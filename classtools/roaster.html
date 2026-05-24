@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>학교 통합 명단 관리</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; padding: 20px; background-color: #f9f9f9; }
+        h1 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
+        th { background-color: #2c3e50; color: white; }
+        tr:nth-child(even) { background-color: #f2f2f2; }
+        .loading { color: #555; font-weight: bold; font-size: 1.2em; }
+    </style>
+</head>
+<body>
+
+    <h1 id="school-title">명단 로딩 중...</h1>
+    <div id="roster-container">
+        <p class="loading">데이터를 불러오는 중입니다. 잠시만 기다려 주세요...</p>
+    </div>
+
+    <script>
+        // 1. 배포한 웹 앱 URL을 여기에 붙여넣으세요!
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxEUCT34py7mQTZRDyQ5wdiWwXvxo6TJN9lbfvcaHUHuPxWZpvqtrKKP9gx_A4PSmjS4g/exec";
+
+        // 2. URL 파라미터에서 학교 이름 읽기
+        function getSchoolName() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('school') || "계상초"; 
+        }
+
+        // 3. 데이터 불러오고 화면에 뿌리기
+        async function loadRoster() {
+            const schoolName = getSchoolName();
+            const container = document.getElementById('roster-container');
+            const title = document.getElementById('school-title');
+            
+            title.innerText = schoolName + " 통합 명단";
+
+            try {
+                // school 정보를 쿼리스트링으로 전달
+                const response = await fetch(`${SCRIPT_URL}?school=${encodeURIComponent(schoolName)}`);
+                const data = await response.json();
+                
+                if (!Array.isArray(data)) {
+                    container.innerHTML = `<p style="color:red;">오류: ${data}</p>`;
+                    return;
+                }
+
+                // 테이블 생성
+                let html = '<table><thead><tr>';
+                data[0].forEach(header => html += `<th>${header}</th>`);
+                html += '</tr></thead><tbody>';
+
+                for (let i = 1; i < data.length; i++) {
+                    html += '<tr>';
+                    data[i].forEach(cell => html += `<td>${cell}</td>`);
+                    html += '</tr>';
+                }
+                html += '</tbody></table>';
+                container.innerHTML = html;
+
+            } catch (error) {
+                container.innerHTML = "데이터 로딩 오류: " + error;
+            }
+        }
+
+        window.onload = loadRoster;
+    </script>
+</body>
+</html>

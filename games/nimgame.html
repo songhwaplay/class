@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIM & SUBTRACTION GAME</title>
+    <style>
+        body {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Times New Roman', serif;
+            user-select: none;
+        }
+
+        /* 게임 보드 프레임 */
+        .game-board {
+            width: 780px;
+            height: 540px;
+            background: radial-gradient(circle at center, #1b212c 0%, #0a0d14 100%);
+            border: 6px solid #bda85d;
+            box-shadow: 0 0 0 4px #4a3c18, inset 0 0 30px rgba(0,0,0,0.8);
+            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+            display: none;
+        }
+
+        /* 스타트 화면 스타일 */
+        .start-screen {
+            width: 780px;
+            height: 540px;
+            background: radial-gradient(circle at center, #222733 0%, #07090e 100%);
+            border: 6px solid #bda85d;
+            box-shadow: 0 0 0 4px #4a3c18, inset 0 0 30px rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-sizing: border-box;
+            color: #bda85d;
+            text-align: center;
+            position: relative;
+        }
+
+        .start-title {
+            font-size: 42px;
+            margin-bottom: 5px;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .start-subtitle {
+            font-size: 16px;
+            color: #8b7941;
+            margin-bottom: 20px;
+            letter-spacing: 1px;
+        }
+
+        /* 공통 액션 버튼 스타일 */
+        .action-btn {
+            background: #d8ceb3;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
+            border: 2px solid #a39575;
+            width: 130px; 
+            height: 40px;
+            font-family: 'Times New Roman', serif;
+            font-size: 14px;
+            font-weight: bold;
+            color: #1a1a1a;
+            box-shadow: 3px 3px 6px rgba(0,0,0,0.6);
+            cursor: pointer;
+            letter-spacing: 1px;
+            clip-path: polygon(2% 0%, 98% 2%, 100% 98%, 0% 100%);
+            transition: background-color 0.2s, color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        .action-btn:hover { background-color: #e8debd; }
+        .action-btn:active { box-shadow: 1px 1px 2px rgba(0,0,0,0.6); transform: translate(2px, 2px); }
+        .action-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+        .btn-take { color: #8b0000; }
+
+        /* 대형 옵션 패널 레이아웃 */
+        .setup-container {
+            background: rgba(0,0,0,0.3);
+            border: 2px solid #54391e;
+            padding: 12px 20px;
+            width: 610px;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        .setup-row {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+            justify-content: space-between;
+        }
+        .setup-label {
+            font-size: 13px;
+            color: #a3b6c4;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .opt-btn-group {
+            display: flex;
+            gap: 6px;
+        }
+        .opt-btn {
+            background: rgba(10, 16, 26, 0.9);
+            border: 1px solid #bda85d;
+            color: #bda85d;
+            padding: 4px 10px;
+            font-family: 'Times New Roman', serif;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .opt-btn.active {
+            background: #bda85d;
+            color: #0a0d14;
+            box-shadow: 0 0 8px rgba(250, 236, 153, 0.5);
+        }
+
+        /* 인게임 내 상단 텍스트 및 초기 컨트롤 */
+        .ingame-info-wrapper {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            color: #bda85d;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            gap: 15px;
+            z-index: 50;
+        }
+        .network-status { color: #88a6d4; }
+
+        .ingame-right-panel {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            z-index: 50;
+        }
+
+        /* 인게임 보드 메인 스테이지 */
+        .top-section {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 290px;
+            margin-top: 35px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        /* NIM 스테이지 조형 */
+        .nim-stage-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+            align-items: center;
+            overflow-y: auto;
+            max-height: 280px;
+        }
+        .gem-row-container {
+            display: flex;
+            align-items: center;
+            width: 680px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px dashed rgba(189, 168, 93, 0.2);
+            padding: 4px 15px;
+            box-sizing: border-box;
+            border-radius: 4px;
+        }
+        .gem-row-container.selected-row {
+            background: rgba(189, 168, 93, 0.08);
+            border-color: rgba(189, 168, 93, 0.6);
+        }
+        .row-label { color: #bda85d; font-size: 13px; font-weight: bold; width: 80px; }
+        .gem-pool { display: flex; gap: 8px; flex-wrap: wrap; flex-grow: 1; }
+        
+        .gem {
+            width: 28px;
+            height: 28px;
+            border-radius: 35% 65% 55% 45% / 45% 35% 65% 55%;
+            background: radial-gradient(circle at 30% 30%, #aeffd8, #1ec776, #095c33);
+            border: 2px solid #053b20;
+            box-shadow: inset 1px 1px 3px rgba(255,255,255,0.6), 2px 2px 4px rgba(0,0,0,0.7);
+            cursor: pointer;
+        }
+        .gem.target-select {
+            background: radial-gradient(circle at 30% 30%, #ffffff, #a3a3a3, #3a3a3a);
+            border-color: #222;
+            filter: grayscale(1) opacity(0.6);
+            transform: translateY(-3px);
+        }
+
+        /* COIN 스테이지 조형 */
+        .coin-stage-container {
+            display: flex;
+            justify-content: center;
+            align-content: start;
+            flex-wrap: wrap;
+            gap: 8px 10px;
+            width: 680px;
+            height: 270px;
+            padding: 15px 25px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.25);
+            border: 2px inset #54391e;
+            border-radius: 6px;
+            overflow-y: auto;
+        }
+        .coin-element {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #fff1b0, #d4a328, #7c5f11);
+            border: 2px solid #54410f;
+            box-shadow: inset 1px 1px 3px rgba(255,255,255,0.7), 2px 2px 4px rgba(0,0,0,0.6);
+            color: #fffae6;
+            text-shadow: 1px 1px 2px #44330b;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .coin-element.marked-select {
+            background: radial-gradient(circle at 35% 35%, #ffffff, #9e9e9e, #3a3a3a);
+            border-color: #333;
+            text-shadow: none;
+            filter: grayscale(1) opacity(0.5);
+            transform: translateY(-3px);
+        }
+        .coin-element.looted-empty { visibility: hidden; pointer-events: none; }
+
+        /* 하단 컴포넌트 구조 */
+        .bottom-section-wrapper {
+            margin-top: 10px;
+            border-top: 1px solid rgba(189, 168, 93, 0.3);
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .button-section {
+            display: flex;
+            justify-content: center;
+            gap: 12px; 
+            width: 680px; 
+            margin-bottom: 10px;
+        }
+        
+        .log-monitor {
+            background-color: #000;
+            border: 4px inset #6a3614;
+            height: 94px;
+            width: 680px; 
+            padding: 8px 16px;
+            box-sizing: border-box;
+            color: #fff;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            margin-bottom: 4px; 
+        }
+        .log-row { display: flex; justify-content: space-between; color: #a3b6c4; }
+        .log-row .highlight-player { color: #fcec99; font-weight: bold; }
+        
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+        .overlay.show { opacity: 1; pointer-events: auto; }
+        .popup-box {
+            background: #d8ceb3;
+            background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
+            border: 4px solid #8b7941;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            color: #1a1a1a;
+            box-sizing: border-box;
+        }
+        .popup-box h3 { margin-top: 0; color: #4a3c18; border-bottom: 2px dashed #8b7941; padding-bottom: 10px; letter-spacing: 1px; }
+        .rules-list { font-family: 'Malgun Gothic', sans-serif; font-size: 14px; line-height: 1.8; padding-left: 20px; margin-bottom: 25px; }
+        
+        .result-body { font-family: 'Malgun Gothic', sans-serif; font-size: 17px; text-align: center; line-height: 2; margin-bottom: 25px; color: #2b2310; }
+        .result-body strong { font-size: 22px; letter-spacing: 1px; }
+
+        .link-display {
+            background: #111;
+            padding: 6px 12px;
+            border: 1px solid #bda85d;
+            color: #fff;
+            font-size: 13px;
+            margin-top: 10px;
+            width: 480px;
+            word-break: break-all;
+        }
+    </style>
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+
+<audio id="bgm" src="cds95game.mp3" loop></audio>
+
+<!-- 시작 및 대기 커스텀 화면 -->
+<div class="start-screen" id="start-screen">
+    <div class="start-title">NIM & COIN MATCH</div>
+    <div class="start-subtitle" id="connection-role-msg">온라인 연결 대기 및 게임 설정</div>
+
+    <div class="setup-container" id="config-panel">
+        <div class="setup-row">
+            <div class="setup-label">GAME MODE</div>
+            <div class="opt-btn-group">
+                <button class="opt-btn active" id="mode-nim" onclick="toggleMainMode('nim')">CLASSIC NIM (여러 줄 보석)</button>
+                <button class="opt-btn" id="mode-coin" onclick="toggleMainMode('coin')">SUBTRACTION GAME (뺄셈 주화)</button>
+            </div>
+        </div>
+        
+        <div id="nim-settings-block">
+            <div class="setup-row">
+                <div class="setup-label">NIM LINES COUNT</div>
+                <div class="opt-btn-group">
+                    <button class="opt-btn" id="line-3" onclick="setNimLines(3)">3 LINES</button>
+                    <button class="opt-btn active" id="line-4" onclick="setNimLines(4)">4 LINES</button>
+                    <button class="opt-btn" id="line-5" onclick="setNimLines(5)">5 LINES</button>
+                    <button class="opt-btn" id="line-6" onclick="setNimLines(6)">6 LINES</button>
+                </div>
+            </div>
+            <div class="setup-row">
+                <div class="setup-label">WIN CONDITION</div>
+                <div class="opt-btn-group">
+                    <button class="opt-btn active" id="rule-misere" onclick="setWinRule('misere')">MISERE (마지막 패배)</button>
+                    <button class="opt-btn" id="rule-normal" onclick="setWinRule('normal')">NORMAL (마지막 승리)</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="coin-settings-block" style="display: none;">
+            <div class="setup-row">
+                <div class="setup-label">TOTAL COINS RANGE (RANDOM GENERATE)</div>
+                <div class="opt-btn-group">
+                    <button class="opt-btn active" id="cr-5-9" onclick="setCoinRange('5-9')">5 ~ 9</button>
+                    <button class="opt-btn" id="cr-10-19" onclick="setCoinRange('10-19')">10 ~ 19</button>
+                    <button class="opt-btn" id="cr-20-29" onclick="setCoinRange('20-29')">20 ~ 29</button>
+                    <button class="opt-btn" id="cr-30-39" onclick="setCoinRange('30-39')">30 ~ 39</button>
+                </div>
+            </div>
+            <div class="setup-row">
+                <div class="setup-label">TAKE COINS LIMIT (PER TURN)</div>
+                <div class="opt-btn-group">
+                    <button class="opt-btn" id="tl-2" onclick="setCoinLimit(2)">MAX 2</button>
+                    <button class="opt-btn active" id="tl-3" onclick="setCoinLimit(3)">MAX 3</button>
+                    <button class="opt-btn" id="tl-4" onclick="setCoinLimit(4)">MAX 4</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 호스트용 주소 공유 패널 -->
+    <div id="host-share-zone" style="margin-bottom: 20px;">
+        <div class="setup-label" id="share-title">상대방 크롬북에 아래 주소를 공유하세요:</div>
+        <div class="link-display" id="game-link-url">네트워크 상태 주소를 생성하는 중...</div>
+    </div>
+
+    <button class="action-btn" id="start-game-btn" style="width: 180px;" onclick="requestStartGame()" disabled>WAITING FOR PLAYER</button>
+</div>
+
+<!-- 게임 본무대 화면 -->
+<div class="game-board" id="game-board">
+    
+    <div class="ingame-info-wrapper">
+        <div id="my-identity-label">MY ROLE: ASSIGNING...</div>
+        <div class="network-status" id="net-turn-indicator">WAITING NETWORK...</div>
+    </div>
+    
+    <div class="ingame-right-panel">
+        <button class="reset-btn" id="ingame-reset-btn" onclick="requestReset()">RESET MAP</button>
+    </div>
+
+    <div class="top-section" id="stage-viewport"></div>
+
+    <div class="bottom-section-wrapper">
+        <div class="button-section">
+            <button class="action-btn btn-take" id="take-btn" onclick="executeTake()">TAKE</button>
+            <button class="action-btn" id="cancel-btn" onclick="cancelSelection()">CANCEL</button>
+            <button class="action-btn" onclick="openRules()">RULES</button>
+        </div>
+
+        <div class="log-monitor">
+            <div class="log-row" id="status-turn-line"><span id="current-player-display" class="highlight-player">WAITING...</span><span id="guide-msg">-</span></div>
+            <div class="log-row" id="log-history-1"><span>방이 정상 연결되었습니다. 대결을 준비하십시오.</span></div>
+            <div class="log-row" id="log-history-2"><span>-</span></div>
+        </div>
+    </div>
+
+    <div class="overlay" id="rules-overlay">
+        <div class="popup-box" style="width: 530px;" id="popup-content-wrapper"></div>
+    </div>
+</div>
+
+<script>
+    let gameMode = 'nim';
+    let currentPlayer = 1; 
+    let myRole = null; 
+
+    let nimLines = 4;
+    let winRule = 'misere';
+    let nimRowsData = [];
+    let nimActiveRowIdx = null;
+    let nimSelectedCount = 0;
+
+    let coinRange = '5-9'; 
+    let coinTotal = 7; 
+    let coinLimit = 3;
+    let coinLootedCount = 0;
+    let coinSelectedList = [];
+
+    let peer = null;
+    let conn = null;
+    let targetPeerId = null;
+
+    window.onload = function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCode = urlParams.get('room');
+
+        if (roomCode) {
+            myRole = 'guest';
+            targetPeerId = roomCode;
+            document.getElementById('connection-role-msg').innerText = "GUEST MODE - 방장에게 연결 중...";
+            document.getElementById('config-panel').style.pointerEvents = 'none';
+            document.getElementById('config-panel').style.opacity = '0.5';
+            document.getElementById('host-share-zone').style.display = 'none';
+            initPeerConnection(false);
+        } else {
+            myRole = 'host';
+            document.getElementById('connection-role-msg').innerText = "HOST MODE - 대전 설정 및 방 생성";
+            initPeerConnection(true);
+        }
+    };
+
+    function initPeerConnection(isHost) {
+        peer = new Peer();
+
+        peer.on('open', function(id) {
+            if (isHost) {
+                const shareUrl = window.location.origin + window.location.pathname + '?room=' + id;
+                document.getElementById('game-link-url').innerText = shareUrl;
+            } else {
+                conn = peer.connect(targetPeerId);
+                setupConnectionEvents();
+            }
+        });
+
+        if (isHost) {
+            peer.on('connection', function(connection) {
+                conn = connection;
+                setupConnectionEvents();
+                sendNetData({ type: 'sync_config', mode: gameMode, lines: nimLines, rule: winRule, range: coinRange, limit: coinLimit });
+                document.getElementById('start-game-btn').disabled = false;
+                document.getElementById('start-game-btn').innerText = "START GAME";
+                document.getElementById('game-link-url').innerText = "상대방 접속 완료!";
+            });
+        }
+    }
+
+    function setupConnectionEvents() {
+        conn.on('open', function() {
+            if (myRole === 'guest') {
+                document.getElementById('connection-role-msg').innerText = "방장 연결 성공! 대기 중...";
+            }
+        });
+
+        conn.on('data', function(data) {
+            handleNetworkMessage(data);
+        });
+
+        conn.on('close', function() {
+            alert("상대방과의 통신망 연결이 끊어졌습니다.");
+            window.location.reload();
+        });
+    }
+
+    function handleNetworkMessage(data) {
+        switch(data.type) {
+            case 'sync_config':
+                gameMode = data.mode;
+                nimLines = data.lines;
+                winRule = data.rule;
+                coinRange = data.range;
+                coinLimit = data.limit;
+                syncStartScreenUI();
+                break;
+            case 'start_game':
+                nimRowsData = data.nimRowsData;
+                coinTotal = data.coinTotal;
+                coinLimit = data.coinLimit;
+                currentPlayer = 1;
+                document.getElementById('start-screen').style.display = 'none';
+                document.getElementById('game-board').style.display = 'block';
+                document.getElementById('my-identity-label').innerText = `MY ROLE: ${myRole.toUpperCase()}`;
+                syncGameBoard();
+                break;
+            case 'sync_action':
+                nimRowsData = data.nimRowsData;
+                coinLootedCount = data.coinLootedCount;
+                currentPlayer = data.nextPlayer;
+                
+                const log1 = document.getElementById('log-history-1');
+                const log2 = document.getElementById('log-history-2');
+                log2.innerHTML = log1.innerHTML;
+                log1.innerHTML = `<span>${data.logMsg}</span>`;
+
+                clearTurnTemporaryData();
+                buildStageView();
+                updateTurnDisplay();
+                break;
+            case 'reset_match':
+                alert("상대방이 판을 리셋하여 맵이 다시 재구성되었습니다.");
+                nimRowsData = data.nimRowsData;
+                coinTotal = data.coinTotal;
+                coinLootedCount = 0;
+                currentPlayer = 1;
+                clearTurnTemporaryData();
+                buildStageView();
+                updateTurnDisplay();
+                break;
+            case 'game_over':
+                showModalLayout("🏁 대결 종료 (GAME OVER)", `<div class="result-body"><strong style="color:#1e4620;">PLAYER ${data.winner} 최종 승리!</strong></div>`, true);
+                break;
+        }
+    }
+
+    function sendNetData(obj) {
+        if (conn && conn.open) conn.send(obj);
+    }
+
+    function syncStartScreenUI() {
+        if (gameMode === 'nim') {
+            document.getElementById('mode-nim').classList.add('active');
+            document.getElementById('mode-coin').classList.remove('active');
+            document.getElementById('nim-settings-block').style.display = 'block';
+            document.getElementById('coin-settings-block').style.display = 'none';
+        } else {
+            document.getElementById('mode-nim').classList.remove('active');
+            document.getElementById('mode-coin').classList.add('active');
+            document.getElementById('nim-settings-block').style.display = 'none';
+            document.getElementById('coin-settings-block').style.display = 'block';
+        }
+        for(let i=3; i<=6; i++) {
+            const el = document.getElementById(`line-${i}`);
+            if(el) el.classList.toggle('active', i === nimLines);
+        }
+        document.getElementById('rule-misere').classList.toggle('active', winRule === 'misere');
+        document.getElementById('rule-normal').classList.toggle('active', winRule === 'normal');
+        
+        ['5-9', '10-19', '20-29', '30-39'].forEach(r => {
+            const el = document.getElementById(`cr-${r}`);
+            if(el) el.classList.toggle('active', r === coinRange);
+        });
+
+        [2, 3, 4].forEach(v => {
+            const el = document.getElementById(`tl-${v}`);
+            if(el) el.classList.toggle('active', v === coinLimit);
+        });
+    }
+
+    function toggleMainMode(mode) {
+        if (myRole === 'guest') return;
+        gameMode = mode;
+        document.getElementById('mode-nim').classList.toggle('active', mode === 'nim');
+        document.getElementById('mode-coin').classList.toggle('active', mode === 'coin');
+        document.getElementById('nim-settings-block').style.display = mode === 'nim' ? 'block' : 'none';
+        document.getElementById('coin-settings-block').style.display = mode === 'coin' ? 'block' : 'none';
+        broadcastConfig();
+    }
+
+    function setNimLines(n) {
+        if (myRole === 'guest') return;
+        nimLines = n;
+        for(let i=3; i<=6; i++) {
+            const el = document.getElementById(`line-${i}`);
+            if(el) el.classList.toggle('active', i === n);
+        }
+        broadcastConfig();
+    }
+
+    function setWinRule(r) {
+        if (myRole === 'guest') return;
+        winRule = r;
+        document.getElementById('rule-misere').classList.toggle('active', r === 'misere');
+        document.getElementById('rule-normal').classList.toggle('active', r === 'normal');
+        broadcastConfig();
+    }
+
+    function setCoinRange(r) {
+        if (myRole === 'guest') return;
+        coinRange = r;
+        ['5-9', '10-19', '20-29', '30-39'].forEach(v => {
+            const el = document.getElementById(`cr-${v}`);
+            if(el) el.classList.toggle('active', v === r);
+        });
+        broadcastConfig();
+    }
+
+    function setCoinLimit(n) {
+        if (myRole === 'guest') return;
+        coinLimit = n;
+        [2, 3, 4].forEach(v => {
+            const el = document.getElementById(`tl-${v}`);
+            if(el) el.classList.toggle('active', v === n);
+        });
+        broadcastConfig();
+    }
+
+    function broadcastConfig() {
+        sendNetData({ type: 'sync_config', mode: gameMode, lines: nimLines, rule: winRule, range: coinRange, limit: coinLimit });
+    }
+
+    function calculateRandomCoinTotal() {
+        let min = 5, max = 9;
+        if (coinRange === '10-19') { min = 10; max = 19; }
+        else if (coinRange === '20-29') { min = 20; max = 29; }
+        else if (coinRange === '30-39') { min = 30; max = 39; }
+        
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function requestStartGame() {
+        if (myRole !== 'host') return;
+        
+        if (gameMode === 'nim') {
+            nimRowsData = [];
+            for(let i=0; i<nimLines; i++) {
+                nimRowsData.push(Math.floor(Math.random() * 5) + (i + 3)); 
+            }
+        } else {
+            coinTotal = calculateRandomCoinTotal(); 
+        }
+
+        const startData = { type: 'start_game', nimRowsData: nimRowsData, coinTotal: coinTotal, coinLimit: coinLimit };
+        sendNetData(startData);
+        handleNetworkMessage(startData);
+    }
+
+    function syncGameBoard() {
+        buildStageView();
+        updateTurnDisplay();
+    }
+
+    function buildStageView() {
+        const viewport = document.getElementById('stage-viewport');
+        viewport.innerHTML = '';
+
+        if (gameMode === 'nim') {
+            document.getElementById('guide-msg').innerText = `한 줄을 골라 보석을 집으십시오. (${winRule === 'misere' ? '마지막 패배' : '마지막 승리'})`;
+            const container = document.createElement('div');
+            container.className = 'nim-stage-container';
+            for (let r = 0; r < nimLines; r++) {
+                const rowBox = document.createElement('div');
+                rowBox.className = 'gem-row-container';
+                rowBox.id = `row-container-${r}`;
+                
+                const label = document.createElement('div');
+                label.className = 'row-label';
+                label.innerText = `LINE ${r + 1}`;
+                rowBox.appendChild(label);
+                
+                const pool = document.createElement('div');
+                pool.className = 'gem-pool';
+                
+                for (let g = 0; g < nimRowsData[r]; g++) {
+                    const gem = document.createElement('div');
+                    gem.className = 'gem';
+                    gem.dataset.row = r;
+                    gem.onclick = function() { handleNimClick(parseInt(this.dataset.row), this); };
+                    pool.appendChild(gem);
+                }
+                rowBox.appendChild(pool);
+                container.appendChild(rowBox);
+            }
+            viewport.appendChild(container);
+        } else {
+            document.getElementById('guide-msg').innerText = `총 ${coinTotal}개 배치됨. 차례대로 한 번에 최대 ${coinLimit}개 수거 가능.`;
+            const coinContainer = document.createElement('div');
+            coinContainer.className = 'coin-stage-container';
+            for (let i = 1; i <= coinTotal; i++) {
+                const coin = document.createElement('div');
+                coin.className = 'coin-element';
+                if (i <= coinLootedCount) coin.className = 'coin-element looted-empty';
+                coin.id = `coin-item-${i}`;
+                coin.innerText = i;
+                coin.dataset.index = i;
+                coin.onclick = function() { handleCoinClick(parseInt(this.dataset.index)); };
+                coinContainer.appendChild(coin);
+            }
+            viewport.appendChild(coinContainer);
+        }
+        updateButtonInteractionState();
+    }
+
+    function isMyTurn() {
+        if (currentPlayer === 1 && myRole === 'host') return true;
+        if (currentPlayer === 2 && myRole === 'guest') return true;
+        return false;
+    }
+
+    function handleNimClick(rowIdx, element) {
+        if (!isMyTurn()) return;
+        if (nimActiveRowIdx !== null && nimActiveRowIdx !== rowIdx) return;
+        
+        nimActiveRowIdx = rowIdx;
+        document.getElementById(`row-container-${rowIdx}`).classList.add('selected-row');
+
+        if (element.classList.contains('target-select')) {
+            element.classList.remove('target-select');
+            nimSelectedCount--;
+            if (nimSelectedCount === 0) {
+                document.getElementById(`row-container-${rowIdx}`).classList.remove('selected-row');
+                nimActiveRowIdx = null;
+            }
+        } else {
+            element.classList.add('target-select');
+            nimSelectedCount++;
+        }
+    }
+
+    function handleCoinClick(idx) {
+        if (!isMyTurn() || idx <= coinLootedCount) return;
+        const expectedNext = coinLootedCount + coinSelectedList.length + 1;
+        const target = document.getElementById('coin-item-' + idx);
+
+        if (target.classList.contains('marked-select')) {
+            if (coinSelectedList[coinSelectedList.length - 1] === idx) {
+                target.classList.remove('marked-select');
+                coinSelectedList.pop();
+            }
+        } else {
+            if (idx !== expectedNext || coinSelectedList.length >= coinLimit) return;
+            target.classList.add('marked-select');
+            coinSelectedList.push(idx);
+        }
+    }
+
+    function updateButtonInteractionState() {
+        const turnState = isMyTurn();
+        document.getElementById('take-btn').disabled = !turnState;
+        document.getElementById('cancel-btn').disabled = !turnState;
+    }
+
+    function executeTake() {
+        if (!isMyTurn()) return;
+        let logMsg = "";
+        let remaining = 0;
+
+        if (gameMode === 'nim') {
+            if (nimActiveRowIdx === null || nimSelectedCount === 0) return;
+            nimRowsData[nimActiveRowIdx] -= nimSelectedCount;
+            logMsg = `[NIM] Player ${currentPlayer}이(가) LINE ${nimActiveRowIdx + 1}에서 보석 ${nimSelectedCount}개를 수거했습니다.`;
+            remaining = nimRowsData.reduce((a, b) => a + b, 0);
+        } else {
+            if (coinSelectedList.length === 0) return;
+            const count = coinSelectedList.length;
+            const start = coinSelectedList[0];
+            const end = coinSelectedList[coinSelectedList.length - 1];
+            coinLootedCount += count;
+            logMsg = `[COIN] Player ${currentPlayer}이(가) 주화 (${start === end ? start : start + '~' + end}) 를 선점했습니다.`;
+            remaining = coinTotal - coinLootedCount;
+        }
+
+        const nextPlayer = currentPlayer === 1 ? 2 : 1;
+
+        const actionData = {
+            type: 'sync_action',
+            nimRowsData: nimRowsData,
+            coinLootedCount: coinLootedCount,
+            nextPlayer: nextPlayer,
+            logMsg: logMsg
+        };
+        sendNetData(actionData);
+        handleNetworkMessage(actionData);
+
+        if (remaining === 0) {
+            let winner = 1;
+            if (gameMode === 'nim') {
+                if (winRule === 'misere') winner = (currentPlayer === 1) ? 2 : 1;
+                else winner = currentPlayer;
+            } else {
+                winner = (currentPlayer === 1) ? 2 : 1;
+            }
+            const overData = { type: 'game_over', winner: winner };
+            sendNetData(overData);
+            handleNetworkMessage(overData);
+        }
+    }
+
+    function requestReset() {
+        const check = confirm("맵을 리셋하여 다시 완전히 무작위 난수로 흩뿌리시겠습니까?");
+        if (!check) return;
+
+        if (gameMode === 'nim') {
+            nimRowsData = [];
+            for(let i=0; i<nimLines; i++) nimRowsData.push(Math.floor(Math.random() * 5) + (i + 3));
+        } else {
+            coinTotal = calculateRandomCoinTotal(); 
+            coinLootedCount = 0;
+        }
+
+        const resetData = { type: 'reset_match', nimRowsData: nimRowsData, coinTotal: coinTotal };
+        sendNetData(resetData);
+        handleNetworkMessage(resetData);
+    }
+
+    function cancelSelection() {
+        clearTurnTemporaryData();
+        buildStageView();
+    }
+
+    function clearTurnTemporaryData() {
+        nimActiveRowIdx = null;
+        nimSelectedCount = 0;
+        coinSelectedList = [];
+    }
+
+    function updateTurnDisplay() {
+        const turnIndicator = document.getElementById('net-turn-indicator');
+        const playerDisplay = document.getElementById('current-player-display');
+        
+        playerDisplay.innerText = `PLAYER ${currentPlayer}'S TURN`;
+
+        if (isMyTurn()) {
+            turnIndicator.innerText = "● MY TURN";
+            turnIndicator.style.color = "#fcec99";
+        } else {
+            turnIndicator.innerText = "○ OPPONENT TURN";
+            turnIndicator.style.color = "#88a6d4";
+        }
+    }
+
+    function showModalLayout(title, innerHTML, isGameOver = false) {
+        const modal = document.getElementById('rules-overlay');
+        const wrapper = document.getElementById('popup-content-wrapper');
+        wrapper.innerHTML = `
+            <h3 style="text-align: center;">${title}</h3>
+            ${innerHTML}
+            <div style="text-align: center;">
+                <button class="action-btn" style="margin: 0 auto;" onclick="${isGameOver ? 'closeRules(); window.location.reload();' : 'closeRules();'}">CLOSE</button>
+            </div>
+        `;
+        modal.classList.add('show');
+    }
+
+    function openRules() {
+        if (gameMode === 'nim') {
+            showModalLayout("📜 NIM RULES", `
+                <ul class="rules-list">
+                    <li>자신의 턴에 한 줄을 골라 원하는 만큼 보석을 가져옵니다.</li>
+                    <li>하단의 <strong>[TAKE]</strong>를 누르면 상대방 크롬북으로 즉시 턴이 전송됩니다.</li>
+                </ul>
+            `, false);
+        } else {
+            showModalLayout("📜 COIN MATCH RULES", `
+                <ul class="rules-list">
+                    <li>지정된 랜덤 주화 수량 한도 내에서 한 번에 1개~제한(MAX)개까지 순서대로 집습니다.</li>
+                    <li>마지막 남은 파멸의 주화를 쥐는 자가 최종 <strong>패배</strong>합니다.</li>
+                </ul>
+            `, false);
+        }
+    }
+
+    function closeRules() { document.getElementById('rules-overlay').classList.remove('show'); }
+</script>
+</body>
+</html>

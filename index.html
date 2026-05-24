@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ClassHub | 학급 관리 플랫폼</title>
+    <style>
+        body { font-family: 'Pretendard', sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 40px; }
+        .dashboard { width: 100%; max-width: 800px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; }
+        .card:hover { transform: translateY(-5px); }
+        .card h2 { margin-top: 0; color: #2c3e50; }
+        .btn { display: inline-block; padding: 10px 15px; background: #3498db; color: white; text-decoration: none; border-radius: 6px; margin-top: 10px; }
+        .school-selector { margin-bottom: 30px; }
+    </style>
+</head>
+<body>
+
+    <h1>ClassHub 통합 관리 대시보드</h1>
+
+    <div class="school-selector">
+        <label>학교 선택: </label>
+        <select id="schoolSelect" onchange="updateLinks()">
+            <option value="계상초">계상초등학교</option>
+            <option value="A초등학교">A초등학교</option>
+            <option value="B초등학교">B초등학교</option>
+        </select>
+    </div>
+
+    <div class="dashboard">
+        <div class="card">
+            <h2>학생 명단</h2>
+            <p>전교생 및 학급별 명단 확인</p>
+            <a id="rosterLink" class="btn" href="classtools/roster.html?school=계상초">명단 보기</a>
+        </div>
+
+        <div class="card">
+            <h2>결석 신고 관리</h2>
+            <p>학부모 제출 자료 확인</p>
+            <a id="absenceLink" class="btn" href="classtools/absence.html">결석 확인</a>
+        </div>
+    </div>
+
+    <script>
+        function updateLinks() {
+            const school = document.getElementById('schoolSelect').value;
+            document.getElementById('rosterLink').href = `classtools/roster.html?school=${school}`;
+        }
+    </script>
+</body>
+</html>
