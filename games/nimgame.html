@@ -317,6 +317,14 @@
             margin-top: 10px;
             width: 480px;
             word-break: break-all;
+            user-select: text;
+            cursor: text;
+        }
+
+        .copy-link-btn {
+            margin-top: 10px;
+            width: 150px;
+            height: 34px;
         }
     </style>
     <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
@@ -383,6 +391,7 @@
     <div id="host-share-zone" style="margin-bottom: 20px;">
         <div class="setup-label" id="share-title">상대방 크롬북에 아래 주소를 공유하세요:</div>
         <div class="link-display" id="game-link-url">네트워크 상태 주소를 생성하는 중...</div>
+        <button class="action-btn copy-link-btn" id="copy-link-btn" onclick="copyGameLink()">COPY ADDRESS</button>
     </div>
 
     <button class="action-btn" id="start-game-btn" style="width: 180px;" onclick="requestStartGame()" disabled>WAITING FOR PLAYER</button>
@@ -461,6 +470,34 @@
         }
     };
 
+    async function copyGameLink() {
+        const linkEl = document.getElementById('game-link-url');
+        const btn = document.getElementById('copy-link-btn');
+        const url = linkEl.innerText.trim();
+
+        if (!url || url.includes('생성하는 중') || url.includes('접속 완료')) return;
+
+        try {
+            await navigator.clipboard.writeText(url);
+            btn.innerText = "COPIED!";
+            setTimeout(() => btn.innerText = "COPY ADDRESS", 1500);
+        } catch (e) {
+            const range = document.createRange();
+            range.selectNodeContents(linkEl);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+
+            try {
+                document.execCommand('copy');
+                btn.innerText = "COPIED!";
+                setTimeout(() => btn.innerText = "COPY ADDRESS", 1500);
+            } catch (err) {
+                btn.innerText = "SELECT & COPY";
+            }
+        }
+    }
+
     function initPeerConnection(isHost) {
         peer = new Peer();
 
@@ -482,6 +519,7 @@
                 document.getElementById('start-game-btn').disabled = false;
                 document.getElementById('start-game-btn').innerText = "START GAME";
                 document.getElementById('game-link-url').innerText = "상대방 접속 완료!";
+                document.getElementById('copy-link-btn').style.display = 'none';
             });
         }
     }
