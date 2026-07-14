@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대항해시대3 스핑크스 퀴즈</title>
+    <style>
+        body { background-color: #2b1d1d; color: #ffffff; font-family: 'Malgun Gothic', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; flex-direction: column; }
+        .quiz-container { width: 600px; background-color: #3d1616; border: 4px double #8c6d6d; padding: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.7); text-align: center; }
+        .quiz-title { border-bottom: 2px solid #8c6d6d; padding-bottom: 5px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e3c1c1; }
+        .question-text { font-size: 16px; line-height: 1.6; margin-bottom: 30px; min-height: 80px; white-space: pre-wrap; text-align: left; padding: 0 20px; }
+        .options-container { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin: 0 auto; }
+        .quiz-btn { background-color: #593131; color: #ffffff; border: 2px solid #8c6d6d; padding: 10px; font-size: 15px; cursor: pointer; transition: background 0.2s; }
+        .quiz-btn:hover { background-color: #7c4848; }
+        .confirm-btn { max-width: 150px; margin-top: 20px; margin-left: auto; margin-right: auto; display: block; }
+        
+        .volume-control { margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 15px; color: #e3c1c1; font-weight: bold; }
+        .vol-btn { background: #8c6d6d; border: 2px solid #593131; color: white; padding: 5px 12px; cursor: pointer; }
+        .vol-bar { display: flex; gap: 4px; }
+        .bar-segment { width: 25px; height: 20px; background: #3d1616; border: 1px solid #8c6d6d; cursor: pointer; }
+        .bar-segment.active-1 { background: #663333; }
+        .bar-segment.active-2 { background: #995533; }
+        .bar-segment.active-3 { background: #cc7733; }
+        .bar-segment.active-4 { background: #ff9933; }
+        .bar-segment.active-5 { background: #ffcc66; }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="quiz-title">스핑크스</div>
+    <div id="display-area"></div>
+    
+    <div class="volume-control">
+        <span>MUSIC VOLUME</span>
+        <button class="vol-btn" onclick="toggleMute()">MUTE</button>
+        <div class="vol-bar">
+            <div class="bar-segment" onclick="setVolume(0.2, 1)"></div>
+            <div class="bar-segment" onclick="setVolume(0.4, 2)"></div>
+            <div class="bar-segment" onclick="setVolume(0.6, 3)"></div>
+            <div class="bar-segment" onclick="setVolume(0.8, 4)"></div>
+            <div class="bar-segment" onclick="setVolume(1.0, 5)"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentStage = 0, difficulty = 5, currentAnswer = "";
+    const displayArea = document.getElementById('display-area');
+    const bgm = new Audio('../assets/sound/sphinx.mp3');
+    bgm.loop = true;
+
+    document.body.addEventListener('click', () => { if(bgm.paused) bgm.play(); }, { once: true });
+
+    function setVolume(val, level) {
+        bgm.volume = val;
+        const segments = document.querySelectorAll('.bar-segment');
+        segments.forEach((seg, i) => {
+            seg.className = 'bar-segment';
+            if (i < level) seg.classList.add('active-' + level);
+        });
+    }
+
+    function toggleMute() { bgm.muted = !bgm.muted; }
+    setVolume(0.6, 3);
+
+    function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+    function loadQuestion() {
+        if (currentStage === 0) {
+            displayArea.innerHTML = `<div class="question-text"><스핑크스> 나의 수수께끼에 도전할 자여. 먼저 그대의 실력을 선택하라.</div>
+            <div class="options-container"><button class="quiz-btn" onclick="setDiff(5)">초급 (1~5)</button><button class="quiz-btn" onclick="setDiff(10)">고급 (1~10)</button></div>`;
+            return;
+        }
+
+        const standardOptions = Array.from({length: difficulty}, (_, i) => `${i + 1}마리`);
+        let qText = "", ans = "";
+
+        if (currentStage === 1) {
+            qText = "<스핑크스> 아침에는 4개의 다리, 낮에는 2개의 다리, 밤에는 3개의 다리로 걷는 괴물은?";
+            let html = `<div class="question-text">${qText}</div><div class="options-container">`;
+            ["스핑크스", "자신", "기타", "없다", "모른다", "무시한다", "도망간다"].forEach(o => html += `<button class="quiz-btn" onclick="check('${o}', '자신')">${o}</button>`);
+            displayArea.innerHTML = html + `</div>`;
+            return;
+        } 
+        
+        if (currentStage === 2) {
+            const x = getRandomInt(1, difficulty), y = getRandomInt(1, difficulty);
+            qText = `<스핑크스> 그럼 그대에게 묻겠다.\n다리가 4개 있는 괴물과 2개 있는 괴물이 ${x + y}마리 있다. 그 다리는 합쳐서 ${4*x + 2*y}개가 있다.\n그러면 다리가 4개있는 괴물은 몇 마린가?`;
+            ans = x + "마리";
+        } else if (currentStage === 3) {
+            const x = getRandomInt(1, difficulty), y = getRandomInt(3, difficulty);
+            qText = `<스핑크스> 다시 그대에게 묻겠다.\n다리가 4개와 2개 있는 괴물의 다리를 합쳐서 ${4*x + 2*y}개가 있다. 세월이 지나서 다리 4개의 괴물은 모두 다리가 2개가 되고, 2개의 다리를 가지고 있는 것 중 2마리는 3개의 다리가 되었다. 괴물들의 다리를 모두 합치니 ${2*x + 2*(y-2) + 3*2}개가 되었다. 처음에 다리가 4개 있었던 괴물은 몇 마리였느냐?`;
+            ans = x + "마리";
+        } else if (currentStage === 4) {
+            const x = getRandomInt(1, difficulty), y = getRandomInt(5, difficulty);
+            qText = `<스핑크스> 마지막으로 그대에게 묻겠다.\n다리가 4개와 2개 있는 괴물의 다리를 합쳐서 ${4*x + 2*y}개가 있다. 세월이 지나서 4개의 다리를 가진 괴물은 모두 다리가 2개로 성장하고, 다리가 2개 있는 괴물중 4마리는 다리가 3개가 되었다. 게다가 다리가 4개였던 괴물의 2배가 되는 4개의 다리를 가지는 괴물이 새로이 태어났다. 괴물들의 다리를 다 합쳐 ${2*x + 2*(y-4) + 3*4 + 4*(2*x)}개가 있다. 그러면 처음에 다리가 4개 있었던 괴물은 몇 마리였느냐?`;
+            ans = x + "마리";
+        } else { showResult(true); return; }
+
+        let html = `<div class="question-text">${qText}</div><div class="options-container">`;
+        standardOptions.forEach(o => html += `<button class="quiz-btn" onclick="check('${o}', '${ans}')">${o}</button>`);
+        displayArea.innerHTML = html + `</div>`;
+    }
+
+    function setDiff(d) { difficulty = d; currentStage = 1; loadQuestion(); }
+    function check(s, a) { if (s === a) { currentStage++; loadQuestion(); } else showResult(false); }
+    function showResult(win) {
+        displayArea.innerHTML = `<div class="question-text" style="text-align:center;">${win ? "<스핑크스> 그대의 예지를 칭송하리라." : "<스핑크스> 성스러운 땅에 합당치 않은 자여! 물러가라!"}</div><button class="quiz-btn confirm-btn" onclick="currentStage=0; loadQuestion();">처음으로</button>`;
+    }
+
+    loadQuestion();
+</script>
+</body>
+</html>

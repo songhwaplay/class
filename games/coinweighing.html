@@ -1,930 +1,1846 @@
 <!DOCTYPE html>
+
 <html lang="ko">
+
 <head>
+
     <meta charset="UTF-8">
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>대항해시대 3 - Coin Game</title>
+
     <style>
+
         body {
+
             background-color: #000;
+
             display: flex;
+
             justify-content: center;
+
             align-items: center;
+
             height: 100vh;
+
             margin: 0;
+
             font-family: 'Times New Roman', serif;
+
             user-select: none;
+
         }
+
+
 
         /* 게임 보드 프레임 */
+
         .game-board {
+
             width: 780px;
+
             height: 540px;
+
             background: radial-gradient(circle at center, #103c68 0%, #061e38 100%);
+
             border: 6px solid #bda85d;
+
             box-shadow: 0 0 0 4px #4a3c18, inset 0 0 30px rgba(0,0,0,0.8);
+
             position: relative;
+
             padding: 20px;
+
             box-sizing: border-box;
+
             display: none;
+
         }
+
+
 
         /* 스타트 화면 스타일 */
+
         .start-screen {
+
             width: 780px;
+
             height: 540px;
+
             background: radial-gradient(circle at center, #1a2a3a 0%, #050b11 100%);
+
             border: 6px solid #bda85d;
+
             box-shadow: 0 0 0 4px #4a3c18, inset 0 0 30px rgba(0,0,0,0.9);
+
             display: flex;
+
             flex-direction: column;
+
             justify-content: center;
+
             align-items: center;
+
             box-sizing: border-box;
+
             color: #bda85d;
+
             text-align: center;
+
             position: relative;
+
         }
+
+
 
         .start-title {
+
             font-size: 42px;
+
             margin-bottom: 5px;
+
             letter-spacing: 3px;
+
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+
         }
+
+
 
         .start-subtitle {
+
             font-size: 20px;
+
             color: #8b7941;
+
             margin-bottom: 30px;
+
             letter-spacing: 1px;
+
         }
+
+
 
         /* 공통 액션 버튼 스타일 */
+
         .action-btn {
+
             background: #d8ceb3;
+
             background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
+
             border: 2px solid #a39575;
+
             width: 120px; 
+
             height: 40px;
+
             font-family: 'Times New Roman', serif;
+
             font-size: 16px;
+
             font-weight: bold;
+
             color: #1a1a1a;
+
             box-shadow: 3px 3px 6px rgba(0,0,0,0.6);
+
             cursor: pointer;
+
             letter-spacing: 2px;
+
             clip-path: polygon(2% 0%, 98% 2%, 100% 98%, 0% 100%);
+
             transition: background-color 0.2s, color 0.2s;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             box-sizing: border-box;
+
         }
+
         .action-btn:hover { background-color: #e8debd; }
+
         .action-btn:active { box-shadow: 1px 1px 2px rgba(0,0,0,0.6); transform: translate(2px, 2px); }
+
         .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
         .btn-decide { color: #8b0000; }
 
+
+
         /* 난이도 설정 레이아웃 */
+
         .difficulty-container {
+
             margin-bottom: 25px;
+
         }
+
         .difficulty-label {
+
             font-size: 16px;
+
             color: #a3b6c4;
+
             margin-bottom: 10px;
+
             letter-spacing: 1px;
+
         }
+
         .diff-btn-group {
+
             display: flex;
+
             gap: 8px;
+
             justify-content: center;
+
             align-items: center;
+
         }
+
         .diff-btn {
+
             background: rgba(6, 30, 56, 0.8);
+
             border: 1px solid #bda85d;
+
             color: #bda85d;
+
             padding: 6px 14px;
+
             font-family: 'Times New Roman', serif;
+
             font-size: 16px;
+
             font-weight: bold;
+
             cursor: pointer;
+
             transition: all 0.2s;
+
         }
+
         .diff-btn:hover {
+
             background: #bda85d;
+
             color: #061e38;
+
         }
+
         .diff-btn.active {
+
             background: #bda85d;
+
             color: #061e38;
+
             box-shadow: 0 0 10px rgba(250, 236, 153, 0.5);
+
         }
+
+
 
         /* 시각적 볼륨 조절 모듈 스타일 */
+
         .volume-container {
+
             margin-bottom: 35px;
+
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
+
         }
+
         .volume-label {
+
             font-size: 15px;
+
             color: #a3b6c4;
+
             margin-bottom: 10px;
+
             letter-spacing: 1px;
+
             font-weight: bold;
+
         }
+
         .volume-interface {
+
             display: flex;
+
             gap: 8px;
+
             align-items: center;
+
         }
+
         .volume-bar-container {
+
             display: flex;
+
             background-color: #110904;
+
             border: 2px solid #54391e;
+
             padding: 4px 6px;
+
             gap: 4px;
+
             box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+
         }
+
         .vol-block {
+
             width: 22px;
+
             height: 16px;
+
             background-color: #24160c; 
+
             border: 1px solid #140d07;
+
             cursor: pointer;
+
             transition: background-color 0.1s;
+
         }
+
         .vol-block.active-level-1 { background: #61401b; border-color: #8c5d27; box-shadow: 0 0 4px #61401b; }
+
         .vol-block.active-level-2 { background: #8c5e27; border-color: #bd7e35; box-shadow: 0 0 6px #8c5e27; }
+
         .vol-block.active-level-3 { background: #b87c35; border-color: #e69d45; box-shadow: 0 0 8px #b87c35; }
+
         .vol-block.active-level-4 { background: #df9744; border-color: #fcae53; box-shadow: 0 0 10px #df9744; }
+
         .vol-block.active-level-5 { background: #ffaa42; border-color: #fff2cc; box-shadow: 0 0 12px #ffaa42; }
 
+
+
         .vol-mute-btn {
+
             background: linear-gradient(to bottom, #c5a059 0%, #947132 100%);
+
             border: 1px solid #61461b;
+
             color: #261603;
+
             padding: 4px 10px;
+
             font-size: 13px;
+
             font-weight: bold;
+
             cursor: pointer;
+
         }
+
         .vol-mute-btn.active {
+
             background: linear-gradient(to bottom, #4a2f1b 0%, #1e1107 100%);
+
             color: #e6cb9c;
+
             border-color: #8a5a36;
+
         }
+
+
 
         /* 인게임 내부 MUSIC VOLUME 패널 */
+
         .ingame-controls-wrapper {
+
             position: absolute;
+
             top: 15px;
+
             left: 20px;
+
             display: flex;
+
             align-items: center;
+
             gap: 15px;
+
             z-index: 50;
+
         }
+
         .ingame-controls-wrapper .volume-label {
+
             margin-bottom: 0;
+
             font-size: 13px;
+
         }
+
+
 
         /* 인게임 상단 우측 동전 제어판 레이아웃 정교화 */
+
         .ingame-difficulty-panel {
+
             position: absolute;
+
             top: 13px;
+
             right: 20px;
+
             display: flex;
+
             align-items: center;
+
             gap: 10px;
+
             z-index: 50;
+
         }
+
         .ingame-difficulty-panel .diff-explain-label {
+
             font-size: 13px;
+
             color: #a3b6c4;
+
             font-weight: bold;
+
             letter-spacing: 1px;
+
         }
+
         .ingame-difficulty-panel .diff-btn {
+
             font-size: 13px;
+
             padding: 4px 10px;
+
         }
+
+
 
         .top-section {
+
             display: flex;
+
             justify-content: center;
+
             gap: 20px; 
+
             height: 290px;
+
             margin-top: 30px;
+
         }
+
+
 
         .scale-area {
+
             width: 380px;
+
             position: relative;
+
             display: flex;
+
             justify-content: center;
+
         }
+
+
 
         .scale-pillar {
+
             position: absolute;
+
             bottom: 20px;
+
             width: 40px;
+
             height: 210px;
+
             background: linear-gradient(to right, #3e2714, #664124, #3e2714);
+
             border: 2px solid #201308;
+
             box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+
             z-index: 2;
+
         }
+
         .scale-base {
+
             position: absolute;
+
             bottom: 0;
+
             width: 100px;
+
             height: 30px;
+
             background: linear-gradient(to right, #503117, #754b2a, #503117);
+
             border: 2px solid #201308;
+
             border-bottom: none;
+
             z-index: 3;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+
         }
+
+
 
         .scale-beam-container {
+
             position: absolute;
+
             top: 50px;
+
             width: 320px;
+
             height: 20px;
+
             z-index: 4;
+
             transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
         }
+
         .scale-beam {
+
             width: 100%;
+
             height: 12px;
+
             background: linear-gradient(to bottom, #a0adb5, #4f5a63);
+
             border: 1px solid #1a232b;
+
             border-radius: 4px;
+
             position: absolute;
+
             top: 4px;
+
             box-shadow: 0 5px 10px rgba(0,0,0,0.5);
+
         }
+
         .scale-pin {
+
             position: absolute;
+
             top: -5px;
+
             left: 50%;
+
             transform: translateX(-50%);
+
             width: 16px;
+
             height: 30px;
+
             background: linear-gradient(to right, #d4c084, #8b7941);
+
             border-radius: 4px;
+
             border: 1px solid #3d3215;
+
             z-index: 5;
+
         }
+
+
 
         .plate-wrapper {
+
             position: absolute;
+
             top: -30px;
+
             width: 200px;
+
             height: 220px;
+
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
+
             justify-content: flex-end;
+
             padding-bottom: 20px;
+
             transition: transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+
             z-index: 20;
+
         }
+
         .plate-wrapper.left { left: -40px; }
+
         .plate-wrapper.right { right: -40px; }
 
+
+
         .plate-strings {
+
             width: 100px;
+
             height: 105px;
+
             border-left: 2px solid #6c7a89;
+
             border-right: 2px solid #6c7a89;
+
             clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+
         }
+
         
+
         .plate {
+
             width: 160px;
+
             height: 55px;
+
             background: radial-gradient(ellipse at center, #8498a8 0%, #2f4152 100%);
+
             border-radius: 50%;
+
             border: 2px solid #a3b6c4;
+
             box-shadow: inset 0 -10px 15px rgba(0,0,0,0.8), 0 10px 10px rgba(0,0,0,0.5);
+
             display: flex;
+
             flex-wrap: wrap;
+
             justify-content: center;
+
             align-content: center;
+
             gap: 2px;
+
             margin-top: -20px;
+
             z-index: 10;
+
         }
+
+
 
         .coin-pool-container {
+
             width: 260px; 
+
             border: 2px solid #728aa0;
+
             background: rgba(255, 255, 255, 0.05);
+
             padding: 12px;
+
             box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+
             display: grid;
+
             grid-template-columns: repeat(4, 52px); 
+
             gap: 12px 8px; 
+
             justify-content: center;
+
             align-content: start;
+
         }
+
+
 
         .pool-slot {
+
             width: 52px;
+
             height: 52px;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             position: relative;
+
         }
+
+
 
         .coin {
+
             width: 52px;
+
             height: 52px;
+
             border-radius: 50%;
+
             background: radial-gradient(circle at 30% 30%, #fcec99, #dcb036, #a17812);
+
             border: 2px solid #85610d;
+
             box-shadow: inset 2px 2px 5px rgba(255,255,255,0.7), 2px 3px 5px rgba(0,0,0,0.6);
+
             color: #fff9e6;
+
             text-shadow: 1px 1px 2px #543d03;
+
             font-size: 24px;
+
             font-weight: bold;
+
             display: flex;
+
             align-items: center;
+
             justify-content: center;
+
             cursor: grab;
+
             position: relative;
+
             z-index: 30;
+
             transition: transform 0.1s, box-shadow 0.1s;
+
         }
+
         .coin:active { cursor: grabbing; transform: scale(1.05); }
+
         
+
         .decide-mode .coin { cursor: pointer; animation: pulse 1s infinite alternate; }
+
         .decide-mode .coin:hover { transform: scale(1.15); box-shadow: 0 0 15px #fcec99; border-color: #fcec99; z-index: 40; }
 
+
+
         @keyframes pulse {
+
             from { box-shadow: 0 0 5px #dcb036; }
+
             to { box-shadow: 0 0 15px #fcec99; }
+
         }
+
+
 
         /* 하단 제어 구역 구조화 디자인 및 여백 픽스 */
+
         .bottom-section-wrapper {
+
             margin-top: 10px;
+
             border-top: 1px solid rgba(189, 168, 93, 0.3);
+
             padding-top: 12px;
+
             display: flex;
+
             flex-direction: column;
+
             align-items: center;
+
             width: 100%;
+
         }
+
+
 
         .button-section {
+
             display: flex;
+
             justify-content: center;
+
             gap: 12px; 
+
             width: 680px; 
+
             margin-bottom: 10px;
+
         }
+
         
+
         .log-monitor {
+
             background-color: #000;
+
             border: 4px inset #6a3614;
+
             height: 94px;
+
             width: 680px; 
+
             padding: 8px 16px;
+
             box-sizing: border-box;
+
             color: #fff;
+
             font-family: 'Courier New', Courier, monospace;
+
             font-size: 18px;
+
             display: flex;
+
             flex-direction: column;
+
             justify-content: space-around;
+
             margin-bottom: 4px; 
+
         }
+
         .log-row {
+
             display: flex;
+
             justify-content: space-between;
+
         }
+
         .log-row span { white-space: pre; }
+
         
+
         .status-msg { color: #fcec99; font-weight: bold; text-align: center; font-size: 20px; text-shadow: 0 0 5px #fcec99; display: none; }
+
         .decide-mode .status-msg { display: block; }
+
         .decide-mode .log-row { display: none; }
 
+
+
         .overlay {
+
             display: none;
+
             position: absolute;
+
             top: 0; left: 0; width: 100%; height: 100%;
+
             background: rgba(0,0,0,0.7);
+
             z-index: 100;
+
             justify-content: center;
+
             align-items: center;
+
         }
+
         .popup-box {
+
             background: #d8ceb3;
+
             background-image: url('data:image/svg+xml;utf8,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
+
             border: 4px solid #8b7941;
+
             padding: 30px;
+
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+
             color: #1a1a1a;
+
             box-sizing: border-box;
+
         }
+
         .popup-box h3 { margin-top: 0; color: #4a3c18; border-bottom: 2px dashed #8b7941; padding-bottom: 10px; letter-spacing: 1px; }
+
         .rules-list { font-family: 'Malgun Gothic', sans-serif; font-size: 16px; line-height: 1.8; padding-left: 20px; margin-bottom: 30px; }
+
         .rules-list strong { color: #8b0000; }
 
+
+
         .result-body {
+
             font-family: 'Malgun Gothic', sans-serif;
+
             font-size: 18px;
+
             text-align: center;
+
             line-height: 2;
+
             margin-bottom: 25px;
+
             color: #2b2310;
+
         }
+
         .result-body strong {
+
             font-size: 22px;
+
             letter-spacing: 1px;
+
         }
+
         .text-success { color: #1e4620; }
+
         .text-danger { color: #8b0000; }
+
     </style>
+
 </head>
+
 <body>
 
-<audio id="bgm" src="coinweighing.mp3" loop></audio>
 
-<!-- 시작 화면 -->
+
+<audio id="bgm" src="../assets/sound/coinweighing.mp3" loop></audio>
+
+
+
 <div class="start-screen" id="start-screen">
+
     <div class="start-title">대항해시대 Ⅲ</div>
+
     <div class="start-subtitle">Coin Weighing Game</div>
+
     
+
     <div class="difficulty-container">
+
         <div class="difficulty-label">SELECT COINS COUNT</div>
+
         <div class="diff-btn-group">
+
             <button class="diff-btn" onclick="setGlobalDifficulty(8, true)">8</button>
+
             <button class="diff-btn" onclick="setGlobalDifficulty(9, true)">9</button>
+
             <button class="diff-btn" onclick="setGlobalDifficulty(10, true)">10</button>
+
             <button class="diff-btn" onclick="setGlobalDifficulty(11, true)">11</button>
+
             <button class="diff-btn active" onclick="setGlobalDifficulty(12, true)">12</button>
+
             <button class="diff-btn" onclick="setGlobalDifficulty(13, true)">13</button>
+
         </div>
+
     </div>
+
+
 
     <div class="volume-container">
+
         <div class="volume-label">MUSIC VOLUME</div>
+
         <div class="volume-interface">
+
             <button class="vol-mute-btn" id="startMuteBtn" onclick="setVolume(0)">MUTE</button>
+
             <div class="volume-bar-container">
+
                 <div class="vol-block start-vb-1" id="start-vb-1" onclick="setVolume(0.2)"></div>
+
                 <div class="vol-block start-vb-2" id="start-vb-2" onclick="setVolume(0.4)"></div>
+
                 <div class="vol-block start-vb-3" id="start-vb-3" onclick="setVolume(0.6)"></div>
+
                 <div class="vol-block start-vb-4" id="start-vb-4" onclick="setVolume(0.8)"></div>
+
                 <div class="vol-block start-vb-5" id="start-vb-5" onclick="setVolume(1.0)"></div>
+
             </div>
+
         </div>
+
     </div>
+
+
 
     <button class="action-btn" onclick="startGame()">START GAME</button>
+
 </div>
 
-<!-- 게임 화면 -->
+
+
 <div class="game-board" id="game-board">
+
     
-    <!-- 인게임 내부 MUSIC VOLUME 패널 -->
+
     <div class="ingame-controls-wrapper">
+
         <div class="volume-label">MUSIC VOLUME</div>
+
         <div class="volume-interface">
+
             <button class="vol-mute-btn" id="gameMuteBtn" onclick="setVolume(0)">MUTE</button>
+
             <div class="volume-bar-container">
+
                 <div class="vol-block game-vb-1" id="game-vb-1" onclick="setVolume(0.2)"></div>
+
                 <div class="vol-block game-vb-2" id="game-vb-2" onclick="setVolume(0.4)"></div>
+
                 <div class="vol-block game-vb-3" id="game-vb-3" onclick="setVolume(0.6)"></div>
+
                 <div class="vol-block game-vb-4" id="game-vb-4" onclick="setVolume(0.8)"></div>
+
                 <div class="vol-block game-vb-5" id="game-vb-5" onclick="setVolume(1.0)"></div>
+
             </div>
+
         </div>
+
     </div>
+
     
-    <!-- 인게임 상단 우측 동전 제어판 (가이드 설명 라벨 식별자 추가 영역) -->
+
     <div class="ingame-difficulty-panel">
+
         <div class="diff-explain-label">COINS:</div>
+
         <div class="diff-btn-group">
+
             <button class="diff-btn in-8" onclick="setGlobalDifficulty(8, false)">8</button>
+
             <button class="diff-btn in-9" onclick="setGlobalDifficulty(9, false)">9</button>
+
             <button class="diff-btn in-10" onclick="setGlobalDifficulty(10, false)">10</button>
+
             <button class="diff-btn in-11" onclick="setGlobalDifficulty(11, false)">11</button>
+
             <button class="diff-btn in-12" onclick="setGlobalDifficulty(12, false)">12</button>
+
             <button class="diff-btn in-13" onclick="setGlobalDifficulty(13, false)">13</button>
+
         </div>
+
     </div>
+
+
 
     <div class="top-section">
+
         <div class="scale-area">
+
             <div class="scale-pillar"></div>
+
             <div class="scale-base"></div>
+
             <div class="scale-beam-container" id="beam-container">
+
                 <div class="scale-beam"></div>
+
                 <div class="scale-pin"></div>
+
                 
+
                 <div class="plate-wrapper left" id="left-wrapper" ondragover="allowDrop(event)" ondrop="dropToZone(event, 'left')">
+
                     <div class="plate-strings"></div>
+
                     <div class="plate" id="left-plate"></div>
+
                 </div>
+
                 
+
                 <div class="plate-wrapper right" id="right-wrapper" ondragover="allowDrop(event)" ondrop="dropToZone(event, 'right')">
+
                     <div class="plate-strings"></div>
+
                     <div class="plate" id="right-plate"></div>
+
                 </div>
+
             </div>
+
         </div>
+
+
 
         <div class="coin-pool-container" id="coin-pool" ondragover="allowDrop(event)" ondrop="dropToZone(event, 'pool')"></div>
+
     </div>
 
-    <!-- 하단 정렬 교정 컴포넌트 랩 그룹 -->
+
+
     <div class="bottom-section-wrapper">
+
         <div class="button-section">
+
             <button class="action-btn" id="weigh-btn" onclick="weighCoins()">WEIGH</button>
+
             <button class="action-btn" onclick="clearPlates()">CLEAR</button>
+
             <button class="action-btn btn-decide" id="decide-btn" onclick="toggleDecideMode()">DECIDE</button>
+
             <button class="action-btn" onclick="openRules()">RULES</button>
+
         </div>
+
+
 
         <div class="log-monitor">
+
             <div class="log-row" id="log-1"><span>1- </span><span id="log-1-content"></span></div>
+
             <div class="log-row" id="log-2"><span>2- </span><span id="log-2-content"></span></div>
+
             <div class="log-row" id="log-3"><span>3- </span><span id="log-3-content"></span></div>
+
             <div class="status-msg">> SELECT THE FAKE COIN <</div>
+
         </div>
+
     </div>
 
+
+
     <div class="overlay" id="rules-overlay">
+
         <div class="popup-box" style="width: 500px;" id="popup-content-wrapper"></div>
+
     </div>
+
+
 
 </div>
 
+
+
 <script>
+
     let coinCount = 12;
+
     let fakeCoinIndex, fakeCoinWeight, currentTurn;
+
     let isDecideMode = false;
+
     let audioCtx = null;
+
     let currentVolume = 0.6; 
+
+
 
     const bgm = document.getElementById('bgm');
 
+
+
     function setVolume(vol) {
+
         currentVolume = vol;
+
         if(bgm) {
+
             bgm.volume = vol;
+
         }
+
         
+
         for (let i = 1; i <= 5; i++) {
+
             const sBlock = document.getElementById(`start-vb-${i}`);
+
             const gBlock = document.getElementById(`game-vb-${i}`);
+
             if(sBlock) sBlock.className = 'vol-block';
+
             if(gBlock) gBlock.className = 'vol-block';
+
         }
+
         
+
         const sMute = document.getElementById('startMuteBtn');
+
         const gMute = document.getElementById('gameMuteBtn');
+
         
+
         if (vol === 0) {
+
             if(sMute) sMute.classList.add('active');
+
             if(gMute) gMute.classList.add('active');
+
         } else {
+
             if(sMute) sMute.classList.remove('active');
+
             if(gMute) gMute.classList.remove('active');
+
             
+
             const activeCount = Math.round(vol * 5);
+
             for (let i = 1; i <= activeCount; i++) {
+
                 const sb = document.getElementById(`start-vb-${i}`);
+
                 const gb = document.getElementById(`game-vb-${i}`);
+
                 if(sb) sb.classList.add(`active-level-${i}`);
+
                 if(gb) gb.classList.add(`active-level-${i}`);
+
             }
+
         }
+
     }
+
+
 
     function setGlobalDifficulty(count, isStartScreen) {
+
         if (!isStartScreen && document.getElementById('game-board').style.display === 'block') {
+
             const confirmReset = confirm("현재 진행 중인 판을 리셋하고 동전 개수를 변경하시겠습니까?");
+
             if (!confirmReset) return;
+
         }
+
+
 
         coinCount = count;
+
         
+
         document.querySelectorAll('.diff-btn').forEach(btn => {
+
             btn.classList.remove('active');
+
         });
+
         
+
         document.querySelectorAll(`.diff-btn`).forEach(btn => {
+
             if(btn.getAttribute('onclick').includes(`(${count},`)) {
+
                 btn.classList.add('active');
+
             }
+
         });
+
+
 
         if(document.getElementById('game-board').style.display === 'block') {
+
             initGame();
+
         }
+
     }
+
+
 
     function startGame() {
+
         if (bgm && bgm.paused) {
+
             bgm.volume = currentVolume;
+
             bgm.play().catch(e => console.log("BGM 재생 차단:", e));
+
         }
+
+
 
         const AudioContext = window.AudioContext || window.webkitAudioContext;
+
         if (AudioContext && !audioCtx) {
+
             audioCtx = new AudioContext();
+
         }
+
         if (audioCtx && audioCtx.state === 'suspended') {
+
             audioCtx.resume();
+
         }
+
+
 
         document.getElementById('start-screen').style.display = 'none';
+
         document.getElementById('game-board').style.display = 'block';
+
         initGame();
+
     }
+
+
 
     function playCoinSound() {
+
         try {
+
             if (!audioCtx) return;
+
             
+
             const osc1 = audioCtx.createOscillator();
+
             const osc2 = audioCtx.createOscillator();
+
             const gainNode = audioCtx.createGain();
+
             
+
             osc1.type = 'sine';
+
             osc1.frequency.setValueAtTime(987.77, audioCtx.currentTime);
+
             
+
             osc2.type = 'triangle';
+
             osc2.frequency.setValueAtTime(1318.51, audioCtx.currentTime);
+
             
+
             gainNode.gain.setValueAtTime(0.15, audioCtx.currentTime);
+
             gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+
             
+
             osc1.connect(gainNode);
+
             osc2.connect(gainNode);
+
             gainNode.connect(audioCtx.destination);
+
             
+
             osc1.start();
+
             osc2.start();
+
             
+
             osc1.stop(audioCtx.currentTime + 0.4);
+
             osc2.stop(audioCtx.currentTime + 0.4);
+
         } catch (e) {
+
             console.log("효과음 재생 실패:", e);
+
         }
+
     }
+
+
 
     function initGame() {
+
         fakeCoinIndex = Math.floor(Math.random() * coinCount);
+
         fakeCoinWeight = Math.random() > 0.5 ? 1.2 : 0.8;
+
         currentTurn = 1;
+
         isDecideMode = false;
 
+
+
         document.getElementById('weigh-btn').disabled = false;
+
         document.getElementById('log-1-content').innerText = "";
+
         document.getElementById('log-2-content').innerText = "";
+
         document.getElementById('log-3-content').innerText = "";
+
         
+
         document.getElementById('game-board').classList.remove('decide-mode');
+
         document.getElementById('decide-btn').innerText = "DECIDE";
+
         document.getElementById('decide-btn').style.backgroundColor = "";
+
         document.getElementById('decide-btn').style.color = "#8b0000";
+
         
+
         resetScaleAnimation();
+
         
+
         const pool = document.getElementById('coin-pool');
+
         const leftPlate = document.getElementById('left-plate');
+
         const rightPlate = document.getElementById('right-plate');
+
         
+
         pool.innerHTML = '';
+
         leftPlate.innerHTML = '';
+
         rightPlate.innerHTML = '';
 
+
+
         for (let i = 0; i < coinCount; i++) {
+
             const poolSlot = document.createElement('div');
+
             poolSlot.className = 'pool-slot';
+
             poolSlot.id = `pool-slot-${i}`;
+
             pool.appendChild(poolSlot);
 
+
+
             const coin = document.createElement('div');
+
             coin.className = 'coin';
+
             coin.id = `coin-${i}`;
+
             coin.innerText = i + 1;
+
             coin.dataset.index = i;
+
             
+
             coin.onclick = function() {
+
                 if (isDecideMode) checkAnswer(parseInt(this.dataset.index));
+
             };
+
             
+
             coin.draggable = true;
+
             coin.ondragstart = function(ev) {
+
                 if (isDecideMode) { ev.preventDefault(); return; } 
+
                 ev.dataTransfer.setData("text", ev.target.id);
+
             };
+
+
 
             poolSlot.appendChild(coin);
+
         }
+
     }
+
+
 
     function allowDrop(ev) { ev.preventDefault(); }
+
     
+
     function sortCoinsInPlate(plate) {
+
         const coins = Array.from(plate.querySelectorAll('.coin'));
+
         coins.sort((a, b) => parseInt(a.dataset.index) - parseInt(b.dataset.index));
+
         coins.forEach(coin => plate.appendChild(coin)); 
+
     }
+
+
 
     function dropToZone(ev, zoneType) {
+
         if (isDecideMode) return;
+
         ev.preventDefault();
+
         
+
         const data = ev.dataTransfer.getData("text");
+
         const coin = document.getElementById(data);
+
         if (!coin) return;
+
         
+
         const coinIdx = parseInt(coin.dataset.index);
 
+
+
         if (zoneType === 'pool') {
+
             const targetSlot = document.getElementById(`pool-slot-${coinIdx}`);
+
             if (targetSlot && targetSlot.children.length === 0) {
+
                 targetSlot.appendChild(coin);
+
                 resetScaleAnimation();
+
                 playCoinSound();
+
             }
+
         } else {
+
             const plate = document.getElementById(`${zoneType}-plate`);
+
             if (plate) {
+
                 plate.appendChild(coin);
+
                 sortCoinsInPlate(plate);
+
                 resetScaleAnimation();
+
                 playCoinSound();
+
             }
+
         }
+
     }
+
+
 
     function clearPlates() {
+
         if (isDecideMode) return;
+
         let moved = false;
 
+
+
         for (let i = 0; i < coinCount; i++) {
+
             const coin = document.getElementById(`coin-${i}`);
+
             if (coin && coin.parentElement.id !== `pool-slot-${i}`) {
+
                 const targetSlot = document.getElementById(`pool-slot-${i}`);
+
                 targetSlot.appendChild(coin);
+
                 moved = true;
+
             }
+
         }
+
         
+
         if (moved) {
+
             resetScaleAnimation();
+
             playCoinSound();
+
         }
+
     }
+
+
 
     function resetScaleAnimation() {
+
         document.getElementById('beam-container').style.transform = 'rotate(0deg)';
+
         document.getElementById('left-wrapper').style.transform = 'translateY(0px)';
+
         document.getElementById('right-wrapper').style.transform = 'translateY(0px)';
+
     }
+
+
 
     function weighCoins() {
+
         if (currentTurn > 3 || isDecideMode) return;
 
+
+
         const leftCoins = Array.from(document.getElementById('left-plate').querySelectorAll('.coin'));
+
         const rightCoins = Array.from(document.getElementById('right-plate').querySelectorAll('.coin'));
 
+
+
         if (leftCoins.length !== rightCoins.length) { 
+
             showModalLayout("⚠️ 판별 경고", `<div class="result-body">양쪽 접시 위의 동전 개수가 일치하지 않습니다.<br>천칭의 수평을 맞춘 후 다시 작동시켜 주십시오.</div>`, false);
+
             return; 
+
         }
+
         if (leftCoins.length === 0) return; 
 
+
+
         let wL = 0, wR = 0;
+
         for (let c of leftCoins) wL += (parseInt(c.dataset.index) === fakeCoinIndex) ? fakeCoinWeight : 1.0;
+
         for (let c of rightCoins) wR += (parseInt(c.dataset.index) === fakeCoinIndex) ? fakeCoinWeight : 1.0;
 
+
+
         wL = parseFloat(wL.toFixed(1));
+
         wR = parseFloat(wR.toFixed(1));
 
+
+
         const beam = document.getElementById('beam-container');
+
         const leftWrap = document.getElementById('left-wrapper');
+
         const rightWrap = document.getElementById('right-wrapper');
+
         
+
         let resultSymbol = "";
 
+
+
         if (wL === wR) {
+
             beam.style.transform = 'rotate(0deg)';
+
             leftWrap.style.transform = 'translateY(0px)';
+
             rightWrap.style.transform = 'translateY(0px)';
+
             resultSymbol = "=";
+
         } else if (wL > wR) {
+
             beam.style.transform = 'rotate(-12deg)';
+
             leftWrap.style.transform = 'translateY(35px)';
+
             rightWrap.style.transform = 'translateY(-35px)';
+
             resultSymbol = ">";
+
         } else {
+
             beam.style.transform = 'rotate(12deg)';
+
             leftWrap.style.transform = 'translateY(-35px)';
+
             rightWrap.style.transform = 'translateY(35px)';
+
             resultSymbol = "<";
+
         }
+
+
 
         const leftStr = leftCoins.map(c => c.innerText).sort((a,b)=>a-b).join(' ');
+
         const rightStr = rightCoins.map(c => c.innerText).sort((a,b)=>a-b).join(' ');
+
         
+
         const logContent = `${leftStr}     ${resultSymbol}     ${rightStr}`;
+
         document.getElementById(`log-${currentTurn}-content`).innerText = logContent;
 
+
+
         currentTurn++;
+
         if (currentTurn > 3) {
+
             document.getElementById('weigh-btn').disabled = true;
+
         }
+
     }
+
+
 
     function toggleDecideMode() {
+
         isDecideMode = !isDecideMode;
+
         const btn = document.getElementById('decide-btn');
+
         const board = document.getElementById('game-board');
+
         
+
         if (isDecideMode) {
+
             board.classList.add('decide-mode');
+
             btn.innerText = "CANCEL";
+
             btn.style.backgroundColor = "#8b0000";
+
             btn.style.color = "#fff";
+
         } else {
+
             board.classList.remove('decide-mode');
+
             btn.innerText = "DECIDE";
+
             btn.style.backgroundColor = "";
+
             btn.style.color = "#8b0000";
+
         }
+
     }
 
+
+
     function showModalLayout(title, innerHTML, isGameOver = false) {
+
         const wrapper = document.getElementById('popup-content-wrapper');
+
         
+
         wrapper.innerHTML = `
+
             <h3 style="text-align: center;">${title}</h3>
+
             ${innerHTML}
+
             <div style="text-align: center;">
-                <button class="action-btn" style="margin: 0 auto;" onclick="${isGameOver ? 'closeRules(); initGame();' : 'closeRules();'}">CLOSE</button>
+
+                <button class="action-btn" 
+
+onclick="${isGameOver ? 'restartGame()' : 'closeModal()'}">
+                    ${isGameOver ? 'NEW GAME' : 'CLOSE'}
+                </button>
             </div>
         `;
+
         document.getElementById('rules-overlay').style.display = 'flex';
     }
 
-    function checkAnswer(guessIdx) {
-        if (guessIdx === fakeCoinIndex) {
-            showModalLayout(
-                "👑 판별 성공 (SUCCESS)", 
-                `<div class="result-body">
-                    <strong class="text-success">정답입니다.</strong><br><br>
-                    가짜 동전은 <span style="font-weight:bold; color:#8b0000;">${fakeCoinIndex + 1}번</span>입니다.
-                 </div>`, 
-                true
-            );
+
+
+    function closeModal() {
+        document.getElementById('rules-overlay').style.display = 'none';
+    }
+
+
+
+    function restartGame() {
+        closeModal();
+        initGame();
+    }
+
+
+
+    function openRules() {
+        const rulesHTML = `
+            <ul class="rules-list">
+                <li>동전 가운데 단 하나만 무게가 다른 <strong>가짜 동전</strong>입니다.</li>
+                <li>가짜 동전은 정상 동전보다 <strong>무겁거나 가벼울 수 있습니다.</strong></li>
+                <li>동전을 끌어서 천칭의 양쪽 접시에 올리십시오.</li>
+                <li>양쪽 접시에는 반드시 <strong>같은 개수</strong>의 동전을 올려야 합니다.</li>
+                <li><strong>WEIGH</strong> 버튼으로 최대 세 번까지 무게를 비교할 수 있습니다.</li>
+                <li>판단이 끝나면 <strong>DECIDE</strong>를 누른 뒤 가짜라고 생각하는 동전을 선택하십시오.</li>
+            </ul>
+        `;
+
+        showModalLayout("GAME RULES", rulesHTML, false);
+    }
+
+
+
+    function checkAnswer(selectedIndex) {
+        if (!isDecideMode) return;
+
+        const selectedNumber = selectedIndex + 1;
+        const fakeNumber = fakeCoinIndex + 1;
+        const weightType = fakeCoinWeight > 1 ? "무거운" : "가벼운";
+        const weightClass = fakeCoinWeight > 1 ? "text-danger" : "text-success";
+
+        if (selectedIndex === fakeCoinIndex) {
+            const successHTML = `
+                <div class="result-body">
+                    선택한 <strong>${selectedNumber}번 동전</strong>이 가짜 동전입니다.<br>
+                    이 동전은 정상 동전보다
+                    <strong class="${weightClass}">${weightType} 동전</strong>이었습니다.<br><br>
+                    <strong class="text-success">판별에 성공했습니다!</strong>
+                </div>
+            `;
+
+            showModalLayout("✅ 판별 성공", successHTML, true);
         } else {
-            showModalLayout(
-                "☠️ 판별 실패 (GAME OVER)", 
-                `<div class="result-body">
-                    <strong class="text-danger">오답입니다.</strong><br><br>
-                    정답인 가짜 동전은 <span style="font-weight:bold; color:#103c68;">${fakeCoinIndex + 1}번</span>이었습니다.
-                 </div>`, 
-                true
-            );
+            const failHTML = `
+                <div class="result-body">
+                    선택한 <strong>${selectedNumber}번 동전</strong>은 정상 동전입니다.<br>
+                    실제 가짜 동전은 <strong>${fakeNumber}번</strong>이며,<br>
+                    정상 동전보다 <strong class="${weightClass}">${weightType} 동전</strong>이었습니다.<br><br>
+                    <strong class="text-danger">판별에 실패했습니다.</strong>
+                </div>
+            `;
+
+            showModalLayout("☠ 항해 실패", failHTML, true);
         }
     }
 
-    function openRules() {
-        showModalLayout(
-            "📜 GAME RULES", 
-            `<ul class="rules-list">
-                <li>주어진 동전들 중 <strong>무게가 다른 단 1개의 가짜 동전</strong>을 찾아내야 합니다.</li>
-                <li>가짜 동전은 진짜 동전보다 <strong>무거울 수도, 가벼울 수도</strong> 있습니다.</li>
-                <li>동전을 마우스로 드래그하여 양쪽 접시에 <strong>같은 개수</strong>로 올리고 [WEIGH] 버튼을 누르세요.</li>
-                <li>무게 측정은 <strong>최대 3번</strong>까지만 허용됩니다.</li>
-                <li>가짜 동전을 특정했다면 <strong>[DECIDE]</strong> 버튼을 누른 뒤, 해당 동전을 직접 마우스로 클릭하여 제출하세요.</li>
-            </ul>`,
-            false
-        );
-    }
-    
-    function closeRules() { document.getElementById('rules-overlay').style.display = 'none'; }
 
-    window.removeAttribute ? null : setVolume(0.6);
+
+    document.getElementById('rules-overlay').addEventListener('click', function(event) {
+        if (event.target === this) closeModal();
+    });
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') closeModal();
+    });
+
+    setVolume(currentVolume);
+    setGlobalDifficulty(coinCount, true);
 </script>
+
 </body>
 </html>
