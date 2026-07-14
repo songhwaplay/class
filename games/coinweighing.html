@@ -14,7 +14,9 @@
 
         body {
 
-            background-color: #000;
+            background:
+                linear-gradient(rgba(30, 20, 12, 0.18), rgba(18, 10, 6, 0.34)),
+                url('../assets/images/sphinxbg.png') center / cover fixed;
 
             display: flex;
 
@@ -22,7 +24,7 @@
 
             align-items: center;
 
-            height: 100vh;
+            min-height: 100vh;
 
             margin: 0;
 
@@ -30,6 +32,17 @@
 
             user-select: none;
 
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at center, rgba(255, 218, 150, 0.08), transparent 40%),
+                radial-gradient(circle at center, transparent 30%, rgba(26, 12, 6, 0.44) 100%);
         }
 
 
@@ -42,11 +55,16 @@
 
             height: 540px;
 
-            background: radial-gradient(circle at center, #103c68 0%, #061e38 100%);
+            background:
+                linear-gradient(rgba(4, 18, 31, 0.34), rgba(4, 18, 31, 0.52)),
+                url('../assets/images/coinweighingbg.png') center / cover no-repeat;
 
             border: 6px solid #bda85d;
 
-            box-shadow: 0 0 0 4px #4a3c18, inset 0 0 30px rgba(0,0,0,0.8);
+            box-shadow:
+                0 0 0 4px #4a3c18,
+                inset 0 0 32px rgba(0,0,0,0.72),
+                0 12px 28px rgba(0,0,0,0.38);
 
             position: relative;
 

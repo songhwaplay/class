@@ -5,41 +5,369 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>대항해시대3 스핑크스 퀴즈</title>
     <style>
-        body { background-color: #2b1d1d; color: #ffffff; font-family: 'Malgun Gothic', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; flex-direction: column; }
-        .quiz-container { width: 600px; background-color: #3d1616; border: 4px double #8c6d6d; padding: 20px; box-shadow: 0 0 15px rgba(0,0,0,0.7); text-align: center; }
-        .quiz-title { border-bottom: 2px solid #8c6d6d; padding-bottom: 5px; margin-bottom: 20px; font-size: 18px; font-weight: bold; color: #e3c1c1; }
-        .question-text { font-size: 16px; line-height: 1.6; margin-bottom: 30px; min-height: 80px; white-space: pre-wrap; text-align: left; padding: 0 20px; }
-        .options-container { display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin: 0 auto; }
-        .quiz-btn { background-color: #593131; color: #ffffff; border: 2px solid #8c6d6d; padding: 10px; font-size: 15px; cursor: pointer; transition: background 0.2s; }
-        .quiz-btn:hover { background-color: #7c4848; }
-        .confirm-btn { max-width: 150px; margin-top: 20px; margin-left: auto; margin-right: auto; display: block; }
-        
-        .volume-control { margin-top: 30px; display: flex; justify-content: center; align-items: center; gap: 15px; color: #e3c1c1; font-weight: bold; }
-        .vol-btn { background: #8c6d6d; border: 2px solid #593131; color: white; padding: 5px 12px; cursor: pointer; }
-        .vol-bar { display: flex; gap: 4px; }
-        .bar-segment { width: 25px; height: 20px; background: #3d1616; border: 1px solid #8c6d6d; cursor: pointer; }
-        .bar-segment.active-1 { background: #663333; }
-        .bar-segment.active-2 { background: #995533; }
-        .bar-segment.active-3 { background: #cc7733; }
-        .bar-segment.active-4 { background: #ff9933; }
-        .bar-segment.active-5 { background: #ffcc66; }
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            min-height: 100%;
+            margin: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            padding: 18px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-family: 'Malgun Gothic', sans-serif;
+            background:
+                linear-gradient(rgba(30, 18, 10, 0.24), rgba(18, 10, 7, 0.48)),
+                url('../assets/images/sphinxbg.png') center / cover fixed;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at center, rgba(247, 205, 120, 0.10), transparent 36%),
+                radial-gradient(circle at center, transparent 25%, rgba(18, 8, 4, 0.64) 100%);
+        }
+
+        .game-frame {
+            width: min(960px, 100%);
+            min-height: 580px;
+            display: grid;
+            grid-template-columns: 315px minmax(0, 1fr);
+            position: relative;
+            overflow: hidden;
+            border: 4px double #b4863f;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.035), transparent 25%),
+                linear-gradient(180deg, rgba(52, 25, 17, 0.98), rgba(25, 12, 11, 0.99));
+            box-shadow:
+                0 0 0 5px #2b1809,
+                0 25px 65px rgba(0,0,0,0.72),
+                inset 0 0 45px rgba(0,0,0,0.55);
+        }
+
+        .game-frame::before {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border: 1px solid rgba(232, 196, 120, 0.18);
+            pointer-events: none;
+        }
+
+        .sphinx-panel {
+            min-height: 580px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            padding: 34px 20px;
+            border-right: 1px solid rgba(232, 196, 120, 0.26);
+            background:
+                radial-gradient(ellipse at 50% 45%, rgba(225, 169, 68, 0.20), transparent 45%),
+                linear-gradient(180deg, rgba(21, 25, 30, 0.77), rgba(34, 13, 10, 0.94));
+        }
+
+        .sphinx-panel::before {
+            content: "";
+            position: absolute;
+            width: 270px;
+            height: 220px;
+            border: 1px solid rgba(232, 196, 120, 0.34);
+            box-shadow:
+                0 0 0 8px rgba(97, 58, 20, 0.15),
+                0 0 38px rgba(232, 196, 120, 0.14);
+            pointer-events: none;
+        }
+
+        .sphinx-image {
+            width: min(270px, 96%);
+            aspect-ratio: 16 / 9;
+            object-fit: cover;
+            position: relative;
+            z-index: 2;
+            border: 1px solid #a57631;
+            box-shadow:
+                0 12px 22px rgba(0,0,0,0.48),
+                0 0 18px rgba(232,196,120,0.15);
+        }
+
+        .sphinx-name {
+            width: min(250px, 88%);
+            position: relative;
+            z-index: 3;
+            margin-top: 2px;
+            padding: 9px 12px;
+            border: 1px solid #a57631;
+            color: #eccb83;
+            background: linear-gradient(180deg, rgba(78,32,22,0.97), rgba(37,13,11,0.99));
+            text-align: center;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-weight: bold;
+            letter-spacing: 4px;
+            text-shadow: 0 2px 3px #000;
+        }
+
+        .quiz-container {
+            min-width: 0;
+            min-height: 580px;
+            padding: 28px 31px 23px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            text-align: center;
+        }
+
+        .quiz-title {
+            margin-bottom: 17px;
+            padding-bottom: 13px;
+            border-bottom: 1px solid rgba(232, 196, 120, 0.30);
+            color: #ebca81;
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 31px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-shadow: 0 3px 5px #000;
+        }
+
+        #display-area {
+            flex: 1;
+            min-height: 385px;
+            padding: 23px 23px 20px;
+            position: relative;
+            color: #2b1c0e;
+            border: 2px solid #906832;
+            background:
+                linear-gradient(rgba(246, 234, 208, 0.97), rgba(223, 199, 158, 0.98)),
+                url('../assets/images/sphinxbg.png') center / cover;
+            box-shadow:
+                inset 0 0 24px rgba(78, 43, 14, 0.18),
+                0 10px 20px rgba(0,0,0,0.27);
+        }
+
+        #display-area::before,
+        #display-area::after {
+            content: "◆";
+            position: absolute;
+            color: #8c6228;
+            font-size: 15px;
+        }
+
+        #display-area::before {
+            top: 7px;
+            left: 10px;
+        }
+
+        #display-area::after {
+            right: 10px;
+            bottom: 7px;
+        }
+
+        .question-text {
+            min-height: 105px;
+            margin-bottom: 23px;
+            padding: 5px 10px 0;
+            white-space: pre-wrap;
+            text-align: left;
+            word-break: keep-all;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.75;
+        }
+
+        .options-container {
+            width: min(430px, 100%);
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 9px;
+        }
+
+        .quiz-btn {
+            min-height: 43px;
+            padding: 9px 12px;
+            cursor: pointer;
+            color: #fff4da;
+            border: 1px solid #79511c;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.17), transparent),
+                #674019;
+            font-size: 14px;
+            font-weight: bold;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.22),
+                0 3px 5px rgba(49,24,6,0.22);
+            transition: transform 0.12s ease, background 0.15s ease, border-color 0.15s ease;
+        }
+
+        .quiz-btn:hover {
+            border-color: #dfae53;
+            background-color: #8b5b22;
+            transform: translateY(-2px);
+        }
+
+        .quiz-btn:active {
+            transform: translateY(1px);
+        }
+
+        .confirm-btn {
+            width: min(180px, 100%);
+            max-width: none;
+            margin: 20px auto 0;
+            display: block;
+        }
+
+        .volume-control {
+            margin-top: 15px;
+            padding: 10px 12px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 10px;
+            color: #c9a86f;
+            border: 1px solid rgba(232, 196, 120, 0.20);
+            background: rgba(0,0,0,0.22);
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 0.7px;
+        }
+
+        .vol-btn {
+            padding: 5px 11px;
+            cursor: pointer;
+            color: #edcf91;
+            border: 1px solid #856027;
+            background: #3a1813;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .vol-bar {
+            display: flex;
+            gap: 3px;
+        }
+
+        .bar-segment {
+            width: 18px;
+            height: 16px;
+            padding: 0;
+            cursor: pointer;
+            border: 1px solid #76501e;
+            background: #1a100d;
+        }
+
+        .bar-segment.active-1 {
+            background: #72501f;
+        }
+
+        .bar-segment.active-2 {
+            background: #986522;
+        }
+
+        .bar-segment.active-3 {
+            background: #bf812d;
+        }
+
+        .bar-segment.active-4 {
+            background: #e29f3d;
+        }
+
+        .bar-segment.active-5 {
+            background: #f3cf78;
+            box-shadow: 0 0 6px rgba(243,207,120,0.45);
+        }
+
+        @media (max-width: 760px) {
+            body {
+                padding: 0;
+                align-items: flex-start;
+            }
+
+            .game-frame {
+                min-height: 100vh;
+                grid-template-columns: 1fr;
+                border-left: 0;
+                border-right: 0;
+            }
+
+            .sphinx-panel {
+                min-height: 245px;
+                padding: 20px 16px 16px;
+                border-right: 0;
+                border-bottom: 1px solid rgba(232, 196, 120, 0.26);
+            }
+
+            .sphinx-panel::before {
+                width: 245px;
+                height: 175px;
+            }
+
+            .sphinx-image {
+                width: 245px;
+                max-height: none;
+                object-fit: cover;
+            }
+
+            .sphinx-name {
+                width: min(330px, 92%);
+                padding: 7px 10px;
+            }
+
+            .quiz-container {
+                min-height: auto;
+                padding: 21px 15px 20px;
+            }
+
+            #display-area {
+                min-height: 420px;
+                padding: 20px 16px;
+            }
+
+            .options-container {
+                grid-template-columns: 1fr;
+            }
+
+            .volume-control {
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="quiz-container">
-    <div class="quiz-title">스핑크스</div>
-    <div id="display-area"></div>
-    
-    <div class="volume-control">
-        <span>MUSIC VOLUME</span>
-        <button class="vol-btn" onclick="toggleMute()">MUTE</button>
-        <div class="vol-bar">
-            <div class="bar-segment" onclick="setVolume(0.2, 1)"></div>
-            <div class="bar-segment" onclick="setVolume(0.4, 2)"></div>
-            <div class="bar-segment" onclick="setVolume(0.6, 3)"></div>
-            <div class="bar-segment" onclick="setVolume(0.8, 4)"></div>
-            <div class="bar-segment" onclick="setVolume(1.0, 5)"></div>
+<div class="game-frame">
+    <aside class="sphinx-panel">
+        <img class="sphinx-image" src="../assets/images/sphinx.png" alt="스핑크스">
+        <div class="sphinx-name">SPHINX</div>
+    </aside>
+
+    <div class="quiz-container">
+        <div class="quiz-title">스핑크스</div>
+        <div id="display-area"></div>
+
+        <div class="volume-control">
+            <span>MUSIC VOLUME</span>
+            <button class="vol-btn" onclick="toggleMute()">MUTE</button>
+            <div class="vol-bar">
+                <div class="bar-segment" onclick="setVolume(0.2, 1)"></div>
+                <div class="bar-segment" onclick="setVolume(0.4, 2)"></div>
+                <div class="bar-segment" onclick="setVolume(0.6, 3)"></div>
+                <div class="bar-segment" onclick="setVolume(0.8, 4)"></div>
+                <div class="bar-segment" onclick="setVolume(1.0, 5)"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -68,8 +396,8 @@
 
     function loadQuestion() {
         if (currentStage === 0) {
-            displayArea.innerHTML = `<div class="question-text"><스핑크스> 나의 수수께끼에 도전할 자여. 먼저 그대의 실력을 선택하라.</div>
-            <div class="options-container"><button class="quiz-btn" onclick="setDiff(5)">초급 (1~5)</button><button class="quiz-btn" onclick="setDiff(10)">고급 (1~10)</button></div>`;
+            displayArea.innerHTML = `<div class="question-text"><스핑크스> 나의 수수께끼에 도전할 자는 먼저 실력을 선택하라.</div>
+            <div class="options-container"><button class="quiz-btn" onclick="setDiff(5)">초급 (1~5마리 범위)</button><button class="quiz-btn" onclick="setDiff(10)">고급 (1~10마리 범위)</button></div>`;
             return;
         }
 

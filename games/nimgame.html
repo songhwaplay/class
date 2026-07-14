@@ -32,7 +32,8 @@
         body {
             min-height: 100vh;
             background:
-                radial-gradient(circle at 50% 16%, #1b2638 0%, #090d14 42%, #030407 100%);
+                linear-gradient(rgba(30, 20, 12, 0.18), rgba(18, 10, 6, 0.34)),
+                url('../assets/images/sphinxbg.png') center / cover fixed;
             color: var(--text);
             font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
             display: flex;
@@ -40,6 +41,17 @@
             align-items: center;
             padding: 16px;
             user-select: none;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at center, rgba(255, 218, 150, 0.08), transparent 40%),
+                radial-gradient(circle at center, transparent 30%, rgba(26, 12, 6, 0.44) 100%);
         }
 
         button, input { font: inherit; }
@@ -413,6 +425,66 @@
             margin-top: 12px;
         }
 
+        .music-control {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 14px auto 0;
+            flex-wrap: wrap;
+        }
+
+        .music-label {
+            color: #b4c6da;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .music-mute-btn {
+            min-height: 30px;
+            padding: 5px 11px;
+            border: 1px solid var(--gold-dark);
+            background: linear-gradient(180deg, #d2a64c 0%, #8f6624 100%);
+            color: #211707;
+            font-family: Georgia, "Times New Roman", serif;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .music-mute-btn.active {
+            background: linear-gradient(180deg, #3b2515 0%, #1a0f08 100%);
+            color: var(--gold-bright);
+        }
+
+        .music-volume-bar {
+            display: flex;
+            gap: 4px;
+            padding: 4px 6px;
+            border: 2px solid #5a3819;
+            background: #160d08;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.72);
+        }
+
+        .music-segment {
+            width: 23px;
+            height: 19px;
+            padding: 0;
+            border: 1px solid #6d451d;
+            background: #27170d;
+            cursor: pointer;
+        }
+
+        .music-segment.active-1 { background: #81501f; }
+        .music-segment.active-2 { background: #a56525; }
+        .music-segment.active-3 { background: #c77c2b; }
+        .music-segment.active-4 { background: #e79437; }
+        .music-segment.active-5 {
+            background: #ffb34d;
+            box-shadow: 0 0 9px rgba(255,179,77,0.58);
+        }
+
         /* Game screen */
         .game-screen {
             display: flex;
@@ -471,11 +543,13 @@
             min-height: 380px;
             margin-top: 16px;
             padding: 17px 18px;
-            border: 1px solid rgba(198,170,85,0.22);
+            border: 1px solid rgba(198,170,85,0.32);
             background:
-                radial-gradient(circle at center, rgba(31,50,69,0.42), rgba(3,6,10,0.66)),
-                linear-gradient(180deg, rgba(255,255,255,0.018), transparent);
-            box-shadow: inset 0 0 32px rgba(0,0,0,0.42);
+                linear-gradient(rgba(5, 12, 18, 0.34), rgba(5, 12, 18, 0.54)),
+                url('../assets/images/nimgamebg.png') center / cover no-repeat;
+            box-shadow:
+                inset 0 0 34px rgba(0,0,0,0.55),
+                0 10px 24px rgba(0,0,0,0.28);
             display: flex;
             flex-direction: column;
         }
@@ -845,6 +919,8 @@
             onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';"></script>
 </head>
 <body>
+<audio id="bgm" src="../assets/sound/nimgame.mp3" loop></audio>
+
 <div class="app-shell">
     <section class="screen" id="lobby-screen">
         <div class="title-wrap">
@@ -964,6 +1040,18 @@
         <div class="foot-note" id="lobby-foot-note">
             방장은 3자리 방 번호를 알려주고, 상대방은 같은 홈페이지에서 방 번호를 입력합니다.
         </div>
+
+        <div class="music-control">
+            <span class="music-label">MUSIC VOLUME</span>
+            <button class="music-mute-btn" id="music-mute-btn" onclick="toggleMusicMute()">MUTE</button>
+            <div class="music-volume-bar">
+                <button class="music-segment" id="music-v1" onclick="setMusicVolume(0.2, 1)" aria-label="볼륨 1"></button>
+                <button class="music-segment" id="music-v2" onclick="setMusicVolume(0.4, 2)" aria-label="볼륨 2"></button>
+                <button class="music-segment" id="music-v3" onclick="setMusicVolume(0.6, 3)" aria-label="볼륨 3"></button>
+                <button class="music-segment" id="music-v4" onclick="setMusicVolume(0.8, 4)" aria-label="볼륨 4"></button>
+                <button class="music-segment" id="music-v5" onclick="setMusicVolume(1.0, 5)" aria-label="볼륨 5"></button>
+            </div>
+        </div>
     </section>
 
     <section class="screen game-screen hidden" id="game-screen">
@@ -992,6 +1080,18 @@
             <button class="secondary-btn" id="cancel-btn" onclick="clearSelection()" disabled>CANCEL</button>
             <button class="secondary-btn" onclick="openRules()">RULES</button>
             <button class="danger-btn" id="new-round-btn" onclick="requestNewRound()">NEW ROUND</button>
+        </div>
+
+        <div class="music-control">
+            <span class="music-label">MUSIC VOLUME</span>
+            <button class="music-mute-btn" id="music-mute-btn-game" onclick="toggleMusicMute()">MUTE</button>
+            <div class="music-volume-bar">
+                <button class="music-segment game-music-segment" onclick="setMusicVolume(0.2, 1)" aria-label="볼륨 1"></button>
+                <button class="music-segment game-music-segment" onclick="setMusicVolume(0.4, 2)" aria-label="볼륨 2"></button>
+                <button class="music-segment game-music-segment" onclick="setMusicVolume(0.6, 3)" aria-label="볼륨 3"></button>
+                <button class="music-segment game-music-segment" onclick="setMusicVolume(0.8, 4)" aria-label="볼륨 4"></button>
+                <button class="music-segment game-music-segment" onclick="setMusicVolume(1.0, 5)" aria-label="볼륨 5"></button>
+            </div>
         </div>
 
         <div class="log-panel">
@@ -1052,11 +1152,15 @@
     let selection = { row: null, count: 0 };
     let logs = [];
     let toastTimer = null;
+    let currentMusicVolume = 0.6;
+    let musicStarted = false;
+    let effectAudioContext = null;
 
     const $ = (id) => document.getElementById(id);
     const clone = (value) => JSON.parse(JSON.stringify(value));
 
     window.addEventListener("load", initialize);
+    document.addEventListener("pointerdown", startBackgroundMusic, { once: true });
     window.addEventListener("beforeunload", () => {
         try { if (conn) conn.close(); } catch (_) {}
         try { if (peer) peer.destroy(); } catch (_) {}
@@ -1073,6 +1177,7 @@
     });
 
     function initialize() {
+        setMusicVolume(0.6, 3);
         const params = new URLSearchParams(location.search);
         const roomCode = normalizeRoomCode(params.get("room") || "");
 
@@ -1537,6 +1642,117 @@
         toastTimer = setTimeout(() => toast.classList.remove("show"), 1600);
     }
 
+    function startBackgroundMusic() {
+        const bgm = $("bgm");
+        if (!bgm || musicStarted) return;
+        bgm.volume = currentMusicVolume;
+        bgm.play().then(() => {
+            musicStarted = true;
+        }).catch(() => {});
+    }
+
+    function setMusicVolume(volume, level) {
+        const bgm = $("bgm");
+        currentMusicVolume = volume;
+
+        if (bgm) {
+            bgm.muted = false;
+            bgm.volume = volume;
+        }
+
+        document.querySelectorAll(".music-segment").forEach((segment, index) => {
+            segment.className = segment.classList.contains("game-music-segment")
+                ? "music-segment game-music-segment"
+                : "music-segment";
+
+            if ((index % 5) < level) {
+                segment.classList.add(`active-${level}`);
+            }
+        });
+
+        ["music-mute-btn", "music-mute-btn-game"].forEach((id) => {
+            const button = $(id);
+            if (button) {
+                button.classList.remove("active");
+                button.textContent = "MUTE";
+            }
+        });
+
+        startBackgroundMusic();
+    }
+
+    function toggleMusicMute() {
+        const bgm = $("bgm");
+        if (!bgm) return;
+
+        startBackgroundMusic();
+        bgm.muted = !bgm.muted;
+
+        ["music-mute-btn", "music-mute-btn-game"].forEach((id) => {
+            const button = $(id);
+            if (button) {
+                button.classList.toggle("active", bgm.muted);
+                button.textContent = bgm.muted ? "UNMUTE" : "MUTE";
+            }
+        });
+    }
+
+    function getEffectAudioContext() {
+        if (!effectAudioContext) {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            if (AudioContextClass) {
+                effectAudioContext = new AudioContextClass();
+            }
+        }
+
+        if (effectAudioContext && effectAudioContext.state === "suspended") {
+            effectAudioContext.resume();
+        }
+
+        return effectAudioContext;
+    }
+
+    function playCrystalTone(frequency, duration, delay = 0, volume = 0.055) {
+        const context = getEffectAudioContext();
+        if (!context) return;
+
+        const oscillator = context.createOscillator();
+        const gain = context.createGain();
+        const filter = context.createBiquadFilter();
+        const startTime = context.currentTime + delay;
+
+        oscillator.type = "sine";
+        oscillator.frequency.setValueAtTime(frequency, startTime);
+
+        filter.type = "highpass";
+        filter.frequency.setValueAtTime(350, startTime);
+        filter.Q.setValueAtTime(0.6, startTime);
+
+        gain.gain.setValueAtTime(0.0001, startTime);
+        gain.gain.exponentialRampToValueAtTime(volume, startTime + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, startTime + duration);
+
+        oscillator.connect(filter);
+        filter.connect(gain);
+        gain.connect(context.destination);
+
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration + 0.03);
+    }
+
+    function playGemSelectSound(selected = true, count = 1) {
+        const step = Math.min(Math.max(count - 1, 0), 7);
+        const baseFrequency = selected ? 880 : 659.25;
+        const frequency = baseFrequency * Math.pow(2, step / 24);
+
+        playCrystalTone(frequency, 0.24, 0, selected ? 0.06 : 0.045);
+        playCrystalTone(frequency * 1.5, 0.16, 0.025, selected ? 0.026 : 0.018);
+
+        if (selected) {
+            playCrystalTone(frequency * 2, 0.11, 0.055, 0.014);
+        }
+    }
+
     function startRound() {
         if (myRole !== "host" || !connected) return;
 
@@ -1739,17 +1955,23 @@
 
         if (selection.row === row && selection.count === count) {
             selection = { row: null, count: 0 };
+            playGemSelectSound(false, count);
         } else {
             selection = { row, count };
+            playGemSelectSound(true, count);
         }
         renderGame();
     }
 
     function selectCoinMove(count) {
         if (!isMyTurn() || state.over) return;
-        selection = selection.count === count
+
+        const isCancel = selection.count === count;
+        selection = isCancel
             ? { row: null, count: 0 }
             : { row: null, count };
+
+        playGemSelectSound(!isCancel, count);
         renderGame();
     }
 
