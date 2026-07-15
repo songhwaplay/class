@@ -1,0 +1,38 @@
+{
+  "name": "cds95-classroom",
+  "version": "23.0.0",
+  "private": true,
+  "description": "CDS95 실시간 도착 미션 학습 플랫폼",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && npm run check:catalog && npm run check:html",
+    "check:html": "node tests/html-script-syntax.js",
+    "check:catalog": "node -e \"for (const f of ['places','items','templates','ready-missions']) JSON.parse(require('node:fs').readFileSync('data/catalog/'+f+'.json','utf8')); console.log('catalog JSON ok')\"",
+    "test": "npm run check && npm run test:terrain && npm run test:v23 && npm run test:v23:current",
+    "test:terrain": "node tests/terrain-unit.js",
+    "test:v23": "node tests/v23-simplified-ui-unit.js",
+    "test:v23:current": "node tests/v23-current-balance-unit.js",
+    "test:v23:lock": "node tests/v23-start-lock-smoke.js",
+    "test:smoke": "node tests/realtime-smoke.js",
+    "test:race": "node tests/arrival-race-smoke.js",
+    "test:race:land": "node tests/land-arrival-race-smoke.js",
+    "test:load20": "node tests/20-student-smoke.js",
+    "test:load33": "node tests/33-student-smoke.js",
+    "test:clock": "node tests/shared-clock-port-smoke.js",
+    "test:fatigue": "node tests/fatigue-speed-smoke.js",
+    "test:status": "node tests/status-supplies-smoke.js",
+    "test:current-visual": "node tests/current-visual-unit.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "express": "5.2.1",
+    "socket.io": "4.8.3"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.8.3"
+  }
+}

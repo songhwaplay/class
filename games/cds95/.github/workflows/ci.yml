@@ -1,0 +1,53 @@
+name: Node CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: npm run test:terrain
+      - name: Start server
+        run: |
+          mkdir -p /tmp/uw3-ci-state
+          DATA_DIR=/tmp/uw3-ci-state TEACHER_PIN=2468 npm start > server.log 2>&1 &
+          echo $! > server.pid
+      - name: Wait for health check
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/health; then exit 0; fi
+            sleep 1
+          done
+          cat server.log
+          exit 1
+      - run: npm run test:smoke
+        env:
+          TEST_TEACHER_PIN: "2468"
+      - run: npm run test:land
+      - run: npm run test:action
+        env:
+          TEST_TEACHER_PIN: "2468"
+      - run: npm run test:catalog
+        env:
+          TEST_TEACHER_PIN: "2468"
+      - run: npm run test:minimal
+        env:
+          TEST_TEACHER_PIN: "2468"
+          TEST_STATE_FILE: /tmp/uw3-ci-state/classroom-state.json
+      - run: npm run test:control
+        env:
+          TEST_TEACHER_PIN: "2468"
+      - name: Stop server
+        if: always()
+        run: kill $(cat server.pid) 2>/dev/null || true

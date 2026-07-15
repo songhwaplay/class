@@ -1,0 +1,40 @@
+[
+  {
+    "id": "transport",
+    "name": "도시 간 물자 운송",
+    "description": "출발 도시에서 물품을 수령해 목적 도시의 지정 시설에 전달합니다.",
+    "needs": [
+      "sourcePort",
+      "targetPort",
+      "item"
+    ]
+  },
+  {
+    "id": "landmark",
+    "name": "주요 지형 탐험",
+    "description": "사회과부도에서 실제 지형 이름을 찾고 게임에서 해당 지점을 조사합니다.",
+    "needs": [
+      "targetLandform"
+    ]
+  },
+  {
+    "id": "supply_landmark",
+    "name": "탐사대 보급·지형 조사",
+    "description": "출발 도시에서 물품을 수령하고 가까운 항구에 상륙해 주요 지형의 조사대에 전달합니다.",
+    "needs": [
+      "sourcePort",
+      "targetLandform",
+      "item"
+    ]
+  },
+  {
+    "id": "sea_route",
+    "name": "주요 해협·곶 통과",
+    "description": "실제 해협이나 곶을 통과한 뒤 목적 항구까지 이동합니다.",
+    "needs": [
+      "sourcePort",
+      "viaSeaLandform",
+      "targetPort"
+    ]
+  }
+]

@@ -1,0 +1,737 @@
+[
+  {
+    "id": "lisbon",
+    "name": "리스본",
+    "nameEn": "Lisbon",
+    "category": "항구 도시",
+    "continent": "유럽",
+    "region": "포르투갈",
+    "lat": 38.7223,
+    "lon": -9.1393,
+    "access": "port",
+    "atlasHint": "이베리아반도 서쪽, 대서양 연안",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "지도제작소",
+      "관청"
+    ]
+  },
+  {
+    "id": "london",
+    "name": "런던",
+    "nameEn": "London",
+    "category": "항구 도시",
+    "continent": "유럽",
+    "region": "영국",
+    "lat": 51.5074,
+    "lon": -0.1278,
+    "access": "port",
+    "atlasHint": "영국 남동부, 템스강 하류",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "조선소",
+      "관청"
+    ]
+  },
+  {
+    "id": "amsterdam",
+    "name": "암스테르담",
+    "nameEn": "Amsterdam",
+    "category": "항구 도시",
+    "continent": "유럽",
+    "region": "네덜란드",
+    "lat": 52.3676,
+    "lon": 4.9041,
+    "access": "port",
+    "atlasHint": "북해 연안의 저지대와 라인강 하구 부근",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "지도제작소"
+    ]
+  },
+  {
+    "id": "istanbul",
+    "name": "이스탄불",
+    "nameEn": "Istanbul",
+    "category": "항구 도시",
+    "continent": "유럽·아시아",
+    "region": "튀르키예",
+    "lat": 41.0082,
+    "lon": 28.9784,
+    "access": "port",
+    "atlasHint": "보스포루스 해협 양쪽, 흑해와 지중해 사이",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "지도제작소",
+      "관청"
+    ]
+  },
+  {
+    "id": "tangier",
+    "name": "탕헤르",
+    "nameEn": "Tangier",
+    "category": "항구 도시",
+    "continent": "아프리카",
+    "region": "모로코",
+    "lat": 35.7595,
+    "lon": -5.834,
+    "access": "port",
+    "atlasHint": "지브롤터 해협 남쪽, 아프리카 북서단",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "alexandria",
+    "name": "알렉산드리아",
+    "nameEn": "Alexandria",
+    "category": "항구 도시",
+    "continent": "아프리카",
+    "region": "이집트",
+    "lat": 31.2001,
+    "lon": 29.9187,
+    "access": "port",
+    "atlasHint": "지중해 남동부, 나일강 삼각주 서쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "연구소"
+    ]
+  },
+  {
+    "id": "tripoli",
+    "name": "트리폴리",
+    "nameEn": "Tripoli",
+    "category": "항구 도시",
+    "continent": "아프리카",
+    "region": "리비아",
+    "lat": 32.8872,
+    "lon": 13.1913,
+    "access": "port",
+    "atlasHint": "지중해 남안, 사하라 사막 북쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "cape_town",
+    "name": "케이프타운",
+    "nameEn": "Cape Town",
+    "category": "항구 도시",
+    "continent": "아프리카",
+    "region": "남아프리카공화국",
+    "lat": -33.9249,
+    "lon": 18.4241,
+    "access": "port",
+    "atlasHint": "아프리카 남서단, 희망봉 북쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "조선소"
+    ]
+  },
+  {
+    "id": "mombasa",
+    "name": "몸바사",
+    "nameEn": "Mombasa",
+    "category": "항구 도시",
+    "continent": "아프리카",
+    "region": "케냐",
+    "lat": -4.0435,
+    "lon": 39.6682,
+    "access": "port",
+    "atlasHint": "아프리카 동해안, 인도양 연안",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "calicut",
+    "name": "캘리컷",
+    "nameEn": "Calicut",
+    "category": "항구 도시",
+    "continent": "아시아",
+    "region": "인도 남서부",
+    "lat": 11.2588,
+    "lon": 75.7804,
+    "access": "port",
+    "atlasHint": "인도반도 서해안, 아라비아해 연안",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "지도제작소"
+    ]
+  },
+  {
+    "id": "mumbai",
+    "name": "뭄바이",
+    "nameEn": "Mumbai",
+    "category": "항구 도시",
+    "continent": "아시아",
+    "region": "인도",
+    "lat": 19.076,
+    "lon": 72.8777,
+    "access": "port",
+    "atlasHint": "인도반도 서해안",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "조선소"
+    ]
+  },
+  {
+    "id": "malacca",
+    "name": "말라카",
+    "nameEn": "Malacca",
+    "category": "항구 도시",
+    "continent": "아시아",
+    "region": "말레이반도",
+    "lat": 2.1896,
+    "lon": 102.2501,
+    "access": "port",
+    "atlasHint": "말라카 해협 동쪽, 말레이반도 서안",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "지도제작소"
+    ]
+  },
+  {
+    "id": "jakarta",
+    "name": "자카르타",
+    "nameEn": "Jakarta",
+    "category": "항구 도시",
+    "continent": "아시아",
+    "region": "인도네시아",
+    "lat": -6.2088,
+    "lon": 106.8456,
+    "access": "port",
+    "atlasHint": "자와섬 북서부, 자와해 연안",
+    "facilities": [
+      "항구 창고",
+      "시장"
+    ]
+  },
+  {
+    "id": "manila",
+    "name": "마닐라",
+    "nameEn": "Manila",
+    "category": "항구 도시",
+    "continent": "아시아",
+    "region": "필리핀",
+    "lat": 14.5995,
+    "lon": 120.9842,
+    "access": "port",
+    "atlasHint": "루손섬 서쪽, 마닐라만",
+    "facilities": [
+      "항구 창고",
+      "시장"
+    ]
+  },
+  {
+    "id": "nagasaki",
+    "name": "나가사키",
+    "nameEn": "Nagasaki",
+    "category": "항구 도시",
+    "continent": "아시아",
+    "region": "일본",
+    "lat": 32.7503,
+    "lon": 129.8779,
+    "access": "port",
+    "atlasHint": "일본 규슈 서쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "조선소"
+    ]
+  },
+  {
+    "id": "new_york",
+    "name": "뉴욕",
+    "nameEn": "New York",
+    "category": "항구 도시",
+    "continent": "북아메리카",
+    "region": "미국 동부",
+    "lat": 40.7128,
+    "lon": -74.006,
+    "access": "port",
+    "atlasHint": "북아메리카 대서양 연안, 허드슨강 하구",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "new_orleans",
+    "name": "뉴올리언스",
+    "nameEn": "New Orleans",
+    "category": "항구 도시",
+    "continent": "북아메리카",
+    "region": "미국 남부",
+    "lat": 29.9511,
+    "lon": -90.0715,
+    "access": "port",
+    "atlasHint": "미시시피강 하류, 멕시코만 북쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "quebec_city",
+    "name": "퀘벡",
+    "nameEn": "Quebec City",
+    "category": "항구 도시",
+    "continent": "북아메리카",
+    "region": "캐나다",
+    "lat": 46.8139,
+    "lon": -71.208,
+    "access": "port",
+    "atlasHint": "세인트로렌스강 하류",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "havana",
+    "name": "아바나",
+    "nameEn": "Havana",
+    "category": "항구 도시",
+    "continent": "북아메리카",
+    "region": "쿠바",
+    "lat": 23.1136,
+    "lon": -82.3666,
+    "access": "port",
+    "atlasHint": "카리브해의 쿠바섬 북서부",
+    "facilities": [
+      "항구 창고",
+      "시장"
+    ]
+  },
+  {
+    "id": "colon",
+    "name": "콜론",
+    "nameEn": "Colón",
+    "category": "항구 도시",
+    "continent": "북아메리카",
+    "region": "파나마",
+    "lat": 9.3592,
+    "lon": -79.9003,
+    "access": "port",
+    "atlasHint": "파나마 지협의 카리브해 쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "rio",
+    "name": "리우데자네이루",
+    "nameEn": "Rio de Janeiro",
+    "category": "항구 도시",
+    "continent": "남아메리카",
+    "region": "브라질",
+    "lat": -22.9068,
+    "lon": -43.1729,
+    "access": "port",
+    "atlasHint": "남아메리카 동해안, 대서양 연안",
+    "facilities": [
+      "항구 창고",
+      "시장"
+    ]
+  },
+  {
+    "id": "buenos_aires",
+    "name": "부에노스아이레스",
+    "nameEn": "Buenos Aires",
+    "category": "항구 도시",
+    "continent": "남아메리카",
+    "region": "아르헨티나",
+    "lat": -34.6037,
+    "lon": -58.3816,
+    "access": "port",
+    "atlasHint": "라플라타강 하구 남쪽",
+    "facilities": [
+      "항구 창고",
+      "시장"
+    ]
+  },
+  {
+    "id": "lima",
+    "name": "리마",
+    "nameEn": "Lima",
+    "category": "항구 도시",
+    "continent": "남아메리카",
+    "region": "페루",
+    "lat": -12.0464,
+    "lon": -77.0428,
+    "access": "port",
+    "atlasHint": "남아메리카 태평양 연안, 안데스산맥 서쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "sevastopol",
+    "name": "세바스토폴",
+    "nameEn": "Sevastopol",
+    "category": "항구 도시",
+    "continent": "유럽",
+    "region": "크림반도",
+    "lat": 44.6167,
+    "lon": 33.5254,
+    "access": "port",
+    "atlasHint": "흑해 북쪽의 크림반도 남서부",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "지도제작소"
+    ]
+  },
+  {
+    "id": "genoa",
+    "name": "제노바",
+    "nameEn": "Genoa",
+    "category": "항구 도시",
+    "continent": "유럽",
+    "region": "이탈리아",
+    "lat": 44.4056,
+    "lon": 8.9463,
+    "access": "port",
+    "atlasHint": "지중해 북부, 알프스산맥 남쪽",
+    "facilities": [
+      "항구 창고",
+      "시장",
+      "탐사대 본부"
+    ]
+  },
+  {
+    "id": "sydney",
+    "name": "시드니",
+    "nameEn": "Sydney",
+    "category": "항구 도시",
+    "continent": "오세아니아",
+    "region": "오스트레일리아",
+    "lat": -33.8688,
+    "lon": 151.2093,
+    "access": "port",
+    "atlasHint": "오스트레일리아 남동부 태평양 연안",
+    "facilities": [
+      "항구 창고",
+      "시장"
+    ]
+  },
+  {
+    "id": "gibraltar_strait",
+    "name": "지브롤터 해협",
+    "nameEn": "Strait of Gibraltar",
+    "category": "해협",
+    "continent": "유럽·아프리카",
+    "region": "스페인·모로코 사이",
+    "lat": 35.96,
+    "lon": -5.61,
+    "access": "sea",
+    "atlasHint": "이베리아반도 남쪽과 아프리카 북서쪽 사이, 대서양과 지중해를 연결",
+    "arrivalRadiusTiles": 5
+  },
+  {
+    "id": "bosporus",
+    "name": "보스포루스 해협",
+    "nameEn": "Bosporus",
+    "category": "해협",
+    "continent": "유럽·아시아",
+    "region": "튀르키예",
+    "lat": 41.12,
+    "lon": 29.05,
+    "access": "sea",
+    "atlasHint": "흑해와 마르마라해 사이, 유럽과 아시아의 경계",
+    "arrivalRadiusTiles": 5
+  },
+  {
+    "id": "cape_good_hope",
+    "name": "희망봉",
+    "nameEn": "Cape of Good Hope",
+    "category": "곶",
+    "continent": "아프리카",
+    "region": "남아프리카공화국",
+    "lat": -34.3568,
+    "lon": 18.474,
+    "access": "sea",
+    "atlasHint": "아프리카 남서단의 대서양·인도양 항로 부근",
+    "arrivalRadiusTiles": 5
+  },
+  {
+    "id": "malacca_strait",
+    "name": "말라카 해협",
+    "nameEn": "Strait of Malacca",
+    "category": "해협",
+    "continent": "아시아",
+    "region": "말레이반도·수마트라섬 사이",
+    "lat": 2.5,
+    "lon": 101,
+    "access": "sea",
+    "atlasHint": "말레이반도와 수마트라섬 사이, 인도양과 남중국해를 잇는 항로",
+    "arrivalRadiusTiles": 5
+  },
+  {
+    "id": "bering_strait",
+    "name": "베링 해협",
+    "nameEn": "Bering Strait",
+    "category": "해협",
+    "continent": "아시아·북아메리카",
+    "region": "러시아·알래스카 사이",
+    "lat": 65.9,
+    "lon": -168.9,
+    "access": "sea",
+    "atlasHint": "아시아 북동쪽과 북아메리카 북서쪽 사이",
+    "arrivalRadiusTiles": 5
+  },
+  {
+    "id": "amazon_mouth",
+    "name": "아마존강 하구",
+    "nameEn": "Amazon River Mouth",
+    "category": "강 하구",
+    "continent": "남아메리카",
+    "region": "브라질 북부",
+    "lat": -0.8,
+    "lon": -49,
+    "access": "sea",
+    "atlasHint": "남아메리카 북동부, 적도 부근의 대서양 연안",
+    "arrivalRadiusTiles": 8
+  },
+  {
+    "id": "nile_delta",
+    "name": "나일강 삼각주",
+    "nameEn": "Nile Delta",
+    "category": "삼각주",
+    "continent": "아프리카",
+    "region": "이집트 북부",
+    "lat": 31,
+    "lon": 31,
+    "access": "land",
+    "landingPortId": "alexandria",
+    "atlasHint": "나일강이 지중해로 흘러드는 이집트 북부의 부채꼴 저지대",
+    "arrivalRadiusTiles": 8
+  },
+  {
+    "id": "mississippi_mouth",
+    "name": "미시시피강 하구",
+    "nameEn": "Mississippi River Mouth",
+    "category": "강 하구",
+    "continent": "북아메리카",
+    "region": "미국 남부",
+    "lat": 29,
+    "lon": -89.2,
+    "access": "land",
+    "landingPortId": "new_orleans",
+    "atlasHint": "미국 남부에서 멕시코만으로 흘러드는 미시시피강의 하구",
+    "arrivalRadiusTiles": 8
+  },
+  {
+    "id": "niagara_falls",
+    "name": "나이아가라 폭포",
+    "nameEn": "Niagara Falls",
+    "category": "폭포",
+    "continent": "북아메리카",
+    "region": "미국·캐나다 국경",
+    "lat": 43.0799,
+    "lon": -79.0747,
+    "access": "land",
+    "landingPortId": "new_york",
+    "atlasHint": "오대호의 이리호와 온타리오호 사이",
+    "arrivalRadiusTiles": 5
+  },
+  {
+    "id": "crimea_peninsula",
+    "name": "크림반도",
+    "nameEn": "Crimean Peninsula",
+    "category": "반도",
+    "continent": "유럽",
+    "region": "흑해 북부",
+    "lat": 45,
+    "lon": 34,
+    "access": "land",
+    "landingPortId": "sevastopol",
+    "atlasHint": "흑해 북쪽으로 돌출된 큰 반도",
+    "arrivalRadiusTiles": 18,
+    "interactionRadiusTiles": 4
+  },
+  {
+    "id": "sahara",
+    "name": "사하라 사막",
+    "nameEn": "Sahara Desert",
+    "category": "사막",
+    "continent": "아프리카",
+    "region": "북아프리카",
+    "lat": 23.5,
+    "lon": 13,
+    "access": "land",
+    "landingPortId": "tripoli",
+    "atlasHint": "북아프리카 대부분을 차지하는 넓은 사막 지대",
+    "arrivalRadiusTiles": 24
+  },
+  {
+    "id": "alps",
+    "name": "알프스산맥",
+    "nameEn": "Alps",
+    "category": "산맥",
+    "continent": "유럽",
+    "region": "중부 유럽",
+    "lat": 46.5,
+    "lon": 9.5,
+    "access": "land",
+    "landingPortId": "genoa",
+    "atlasHint": "이탈리아 북쪽과 프랑스·스위스·오스트리아 사이의 산맥",
+    "arrivalRadiusTiles": 24
+  },
+  {
+    "id": "panama_isthmus",
+    "name": "파나마 지협",
+    "nameEn": "Isthmus of Panama",
+    "category": "지협",
+    "continent": "북아메리카·남아메리카",
+    "region": "파나마",
+    "lat": 9,
+    "lon": -79.5,
+    "access": "land",
+    "landingPortId": "colon",
+    "atlasHint": "북아메리카와 남아메리카를 잇는 좁은 육지",
+    "arrivalRadiusTiles": 8
+  },
+  {
+    "id": "andes",
+    "name": "안데스산맥",
+    "nameEn": "Andes",
+    "category": "산맥",
+    "continent": "남아메리카",
+    "region": "남아메리카 서부",
+    "lat": -13.5,
+    "lon": -72.5,
+    "access": "land",
+    "landingPortId": "lima",
+    "atlasHint": "남아메리카 서쪽 해안을 따라 남북으로 길게 이어지는 산맥",
+    "arrivalRadiusTiles": 24
+  },
+  {
+    "id": "great_rift_valley",
+    "name": "동아프리카 지구대",
+    "nameEn": "East African Rift",
+    "category": "지구대",
+    "continent": "아프리카",
+    "region": "동아프리카",
+    "lat": -3,
+    "lon": 36,
+    "access": "land",
+    "landingPortId": "mombasa",
+    "atlasHint": "동아프리카를 남북으로 가르는 길고 낮은 지대"
+  },
+  {
+    "id": "danube_delta",
+    "name": "도나우강 삼각주",
+    "nameEn": "Danube Delta",
+    "category": "삼각주",
+    "continent": "유럽",
+    "region": "흑해 서안",
+    "lat": 45.15,
+    "lon": 29.3,
+    "access": "land",
+    "landingPortId": "istanbul",
+    "atlasHint": "도나우강이 흑해로 흘러드는 유럽 동부의 삼각주",
+    "arrivalRadiusTiles": 8
+  },
+  {
+    "id": "japanese_archipelago",
+    "name": "일본 열도",
+    "nameEn": "Japanese Archipelago",
+    "category": "열도",
+    "continent": "아시아",
+    "region": "동아시아",
+    "lat": 36.0,
+    "lon": 138.0,
+    "access": "sea",
+    "atlasHint": "동아시아 대륙의 동쪽, 태평양 가장자리를 따라 이어지는 열도",
+    "arrivalRadiusTiles": 30
+  },
+  {
+    "id": "malay_archipelago",
+    "name": "말레이 제도",
+    "nameEn": "Malay Archipelago",
+    "category": "제도",
+    "continent": "아시아",
+    "region": "동남아시아",
+    "lat": -2.0,
+    "lon": 118.0,
+    "access": "sea",
+    "atlasHint": "동남아시아의 말레이반도와 오스트레일리아 사이에 넓게 분포한 섬 무리",
+    "arrivalRadiusTiles": 38
+  },
+  {
+    "id": "philippine_archipelago",
+    "name": "필리핀 제도",
+    "nameEn": "Philippine Archipelago",
+    "category": "제도",
+    "continent": "아시아",
+    "region": "동남아시아",
+    "lat": 12.0,
+    "lon": 122.0,
+    "access": "sea",
+    "atlasHint": "남중국해와 태평양 사이, 동남아시아 동쪽의 섬 무리",
+    "arrivalRadiusTiles": 24
+  },
+  {
+    "id": "hawaiian_islands",
+    "name": "하와이 제도",
+    "nameEn": "Hawaiian Islands",
+    "category": "제도",
+    "continent": "오세아니아",
+    "region": "북태평양",
+    "lat": 20.8,
+    "lon": -156.3,
+    "access": "sea",
+    "atlasHint": "북태평양 중앙부에 길게 이어지는 화산섬 무리",
+    "arrivalRadiusTiles": 18
+  },
+  {
+    "id": "aleutian_islands",
+    "name": "알류샨 열도",
+    "nameEn": "Aleutian Islands",
+    "category": "열도",
+    "continent": "북아메리카",
+    "region": "북태평양",
+    "lat": 52.2,
+    "lon": -174.0,
+    "access": "sea",
+    "atlasHint": "알래스카반도에서 서쪽으로 길게 이어져 베링해와 북태평양을 나누는 열도",
+    "arrivalRadiusTiles": 28
+  },
+  {
+    "id": "aegean_islands",
+    "name": "에게해 제도",
+    "nameEn": "Aegean Islands",
+    "category": "제도",
+    "continent": "유럽",
+    "region": "에게해",
+    "lat": 38.2,
+    "lon": 25.0,
+    "access": "sea",
+    "atlasHint": "그리스와 튀르키예 사이의 에게해에 흩어진 섬 무리",
+    "arrivalRadiusTiles": 18
+  }
+]

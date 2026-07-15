@@ -2,19 +2,153 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메인 게임 메뉴</title>
     <style>
-        body { background-color: #2b1d1d; color: #ffffff; text-align: center; padding-top: 50px; font-family: sans-serif; }
-        .menu-container { display: flex; flex-direction: column; gap: 15px; align-items: center; }
-        a { 
-            display: block; width: 250px; padding: 15px; 
-            background-color: #593131; color: white; 
-            text-decoration: none; border: 2px solid #8c6d6d;
+        :root {
+            --bg: #2b1d1d;
+            --panel: #3a210f;
+            --panel-dark: #261204;
+            --gold: #d7b47a;
+            --gold-dark: #7d4a16;
+            --gold-mid: #b56e20;
+            --gold-bright: #ffb54a;
         }
-        a:hover { background-color: #7c4848; }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background-color: var(--bg);
+            color: #ffffff;
+            text-align: center;
+            padding: 50px 18px;
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        .music-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+            padding: 4px 6px;
+            color: var(--gold);
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            user-select: none;
+        }
+
+        .music-label {
+            white-space: nowrap;
+            font-size: 16px;
+        }
+
+        .mute-button {
+            min-width: 66px;
+            height: 27px;
+            padding: 0 10px;
+            border: 2px solid #5d360f;
+            outline: 1px solid #1b0d03;
+            background: linear-gradient(#b88b4a, #8b5b22);
+            box-shadow: inset 0 1px 0 #d5b77f, 0 1px 0 #5b3110;
+            color: #1d1005;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .mute-button:hover,
+        .mute-button:focus-visible {
+            filter: brightness(1.12);
+        }
+
+        .volume-box {
+            display: flex;
+            gap: 3px;
+            padding: 4px 5px;
+            border: 2px solid var(--gold-dark);
+            outline: 2px solid var(--panel-dark);
+            background: #2d1607;
+            box-shadow: inset 0 0 0 1px #1c0c02;
+        }
+
+        .volume-step {
+            width: 22px;
+            height: 21px;
+            padding: 0;
+            border: 1px solid #b9782c;
+            background: #6b4218;
+            box-shadow: inset 0 0 0 1px #3f2309;
+            cursor: pointer;
+        }
+
+        .volume-step.active {
+            background: linear-gradient(135deg, #b56d21, var(--gold-bright));
+            border-color: #ffd18a;
+            box-shadow: inset 0 0 0 1px #9f5918;
+        }
+
+        .volume-step:hover,
+        .volume-step:focus-visible {
+            filter: brightness(1.2);
+        }
+
+        h1 { margin-top: 0; }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .menu-container a {
+            display: block;
+            width: 250px;
+            padding: 15px;
+            background-color: #593131;
+            color: white;
+            text-decoration: none;
+            border: 2px solid #8c6d6d;
+            font-family: sans-serif;
+        }
+
+        .menu-container a:hover { background-color: #7c4848; }
+
+        .music-status {
+            min-height: 18px;
+            margin: -18px 0 18px;
+            color: #c9ad87;
+            font-family: sans-serif;
+            font-size: 12px;
+        }
+
+        @media (max-width: 520px) {
+            body { padding-top: 28px; }
+            .music-control { gap: 7px; transform: scale(0.93); }
+            .music-label { font-size: 14px; }
+            .volume-step { width: 20px; }
+        }
     </style>
 </head>
 <body>
+    <audio id="bgm" src="assets/sound/cds95main.mp3" autoplay loop preload="auto"></audio>
+
+    <div class="music-control" aria-label="배경음악 음량 조절">
+        <span class="music-label">MUSIC VOLUME:</span>
+        <button id="muteButton" class="mute-button" type="button">MUTE</button>
+        <div class="volume-box" role="group" aria-label="음량 단계">
+            <button class="volume-step" type="button" data-level="1" aria-label="음량 1단계"></button>
+            <button class="volume-step" type="button" data-level="2" aria-label="음량 2단계"></button>
+            <button class="volume-step" type="button" data-level="3" aria-label="음량 3단계"></button>
+            <button class="volume-step" type="button" data-level="4" aria-label="음량 4단계"></button>
+            <button class="volume-step" type="button" data-level="5" aria-label="음량 5단계"></button>
+        </div>
+    </div>
+    <div id="musicStatus" class="music-status" aria-live="polite"></div>
+
     <h1>게임 선택</h1>
     <div class="menu-container">
         <a href="games/coinweighing.html">동전 저울</a>
@@ -22,5 +156,79 @@
         <a href="games/nimgame.html">님(Nim) 게임</a>
         <a href="games/sphinx.html">스핑크스</a>
     </div>
+
+    <script>
+        (() => {
+            const bgm = document.getElementById('bgm');
+            const muteButton = document.getElementById('muteButton');
+            const musicStatus = document.getElementById('musicStatus');
+            const volumeSteps = [...document.querySelectorAll('.volume-step')];
+
+            const savedLevel = Number(localStorage.getItem('cds95VolumeLevel'));
+            let volumeLevel = Number.isInteger(savedLevel) && savedLevel >= 1 && savedLevel <= 5
+                ? savedLevel
+                : 4;
+            let isMuted = localStorage.getItem('cds95Muted') === 'true';
+
+            function renderVolume() {
+                volumeSteps.forEach((step, index) => {
+                    step.classList.toggle('active', !isMuted && index < volumeLevel);
+                });
+                muteButton.textContent = isMuted ? 'PLAY' : 'MUTE';
+                muteButton.setAttribute('aria-pressed', String(isMuted));
+            }
+
+            async function startMusic() {
+                bgm.muted = false;
+                bgm.volume = volumeLevel / 5;
+                try {
+                    await bgm.play();
+                    isMuted = false;
+                    localStorage.setItem('cds95Muted', 'false');
+                    musicStatus.textContent = '';
+                } catch (error) {
+                    isMuted = true;
+                    musicStatus.textContent = '자동재생이 차단되었습니다. PLAY 또는 음량 칸을 누르세요.';
+                }
+                renderVolume();
+            }
+
+            function stopMusic() {
+                bgm.pause();
+                isMuted = true;
+                localStorage.setItem('cds95Muted', 'true');
+                musicStatus.textContent = '';
+                renderVolume();
+            }
+
+            muteButton.addEventListener('click', () => {
+                if (bgm.paused || isMuted) {
+                    startMusic();
+                } else {
+                    stopMusic();
+                }
+            });
+
+            volumeSteps.forEach((step) => {
+                step.addEventListener('click', () => {
+                    volumeLevel = Number(step.dataset.level);
+                    bgm.volume = volumeLevel / 5;
+                    localStorage.setItem('cds95VolumeLevel', String(volumeLevel));
+                    startMusic();
+                });
+            });
+
+            bgm.addEventListener('error', () => {
+                musicStatus.textContent = '음악 파일을 찾지 못했습니다: assets/sound/cds95main.mp3';
+            });
+
+            bgm.volume = volumeLevel / 5;
+            renderVolume();
+
+            if (!isMuted) {
+                startMusic();
+            }
+        })();
+    </script>
 </body>
 </html>

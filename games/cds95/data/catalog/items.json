@@ -1,0 +1,68 @@
+[
+  {
+    "id": "survey_tools",
+    "name": "측량 장비",
+    "category": "탐사 도구",
+    "description": "거리와 지형을 조사하는 데 쓰는 장비"
+  },
+  {
+    "id": "map_tools",
+    "name": "지도 제작 도구",
+    "category": "탐사 도구",
+    "description": "관측 내용을 지도에 기록하는 도구"
+  },
+  {
+    "id": "field_notebooks",
+    "name": "현장 기록지",
+    "category": "탐사 도구",
+    "description": "지형과 위치를 기록하는 자료"
+  },
+  {
+    "id": "sample_boxes",
+    "name": "표본 상자",
+    "category": "탐사 도구",
+    "description": "암석·식물 등의 표본을 보관하는 상자"
+  },
+  {
+    "id": "food",
+    "name": "탐사 식량",
+    "category": "보급품",
+    "description": "장거리 탐사대에 필요한 식량"
+  },
+  {
+    "id": "water",
+    "name": "식수",
+    "category": "보급품",
+    "description": "건조 지역 탐사에 필요한 물"
+  },
+  {
+    "id": "medical_supplies",
+    "name": "의약품",
+    "category": "보급품",
+    "description": "탐사대의 안전을 위한 기본 의약품"
+  },
+  {
+    "id": "cork",
+    "name": "코르크",
+    "category": "지역 생산물",
+    "description": "지중해성 기후 지역에서 생산되는 재료"
+  },
+  {
+    "id": "timber",
+    "name": "목재",
+    "category": "지역 생산물",
+    "description": "선박과 건축에 쓰는 재료"
+  },
+  {
+    "id": "pepper",
+    "name": "후추",
+    "category": "지역 생산물",
+    "description": "인도양 교역에서 중요한 향신료"
+  },
+  {
+    "id": "cotton_textiles",
+    "name": "면직물",
+    "category": "지역 생산물",
+    "description": "면화로 만든 직물"
+  }
+]

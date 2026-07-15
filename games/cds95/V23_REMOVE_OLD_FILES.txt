@@ -1,0 +1,5 @@
+v22 이하 폴더에 v23 업데이트를 덮어쓴 경우 아래 파일은 더 이상 사용하지 않습니다. 남아 있어도 실행에는 영향이 없지만 삭제해도 됩니다.
+
+public\js\weather.js
+public\assets\weather\cloud_original_12frames.png
+tests\weather-unit.js

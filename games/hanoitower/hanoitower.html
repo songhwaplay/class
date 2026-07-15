@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Antique Tower of Hanoi - Perfect Arc Cone</title>
+    <style>
+        /* 심해 바다 느낌의 배경 */
+        body { 
+            background:
+                linear-gradient(rgba(30, 20, 12, 0.18), rgba(18, 10, 6, 0.34)),
+                url('../../assets/images/sphinxbg.png') center / cover fixed;
+            color: #e6cb9c; 
+            font-family: 'Georgia', 'Times New Roman', serif; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            margin: 0; 
+            padding: 20px; 
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at center, rgba(255, 218, 150, 0.08), transparent 40%),
+                radial-gradient(circle at center, transparent 30%, rgba(26, 12, 6, 0.44) 100%);
+        }
+        
+        /* 스타트 화면 스타일 */
+        .start-screen {
+            background: linear-gradient(135deg, #2b1a0e 0%, #150d07 100%);
+            border: 3px solid #a27d4f;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.6);
+            width: 450px;
+            padding: 40px;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .start-title {
+            font-size: 2.2em;
+            color: #bd9653;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .start-subtitle {
+            font-size: 1.1em;
+            color: #8a5a36;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        /* 인게임 메인 컨테이너 */
+        .game-container {
+            display: none;
+            width: 100%;
+            max-width: 900px;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* 상단 제어판 */
+        .controls { 
+            margin-bottom: 30px; 
+            background: linear-gradient(135deg, #4a2f1b 0%, #2b1a0e 100%); 
+            padding: 20px; 
+            border: 3px solid #8a5a36; 
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.5);
+            text-align: center; 
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .option-group { 
+            margin: 12px 0; 
+            color: #e6cb9c; 
+            font-weight: bold; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 15px; 
+            font-size: 0.95em;
+            letter-spacing: 1px;
+        }
+        
+        .btn-container { display: flex; gap: 6px; align-items: center; }
+        
+        button { 
+            cursor: pointer; 
+            padding: 6px 14px;
+            background: linear-gradient(to bottom, #c5a059 0%, #947132 100%); 
+            border: 1px solid #61461b; 
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.3), 0 2px 4px rgba(0,0,0,0.4);
+            font-weight: bold; 
+            color: #261603;
+            font-family: inherit;
+            transition: all 0.1s ease;
+        }
+        button:active { 
+            background: linear-gradient(to bottom, #947132 0%, #c5a059 100%); 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+        }
+        button.active { 
+            background: linear-gradient(to bottom, #4a2f1b 0%, #1e1107 100%); 
+            color: #e6cb9c; 
+            border-color: #8a5a36;
+            box-shadow: inset 0 3px 5px rgba(0,0,0,0.8);
+        }
+        
+        .btn-start-action {
+            background: linear-gradient(to bottom, #962d22 0%, #5c160f 100%) !important;
+            color: #f7e1cd !important;
+            border-color: #400f0a !important;
+            padding: 10px 30px !important;
+            font-size: 1.1em !important;
+        }
+
+        /* 볼륨 인디케이터 */
+        .volume-bar-container {
+            display: flex;
+            background-color: #110904;
+            border: 2px solid #54391e;
+            padding: 4px 6px;
+            gap: 4px;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+        }
+        .vol-block {
+            width: 20px;
+            height: 16px;
+            background-color: #24160c; 
+            border: 1px solid #140d07;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .vol-block.active-level-1 { background: #61401b; border-color: #8c5d27; box-shadow: 0 0 4px #61401b; }
+        .vol-block.active-level-2 { background: #8c5e27; border-color: #bd7e35; box-shadow: 0 0 6px #8c5e27; }
+        .vol-block.active-level-3 { background: #b87c35; border-color: #e69d45; box-shadow: 0 0 8px #b87c35; }
+        .vol-block.active-level-4 { background: #df9744; border-color: #fcae53; box-shadow: 0 0 10px #df9744; }
+        .vol-block.active-level-5 { background: #ffaa42; border-color: #fff2cc; box-shadow: 0 0 12px #ffaa42; }
+
+        .vol-mute-btn {
+            padding: 4px 10px;
+            font-size: 0.85em;
+        }
+        
+        /* 하노이탑 보드 구역 (수정: 기둥 간 간격을 60px에서 20px로 좁힘) */
+        .board-wrapper { 
+            display: flex; 
+            gap: 20px; 
+            margin-top: 20px; 
+            align-items: flex-end; 
+            padding: 20px 40px;
+            background:
+                linear-gradient(rgba(6, 17, 27, 0.30), rgba(6, 17, 27, 0.48)),
+                url('../../assets/images/hanoitowerbg.png') center / cover no-repeat;
+            border: 2px solid rgba(138, 90, 54, 0.78);
+            border-radius: 8px;
+            box-shadow:
+                inset 0 0 26px rgba(0,0,0,0.58),
+                0 10px 24px rgba(0,0,0,0.38);
+        }
+        
+        /* 기둥 및 받침대 */
+        .pole { 
+            width: 240px; 
+            height: 420px; 
+            display: flex; 
+            flex-direction: column-reverse; 
+            align-items: center; 
+            border-bottom: 24px solid #3e2312; 
+            background: transparent;
+            position: relative;
+            box-shadow: 0 8px 12px rgba(0,0,0,0.6);
+        }
+        .pole::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            width: 14px;
+            height: 380px;
+            background: linear-gradient(to right, #2b160a, #4a2815, #1a0d05);
+            border-radius: 4px 4px 0 0;
+            z-index: 1;
+        }
+        
+        /* 원판 디자인 */
+        .disk { 
+            cursor: grab; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-weight: bold; 
+            color: #ffffff; 
+            margin-bottom: -1px; 
+            z-index: 10;
+            box-sizing: border-box;
+            
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 1.3em;
+            text-shadow: 1px 2px 3px rgba(0, 0, 0, 0.9);
+            
+            box-shadow: 
+                0 4px 5px rgba(0,0,0,0.3), 
+                inset 0 4px 4px rgba(255,255,255,0.3), 
+                inset 0 -4px 6px rgba(0,0,0,0.4);
+            
+            transition: transform 0.1s;
+
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+            -webkit-user-drag: element;
+        }
+        .disk:active { cursor: grabbing; transform: scale(1.03); }
+        
+        #info { 
+            margin-top: 30px; 
+            font-size: 1.4em; 
+            font-weight: bold;
+            letter-spacing: 2px;
+            color: #c5a059;
+            text-shadow: 2px 2px 4px #000; 
+        }
+        #moveCount { color: #e6cb9c; }
+
+        /* 모달 */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.25s ease;
+            z-index: 200;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: auto; }
+
+        .antique-modal {
+            background: linear-gradient(135deg, #2b1a0e 0%, #150d07 100%);
+            border: 3px solid #a27d4f;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.6);
+            width: 450px;
+            padding: 25px;
+            text-align: center;
+            transform: scale(0.85);
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-overlay.show .antique-modal { transform: scale(1); }
+
+        .modal-title {
+            font-size: 1.5em;
+            color: #bd9653;
+            letter-spacing: 3px;
+            margin-bottom: 15px;
+            border-bottom: 1px dashed #a27d4f;
+            padding-bottom: 8px;
+            text-shadow: 1px 1px 2px #000;
+        }
+        .modal-content {
+            color: #ecd5b3;
+            font-size: 1.1em;
+            line-height: 1.8;
+            text-align: left;
+            margin-bottom: 20px;
+            font-family: inherit;
+        }
+        .modal-content p { margin: 8px 0; }
+    </style>
+</head>
+<body>
+
+<div class="start-screen" id="start-screen">
+    <div class="start-title">하노이의 탑</div>
+    <div class="start-subtitle">Antique Tower of Hanoi</div>
+    <button class="action-btn btn-start-action" onclick="startGameEnvironment()">START GAME</button>
+</div>
+
+<div class="game-container" id="game-container">
+    <div class="controls">
+        <div class="option-group">
+            DISKS: 
+            <div class="btn-container">
+                <button onclick="setDisk(1)">1</button><button onclick="setDisk(2)">2</button><button onclick="setDisk(3)" class="active">3</button>
+                <button onclick="setDisk(4)">4</button><button onclick="setDisk(5)">5</button><button onclick="setDisk(6)">6</button>
+                <button onclick="setDisk(7)">7</button><button onclick="setDisk(8)">8</button>
+            </div>
+        </div>
+        <div class="option-group">
+            MODE: 
+            <div class="btn-container">
+                <button id="modeNormal" onclick="setMode('normal')" class="active">NORMAL</button>
+                <button id="modeRandom" onclick="setMode('random')">RANDOM</button>
+            </div>
+        </div>
+        <div class="option-group">
+            MUSIC VOLUME: 
+            <div class="btn-container">
+                <button class="vol-mute-btn" id="muteBtn" onclick="setVolume(0)">MUTE</button>
+                <div class="volume-bar-container">
+                    <div class="vol-block" id="vb-1" onclick="setVolume(0.2)"></div>
+                    <div class="vol-block" id="vb-2" onclick="setVolume(0.4)"></div>
+                    <div class="vol-block" id="vb-3" onclick="setVolume(0.6)"></div>
+                    <div class="vol-block" id="vb-4" onclick="setVolume(0.8)"></div>
+                    <div class="vol-block" id="vb-5" onclick="setVolume(1.0)"></div>
+                </div>
+            </div>
+        </div>
+        <button onclick="initGame()" style="margin-top: 5px;">RESET GAME</button>
+        <button onclick="showRules()" style="margin-top: 5px;">RULES</button>
+    </div>
+
+    <div class="board-wrapper">
+        <div class="pole" id="pole0" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="pole" id="pole1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="pole" id="pole2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    </div>
+
+    <div id="info">MOVES: <span id="moveCount">0</span></div>
+</div>
+
+<div class="modal-overlay" id="rulesModal">
+    <div class="antique-modal">
+        <div class="modal-title">RULES</div>
+        <div class="modal-content" id="modalText"></div>
+        <button onclick="closeModal()" style="padding: 6px 25px; margin-top: 10px;">확인</button>
+    </div>
+</div>
+
+<script>
+    const customGradients = [
+        'linear-gradient(to bottom, #aa3232, #851c1c)', 
+        'linear-gradient(to bottom, #dfa837, #b88221)', 
+        'linear-gradient(to bottom, #dfc664, #bca13f)', 
+        'linear-gradient(to bottom, #306b49, #204c32)', 
+        'linear-gradient(to bottom, #335580, #223a59)', 
+        'linear-gradient(to bottom, #233452, #152034)', 
+        'linear-gradient(to bottom, #593563, #3f2247)', 
+        'linear-gradient(to bottom, #292420, #1c1815)'  
+    ];
+
+    let poles = [[], [], []];
+    let initialPoles = [];
+    let moveCount = 0;
+    let totalDisks = 3;
+    let mode = 'normal';
+    
+    const bgm = new Audio('../../assets/sound/hanoitower.mp3'); 
+    bgm.loop = true;
+    bgm.volume = 0.6; 
+
+    function setVolume(vol) {
+        bgm.volume = vol;
+        
+        for (let i = 1; i <= 5; i++) {
+            const block = document.getElementById(`vb-${i}`);
+            block.className = 'vol-block'; 
+        }
+        
+        const muteBtn = document.getElementById('muteBtn');
+        if (vol === 0) {
+            muteBtn.classList.add('active');
+        } else {
+            muteBtn.classList.remove('active');
+            const activeCount = Math.round(vol * 5);
+            for (let i = 1; i <= activeCount; i++) {
+                document.getElementById(`vb-${i}`).classList.add(`active-level-${i}`);
+            }
+        }
+    }
+
+    function startGameEnvironment() {
+        bgm.play().catch(e => console.log("배경음악 재생 차단: 파일 경로를 확인하세요."));
+        
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('game-container').style.display = 'flex';
+        
+        setVolume(0.6);
+        initGame();
+    }
+
+    function playSound(diskSize) {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const scale = [523.25, 493.88, 440.00, 392.00, 349.23, 329.63, 293.66, 261.63]; 
+        const targetFreq = scale[(diskSize - 1) % 8] || 330;
+
+        const bodyOsc = audioCtx.createOscillator();
+        const bodyGain = audioCtx.createGain();
+        bodyOsc.type = 'sine';
+        bodyOsc.frequency.setValueAtTime(targetFreq, audioCtx.currentTime);
+
+        const strikeOsc = audioCtx.createOscillator();
+        const strikeGain = audioCtx.createGain();
+        strikeOsc.type = 'triangle';
+        strikeOsc.frequency.setValueAtTime(targetFreq * 3, audioCtx.currentTime);
+
+        bodyOsc.connect(bodyGain);
+        strikeOsc.connect(strikeGain);
+        bodyGain.connect(audioCtx.destination);
+        strikeGain.connect(audioCtx.destination);
+
+        const now = audioCtx.currentTime;
+        bodyGain.gain.setValueAtTime(0, now);
+        bodyGain.gain.linearRampToValueAtTime(0.25, now + 0.005);
+        bodyGain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+        strikeGain.gain.setValueAtTime(0, now);
+        strikeGain.gain.linearRampToValueAtTime(0.18, now + 0.002);
+        strikeGain.gain.exponentialRampToValueAtTime(0.001, now + 0.04);
+
+        bodyOsc.start(now); strikeOsc.start(now);
+        bodyOsc.stop(now + 0.33); strikeOsc.stop(now + 0.05);
+    }
+
+    function showCustomAlert(title, paragraphs) {
+        const modal = document.getElementById('rulesModal');
+        const titleEl = modal.querySelector('.modal-title');
+        const contentEl = document.getElementById('modalText');
+        
+        titleEl.textContent = title;
+        contentEl.innerHTML = paragraphs.map(p => `<p>${p}</p>`).join('');
+        
+        modal.classList.add('show');
+    }
+
+    function closeModal() {
+        document.getElementById('rulesModal').classList.remove('show');
+    }
+
+    function showRules() {
+        showCustomAlert("古塔 規則 (RULES)", [
+            "1. 모든 원판을 가운데 기둥으로 옮겨 쌓아야 합니다.",
+            "2. 한 번에 오직 하나의 원판만 움직일 수 있습니다.",
+            "3. 큰 원판을 작은 원판 위에 쌓을 수 없습니다."
+        ]);
+    }
+
+    function setDisk(n) {
+        totalDisks = n;
+        document.querySelectorAll('.option-group button').forEach((btn, i) => { 
+            if(i < 8) btn.classList.toggle('active', i + 1 === n); 
+        });
+        initGame();
+    }
+
+    function setMode(m) {
+        mode = m;
+        document.getElementById('modeNormal').classList.toggle('active', m === 'normal');
+        document.getElementById('modeRandom').classList.toggle('active', m === 'random');
+        initGame();
+    }
+
+    function initGame() {
+        poles = [[], [], []];
+        moveCount = 0;
+        document.getElementById('moveCount').textContent = moveCount;
+        if (mode === 'normal') {
+            for (let i = totalDisks; i > 0; i--) poles[0].push(i);
+        } else {
+            let placed = false;
+            while (!placed) {
+                poles = [[], [], []];
+                for (let i = totalDisks; i > 0; i--) poles[Math.floor(Math.random() * 3)].push(i);
+                poles.forEach(p => p.sort((a,b) => b - a));
+                if (poles[1].length < totalDisks && poles[1][0] !== totalDisks) placed = true;
+            }
+        }
+        initialPoles = poles.map(p => [...p]);
+        render();
+    }
+
+    function calculateMinMoves(currentPoles, disk, targetPole) {
+        if (disk === 0) return 0;
+        let from = -1;
+        for(let i=0; i<3; i++) if(currentPoles[i].includes(disk)) from = i;
+        if (from === targetPole) return calculateMinMoves(currentPoles, disk - 1, targetPole);
+        else {
+            const spare = 3 - from - targetPole;
+            return calculateMinMoves(currentPoles, disk - 1, spare) + 1 + (Math.pow(2, disk - 1) - 1);
+        }
+    }
+
+    function render() {
+        const slopeStep = 24;  
+        const baseWidth = 56;  
+
+        for(let i=0; i<3; i++) {
+            const poleEl = document.getElementById('pole' + i);
+            poleEl.innerHTML = '';
+            poles[i].forEach(size => {
+                const disk = document.createElement('div');
+                disk.className = 'disk';
+                
+                const bottomWidth = size * slopeStep + baseWidth;
+                disk.style.width = bottomWidth + 'px'; 
+                disk.style.background = customGradients[size - 1];
+                disk.textContent = size;
+                
+                const topWidth = (size - 1) * slopeStep + baseWidth;
+                const cutPercent = ((bottomWidth - topWidth) / 2) / bottomWidth * 100;
+
+                if (size === 1) {
+                    disk.style.height = '64px';
+                    disk.style.minHeight = '64px';
+                    disk.style.paddingTop = '18px';
+                    disk.style.clipPath = 'none';
+                    
+                    const targetTopWidth = baseWidth;
+                    const scaleFactor = targetTopWidth / bottomWidth;
+                    
+                    disk.style.clipPath = `polygon(0% 100%, ${cutPercent}% 40%, 35% 15%, 44% 4%, 56% 4%, 65% 15%, ${100 - cutPercent}% 40%, 100% 100%)`;
+                } else {
+                    disk.style.height = '42px';
+                    disk.style.minHeight = '42px';
+                    disk.style.paddingTop = '0px';
+                    disk.style.borderRadius = '0px';
+                    disk.style.clipPath = `polygon(${cutPercent}% 0%, ${100 - cutPercent}% 0%, 100% 100%, 0% 100%)`;
+                }
+
+                disk.draggable = (size === poles[i][poles[i].length - 1]);
+                disk.style.webkitUserDrag = 'element';
+                
+                disk.ondragstart = (e) => e.dataTransfer.setData("text", i);
+                poleEl.appendChild(disk);
+            });
+        }
+    }
+
+    function allowDrop(e) { e.preventDefault(); }
+
+    function drop(e) {
+        e.preventDefault();
+        const fromPoleIdx = parseInt(e.dataTransfer.getData("text"));
+        const targetPole = e.target.closest('.pole');
+        if (!targetPole) return;
+        const toPoleIdx = parseInt(targetPole.id.replace('pole', ''));
+        const diskSize = poles[fromPoleIdx][poles[fromPoleIdx].length - 1];
+        const targetTopDisk = poles[toPoleIdx][poles[toPoleIdx].length - 1];
+
+        if (fromPoleIdx !== toPoleIdx && (!targetTopDisk || diskSize < targetTopDisk)) {
+            poles[toPoleIdx].push(poles[fromPoleIdx].pop());
+            moveCount++;
+            document.getElementById('moveCount').textContent = moveCount;
+            
+            playSound(diskSize); 
+            render();
+            checkWin();
+        }
+    }
+
+    function checkWin() {
+        if (poles[1].length === totalDisks) {
+            const minMoves = calculateMinMoves(initialPoles, totalDisks, 1);
+            setTimeout(() => {
+                showCustomAlert("祝賀 ! (CONGRATULATIONS)", [
+                    `축하합니다! 하노이의 탑을 완성하셨습니다.`,
+                    `현재 이동 횟수: ${moveCount}회`,
+                    `이론상 최소 횟수: ${minMoves}회`
+                ]);
+                initGame();
+            }, 100);
+        }
+    }
+</script>
+</body>
+</html>
