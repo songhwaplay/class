@@ -1,13 +1,13 @@
 {
   "name": "cds95-classroom",
-  "version": "35.0.0",
+  "version": "37.0.0",
   "private": true,
   "description": "CDS95 실시간 도착 미션 학습 플랫폼",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && node --check lib/arrival-zones.js && npm run check:catalog && npm run check:html",
+    "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && node --check lib/arrival-zones.js && node --check lib/completion-rewards.js && npm run check:catalog && npm run check:html",
     "check:html": "node tests/html-script-syntax.js",
     "check:catalog": "node -e \"for (const f of ['places','original-cities','items','templates','ready-missions','arrival-zones']) JSON.parse(require('node:fs').readFileSync('data/catalog/'+f+'.json','utf8')); console.log('catalog JSON ok')\"",
     "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current",
@@ -29,7 +29,9 @@
     "test:cities": "node tests/original-city-catalog-unit.js",
     "test:ports": "node tests/all-original-ports-smoke.js",
     "test:city-access": "node tests/original-city-access-unit.js",
-    "test:v35:smoke": "node tests/v35-completion-free-roam-smoke.js"
+    "test:v35:smoke": "node tests/v35-completion-free-roam-smoke.js",
+    "test:v36:smoke": "node tests/completion-rewards-unit.js && node tests/teacher-map-privacy-unit.js && node tests/v35-completion-free-roam-smoke.js",
+    "test:v37": "node tests/teacher-map-completed-hidden-unit.js && node tests/completion-rewards-unit.js && node tests/teacher-map-privacy-unit.js"
   },
   "engines": {
     "node": ">=22"

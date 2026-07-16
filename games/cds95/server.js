@@ -11,6 +11,7 @@ const ClassroomStore = require('./lib/classroom-store.js');
 const MissionCatalog = require('./lib/mission-catalog.js');
 const Fatigue = require('./lib/fatigue.js');
 const ArrivalZones = require('./lib/arrival-zones.js');
+const CompletionRewards = require('./lib/completion-rewards.js');
 const ARRIVAL_ZONES = require('./data/catalog/arrival-zones.json');
 
 const PORT = Number(process.env.PORT || 3000);
@@ -24,7 +25,7 @@ const LISBON = Object.freeze({
 });
 const SEA_BASE_SPEED = 132;
 const LAND_BASE_SPEED = 96;
-const COMPLETION_SPEED_MULTIPLIER = 2;
+
 const CURRENT_TAIL_FACTOR = 0.30;
 const CURRENT_HEAD_FACTOR = 0.08;
 const CURRENT_CROSS_FACTOR = 0.14;
@@ -203,12 +204,12 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => res.json(publicMissionCatalog()));
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 35,
+  version: 36,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
   landBaseSpeed: LAND_BASE_SPEED,
-  completionSpeedMultiplier: COMPLETION_SPEED_MULTIPLIER,
+  completionSpeedMultipliers: { first: 4, second: 3, third: 2, fourthAndAfter: 1.5 },
   currentTailAssistPercent: Math.round(CURRENT_TAIL_FACTOR * 100),
   currentHeadPenaltyPercent: Math.round(CURRENT_HEAD_FACTOR * 100),
   gameHoursPerRealSecond: GAME_HOURS_PER_REAL_SECOND,
@@ -1122,7 +1123,7 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     missionStatus: p.missionStatus || 'assigned',
     finishRank,
     missionCompleted: raceCompleted,
-    speedBoostMultiplier: raceCompleted ? COMPLETION_SPEED_MULTIPLIER : 1,
+    speedBoostMultiplier: raceCompleted ? CompletionRewards.speedMultiplier(finishRank) : 1,
     currentCityId: p.currentCityId || null,
     currentCityName: currentCityForPlayer(p)?.name || '',
     lastCityId: p.lastCityId || null,
@@ -1207,7 +1208,8 @@ function completeMission(roomCode, p, mission, progress, label) {
   p.missionStatus = 'completed';
   p.mission = `${mission.title} · 완료`;
   const rankText = progress.finishRank ? ` ${progress.finishRank}위로` : '';
-  setNotice(p, `미션 성공!${rankText} ${label || mission.title}에 도착했습니다. 메달을 달고 이동속도 2배로 자유 탐험할 수 있습니다.`);
+  const speedBoost = CompletionRewards.speedMultiplier(progress.finishRank);
+  setNotice(p, `미션 성공!${rankText} ${label || mission.title}에 도착했습니다. 메달을 달고 이동속도 ${speedBoost}배로 자유 탐험할 수 있습니다.`);
   store.scheduleSave();
   const activeMission = store.room(roomCode).activeMission;
   const result = publicProgress(progress, isArrivalRace(activeMission) ? activeMission : mission);
@@ -1827,7 +1829,7 @@ function movePlayer(p, dt) {
   const multiplier = p.mode === 'sea' ? TERRAIN_SPEED.sea : currentTerrain.multiplier;
   const baseSpeed = p.mode === 'sea' ? SEA_BASE_SPEED : LAND_BASE_SPEED;
   const fatigueMultiplier = Fatigue.speedMultiplier(p.fatigue);
-  const completionMultiplier = travel.completed ? COMPLETION_SPEED_MULTIPLIER : 1;
+  const completionMultiplier = travel.completed ? CompletionRewards.speedMultiplier(travel.progress?.finishRank) : 1;
   const step = Math.min(baseSpeed * multiplier * fatigueMultiplier * completionMultiplier * dt, targetDistance);
   const ox = p.x;
   const oy = p.y;
@@ -1913,6 +1915,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v35: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v36: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

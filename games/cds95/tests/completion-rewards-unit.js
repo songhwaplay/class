@@ -1,0 +1,10 @@
+'use strict';
+const assert = require('node:assert/strict');
+const Rewards = require('../lib/completion-rewards.js');
+assert.equal(Rewards.speedMultiplier(0),1);
+assert.equal(Rewards.speedMultiplier(1),4);
+assert.equal(Rewards.speedMultiplier(2),3);
+assert.equal(Rewards.speedMultiplier(3),2);
+assert.equal(Rewards.speedMultiplier(4),1.5);
+assert.equal(Rewards.speedMultiplier(40),1.5);
+console.log(JSON.stringify({ok:true,rewards:[4,3,2,1.5]}));

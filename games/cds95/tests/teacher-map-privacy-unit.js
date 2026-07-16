@@ -1,0 +1,11 @@
+'use strict';
+const fs = require('node:fs');
+const assert = require('node:assert/strict');
+const html = fs.readFileSync('public/teacher.html','utf8');
+assert.ok(!html.includes('id="targetSearch"'),'도착지 검색 입력칸이 남아 있습니다.');
+assert.ok(!html.includes('drawTarget('),'교사 세계지도 목적지 그리기 코드가 남아 있습니다.');
+assert.ok(!html.includes('목적지 약'),'교사 화면에 목적지 남은 거리가 남아 있습니다.');
+assert.ok(!html.includes('목적지 100km 이내'),'교사 화면에 목적지 근접 범례가 남아 있습니다.');
+assert.ok(!html.includes('목적지 300km 이내'),'교사 화면에 목적지 근접 범례가 남아 있습니다.');
+assert.ok(html.includes('정답 위치 비공개'),'정답 위치 비공개 안내가 없습니다.');
+console.log(JSON.stringify({ok:true,teacherMapTargetHidden:true,targetSearchRemoved:true}));
