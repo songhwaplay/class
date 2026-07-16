@@ -682,6 +682,52 @@ textarea,
     margin-top: 14px;
 }
 
+
+/* 이름 입력·클리어 명단 컴팩트 보정 */
+.player-entry {
+    width: min(340px, 100%);
+    margin: 0 auto 9px;
+}
+.player-entry label {
+    margin-bottom: 4px;
+    font-size: 11px;
+}
+.player-name-input {
+    min-height: 36px;
+    padding: 6px 10px;
+    font-size: 16px;
+}
+.player-name-help {
+    min-height: 15px;
+    margin-top: 3px;
+    font-size: 11px;
+}
+.finishers-panel {
+    width: min(390px, 100%);
+    margin: 9px auto;
+    padding: 8px 10px;
+}
+.finishers-title {
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+.finishers-list {
+    max-height: 92px;
+}
+.finisher-row {
+    grid-template-columns: 42px minmax(48px, .7fr) minmax(96px, 1.35fr);
+    gap: 6px;
+    padding: 3px 2px;
+    font-size: 11px;
+}
+.finisher-empty {
+    padding: 5px 3px;
+    font-size: 11px;
+}
+.result-finishers {
+    margin-top: 8px;
+}
+
 </style>
 </head>
 <body>
@@ -698,7 +744,7 @@ textarea,
         <label for="player-name">PLAYER NAME · 한글 2~6자</label>
         <input id="player-name" class="player-name-input" type="text" maxlength="6"
                autocomplete="name" placeholder="이름 입력"
-               oninput="handlePlayerNameInput(this)">
+               data-korean-name-input="true">
         <div class="player-name-help" id="player-name-help">영어·숫자·공백은 입력할 수 없습니다.</div>
     </div>
     
@@ -912,14 +958,17 @@ textarea,
         }
     }
 
-    function handlePlayerNameInput(input) {
+    function handlePlayerNameInput(input, forceNormalize = false) {
+        if (!input || (input.dataset.composing === "true" && !forceNormalize)) return;
+
         const normalized = normalizeKoreanName(input.value);
-        if (input.value !== normalized) input.value = normalized;
+        if (forceNormalize && input.value !== normalized) input.value = normalized;
         playerName = normalized;
 
         const valid = isValidKoreanName(playerName);
         const help = document.getElementById("player-name-help");
         const startButton = document.getElementById("start-game-button");
+
         if (help) {
             help.textContent = valid
                 ? `${playerName} 이름으로 시작합니다.`
@@ -927,7 +976,34 @@ textarea,
             help.classList.toggle("error", !valid && playerName.length > 0);
         }
         if (startButton) startButton.disabled = !valid;
+
+        document.querySelectorAll("[data-difficulty-button]").forEach(button => {
+            button.disabled = !valid;
+        });
+
         if (valid) savePlayerName(playerName);
+    }
+
+    function bindKoreanNameInput(input) {
+        if (!input || input.dataset.nameBound === "true") return;
+        input.dataset.nameBound = "true";
+
+        input.addEventListener("compositionstart", () => {
+            input.dataset.composing = "true";
+        });
+
+        input.addEventListener("compositionend", () => {
+            input.dataset.composing = "false";
+            handlePlayerNameInput(input, true);
+        });
+
+        input.addEventListener("input", () => {
+            handlePlayerNameInput(input, false);
+        });
+
+        input.addEventListener("blur", () => {
+            handlePlayerNameInput(input, true);
+        });
     }
 
     function initializePlayerEntry() {
@@ -935,7 +1011,8 @@ textarea,
         const input = document.getElementById("player-name");
         if (input) {
             input.value = playerName;
-            handlePlayerNameInput(input);
+            bindKoreanNameInput(input);
+            handlePlayerNameInput(input, true);
         }
         loadTodayFinishers();
     }
