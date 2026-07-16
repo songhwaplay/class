@@ -12,7 +12,7 @@
   {
     "id": "landmark",
     "name": "주요 지형 탐험",
-    "description": "사회과부도에서 실제 지형 이름을 찾고 게임에서 해당 지점을 조사합니다.",
+    "description": "게임 지도에서 주요 지형을 찾아 해당 지점을 조사합니다.",
     "needs": [
       "targetLandform"
     ]

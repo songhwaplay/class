@@ -1,0 +1,13 @@
+'use strict';
+const fs=require('node:fs'),assert=require('node:assert');
+const student=fs.readFileSync('public/index.html','utf8');
+const server=fs.readFileSync('server.js','utf8');
+assert.ok(student.includes("button.onclick=()=>chooseStartCity(option.id,city.name,button)"),'선택 버튼 즉시 처리 누락');
+assert.ok(student.includes('missionChoiceCard.isSelecting'),'선택 즉시 표시 누락');
+assert.ok(student.includes('paintEvery=choiceModalActive()?250:moving?33:50'),'선택창 렌더링 경량화 누락');
+assert.ok(student.includes("if(mode!=='sea'||choiceModalActive())return"),'선택창 해류 정지 누락');
+assert.ok(student.includes("if(mode!=='sea'||choiceModalActive()||!windCloudAtlas.complete)return"),'선택창 바람 정지 누락');
+assert.ok(!student.includes('requestAnimationFrame(()=>requestAnimationFrame(()=>'),'출발 선택 요청이 두 프레임 지연됨');
+assert.ok(!student.includes('사회과부도'),'학생 화면 불필요 문구 잔존');
+assert.ok(!server.includes('사회과부도'),'서버 불필요 문구 잔존');
+console.log(JSON.stringify({ok:true,immediateChoice:true,choiceModalFps:4,boilerplateRemoved:true}));

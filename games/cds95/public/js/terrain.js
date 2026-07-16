@@ -19,7 +19,7 @@
     forest: 0.54,
     desert: 0.43,
     mountain: 0.30,
-    highMountain: 0.00
+    highMountain: 0.18
   });
 
   const LABEL = Object.freeze({
@@ -121,7 +121,7 @@
 
     if (special) return { type: isCoastalLand(world, cx, cy) ? 'coast' : 'plain', multiplier: isCoastalLand(world, cx, cy) ? SPEED.coast : SPEED.plain, passable: true };
     if (RIVER_FAMILIES.has(family)) return { type: 'river', multiplier: SPEED.river, passable: true };
-    if (isMajorHighMountainBelt(lon, lat)) return { type: 'highMountain', multiplier: SPEED.highMountain, passable: false };
+    if (isMajorHighMountainBelt(lon, lat)) return { type: 'highMountain', multiplier: SPEED.highMountain, passable: true };
     if (FOREST_FAMILIES.has(family) || isForestRegion(lon, lat)) return { type: 'forest', multiplier: SPEED.forest, passable: true };
     if (isAridRegion(lon, lat)) return { type: 'desert', multiplier: SPEED.desert, passable: true };
     if (MOUNTAIN_FAMILIES.has(family)) return { type: 'mountain', multiplier: SPEED.mountain, passable: true };

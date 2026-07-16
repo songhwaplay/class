@@ -1,6 +1,6 @@
 {
   "name": "cds95-classroom",
-  "version": "41.0.0",
+  "version": "44.0.0",
   "private": true,
   "description": "CDS95 실시간 도착 미션 학습 플랫폼",
   "main": "server.js",
@@ -10,7 +10,7 @@
     "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check public/js/wind.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && node --check lib/arrival-zones.js && node --check lib/completion-rewards.js && npm run check:catalog && npm run check:html",
     "check:html": "node tests/html-script-syntax.js",
     "check:catalog": "node -e \"for (const f of ['places','original-cities','items','templates','ready-missions','arrival-zones']) JSON.parse(require('node:fs').readFileSync('data/catalog/'+f+'.json','utf8')); console.log('catalog JSON ok')\"",
-    "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current && npm run test:current-visual && npm run test:wind",
+    "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current && npm run test:current-visual && npm run test:wind && npm run test:v42 && npm run test:v43 && npm run test:v44",
     "test:terrain": "node tests/terrain-unit.js",
     "test:v23": "node tests/v23-simplified-ui-unit.js",
     "test:v23:current": "node tests/v23-current-balance-unit.js",
@@ -33,7 +33,10 @@
     "test:v36:smoke": "node tests/completion-rewards-unit.js && node tests/teacher-map-privacy-unit.js && node tests/v35-completion-free-roam-smoke.js",
     "test:v37": "node tests/teacher-map-completed-hidden-unit.js && node tests/completion-rewards-unit.js && node tests/teacher-map-privacy-unit.js",
     "test:v38": "node tests/ship-port-rule-unit.js && node tests/ship-port-rule-smoke.js",
-    "test:wind": "node tests/wind-unit.js && node tests/wind-visual-unit.js"
+    "test:wind": "node tests/wind-unit.js && node tests/wind-visual-unit.js",
+    "test:v42": "node tests/v42-choice-responsiveness-unit.js",
+    "test:v43": "node tests/v43-land-terrain-passable-unit.js",
+    "test:v44": "node tests/v44-clock-start-gate-unit.js"
   },
   "engines": {
     "node": ">=22"

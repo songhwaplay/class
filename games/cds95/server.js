@@ -278,13 +278,17 @@ function clockForRoom(roomCode) {
   return roomClocks.get(roomCode);
 }
 
+function roomClockShouldRun(roomCode) {
+  const roomState = store.room(roomCode);
+  return roomState.settings.paused !== true && roomState.activeMission?.phase === 'running';
+}
+
 function classGameMinutes(roomCode, now = Date.now()) {
   const clock = clockForRoom(roomCode);
-  const settings = store.room(roomCode).settings;
   const ownerAlive = clock.ownerSocketId
     && io.sockets.sockets.has(clock.ownerSocketId)
     && now - clock.lastTeacherSyncAt <= TEACHER_CLOCK_TIMEOUT_MS;
-  if (settings.paused || !ownerAlive) return clock.baseGameMinutes;
+  if (!roomClockShouldRun(roomCode) || !ownerAlive) return clock.baseGameMinutes;
   return clock.baseGameMinutes + ((now - clock.baseServerMs) / 1000) * GAME_HOURS_PER_REAL_SECOND * 60;
 }
 
@@ -312,6 +316,12 @@ function syncTeacherClock(roomCode, socketId, reportedGameMinutes) {
   const value = Number(reportedGameMinutes);
   if (!Number.isFinite(value) || value < 0) return null;
   const now = Date.now();
+  if (!roomClockShouldRun(roomCode)) {
+    clock.baseServerMs = now;
+    clock.lastTeacherSyncAt = now;
+    store.room(roomCode).clock.gameMinutes = clock.baseGameMinutes;
+    return clock.baseGameMinutes;
+  }
   const expected = classGameMinutes(roomCode, now);
   const maxCorrection = GAME_HOURS_PER_REAL_SECOND * 60 * 4;
   clock.baseGameMinutes = Math.max(0, Math.min(expected + maxCorrection, Math.max(expected - maxCorrection, value)));
@@ -685,7 +695,7 @@ function buildGeneratedMission(payload, roomCode) {
     const sourceFacility = facilityFor(source, config.sourceFacility, '항구 창고');
     const targetFacility = facilityFor(target, config.targetFacility, '항구 창고');
     title = `${source.name} → ${target.name} ${item.name} 운송`;
-    atlasInstruction = `사회과부도에서 ${source.name}과 ${target.name}의 위치를 각각 찾고, 두 도시가 접한 바다와 이동 방향을 확인하세요.`;
+    atlasInstruction = '';
     instructions = `${source.name} ${sourceFacility}에서 ${withObjectParticle(item.name)} 구입한 뒤 ${target.name} ${targetFacility}에 전달하세요.`;
     stages.push(makeStage({ id:'collect', type:'collect', place:source, mode:'sea', label:`${source.name}에서 물품 구입`, instruction:`${source.name} ${sourceFacility}에 접근해 ${withObjectParticle(item.name)} 구입하세요.`, actionLabel:`${item.name} 구입`, facility:sourceFacility, item }));
     stages.push(makeStage({ id:'deliver', type:'deliver', place:target, mode:'sea', label:`${target.name}에 물품 전달`, instruction:`${target.name} ${targetFacility}에 ${withObjectParticle(item.name)} 전달하세요.`, actionLabel:`${item.name} 전달`, facility:targetFacility, item }));
@@ -693,8 +703,8 @@ function buildGeneratedMission(payload, roomCode) {
     const target = catalogPlace(config.targetPlaceId, '탐험할 지형');
     if (target.canEnterFromSea === true) throw new Error('주요 지형을 선택하세요.');
     title = `${target.name} 탐험`;
-    atlasInstruction = `사회과부도에서 ${target.name}을 찾아 표시하고, ${target.atlasHint}을(를) 확인하세요.`;
-    instructions = `${target.name}의 실제 위치를 사회과부도에서 확인한 뒤 게임 지도에서 해당 지형을 찾아 조사하세요.`;
+    atlasInstruction = '';
+    instructions = `${target.name} 영역을 찾아 조사하세요.`;
     if (target.access === 'land') {
       const landing = catalogPlace(target.landingPortId, '상륙 항구');
       stages.push(makeStage({ id:'land', type:'disembark', place:landing, mode:'sea', label:`${landing.name}에서 상륙`, instruction:`${landing.name} 부근에 도착해 탐험대를 상륙시키세요.`, actionLabel:'탐험대 상륙', transitionTo:'land', transitionPoint:{ x:landing.landPoint.x, y:landing.landPoint.y }, radiusTiles:3 }));
@@ -710,7 +720,7 @@ function buildGeneratedMission(payload, roomCode) {
     const sourceFacility = facilityFor(source, config.sourceFacility, '항구 창고');
     const targetFacility = cleanText(config.targetFacility, 30) || `${target.category} 조사대`;
     title = `${target.name} 조사대에 ${item.name} 전달`;
-    atlasInstruction = `사회과부도에서 ${source.name}과 ${target.name}을 찾고, ${target.atlasHint}을(를) 확인하세요.`;
+    atlasInstruction = '';
     instructions = `${source.name} ${sourceFacility}에서 ${withObjectParticle(item.name)} 구입해 ${target.name}의 ${targetFacility}에 전달하세요.`;
     stages.push(makeStage({ id:'collect', type:'collect', place:source, mode:'sea', label:`${source.name}에서 물품 구입`, instruction:`${source.name} ${sourceFacility}에 접근해 ${withObjectParticle(item.name)} 구입하세요.`, actionLabel:`${item.name} 구입`, facility:sourceFacility, item }));
     if (target.access === 'land') {
@@ -728,10 +738,10 @@ function buildGeneratedMission(payload, roomCode) {
     const target = catalogPlace(config.targetPlaceId, '목적 도시');
     if (source.canEnterFromSea !== true || target.canEnterFromSea !== true || via.access !== 'sea') throw new Error('출발·목적 항구와 해상 지형을 올바르게 선택하세요.');
     title = `${via.name} 통과 항로`;
-    atlasInstruction = `사회과부도에서 ${source.name}, ${via.name}, ${target.name}을 차례로 찾고 항로의 방향을 확인하세요.`;
+    atlasInstruction = '';
     instructions = `${source.name}에서 항로를 시작해 ${via.name}을 통과한 뒤 ${target.name}에 도착하세요.`;
     stages.push(makeStage({ id:'start', type:'start', place:source, mode:'sea', label:`${source.name}에서 항로 시작`, instruction:`${source.name} 항구에서 항로 조사를 시작하세요.`, actionLabel:'항로 시작' }));
-    stages.push(makeStage({ id:'via', type:'waypoint', place:via, mode:'sea', label:`${via.name} 통과`, instruction:`사회과부도에서 찾은 ${via.name}을 실제로 통과하세요.`, actionRequired:false, actionLabel:'' , radiusTiles:3.2 }));
+    stages.push(makeStage({ id:'via', type:'waypoint', place:via, mode:'sea', label:`${via.name} 통과`, instruction:`${via.name}을 통과하세요.`, actionRequired:false, actionLabel:'' , radiusTiles:3.2 }));
     stages.push(makeStage({ id:'arrive', type:'arrive', place:target, mode:'sea', label:`${target.name} 도착`, instruction:`${target.name} 항구에 도착해 항로 조사를 마치세요.`, actionLabel:'도착 확인' }));
   }
 
@@ -819,8 +829,8 @@ function buildStartChoiceSet(payload, roomCode) {
     readyMissionId,
     title: commonTitle,
     goalLabel: goal.label,
-    atlasInstruction: `사회과부도에서 ${goal.label}과 출발 도시 네 곳의 위치를 찾고, 거리와 방향을 비교하세요.`,
-    instructions: cleanText(payload?.instructions, MAX_MISSION_TEXT) || `모든 학생의 목표는 같습니다. 사회과부도를 보고 출발 도시 네 곳 중 한 곳을 선택한 뒤 ${goal.label}까지 스스로 이동하세요. 선택 후에는 출발 도시를 바꿀 수 없습니다.`,
+    atlasInstruction: '',
+    instructions: cleanText(payload?.instructions, MAX_MISSION_TEXT) || `출발 도시 네 곳 중 한 곳을 선택한 뒤 ${goal.label}까지 이동하세요. 선택 후에는 출발 도시를 바꿀 수 없습니다.`,
     startOptions,
     createdAt: Date.now()
   };
@@ -846,8 +856,8 @@ function buildArrivalRace(payload, roomCode) {
     kind: 'arrivalRace',
     mode: 'any',
     title,
-    instructions: `${target.name}에 도착하면 자동으로 성공 처리됩니다. 사회과부도에서 목적지와 출발 도시 네 곳의 위치를 비교한 뒤 출발 도시를 선택하세요.`,
-    atlasInstruction: `사회과부도에서 ${target.name}의 실제 위치를 찾고, 출발 도시 네 곳과의 거리·방향을 비교하세요.`,
+    instructions: `${target.name}에 도착하면 자동으로 성공 처리됩니다. 출발 도시 네 곳 중 하나를 선택하세요.`,
+    atlasInstruction: '',
     markerMode: 'hidden',
     targetPlace: {
       id: target.id,
@@ -1522,6 +1532,7 @@ io.on('connection', (socket) => {
     if (!roomCode) return ack({ ok:false, error:'교사 인증이 필요합니다.' });
     try {
       const mission = buildArrivalRace(payload, roomCode);
+      const waitingAtMinutes = freezeClassClock(roomCode);
       clearMissionRuntime(roomCode);
       store.setActiveMission(roomCode, mission);
       const room = rooms.get(roomCode);
@@ -1547,7 +1558,7 @@ io.on('connection', (socket) => {
       }
       io.to(`class:${roomCode}`).emit('missionPublished', { mission:missionForStudent(mission) });
       io.to(`teacher:${roomCode}`).emit('teacherMissionChanged', { mission:missionForTeacher(mission) });
-      ack({ ok:true, mission:missionForTeacher(mission), progress:missionProgressList(roomCode, mission.id) });
+      ack({ ok:true, mission:missionForTeacher(mission), progress:missionProgressList(roomCode, mission.id), classGameMinutes:waitingAtMinutes });
     } catch (error) {
       ack({ ok:false, error:error.message || '도착 미션을 만들지 못했습니다.' });
     }
@@ -1569,9 +1580,15 @@ io.on('connection', (socket) => {
       return ack({ ok:false, error:`출발 도시를 고르지 않은 학생이 있습니다: ${names}${more}` });
     }
     const startMinutes = classGameMinutes(roomCode);
+    const startedAtReal = Date.now();
     mission.phase = 'running';
     mission.startedAtGameMinutes = startMinutes;
-    mission.startedAt = Date.now();
+    mission.startedAt = startedAtReal;
+    const clock = clockForRoom(roomCode);
+    clock.baseGameMinutes = startMinutes;
+    clock.baseServerMs = startedAtReal;
+    clock.lastTeacherSyncAt = startedAtReal;
+    store.setRoomClock(roomCode, startMinutes);
     for (const p of connected) {
       const progress = progressFor(roomCode, p.name, mission.id, true);
       if (progress.status !== 'completed') progress.status = 'inProgress';
@@ -1672,6 +1689,7 @@ io.on('connection', (socket) => {
   socket.on('teacherClearMission', (_payload, ack = () => {}) => {
     const roomCode = teachers.get(socket.id);
     if (!roomCode) return ack({ ok: false, error: '교사 인증이 필요합니다.' });
+    const stoppedAtMinutes = freezeClassClock(roomCode);
     clearMissionRuntime(roomCode);
     store.clearActiveMission(roomCode);
     const room = rooms.get(roomCode);
@@ -1682,7 +1700,7 @@ io.on('connection', (socket) => {
     }
     io.to(`class:${roomCode}`).emit('missionCleared');
     io.to(`teacher:${roomCode}`).emit('teacherMissionChanged', { mission: null });
-    ack({ ok: true });
+    ack({ ok: true, classGameMinutes: stoppedAtMinutes });
   });
 
   socket.on('teacherSetPaused', (payload, ack = () => {}) => {
@@ -1922,7 +1940,7 @@ function movePlayer(p, dt) {
     const nx = wrapX(rawX);
     const ny = Math.max(TILE, Math.min(WORLD_PIXEL_H - TILE, rawY));
     const nextTerrain = terrainAtPixel(nx, ny);
-    const allowed = p.mode === 'sea' ? nextTerrain.type === 'sea' : nextTerrain.type !== 'sea' && nextTerrain.passable;
+    const allowed = p.mode === 'sea' ? nextTerrain.type === 'sea' : nextTerrain.type !== 'sea';
     if (allowed) {
       p.x = nx;
       p.y = ny;
@@ -1935,8 +1953,7 @@ function movePlayer(p, dt) {
 
   if (!moved) {
     if (p.target) p.target = null;
-    if (p.mode === 'land' && blockedTerrain?.type === 'highMountain') setNotice(p, '높은 산맥은 통과할 수 없습니다. 고개나 우회로를 찾으세요.');
-    else if (p.mode === 'land' && blockedTerrain?.type === 'sea') setNotice(p, '탐험대는 바다를 건널 수 없습니다. 항구로 돌아가 배를 이용하세요.');
+    if (p.mode === 'land' && blockedTerrain?.type === 'sea') setNotice(p, '탐험대는 바다를 건널 수 없습니다. 항구로 돌아가 배를 이용하세요.');
     else if (p.mode === 'sea' && blockedTerrain?.type !== 'sea') setNotice(p, '육지입니다. 가까운 항구를 통해 입항하세요.');
   }
 
@@ -1982,6 +1999,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v41: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v44: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
