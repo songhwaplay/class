@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v45</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v47</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -85,7 +85,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 'use strict';
 const {WORLD_W:WW,WORLD_H:WH,TILE:TS,WORLD_PIXEL_W:SPAN,WORLD_PIXEL_H:MAP_H,SPEED:TERRAIN_SPEED,LABEL:TERRAIN_LABEL}=UW3Terrain;
 const START={x:1181.5*TS,y:356.5*TS};
-const SEA_BASE_SPEED=132,LAND_BASE_SPEED=96,CURRENT_TAIL_FACTOR=.40,CURRENT_STRONG_CORE_TAIL_FACTOR=.80,CURRENT_HEAD_FACTOR=.23,CURRENT_CROSS_FACTOR=.14,WIND_TAIL_FACTOR=1.00,WIND_HEAD_FACTOR=.65;
+const SEA_BASE_SPEED=132,LAND_BASE_SPEED=96,CURRENT_TAIL_FACTOR=.40,CURRENT_STRONG_CORE_TAIL_FACTOR=.80,CURRENT_HEAD_FACTOR=.23,CURRENT_CROSS_FACTOR=.14,WIND_TAIL_FACTOR=1.00,WIND_HEAD_FACTOR=.65,SIMULATION_RATE=2;
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d',{alpha:false});
 const loading=document.getElementById('loading'),join=document.getElementById('join'),joinForm=document.getElementById('joinCard');
 const roomInput=document.getElementById('roomCode'),nameInput=document.getElementById('studentName'),joinError=document.getElementById('joinError');
@@ -332,6 +332,7 @@ missionToggle.onclick=()=>setMissionPanelOpen(true);missionClose.onclick=()=>set
 
 function localBlock(text){const now=performance.now();if(now-lastLocalBlock>900){lastLocalBlock=now;showToast(text)}}
 function movePrediction(dt){
+  dt*=SIMULATION_RATE;
   if(!self||!canTravelNow()||(mode!=='sea'&&mode!=='land'))return;
   let vx=(keys.right?1:0)-(keys.left?1:0),vy=(keys.down?1:0)-(keys.up?1:0);const len=Math.hypot(vx,vy);if(!len)return;vx/=len;vy/=len;
   const current=terrainAtPixel(self.x,self.y),mult=mode==='sea'?TERRAIN_SPEED.sea:current.multiplier,baseSpeed=mode==='sea'?SEA_BASE_SPEED:LAND_BASE_SPEED,fatigueMult=serverSelf?.fatigueSpeedMultiplier??fatigueMultiplier(serverSelf?.fatigue),completionMult=completionBoost(),ox=self.x,oy=self.y;
@@ -365,10 +366,10 @@ function drawCurrentTracer(tracer,now,cw,ch,left,top){
   ctx.save();ctx.globalAlpha=alpha;ctx.translate(Math.round(s.x),Math.round(s.y));ctx.rotate(Math.atan2(point.yDir,point.xDir));ctx.drawImage(currentFlowSprite,frame*CURRENT_FLOW_FRAME_W,0,CURRENT_FLOW_FRAME_W,CURRENT_FLOW_FRAME_H,-size*.5,-size*.16,size,size*.32);ctx.restore();
 }
 function choiceModalActive(){return awaitingStartChoice()&&missionPanel.classList.contains('show')}
-function drawOceanCurrents(cw,ch,left,top,now=performance.now()){
+function drawOceanCurrents(cw,ch,left,top,now=performance.now()*SIMULATION_RATE){
   if(mode!=='sea'||choiceModalActive())return;ctx.save();ctx.globalCompositeOperation='screen';ctx.imageSmoothingEnabled=false;for(const tracer of currentTracers)drawCurrentTracer(tracer,now,cw,ch,left,top);ctx.restore();
 }
-function drawWindClouds(cw,ch,left,top,now=performance.now()){
+function drawWindClouds(cw,ch,left,top,now=performance.now()*SIMULATION_RATE){
   if(mode!=='sea'||choiceModalActive()||!windCloudAtlas.complete)return;
   const viewW=cw/zoom,viewH=ch/zoom,cellsX=Math.ceil(SPAN/WIND_CLOUD_CELL_W),c0x=Math.floor((left-WIND_CLOUD_CELL_W)/WIND_CLOUD_CELL_W),c1x=Math.ceil((left+viewW+WIND_CLOUD_CELL_W)/WIND_CLOUD_CELL_W),c0y=Math.max(0,Math.floor((top-WIND_CLOUD_CELL_H)/WIND_CLOUD_CELL_H)),c1y=Math.min(Math.ceil(MAP_H/WIND_CLOUD_CELL_H)-1,Math.ceil((top+viewH+WIND_CLOUD_CELL_H)/WIND_CLOUD_CELL_H));
   ctx.save();ctx.globalCompositeOperation='screen';ctx.imageSmoothingEnabled=false;

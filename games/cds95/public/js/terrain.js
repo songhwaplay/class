@@ -35,6 +35,12 @@
 
   const RIVER_FAMILIES = new Set([60, 61, 62, 68, 88, 92, 97]);
   const FOREST_FAMILIES = new Set([93, 94, 95]);
+  // WORLD.CDS 타일 아틀라스에서 큰 산맥 그림이 들어 있는 행이다.
+  // 지리 좌표 범위가 아니라 실제 지도에 찍힌 타일로만 고산을 판정한다.
+  const HIGH_MOUNTAIN_FAMILIES = new Set([
+    44,45,46,47,48,49,50,51,52,53,54,55,56,57,58
+  ]);
+
   const MOUNTAIN_FAMILIES = new Set([
     44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,
     63,64,65,66,67,69,70,71,72,73,74,78,79,80,81,82,
@@ -92,17 +98,6 @@
     );
   }
 
-  function isMajorHighMountainBelt(lon, lat) {
-    return (
-      inBox(lon, lat, 69, 106, 24, 39) ||       // 히말라야·티베트
-      inBox(lon, lat, -82, -65, -56, 13) ||     // 안데스
-      inBox(lon, lat, -132, -99, 29, 62) ||     // 로키
-      inBox(lon, lat, 5, 19, 42, 49) ||         // 알프스
-      inBox(lon, lat, 35, 51, 38, 45) ||        // 코카서스
-      inBox(lon, lat, 66, 88, 36, 47)            // 파미르·천산
-    );
-  }
-
   function isCoastalLand(world, cx, cy) {
     const neighbors = [[1,0],[-1,0],[0,1],[0,-1]];
     return neighbors.some(([dx, dy]) => !isLandValue(cellValue(world, cx + dx, cy + dy)));
@@ -121,7 +116,7 @@
 
     if (special) return { type: isCoastalLand(world, cx, cy) ? 'coast' : 'plain', multiplier: isCoastalLand(world, cx, cy) ? SPEED.coast : SPEED.plain, passable: true };
     if (RIVER_FAMILIES.has(family)) return { type: 'river', multiplier: SPEED.river, passable: true };
-    if (isMajorHighMountainBelt(lon, lat)) return { type: 'highMountain', multiplier: SPEED.highMountain, passable: true };
+    if (HIGH_MOUNTAIN_FAMILIES.has(family)) return { type: 'highMountain', multiplier: SPEED.highMountain, passable: true };
     if (FOREST_FAMILIES.has(family) || isForestRegion(lon, lat)) return { type: 'forest', multiplier: SPEED.forest, passable: true };
     if (isAridRegion(lon, lat)) return { type: 'desert', multiplier: SPEED.desert, passable: true };
     if (MOUNTAIN_FAMILIES.has(family)) return { type: 'mountain', multiplier: SPEED.mountain, passable: true };
@@ -135,6 +130,6 @@
 
   return Object.freeze({
     WORLD_W, WORLD_H, TILE, WORLD_PIXEL_W, WORLD_PIXEL_H,
-    SPEED, LABEL, wrapCellX, wrapPixelX, cellValue, terrainAtCell, terrainAtPixel, lonLat
+    SPEED, LABEL, HIGH_MOUNTAIN_FAMILIES, wrapCellX, wrapPixelX, cellValue, terrainAtCell, terrainAtPixel, lonLat
   });
 }));

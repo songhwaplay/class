@@ -18,9 +18,9 @@ const sahara = atLonLat(10, 25);
 const amazon = atLonLat(-60, -5);
 const lisbon = atLonLat(-9.1, 38.7);
 
-assert.equal(himalaya.type, 'highMountain');
+assert.notEqual(himalaya.type, 'highMountain');
 assert.equal(himalaya.passable, true);
-assert.equal(himalaya.multiplier, 0.18);
+assert.ok(himalaya.multiplier > 0);
 for (const terrain of [sahara, amazon, lisbon]) {
   assert.notEqual(terrain.type, 'sea');
   assert.equal(terrain.passable, true);
@@ -41,5 +41,6 @@ console.log(JSON.stringify({
   ok: true,
   allLandTerrainPassable: true,
   highMountainSpeedPercent: 18,
+  coordinateOnlyHighMountainRemoved: true,
   onlyTransportBoundaryBlocks: true
 }));

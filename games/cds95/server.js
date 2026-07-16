@@ -34,6 +34,8 @@ const CURRENT_CROSS_FACTOR = 0.14;
 const WIND_TAIL_FACTOR = 1.00;
 const WIND_HEAD_FACTOR = 0.65;
 const GAME_HOURS_PER_REAL_SECOND = 8;
+// V47: V45의 '시간 2배'를 날짜만이 아니라 전체 시뮬레이션에 동일 적용한다.
+const SIMULATION_RATE = 2;
 const PORT_ENTRY_GAME_MINUTES = 360;
 const PORT_EXIT_GAME_MINUTES = 240;
 const LAND_PREP_GAME_MINUTES = 360;
@@ -1973,7 +1975,7 @@ function movePlayer(p, dt) {
 }
 
 setInterval(() => {
-  const dt = 1 / TICK_HZ;
+  const dt = SIMULATION_RATE / TICK_HZ;
   for (const [roomCode, room] of rooms) {
     const classMinutes = classGameMinutes(roomCode);
     for (const p of room.values()) {
@@ -2007,6 +2009,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v45: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v47: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
