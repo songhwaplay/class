@@ -202,7 +202,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => res.json(publicMissionCatalog()));
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 28,
+  version: 29,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -226,12 +226,13 @@ app.get('/health', (_req, res) => res.json({
   sharedClassClock: true,
   teacherClockAuthority: true,
   timedPortOperations: true,
+  directSeaLandTransfer: true,
   fatigueAffectsSeaAndLandSpeed: true,
   fatigueSlowdownStart: Fatigue.FATIGUE_SLOWDOWN_START,
   fatigueMinSpeedPercent: Math.round(Fatigue.MIN_SPEED_MULTIPLIER * 100),
-  topStatusBar: ['date','latitudeLongitude','money','water','food','fatigue'],
+  topStatusBar: ['date','latitudeLongitude','fatigue'],
   bottomGuideWindow: true,
-  suppliesConsumeWithSharedClock: true,
+  suppliesConsumeWithSharedClock: false,
   persistedStudentState: ['selectedStartCity', 'missionStatus', 'finishRank', 'completionTime'],
   teacherControls: true,
   persistenceFile: store.filePath
@@ -897,8 +898,8 @@ function nearbyCatalogPort(player) {
   return {
     placeId: place.id,
     placeName: place.name,
-    actionLabel: player.mode === 'sea' ? `${place.name} 입항` : `${place.name} 도시로 들어가기`,
-    nextMode: 'city'
+    actionLabel: player.mode === 'sea' ? `${place.name} 상륙` : `${place.name} 승선`,
+    nextMode: player.mode === 'sea' ? 'land' : 'sea'
   };
 }
 
@@ -1086,11 +1087,6 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     lastCityId: p.lastCityId || null,
     fatigue: Math.round(Fatigue.clamp(p.fatigue) * 10) / 10,
     fatigueSpeedMultiplier: Math.round(Fatigue.speedMultiplier(p.fatigue) * 1000) / 1000,
-    money: Math.max(0, Math.round(Number(p.money) || 0)),
-    water: Math.round(Math.max(0, Number(p.water) || 0) * 10) / 10,
-    food: Math.round(Math.max(0, Number(p.food) || 0) * 10) / 10,
-    maxWater: MAX_WATER,
-    maxFood: MAX_FOOD,
     transition
   };
 }
@@ -1312,83 +1308,15 @@ io.on('connection', (socket) => {
     p.lastSeen = Date.now();
   });
 
-  socket.on('enterPort', (_payload, ack = () => {}) => {
-    const p = playerForSocket(socket);
-    if (!p || p.mode !== 'sea') return ack({ ok:false, error:'현재는 입항할 수 없습니다.' });
-    const travel = arrivalRaceTravelGate(p); if (!travel.ok) return ack({ ok:false, error:travel.error });
-    if (p.transition) return ack({ ok:false, error:'이미 입항 절차가 진행 중입니다.' });
-    const place = nearestOriginalCityAccess(p, 3.2);
-    if (!place) return ack({ ok:false, error:'항구 도시에 더 가까이 접근하세요.' });
-    beginTimedTransition(p, {
-      kind:'enterPort', label:`${place.name} 입항 중`, durationGameMinutes:PORT_ENTRY_GAME_MINUTES,
-      destinationMode:'city', destinationPoint:place.cityPoint, cityIdAfter:place.id,
-      missionAfter:`${place.name} 도착`, noticeAfter:`${place.name}에 입항했습니다.`
-    });
-    ack({ ok:true, started:true, self:publicPlayer(p), city:place.name });
-  });
+  socket.on('enterPort', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
 
-  socket.on('departPort', (_payload, ack = () => {}) => {
-    const room = roomForSocket(socket);
-    const p = room?.get(socket.id);
-    if (!p || p.mode !== 'city') return ack({ ok:false, error:'도시에 입항한 상태가 아닙니다.' });
-    const travel = arrivalRaceTravelGate(p); if (!travel.ok) return ack({ ok:false, error:travel.error });
-    if (p.transition) return ack({ ok:false, error:'이미 출항 절차가 진행 중입니다.' });
-    const place = currentCityForPlayer(p);
-    if (!place || place.canEnterFromSea !== true) return ack({ ok:false, error:'현재 도시에서는 출항할 수 없습니다.' });
-    beginTimedTransition(p, {
-      kind:'departPort', label:`${place.name} 출항 준비 중`, durationGameMinutes:PORT_EXIT_GAME_MINUTES,
-      destinationMode:'sea', destinationPoint:safeHarborSpawn(room, place), lastCityIdAfter:place.id,
-      missionAfter:`${place.name}에서 출항`, noticeAfter:`${place.name}에서 출항했습니다.`
-    });
-    ack({ ok:true, started:true, self:publicPlayer(p), city:place.name });
-  });
+  socket.on('departPort', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
 
-  socket.on('resupply', (_payload, ack = () => {}) => {
-    const p = playerForSocket(socket);
-    if (!p || p.mode !== 'city') return ack({ ok:false, error:'도시에 있을 때만 보급할 수 있습니다.' });
-    if (p.transition) return ack({ ok:false, error:'현재 준비 절차가 끝난 뒤 보급하세요.' });
-    const missingWater = Math.max(0, MAX_WATER - (Number(p.water) || 0));
-    const missingFood = Math.max(0, MAX_FOOD - (Number(p.food) || 0));
-    const cost = Math.ceil(missingWater * 4 + missingFood * 5);
-    if (cost <= 0) return ack({ ok:true, cost:0, self:publicPlayer(p), message:'물과 식량이 이미 충분합니다.' });
-    if ((Number(p.money) || 0) < cost) return ack({ ok:false, error:`보급에 ${cost.toLocaleString('ko-KR')}두캇이 필요합니다.` });
-    p.money -= cost; p.water = MAX_WATER; p.food = MAX_FOOD; p.waterBand = 100; p.foodBand = 100;
-    p.lastSupplyGameMinutes = classGameMinutes(p.roomCode);
-    const cityName = currentCityForPlayer(p)?.name || '도시';
-    const message = `${cityName}에서 물과 식량을 가득 보급했습니다. ${cost.toLocaleString('ko-KR')}두캇을 사용했습니다.`;
-    setNotice(p, message); ack({ ok:true, cost, self:publicPlayer(p), message });
-  });
+  socket.on('resupply', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
 
-  socket.on('startLandExpedition', (_payload, ack = () => {}) => {
-    const room = roomForSocket(socket);
-    const p = room?.get(socket.id);
-    if (!p || p.mode !== 'city') return ack({ ok:false, error:'도시에서 탐험대를 편성해야 합니다.' });
-    const travel = arrivalRaceTravelGate(p); if (!travel.ok) return ack({ ok:false, error:travel.error });
-    if (p.transition) return ack({ ok:false, error:'다른 준비 절차가 진행 중입니다.' });
-    const place = currentCityForPlayer(p);
-    if (!place) return ack({ ok:false, error:'현재 도시 정보를 찾지 못했습니다.' });
-    beginTimedTransition(p, {
-      kind:'startLand', label:`${place.name} 육상 탐험대 편성 중`, durationGameMinutes:LAND_PREP_GAME_MINUTES,
-      destinationMode:'land', destinationPoint:safeLandSpawn(room, place), lastCityIdAfter:place.id,
-      missionAfter:`${place.name}에서 육상 탐험`, noticeAfter:`${place.name}에서 육상 탐험대가 출발했습니다.`
-    });
-    ack({ ok:true, started:true, self:publicPlayer(p), city:place.name });
-  });
+  socket.on('startLandExpedition', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
 
-  socket.on('returnToCity', (_payload, ack = () => {}) => {
-    const p = playerForSocket(socket);
-    if (!p || p.mode !== 'land') return ack({ ok:false, error:'육상 탐험 중이 아닙니다.' });
-    const travel = arrivalRaceTravelGate(p); if (!travel.ok) return ack({ ok:false, error:travel.error });
-    if (p.transition) return ack({ ok:false, error:'도시 진입 절차가 진행 중입니다.' });
-    const place = nearestOriginalCityAccess(p, 3.2);
-    if (!place) return ack({ ok:false, error:'도시의 육상 출입 지점으로 이동하세요.' });
-    beginTimedTransition(p, {
-      kind:'returnCity', label:`${place.name} 도시 진입 중`, durationGameMinutes:RETURN_CITY_GAME_MINUTES,
-      destinationMode:'city', destinationPoint:place.cityPoint, cityIdAfter:place.id,
-      missionAfter:`${place.name} 도착`, noticeAfter:`${place.name} 도시로 들어왔습니다.`
-    });
-    ack({ ok:true, started:true, self:publicPlayer(p), city:place.name });
-  });
+  socket.on('returnToCity', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
 
   socket.on('missionUpdate', (payload) => {
     const p = playerForSocket(socket);
@@ -1468,25 +1396,27 @@ io.on('connection', (socket) => {
   });
 
   socket.on('useCatalogPort', (payload, ack = () => {}) => {
+    const room = roomForSocket(socket);
     const p = playerForSocket(socket);
     if (!p || (p.mode !== 'sea' && p.mode !== 'land')) return ack({ ok:false, error:'현재 항구를 이용할 수 없습니다.' });
     const travel = arrivalRaceTravelGate(p); if (!travel.ok) return ack({ ok:false, error:travel.error });
-    if (p.transition) return ack({ ok:false, error:'항구 이용 절차가 이미 진행 중입니다.' });
+    if (p.transition) return ack({ ok:false, error:'이동 수단 전환이 이미 진행 중입니다.' });
     const place = RESOLVED_PLACES.get(String(payload?.placeId || ''));
     if (!place || !place.isOriginalCity) return ack({ ok:false, error:'원작 도시 정보를 찾지 못했습니다.' });
     const fromSea = p.mode === 'sea';
     const entryPoints = fromSea ? place.originalSeaEntryPoints : place.originalLandEntryPoints;
-    if (!Array.isArray(entryPoints) || !entryPoints.length) {
-      return ack({ ok:false, error:fromSea?'원작에서 이 도시는 바다로 입항할 수 없습니다.':'원작에서 이 방향으로는 도시에 들어갈 수 없습니다.' });
-    }
+    if (!Array.isArray(entryPoints) || !entryPoints.length) return ack({ ok:false, error:fromSea?'원작에서 이 도시는 바다로 접근할 수 없습니다.':'원작에서 이 도시를 통해 승선할 수 없습니다.' });
     const near = entryPoints.some((point) => distanceXY(p.x, p.y, point.x, point.y) <= 3.2 * TILE);
     if (!near) return ack({ ok:false, error:`${place.name}에 더 가까이 이동하세요.` });
+    const destinationMode = fromSea ? 'land' : 'sea';
+    const destinationPoint = fromSea ? safeLandSpawn(room, place) : safeHarborSpawn(room, place);
     beginTimedTransition(p, {
-      kind:fromSea?'enterCatalogPort':'enterCatalogCity',
-      label:fromSea?`${place.name} 입항 중`:`${place.name} 도시 진입 중`,
-      durationGameMinutes:fromSea?PORT_ENTRY_GAME_MINUTES:RETURN_CITY_GAME_MINUTES,
-      destinationMode:'city', destinationPoint:place.cityPoint, cityIdAfter:place.id,
-      missionAfter:`${place.name} 도착`, noticeAfter:fromSea?`${place.name}에 입항했습니다.`:`${place.name} 도시로 들어왔습니다.`
+      kind:fromSea?'directDisembark':'directEmbark',
+      label:fromSea?`${place.name} 상륙 준비 중`:`${place.name} 승선 준비 중`,
+      durationGameMinutes:fromSea?LAND_PREP_GAME_MINUTES:PORT_EXIT_GAME_MINUTES,
+      destinationMode, destinationPoint, lastCityIdAfter:place.id,
+      missionAfter:fromSea?`${place.name}에서 육상 탐험`:`${place.name}에서 항해`,
+      noticeAfter:fromSea?`${place.name}에서 육상 탐험을 시작합니다.`:`${place.name}에서 승선했습니다.`
     });
     ack({ ok:true, started:true, self:publicPlayer(p), port:place.name });
   });
