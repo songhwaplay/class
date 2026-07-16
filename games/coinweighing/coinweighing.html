@@ -728,6 +728,344 @@ textarea,
     margin-top: 8px;
 }
 
+
+/* 동전 탭 선택 피드백 강화 */
+.coin.selected {
+    outline: 4px solid #55ffff !important;
+    outline-offset: 3px;
+    border-color: #ffffff;
+    box-shadow:
+        0 0 0 7px rgba(0, 255, 255, .28),
+        0 0 24px 10px rgba(0, 255, 255, .80),
+        inset 2px 2px 5px rgba(255,255,255,.75) !important;
+    transform: translateY(-3px) scale(1.12) !important;
+    z-index: 80 !important;
+}
+
+.coin.selected::after {
+    content: "✓";
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: 22px;
+    height: 22px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    background: #008c99;
+    color: #ffffff;
+    font: bold 14px/1 Arial, sans-serif;
+    box-shadow: 0 2px 7px rgba(0,0,0,.65);
+}
+
+/* 동전을 선택하면 목적지가 hover 없이 항상 보이게 */
+.coin-selected-active .plate-wrapper,
+.coin-selected-active .coin-pool-container {
+    cursor: pointer;
+}
+
+.coin-selected-active .plate-wrapper {
+    border: 2px solid rgba(85,255,255,.75);
+    background: rgba(0,255,255,.08);
+    box-shadow:
+        inset 0 0 18px rgba(0,255,255,.16),
+        0 0 15px rgba(0,255,255,.48);
+}
+
+.coin-selected-active .coin-pool-container {
+    border-color: #55ffff;
+    box-shadow:
+        inset 0 0 14px rgba(0,255,255,.20),
+        0 0 15px rgba(0,255,255,.48);
+}
+
+/* 모바일에서는 끌기보다 톡-톡 이동을 기본으로 사용 */
+@media (pointer: coarse) {
+    .coin {
+        touch-action: manipulation !important;
+        -webkit-user-drag: none !important;
+        user-drag: none !important;
+    }
+}
+
+/* 휴대폰 가로모드 한 화면 맞춤 */
+@media (orientation: landscape) and (max-height: 520px) {
+    html, body {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        padding: 0;
+        align-items: flex-start;
+    }
+
+    .game-board {
+        width: 100vw;
+        height: 100vh;
+        padding: 6px 8px;
+        border-width: 3px;
+        overflow: hidden;
+    }
+
+    .ingame-controls-wrapper {
+        top: 5px;
+        left: 7px;
+        gap: 5px;
+    }
+
+    .ingame-controls-wrapper .volume-label,
+    .ingame-difficulty-panel .diff-explain-label {
+        font-size: 10px;
+    }
+
+    .ingame-difficulty-panel {
+        top: 4px;
+        right: 7px;
+        gap: 4px;
+    }
+
+    .ingame-difficulty-panel .diff-btn {
+        min-height: 28px !important;
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+
+    .volume-interface {
+        gap: 3px;
+    }
+
+    .vol-mute-btn {
+        min-height: 28px !important;
+        padding: 2px 6px;
+        font-size: 10px;
+    }
+
+    .volume-bar-container {
+        padding: 2px 3px;
+        gap: 2px;
+    }
+
+    .vol-block {
+        width: 13px;
+        height: 11px;
+    }
+
+    .top-section {
+        height: calc(100vh - 145px);
+        min-height: 210px;
+        margin-top: 33px;
+        gap: 5px;
+        align-items: stretch;
+    }
+
+    .scale-area {
+        width: 58%;
+        min-width: 0;
+        transform: scale(.78);
+        transform-origin: center bottom;
+        margin: 0 -7% 0 -4%;
+    }
+
+    .coin-pool-container {
+        width: 42%;
+        min-width: 226px;
+        height: 100%;
+        padding: 5px;
+        grid-template-columns: repeat(5, 40px);
+        grid-auto-rows: 40px;
+        gap: 4px;
+        overflow-y: auto;
+        align-content: center;
+    }
+
+    .pool-slot,
+    .coin {
+        width: 40px;
+        height: 40px;
+    }
+
+    .coin {
+        font-size: 17px;
+        border-width: 1px;
+    }
+
+    .bottom-section-wrapper {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 3px;
+        margin: 0;
+        padding-top: 4px;
+        border-top-color: rgba(189,168,93,.18);
+    }
+
+    .button-section {
+        width: auto;
+        margin-bottom: 3px;
+        gap: 5px;
+    }
+
+    .button-section .action-btn {
+        width: 88px;
+        height: 31px;
+        min-height: 31px !important;
+        font-size: 11px;
+        padding: 2px 5px;
+    }
+
+    .log-monitor {
+        width: min(94vw, 680px);
+        height: 54px;
+        padding: 3px 9px;
+        border-width: 2px;
+        font-size: 11px;
+        margin-bottom: 0;
+    }
+
+    .status-msg {
+        font-size: 13px;
+    }
+
+    .tablet-landscape-hint {
+        display: none !important;
+    }
+}
+
+/* 휴대폰 세로모드도 화면 밖으로 넘치지 않게 */
+@media (orientation: portrait) and (max-width: 620px) {
+    body {
+        padding: 0;
+        align-items: flex-start;
+        overflow-x: hidden;
+    }
+
+    .start-screen {
+        width: 100vw;
+        min-height: 100vh;
+        height: auto;
+        padding: 22px 12px;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .start-title {
+        font-size: 30px;
+    }
+
+    .start-subtitle {
+        margin-bottom: 16px;
+        font-size: 15px;
+    }
+
+    .difficulty-container,
+    .volume-container {
+        margin-bottom: 14px;
+    }
+
+    .diff-btn-group {
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+
+    .game-board {
+        width: 100vw;
+        height: auto;
+        min-height: 100vh;
+        padding: 54px 6px 10px;
+        border-left: 0;
+        border-right: 0;
+    }
+
+    .ingame-controls-wrapper {
+        top: 7px;
+        left: 7px;
+        gap: 4px;
+    }
+
+    .ingame-difficulty-panel {
+        top: 7px;
+        right: 7px;
+        gap: 3px;
+    }
+
+    .ingame-controls-wrapper .volume-label,
+    .ingame-difficulty-panel .diff-explain-label {
+        display: none;
+    }
+
+    .ingame-difficulty-panel .diff-btn {
+        padding: 3px 6px;
+        font-size: 11px;
+    }
+
+    .top-section {
+        height: auto;
+        margin-top: 0;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .scale-area {
+        width: 100%;
+        height: 260px;
+        transform: scale(.86);
+        transform-origin: center top;
+        margin-bottom: -34px;
+    }
+
+    .coin-pool-container {
+        width: min(96vw, 350px);
+        padding: 7px;
+        grid-template-columns: repeat(5, 48px);
+        gap: 6px;
+    }
+
+    .pool-slot,
+    .coin {
+        width: 48px;
+        height: 48px;
+    }
+
+    .coin {
+        font-size: 20px;
+    }
+
+    .bottom-section-wrapper {
+        margin-top: 7px;
+        padding-top: 7px;
+    }
+
+    .button-section {
+        width: 100%;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .button-section .action-btn {
+        width: calc(50% - 4px);
+        min-height: 40px;
+    }
+
+    .log-monitor {
+        width: 96vw;
+        height: 76px;
+        padding: 5px 8px;
+        font-size: 13px;
+    }
+
+    .popup-box {
+        max-width: calc(100vw - 20px);
+        max-height: 88vh;
+        overflow-y: auto;
+        padding: 18px;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -775,12 +1113,13 @@ textarea,
     </div>
 
 
+    <button class="action-btn" id="start-game-button" onclick="startGame()" disabled>START GAME</button>
+
     <div class="finishers-panel">
         <div class="finishers-title">🏆 TODAY’S FINISHERS</div>
         <div class="finishers-list" id="today-finishers-list"></div>
     </div>
 
-    <button class="action-btn" id="start-game-button" onclick="startGame()" disabled>START GAME</button>
 </div>
 
 <div class="game-board" id="game-board">
@@ -1177,14 +1516,13 @@ textarea,
                 }
             };
             
-            coin.draggable = true;
+            coin.draggable = !window.matchMedia('(pointer: coarse)').matches;
             coin.ondragstart = function(ev) {
                 if (isDecideMode) { ev.preventDefault(); return; } 
                 ev.dataTransfer.setData("text", ev.target.id);
             };
 
-            // 터치 기반 직접 드래그앤드랍 보조 장치 바인딩 (선택 외에 직접 손으로 끌고 싶은 유저 대응)
-            bindTouchDragEvents(coin);
+            // 모바일에서는 드래그 대신 동전 톡 → 목적지 톡 방식 사용
 
             poolSlot.appendChild(coin);
         }
@@ -1481,7 +1819,7 @@ textarea,
             <ul class="rules-list">
                 <li>동전 가운데 단 하나만 무게가 다른 <strong>가짜 동전</strong>입니다.</li>
                 <li>가짜 동전은 정상 동전보다 <strong>무겁거나 가벼울 수 있습니다.</strong></li>
-                <li>동전을 끌어서 천칭의 양쪽 접시에 올리십시오.</li>
+                <li>동전을 <strong>톡 누른 뒤</strong> 왼쪽 접시, 오른쪽 접시 또는 동전 보관함을 톡 누르면 이동합니다.</li>
                 <li>양쪽 접시에는 반드시 <strong>같은 개수</strong>의 동전을 올려야 합니다.</li>
                 <li><strong>WEIGH</strong> 버튼으로 최대 세 번까지 무게를 비교할 수 있습니다.</li>
                 <li>판단이 끝나면 <strong>DECIDE</strong>를 누른 뒤 가짜라고 생각하는 동전을 선택하십시오.</li>
@@ -1528,7 +1866,7 @@ textarea,
                 </div>
             `;
 
-            showModalLayout("☠ 항해 실패", failHTML, true);
+            showModalLayout("☠ 실패", failHTML, true);
         }
     }
 

@@ -1,0 +1,25 @@
+'use strict';
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const MissionCatalog = require('../lib/mission-catalog.js');
+const root = path.join(__dirname, '..');
+const server = fs.readFileSync(path.join(root, 'server.js'), 'utf8');
+const teacher = fs.readFileSync(path.join(root, 'public', 'teacher.html'), 'utf8');
+const student = fs.readFileSync(path.join(root, 'public', 'index.html'), 'utf8');
+const store = fs.readFileSync(path.join(root, 'lib', 'classroom-store.js'), 'utf8');
+
+const paris = MissionCatalog.PLACES.find(place => place.name === '파리');
+const lisbon = MissionCatalog.PLACES.find(place => place.name === '리스본');
+assert.equal(paris?.canEnterFromSea, false);
+assert.equal(lisbon?.canEnterFromSea, true);
+assert.match(server, /place\.canEnterFromSea !== true/);
+assert.match(teacher, /ports=cities\.filter\(p=>p\.canEnterFromSea===true\)/);
+assert.match(server, /p\.shipPortId !== place\.id/);
+assert.match(server, /배는 \$\{shipPortName\}에 정박해 있습니다/);
+assert.match(server, /shipPortIdAfter:place\.id/);
+assert.match(server, /progress\.shipPortId = startPlace\.id/);
+assert.match(store, /shipPortId/);
+assert.match(student, /배 정박:/);
+assert.match(student, /portInteraction\.canUse===false/);
+console.log(JSON.stringify({ ok: true, portOnlyStarts: true, ownShipOnlyBoarding: true, persistedShipPort: true, blockedPrompt: true }));

@@ -20,12 +20,14 @@ function minimalProgress(value) {
   const cargoItemId = typeof value?.cargoItemId === 'string' ? value.cargoItemId.slice(0, 40) : null;
   const selectedMissionId = typeof value?.selectedMissionId === 'string' ? value.selectedMissionId.slice(0, 80) : null;
   const selectedStartPlaceId = typeof value?.selectedStartPlaceId === 'string' ? value.selectedStartPlaceId.slice(0, 80) : null;
+  const shipPortId = typeof value?.shipPortId === 'string' ? value.shipPortId.slice(0, 80) : selectedStartPlaceId;
   return {
     status,
     stageIndex,
     cargoItemId,
     selectedMissionId,
     selectedStartPlaceId,
+    shipPortId,
     completedAt: status === 'completed' && Number.isFinite(value?.completedAt) ? value.completedAt : null,
     completedGameMinutes: status === 'completed' && Number.isFinite(value?.completedGameMinutes) ? Math.max(0, value.completedGameMinutes) : null,
     finishRank: status === 'completed' && Number.isFinite(value?.finishRank) ? Math.max(1, Math.floor(value.finishRank)) : null
@@ -37,7 +39,7 @@ class ClassroomStore {
     const dataDir = options.dataDir || process.env.DATA_DIR || path.join(process.cwd(), 'runtime');
     fs.mkdirSync(dataDir, { recursive: true });
     this.filePath = path.join(dataDir, 'classroom-state.json');
-    this.state = { version: 8, rooms: {} };
+    this.state = { version: 9, rooms: {} };
     this.saveTimer = null;
     this.load();
   }
@@ -65,7 +67,7 @@ class ClassroomStore {
         }
         rooms[roomCode] = room;
       }
-      this.state = { version: 8, rooms };
+      this.state = { version: 9, rooms };
     } catch (error) {
       console.error('수업 상태 불러오기 실패:', error.message);
     }
@@ -95,6 +97,7 @@ class ClassroomStore {
         cargoItemId: null,
         selectedMissionId: null,
         selectedStartPlaceId: null,
+        shipPortId: null,
         completedAt: null,
         completedGameMinutes: null,
         finishRank: null

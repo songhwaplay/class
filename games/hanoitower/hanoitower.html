@@ -505,6 +505,255 @@ textarea,
     margin-top: 8px;
 }
 
+
+/* 터치·클릭 이동 방식 */
+.pole {
+    cursor: pointer;
+    transition: box-shadow .14s ease, background-color .14s ease, transform .14s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.pole.tap-target {
+    background-color: rgba(240, 215, 124, .08);
+    box-shadow:
+        0 0 0 3px rgba(240, 215, 124, .42),
+        0 0 24px rgba(240, 215, 124, .42),
+        0 8px 12px rgba(0,0,0,.6);
+}
+
+.pole.tap-invalid {
+    animation: pole-invalid-flash .28s ease;
+}
+
+.disk.tap-selected {
+    outline: 4px solid #fff0a6;
+    outline-offset: 3px;
+    box-shadow:
+        0 0 0 7px rgba(198, 170, 85, .40),
+        0 0 26px 10px rgba(255, 222, 112, .78),
+        0 4px 5px rgba(0,0,0,.3),
+        inset 0 4px 4px rgba(255,255,255,.3),
+        inset 0 -4px 6px rgba(0,0,0,.4);
+    transform: translateY(-6px) scale(1.035);
+    z-index: 30;
+}
+
+.disk.tap-selectable {
+    cursor: pointer;
+}
+
+.disk:not(.tap-selectable) {
+    cursor: default;
+}
+
+.tap-guide {
+    margin-top: 10px;
+    min-height: 20px;
+    color: #efd998;
+    font: bold 13px/1.45 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    letter-spacing: .3px;
+    text-align: center;
+}
+
+@keyframes pole-invalid-flash {
+    0%, 100% { box-shadow: 0 8px 12px rgba(0,0,0,.6); }
+    50% {
+        background-color: rgba(224, 60, 50, .20);
+        box-shadow:
+            0 0 0 4px rgba(224, 60, 50, .60),
+            0 0 24px rgba(224, 60, 50, .72);
+    }
+}
+
+
+/* 모바일 가로모드 화면 맞춤 */
+@media (max-height: 520px) and (orientation: landscape) {
+    html, body {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+        overflow: hidden;
+    }
+
+    body {
+        padding: 4px;
+        justify-content: flex-start;
+    }
+
+    .game-container {
+        width: 100%;
+        max-width: none;
+        height: 100vh;
+        justify-content: flex-start;
+        overflow: hidden;
+    }
+
+    .controls {
+        width: 100%;
+        margin-bottom: 4px;
+        padding: 5px 8px;
+        border-width: 2px;
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1.4fr auto auto;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .option-group {
+        margin: 0;
+        gap: 4px;
+        font-size: 11px;
+        letter-spacing: 0;
+        white-space: nowrap;
+    }
+
+    .btn-container {
+        gap: 2px;
+        flex-wrap: nowrap;
+    }
+
+    .controls button {
+        min-height: 30px !important;
+        padding: 3px 7px;
+        font-size: 11px;
+    }
+
+    .volume-bar-container {
+        padding: 2px 3px;
+        gap: 2px;
+    }
+
+    .vol-block {
+        width: 14px;
+        height: 12px;
+    }
+
+    .board-wrapper {
+        width: min(100%, 820px);
+        height: calc(100vh - 94px);
+        min-height: 250px;
+        margin-top: 0;
+        padding: 6px 12px 4px;
+        gap: 6px;
+        align-items: flex-end;
+        overflow: hidden;
+    }
+
+    .pole {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+        height: 100%;
+        max-height: 330px;
+        border-bottom-width: 16px;
+    }
+
+    .pole::before {
+        height: calc(100% - 16px);
+        width: 10px;
+    }
+
+    .disk {
+        max-width: 96%;
+        font-size: 1em;
+    }
+
+    #info {
+        position: fixed;
+        right: 10px;
+        bottom: 7px;
+        z-index: 60;
+        margin: 0;
+        padding: 4px 8px;
+        border: 1px solid rgba(197,160,89,.48);
+        background: rgba(18,10,6,.78);
+        border-radius: 5px;
+        font-size: 13px;
+        letter-spacing: 1px;
+    }
+
+    .tap-guide {
+        position: fixed;
+        left: 50%;
+        bottom: 7px;
+        z-index: 59;
+        transform: translateX(-50%);
+        width: min(58vw, 420px);
+        margin: 0;
+        padding: 4px 8px;
+        border: 1px solid rgba(197,160,89,.38);
+        background: rgba(18,10,6,.78);
+        border-radius: 5px;
+        font-size: 11px;
+    }
+
+    .tablet-landscape-hint {
+        display: none !important;
+    }
+}
+
+@media (max-width: 760px) and (orientation: portrait) {
+    body {
+        padding: 6px;
+        align-items: flex-start;
+    }
+
+    .start-screen {
+        width: 100%;
+        max-width: 450px;
+        margin-top: 8px;
+        padding: 24px 18px;
+    }
+
+    .game-container {
+        width: 100%;
+    }
+
+    .controls {
+        margin-bottom: 8px;
+        padding: 10px 8px;
+    }
+
+    .option-group {
+        flex-direction: column;
+        gap: 6px;
+        margin: 7px 0;
+    }
+
+    .btn-container {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .board-wrapper {
+        width: 100%;
+        padding: 10px 4px;
+        gap: 2px;
+        overflow: hidden;
+    }
+
+    .pole {
+        flex: 1 1 0;
+        width: auto;
+        min-width: 0;
+        height: 330px;
+    }
+
+    .disk {
+        max-width: 95%;
+    }
+
+    #info {
+        margin-top: 12px;
+        font-size: 1.05em;
+    }
+
+    .tap-guide {
+        padding: 0 8px;
+        font-size: 12px;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -522,11 +771,11 @@ textarea,
                data-korean-name-input="true">
         <div class="player-name-help" id="player-name-help">영어·숫자·공백은 입력할 수 없습니다.</div>
     </div>
+    <button class="action-btn btn-start-action" id="start-game-button" onclick="startGameEnvironment()" disabled>START GAME</button>
     <div class="finishers-panel">
         <div class="finishers-title">🏆 TODAY’S FINISHERS</div>
         <div class="finishers-list" id="today-finishers-list"></div>
     </div>
-    <button class="action-btn btn-start-action" id="start-game-button" onclick="startGameEnvironment()" disabled>START GAME</button>
 </div>
 
 <div class="game-container" id="game-container">
@@ -564,12 +813,13 @@ textarea,
     </div>
 
     <div class="board-wrapper">
-        <div class="pole" id="pole0" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        <div class="pole" id="pole1" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        <div class="pole" id="pole2" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="pole" id="pole0" onclick="handlePoleTap(0)" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="pole" id="pole1" onclick="handlePoleTap(1)" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <div class="pole" id="pole2" onclick="handlePoleTap(2)" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
     </div>
 
     <div id="info">MOVES: <span id="moveCount">0</span></div>
+    <div class="tap-guide" id="tap-guide">맨 위 원판을 톡 누른 뒤, 옮길 기둥 영역을 톡 누르세요.</div>
 </div>
 
 <div class="modal-overlay" id="rulesModal">
@@ -597,6 +847,7 @@ textarea,
     let moveCount = 0;
     let totalDisks = 3;
     let mode = 'normal';
+    let selectedPoleIndex = null;
     
     const bgm = new Audio('../../assets/sound/hanoitower.mp3'); 
 
@@ -839,7 +1090,7 @@ textarea,
     function showRules() {
         showCustomAlert("古塔 規則 (RULES)", [
             "1. 모든 원판을 가운데 기둥으로 옮겨 쌓아야 합니다.",
-            "2. 한 번에 오직 하나의 원판만 움직일 수 있습니다.",
+            "2. 맨 위 원판을 톡 누른 뒤, 옮길 기둥 영역을 톡 누르면 이동합니다.",
             "3. 큰 원판을 작은 원판 위에 쌓을 수 없습니다."
         ]);
     }
@@ -861,6 +1112,7 @@ textarea,
 
     function initGame() {
         poles = [[], [], []];
+        selectedPoleIndex = null;
         moveCount = 0;
         document.getElementById('moveCount').textContent = moveCount;
         if (mode === 'normal') {
@@ -890,21 +1142,26 @@ textarea,
     }
 
     function render() {
-        const slopeStep = 24;  
-        const baseWidth = 56;  
+        const slopeStep = 24;
+        const baseWidth = 56;
 
-        for(let i=0; i<3; i++) {
+        for (let i = 0; i < 3; i++) {
             const poleEl = document.getElementById('pole' + i);
             poleEl.innerHTML = '';
-            poles[i].forEach(size => {
+            poleEl.classList.toggle('tap-target', selectedPoleIndex !== null && selectedPoleIndex !== i);
+
+            poles[i].forEach((size, diskIndex) => {
                 const disk = document.createElement('div');
-                disk.className = 'disk';
-                
+                const isTopDisk = diskIndex === poles[i].length - 1;
+                disk.className = 'disk' +
+                    (isTopDisk ? ' tap-selectable' : '') +
+                    (selectedPoleIndex === i && isTopDisk ? ' tap-selected' : '');
+
                 const bottomWidth = size * slopeStep + baseWidth;
-                disk.style.width = bottomWidth + 'px'; 
+                disk.style.width = bottomWidth + 'px';
                 disk.style.background = customGradients[size - 1];
                 disk.textContent = size;
-                
+
                 const topWidth = (size - 1) * slopeStep + baseWidth;
                 const cutPercent = ((bottomWidth - topWidth) / 2) / bottomWidth * 100;
 
@@ -912,26 +1169,120 @@ textarea,
                     disk.style.height = '64px';
                     disk.style.minHeight = '64px';
                     disk.style.paddingTop = '18px';
-                    disk.style.clipPath = 'none';
-                    
-                    const targetTopWidth = baseWidth;
-                    const scaleFactor = targetTopWidth / bottomWidth;
-                    
-                    disk.style.clipPath = `polygon(0% 100%, ${cutPercent}% 40%, 35% 15%, 44% 4%, 56% 4%, 65% 15%, ${100 - cutPercent}% 40%, 100% 100%)`;
+                    disk.style.clipPath =
+                        `polygon(0% 100%, ${cutPercent}% 40%, 35% 15%, 44% 4%, 56% 4%, 65% 15%, ${100 - cutPercent}% 40%, 100% 100%)`;
                 } else {
                     disk.style.height = '42px';
                     disk.style.minHeight = '42px';
                     disk.style.paddingTop = '0px';
                     disk.style.borderRadius = '0px';
-                    disk.style.clipPath = `polygon(${cutPercent}% 0%, ${100 - cutPercent}% 0%, 100% 100%, 0% 100%)`;
+                    disk.style.clipPath =
+                        `polygon(${cutPercent}% 0%, ${100 - cutPercent}% 0%, 100% 100%, 0% 100%)`;
                 }
 
-                disk.draggable = (size === poles[i][poles[i].length - 1]);
+                disk.draggable = isTopDisk;
                 disk.style.webkitUserDrag = 'element';
-                
-                disk.ondragstart = (e) => e.dataTransfer.setData("text", i);
+
+                disk.ondragstart = (event) => {
+                    event.dataTransfer.setData("text", i);
+                    selectedPoleIndex = null;
+                    updateTapGuide();
+                };
+
+                if (isTopDisk) {
+                    disk.onclick = (event) => {
+                        event.stopPropagation();
+                        selectTopDisk(i);
+                    };
+                }
+
                 poleEl.appendChild(disk);
             });
+        }
+
+        updateTapGuide();
+    }
+
+    function updateTapGuide(message = "") {
+        const guide = document.getElementById('tap-guide');
+        if (!guide) return;
+
+        if (message) {
+            guide.textContent = message;
+        } else if (selectedPoleIndex === null) {
+            guide.textContent = "맨 위 원판을 톡 누른 뒤, 옮길 기둥 영역을 톡 누르세요.";
+        } else {
+            const diskSize = poles[selectedPoleIndex][poles[selectedPoleIndex].length - 1];
+            guide.textContent = `${diskSize}번 원판 선택됨 · 옮길 기둥을 톡 누르세요.`;
+        }
+    }
+
+    function selectTopDisk(poleIndex) {
+        if (!poles[poleIndex].length) return;
+
+        if (selectedPoleIndex === poleIndex) {
+            selectedPoleIndex = null;
+            render();
+            return;
+        }
+
+        selectedPoleIndex = poleIndex;
+        render();
+    }
+
+    function flashInvalidPole(poleIndex) {
+        const poleEl = document.getElementById('pole' + poleIndex);
+        if (!poleEl) return;
+        poleEl.classList.remove('tap-invalid');
+        void poleEl.offsetWidth;
+        poleEl.classList.add('tap-invalid');
+        setTimeout(() => poleEl.classList.remove('tap-invalid'), 320);
+    }
+
+    function moveTopDisk(fromPoleIdx, toPoleIdx) {
+        if (
+            !Number.isInteger(fromPoleIdx) ||
+            !Number.isInteger(toPoleIdx) ||
+            fromPoleIdx === toPoleIdx ||
+            !poles[fromPoleIdx].length
+        ) {
+            return false;
+        }
+
+        const diskSize = poles[fromPoleIdx][poles[fromPoleIdx].length - 1];
+        const targetTopDisk = poles[toPoleIdx][poles[toPoleIdx].length - 1];
+
+        if (targetTopDisk && diskSize > targetTopDisk) {
+            return false;
+        }
+
+        poles[toPoleIdx].push(poles[fromPoleIdx].pop());
+        selectedPoleIndex = null;
+        moveCount++;
+        document.getElementById('moveCount').textContent = moveCount;
+
+        playSound(diskSize);
+        render();
+        checkWin();
+        return true;
+    }
+
+    function handlePoleTap(toPoleIdx) {
+        if (selectedPoleIndex === null) {
+            if (poles[toPoleIdx].length) selectTopDisk(toPoleIdx);
+            return;
+        }
+
+        if (selectedPoleIndex === toPoleIdx) {
+            selectedPoleIndex = null;
+            render();
+            return;
+        }
+
+        const moved = moveTopDisk(selectedPoleIndex, toPoleIdx);
+        if (!moved) {
+            flashInvalidPole(toPoleIdx);
+            updateTapGuide("큰 원판은 작은 원판 위에 놓을 수 없습니다.");
         }
     }
 
@@ -942,18 +1293,11 @@ textarea,
         const fromPoleIdx = parseInt(e.dataTransfer.getData("text"));
         const targetPole = e.target.closest('.pole');
         if (!targetPole) return;
-        const toPoleIdx = parseInt(targetPole.id.replace('pole', ''));
-        const diskSize = poles[fromPoleIdx][poles[fromPoleIdx].length - 1];
-        const targetTopDisk = poles[toPoleIdx][poles[toPoleIdx].length - 1];
 
-        if (fromPoleIdx !== toPoleIdx && (!targetTopDisk || diskSize < targetTopDisk)) {
-            poles[toPoleIdx].push(poles[fromPoleIdx].pop());
-            moveCount++;
-            document.getElementById('moveCount').textContent = moveCount;
-            
-            playSound(diskSize); 
-            render();
-            checkWin();
+        const toPoleIdx = parseInt(targetPole.id.replace('pole', ''));
+        if (!moveTopDisk(fromPoleIdx, toPoleIdx)) {
+            flashInvalidPole(toPoleIdx);
+            updateTapGuide("큰 원판은 작은 원판 위에 놓을 수 없습니다.");
         }
     }
 

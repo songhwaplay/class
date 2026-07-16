@@ -1,4 +1,4 @@
-# CDS95 v23 폴더 구조
+# CDS95 v41 폴더 구조
 
 ```text
 cds95/
@@ -9,11 +9,13 @@ cds95/
 ├─ public/
 │  ├─ assets/
 │  │  ├─ cities/
-│  │  ├─ currents/              해류용 원본 구름 스프라이트
+│  │  ├─ currents/              해류 원본 자료 보관
+│  │  ├─ weather/               원작 CLOUD.CDS 12프레임 구름
 │  │  ├─ maps/
 │  │  └─ ships/
 │  ├─ js/terrain.js
 │  ├─ js/ocean-current.js
+│  ├─ js/wind.js                무역풍·편서풍·극동풍·계절풍
 │  ├─ index.html                학생 화면
 │  └─ teacher.html              교사 미션·순위판
 ├─ tests/

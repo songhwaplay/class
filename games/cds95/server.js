@@ -7,6 +7,7 @@ const express = require('express');
 const { Server } = require('socket.io');
 const Terrain = require('./public/js/terrain.js');
 const OceanCurrent = require('./public/js/ocean-current.js');
+const MajorWind = require('./public/js/wind.js');
 const ClassroomStore = require('./lib/classroom-store.js');
 const MissionCatalog = require('./lib/mission-catalog.js');
 const Fatigue = require('./lib/fatigue.js');
@@ -26,9 +27,12 @@ const LISBON = Object.freeze({
 const SEA_BASE_SPEED = 132;
 const LAND_BASE_SPEED = 96;
 
-const CURRENT_TAIL_FACTOR = 0.30;
-const CURRENT_HEAD_FACTOR = 0.08;
+const CURRENT_TAIL_FACTOR = 0.40;
+const CURRENT_STRONG_CORE_TAIL_FACTOR = 0.80;
+const CURRENT_HEAD_FACTOR = 0.23;
 const CURRENT_CROSS_FACTOR = 0.14;
+const WIND_TAIL_FACTOR = 1.00;
+const WIND_HEAD_FACTOR = 0.65;
 const GAME_HOURS_PER_REAL_SECOND = 4;
 const PORT_ENTRY_GAME_MINUTES = 360;
 const PORT_EXIT_GAME_MINUTES = 240;
@@ -186,6 +190,7 @@ function publicMissionCatalog() {
         cityPoint: resolved ? { x: resolved.cityPoint.x, y: resolved.cityPoint.y } : null,
         seaPoint: resolved ? { x: resolved.seaPoint.x, y: resolved.seaPoint.y } : null,
         landPoint: resolved ? { x: resolved.landPoint.x, y: resolved.landPoint.y } : null,
+        canEnterFromSea: resolved?.canEnterFromSea === true,
         arrivalRadiusTiles: resolved?.arrivalRadiusTiles || null
       };
     })
@@ -204,14 +209,17 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => res.json(publicMissionCatalog()));
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 36,
+  version: 41,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
   landBaseSpeed: LAND_BASE_SPEED,
   completionSpeedMultipliers: { first: 4, second: 3, third: 2, fourthAndAfter: 1.5 },
   currentTailAssistPercent: Math.round(CURRENT_TAIL_FACTOR * 100),
+  currentStrongCoreTailAssistPercent: Math.round(CURRENT_STRONG_CORE_TAIL_FACTOR * 100),
   currentHeadPenaltyPercent: Math.round(CURRENT_HEAD_FACTOR * 100),
+  windTailAssistPercent: Math.round(WIND_TAIL_FACTOR * 100),
+  windHeadPenaltyPercent: Math.round(WIND_HEAD_FACTOR * 100),
   gameHoursPerRealSecond: GAME_HOURS_PER_REAL_SECOND,
   landMode: true,
   missionSystem: 'one-destination-four-start-cities-teacher-start-gated-arrival-race',
@@ -223,8 +231,11 @@ app.get('/health', (_req, res) => res.json({
   destinationArrivalZones: Object.keys(ARRIVAL_ZONES).length,
   expeditionJournal: false,
   minimalStudentState: true,
-  oceanCurrentAnimation: 'pending-original-waves-decode',
+  oceanCurrentAnimation: 'major-current-flow-tracers',
   oceanCurrentAffectsMovement: true,
+  majorWindSystem: ['trade-winds','westerlies','polar-easterlies','seasonal-monsoon'],
+  windCloudAnimation: 'original-CLOUD.CDS-12-frame-sprite',
+  windAffectsMovement: true,
   visualWeather: [],
   sharedClassClock: true,
   teacherClockAuthority: true,
@@ -236,7 +247,7 @@ app.get('/health', (_req, res) => res.json({
   topStatusBar: ['date','latitudeLongitude','fatigue'],
   bottomGuideWindow: true,
   suppliesConsumeWithSharedClock: false,
-  persistedStudentState: ['selectedStartCity', 'missionStatus', 'finishRank', 'completionTime'],
+  persistedStudentState: ['selectedStartCity', 'shipPort', 'missionStatus', 'finishRank', 'completionTime'],
   teacherControls: true,
   persistenceFile: store.filePath
 }));
@@ -775,7 +786,7 @@ function buildStartChoiceSet(payload, roomCode) {
   if (!preset) throw new Error('공통 미션을 기본 미션 목록에서 선택하세요.');
   const ids = Array.isArray(payload?.startPlaceIds) ? payload.startPlaceIds.map(String) : [];
   const unique = [...new Set(ids.filter(Boolean))];
-  if (unique.length !== 3) throw new Error('서로 다른 출발 도시 4곳을 선택하세요.');
+  if (unique.length !== 4) throw new Error('서로 다른 출발 도시 4곳을 선택하세요.');
   const starts = unique.map((id) => {
     const place = catalogPlace(id, '출발 도시');
     if (place.canEnterFromSea !== true) throw new Error('출발지는 항구 도시만 선택할 수 있습니다.');
@@ -915,13 +926,33 @@ function advanceStagedMission(roomCode, player, mission, progress, stage, label)
 function nearbyCatalogPort(player) {
   const place = nearestOriginalCityAccess(player, 3.2);
   if (!place) return null;
-  // 내륙 도시는 육상 통과·도착만 가능하다. 실제 바다 출입구가 있는 도시만 승선 버튼을 표시한다.
+  // 내륙 도시는 육상 통과·도착만 가능하다. 실제 바다 출입구가 있는 도시만 승선 후보가 된다.
   if (player.mode === 'land' && (!Array.isArray(place.originalSeaEntryPoints) || !place.originalSeaEntryPoints.length)) return null;
+  if (player.mode === 'land') {
+    const shipPort = RESOLVED_PLACES.get(String(player.shipPortId || ''));
+    const hasOwnShip = !!shipPort && shipPort.id === place.id;
+    if (!hasOwnShip) {
+      const shipPortName = shipPort?.name || '출발 항구';
+      return {
+        placeId: place.id,
+        placeName: place.name,
+        actionLabel: '승선 불가',
+        nextMode: 'sea',
+        canUse: false,
+        message: `${place.name}에는 내 배가 없습니다. 배는 ${shipPortName}에 정박해 있습니다.`,
+        shipPortId: shipPort?.id || null,
+        shipPortName
+      };
+    }
+  }
   return {
     placeId: place.id,
     placeName: place.name,
     actionLabel: player.mode === 'sea' ? `${place.name} 상륙` : `${place.name} 승선`,
-    nextMode: player.mode === 'sea' ? 'land' : 'sea'
+    nextMode: player.mode === 'sea' ? 'land' : 'sea',
+    canUse: true,
+    shipPortId: player.shipPortId || null,
+    shipPortName: RESOLVED_PLACES.get(String(player.shipPortId || ''))?.name || ''
   };
 }
 
@@ -1124,9 +1155,17 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     finishRank,
     missionCompleted: raceCompleted,
     speedBoostMultiplier: raceCompleted ? CompletionRewards.speedMultiplier(finishRank) : 1,
+    currentName: p.currentName || '',
+    currentStrength: Math.round((Number(p.currentStrength) || 0) * 1000) / 1000,
+    currentAssistPercent: Number.isFinite(p.currentAssistPercent) ? p.currentAssistPercent : 0,
+    windName: p.windName || '',
+    windStrength: Math.round((Number(p.windStrength) || 0) * 1000) / 1000,
+    windAssistPercent: Number.isFinite(p.windAssistPercent) ? p.windAssistPercent : 0,
     currentCityId: p.currentCityId || null,
     currentCityName: currentCityForPlayer(p)?.name || '',
     lastCityId: p.lastCityId || null,
+    shipPortId: p.shipPortId || null,
+    shipPortName: RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name || '',
     fatigue: Math.round(Fatigue.clamp(p.fatigue) * 10) / 10,
     fatigueSpeedMultiplier: Math.round(Fatigue.speedMultiplier(p.fatigue) * 1000) / 1000,
     transition
@@ -1173,7 +1212,8 @@ function beginTimedTransition(p, options) {
     missionAfter: options.missionAfter || p.mission,
     noticeAfter: options.noticeAfter || '',
     cityIdAfter: options.cityIdAfter || null,
-    lastCityIdAfter: options.lastCityIdAfter || options.cityIdAfter || null
+    lastCityIdAfter: options.lastCityIdAfter || options.cityIdAfter || null,
+    shipPortIdAfter: options.shipPortIdAfter || null
   };
   p.lastSeen = Date.now();
   return true;
@@ -1186,6 +1226,13 @@ function updateTimedTransition(p, nowGameMinutes) {
   setModeAt(p, action.destinationMode, action.destinationPoint);
   if (action.destinationMode === 'city') p.currentCityId = action.cityIdAfter || action.lastCityIdAfter || null;
   if (action.lastCityIdAfter) p.lastCityId = action.lastCityIdAfter;
+  if (action.shipPortIdAfter) {
+    p.shipPortId = action.shipPortIdAfter;
+    const activeMission = store.room(p.roomCode).activeMission;
+    const progress = activeMission ? progressFor(p.roomCode, p.name, activeMission.id, false) : null;
+    if (progress) progress.shipPortId = action.shipPortIdAfter;
+    store.scheduleSave();
+  }
   p.mission = action.missionAfter;
   if (action.noticeAfter) setNotice(p, action.noticeAfter);
   return true;
@@ -1296,6 +1343,7 @@ io.on('connection', (socket) => {
         stageArrivalKey: null,
         currentCityId: null,
         lastCityId: savedRaceStart?.id || null,
+        shipPortId: savedProgress?.shipPortId || savedRaceStart?.id || null,
         fatigue: 0,
         money: STARTING_MONEY,
         water: MAX_WATER,
@@ -1402,6 +1450,7 @@ io.on('connection', (socket) => {
       if (!startPlace?.point) return ack({ ok:false, error:'배포된 출발 도시 네 곳 중 하나를 선택하세요.' });
       progress.selectedStartPlaceId = startPlace.id;
       progress.selectedMissionId = null;
+      progress.shipPortId = startPlace.id;
       progress.status = 'assigned';
       progress.completedAt = null;
       progress.completedGameMinutes = null;
@@ -1417,6 +1466,7 @@ io.on('connection', (socket) => {
       progress.completedAt = null;
     }
     p.stageArrivalKey = null;
+    p.shipPortId = startPlace.id;
     const room = rooms.get(p.roomCode);
     const spawn = safeSpawn(room, startPlace.point, 'sea');
     setModeAt(p, 'sea', spawn);
@@ -1448,6 +1498,10 @@ io.on('connection', (socket) => {
     const fromSea = p.mode === 'sea';
     const entryPoints = fromSea ? place.originalSeaEntryPoints : place.originalLandEntryPoints;
     if (!Array.isArray(entryPoints) || !entryPoints.length) return ack({ ok:false, error:fromSea?'원작에서 이 도시는 바다로 접근할 수 없습니다.':'원작에서 이 도시를 통해 승선할 수 없습니다.' });
+    if (!fromSea && p.shipPortId !== place.id) {
+      const shipPortName = RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name || '출발 항구';
+      return ack({ ok:false, error:`${place.name}에는 내 배가 없습니다. 배는 ${shipPortName}에 정박해 있습니다.` });
+    }
     const near = entryPoints.some((point) => distanceXY(p.x, p.y, point.x, point.y) <= 3.2 * TILE);
     if (!near) return ack({ ok:false, error:`${place.name}에 더 가까이 이동하세요.` });
     const destinationMode = fromSea ? 'land' : 'sea';
@@ -1456,9 +1510,9 @@ io.on('connection', (socket) => {
       kind:fromSea?'directDisembark':'directEmbark',
       label:fromSea?`${place.name} 상륙 준비 중`:`${place.name} 승선 준비 중`,
       durationGameMinutes:fromSea?LAND_PREP_GAME_MINUTES:PORT_EXIT_GAME_MINUTES,
-      destinationMode, destinationPoint, lastCityIdAfter:place.id,
+      destinationMode, destinationPoint, lastCityIdAfter:place.id, shipPortIdAfter:place.id,
       missionAfter:fromSea?`${place.name}에서 육상 탐험`:`${place.name}에서 항해`,
-      noticeAfter:fromSea?`${place.name}에서 육상 탐험을 시작합니다.`:`${place.name}에서 승선했습니다.`
+      noticeAfter:fromSea?`${place.name}에 배를 정박하고 육상 탐험을 시작합니다.`:`${place.name}에 정박한 내 배에 승선했습니다.`
     });
     ack({ ok:true, started:true, self:publicPlayer(p), port:place.name });
   });
@@ -1476,6 +1530,7 @@ io.on('connection', (socket) => {
           const progress = progressFor(roomCode, p.name, mission.id, true);
           progress.selectedMissionId = null;
           progress.selectedStartPlaceId = null;
+          progress.shipPortId = null;
           progress.status = 'assigned';
           progress.stageIndex = 0;
           progress.cargoItemId = null;
@@ -1483,6 +1538,7 @@ io.on('connection', (socket) => {
           progress.completedGameMinutes = null;
           progress.finishRank = null;
           p.activeMissionId = mission.id;
+          p.shipPortId = null;
           p.mission = '출발 도시 선택 후 교사 출발 대기';
           p.missionStatus = 'assigned';
           stopPlayer(p);
@@ -1830,21 +1886,32 @@ function movePlayer(p, dt) {
   const baseSpeed = p.mode === 'sea' ? SEA_BASE_SPEED : LAND_BASE_SPEED;
   const fatigueMultiplier = Fatigue.speedMultiplier(p.fatigue);
   const completionMultiplier = travel.completed ? CompletionRewards.speedMultiplier(travel.progress?.finishRank) : 1;
-  const step = Math.min(baseSpeed * multiplier * fatigueMultiplier * completionMultiplier * dt, targetDistance);
   const ox = p.x;
   const oy = p.y;
+  let windMultiplier = 1;
+  if (p.mode === 'sea') {
+    const wind = MajorWind.windAtPixel(ox, oy, classGameMinutes(p.roomCode));
+    const windAlignment = vx * wind.x + vy * wind.y;
+    windMultiplier = MajorWind.speedMultiplier(windAlignment, wind.strength, WIND_TAIL_FACTOR, WIND_HEAD_FACTOR);
+    p.windName = wind.name;
+    p.windStrength = wind.strength;
+    p.windAssistPercent = MajorWind.assistPercent(windAlignment, wind.strength, WIND_TAIL_FACTOR, WIND_HEAD_FACTOR);
+  }
+  const step = Math.min(baseSpeed * multiplier * fatigueMultiplier * completionMultiplier * windMultiplier * dt, targetDistance);
   let driftX = 0;
   let driftY = 0;
   if (p.mode === 'sea') {
     const current = OceanCurrent.currentAtPixel(ox, oy);
     const alignment = vx * current.x + vy * current.y;
-    const factor = OceanCurrent.movementFactor(alignment, CURRENT_TAIL_FACTOR, CURRENT_HEAD_FACTOR, CURRENT_CROSS_FACTOR);
+    const localTailFactor = Number.isFinite(current.tailFactor) ? current.tailFactor : CURRENT_TAIL_FACTOR;
+    const factor = OceanCurrent.movementFactor(alignment, localTailFactor, CURRENT_HEAD_FACTOR, CURRENT_CROSS_FACTOR);
     const driftSpeed = SEA_BASE_SPEED * factor * current.strength * completionMultiplier;
     driftX = current.x * driftSpeed * dt;
     driftY = current.y * driftSpeed * dt;
     p.currentName = current.name;
     p.currentStrength = current.strength;
     p.currentAssistPercent = Math.round(factor * current.strength * alignment * 100);
+    p.currentCore = current.coreBlend >= 0.5;
   }
   const candidates = [[ox + vx * step + driftX, oy + vy * step + driftY]];
   if (Math.abs(vx) > 0.001 && Math.abs(vy) > 0.001) candidates.push([ox + vx * step + driftX, oy + driftY], [ox + driftX, oy + vy * step + driftY]);
@@ -1915,6 +1982,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v36: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v41: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
