@@ -7,7 +7,7 @@
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
-canvas{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated}#game{z-index:0}.panel{background:var(--panel);border:1px solid var(--line);box-shadow:0 4px 18px #000b;backdrop-filter:blur(3px)}
+canvas{position:fixed;inset:0;width:100%;height:100%;image-rendering:pixelated}#game{z-index:0}.panel{background:var(--panel);border:1px solid var(--line);box-shadow:0 4px 18px #000b}
 button,input{font:inherit}button{border:1px solid var(--line);background:#17313bee;color:#f4e8c8;border-radius:8px;min-height:42px;cursor:pointer}button:hover{background:#294955}button:active,.held{background:#576b72}
 #loading{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:#07141a;font-size:16px;padding:24px;text-align:center}
 #join{position:fixed;inset:0;z-index:40;display:grid;place-items:center;background:radial-gradient(circle at 50% 20%,#1b3c4b,#07141a 70%);padding:18px}
@@ -34,7 +34,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 
 #missionBanner{position:fixed;left:50%;top:91px;z-index:29;transform:translateX(-50%);display:none;min-width:min(680px,calc(100vw - 150px));max-width:calc(100vw - 150px);padding:8px 14px;border-radius:5px;text-align:center;font-size:14px;font-weight:900;color:#fff2c3;background:#102832f2;border:1px solid #bca36d;box-shadow:0 4px 16px #0009;pointer-events:none}
 #missionBanner.show{display:block}#missionBanner.done{color:#b8f1c5;border-color:#74b784}
-#missionPanel.choiceRequired{display:block!important;left:50%;right:auto;top:50%;width:min(720px,calc(100vw - 28px));max-height:min(78vh,700px);transform:translate(-50%,-50%);padding:20px;z-index:70;background:#0c2630fa;border:2px solid #d3b66d;box-shadow:0 0 0 100vmax #031017c9,0 15px 55px #000}
+#missionPanel.choiceRequired{display:block!important;left:50%;right:auto;top:50%;width:min(720px,calc(100vw - 28px));max-height:min(78vh,700px);transform:translate(-50%,-50%);padding:20px;z-index:70;background:#0c2630fa;border:2px solid #d3b66d;box-shadow:0 15px 55px #000}
 #missionPanel.choiceRequired h3{font-size:25px;text-align:center}.choiceRequired #missionInstructions{text-align:center;font-size:14px}.choiceRequired .atlasGuide{text-align:center;font-size:15px;padding:13px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr 1fr;gap:12px}.choiceRequired .missionChoiceCard{min-height:108px;padding:15px}.choiceRequired .missionChoiceCard b{font-size:20px}.choiceRequired .missionChoiceCard span{font-size:13px}.choiceRequired .missionActions{display:none}
 @media(max-width:650px){.statusMain{grid-template-columns:repeat(3,1fr)}.statusItem{min-height:29px;padding:3px 5px}.statusItem small{font-size:8px}.statusItem b{font-size:10px}.statusSub{font-size:8px}.statusSub #identity,.statusSub #terrainHud{display:none}#hud{font-size:9px}.joinRow{grid-template-columns:1fr}#zoom{top:126px}#messageWindow{left:8px;right:8px;bottom:8px;height:82px}#messageLines{font-size:10px}#pad{width:132px;height:132px;bottom:98px}.actionPrompt{bottom:238px;width:max-content;max-width:92vw}#missionPanel{right:8px;top:126px;max-height:43vh}#missionToggle{right:8px;top:126px}#missionBanner{top:126px;min-width:calc(100vw - 150px);max-width:calc(100vw - 150px);font-size:11px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr}#cityInfo{max-width:90%;bottom:138px}#departBtn{margin-left:0}}
 </style>
@@ -101,7 +101,7 @@ let self=null,serverSelf=null,remote=new Map(),lastSnapshotAt=0,activeMission=nu
 const keys={up:false,down:false,left:false,right:false};
 const socket=io({transports:['websocket','polling'],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500});
 
-function resize(){dpr=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false}
+function resize(){dpr=Math.min(devicePixelRatio||1,1.25);canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false}
 addEventListener('resize',resize);resize();
 function wrapX(x){return UW3Terrain.wrapPixelX(x)}
 function dxWrap(tx,x){let d=tx-x;if(d>SPAN/2)d-=SPAN;if(d<-SPAN/2)d+=SPAN;return d}
@@ -182,11 +182,27 @@ function renderMission(){
 
 function chooseStartCity(optionId,cityName){
   clearKeys();
-  socket.emit('chooseStartCity',{optionId},result=>{
-    if(!result?.ok){showToast(result?.error||'출발 도시를 선택하지 못했습니다.');return}
-    serverSelf=result.self||serverSelf;if(result.self){self={...result.self};mode=result.self.mode}
-    applyMissionState(result.mission,result.progress,false);showToast(`${cityName} 선택 완료. 교사의 출발 신호를 기다리세요.`,'good');missionPanel.classList.remove('show','choiceRequired');missionToggle.classList.add('show');updateTravelLockOverlay();
-  });
+  const cards=[...missionPanel.querySelectorAll('.missionChoiceCard')];
+  for(const card of cards)card.disabled=true;
+  missionFeedback.className='';missionFeedback.textContent=`${cityName}으로 이동 준비 중...`;
+  // 무거운 전체화면 선택창을 먼저 닫아 브라우저가 즉시 한 프레임을 그리게 한다.
+  missionPanel.classList.remove('show','choiceRequired');
+  missionToggle.classList.remove('show');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    socket.emit('chooseStartCity',{optionId},result=>{
+      if(!result?.ok){
+        for(const card of cards)card.disabled=false;
+        missionFeedback.textContent='';
+        missionPanel.classList.add('show','choiceRequired');
+        showToast(result?.error||'출발 도시를 선택하지 못했습니다.');
+        return;
+      }
+      serverSelf=result.self||serverSelf;if(result.self){self={...result.self};mode=result.self.mode}
+      applyMissionState(result.mission,result.progress,false);
+      showToast(`${cityName} 선택 완료. 교사의 출발 신호를 기다리세요.`,'good');
+      missionPanel.classList.remove('show','choiceRequired');missionToggle.classList.add('show');updateTravelLockOverlay();
+    });
+  }));
 }
 function escapeHtml(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function applyMissionState(mission,progress,announce=false){const changed=mission?.id&&mission?.id!==activeMission?.id;activeMission=mission||null;missionProgress=progress||null;renderMission();updateTravelLockOverlay();if(announce&&activeMission){showToast(`새 수행 미션: ${activeMission.title}`);setMissionPanelOpen(true)}else if(changed&&activeMission)setMissionPanelOpen(true)}
@@ -351,7 +367,7 @@ function updateHud(){
   const fatigueBand=fatigue>=80?80:fatigue>=60?60:0;if(fatigueBand>lastFatigueBand)showToast(fatigueBand===60?'피로도가 60을 넘었습니다. 이제 이동 속도가 조금씩 느려집니다.':'피로가 많이 쌓였습니다. 도시에서 쉬어 가세요.','warn');lastFatigueBand=fatigueBand;
   applyModeUI();
 }
-function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;if(assetsReady&&joined&&self){movePrediction(dt);ctx.setTransform(dpr,0,0,dpr,0,0);drawMap(innerWidth,innerHeight);drawPlayers(innerWidth,innerHeight);updateHud()}requestAnimationFrame(loop)}requestAnimationFrame(loop);
+let lastPaint=0;function loop(t){const dt=Math.min(.04,(t-last)/1000);last=t;if(assetsReady&&joined&&self){movePrediction(dt);if(t-lastPaint>=33){lastPaint=t;ctx.setTransform(dpr,0,0,dpr,0,0);drawMap(innerWidth,innerHeight);drawPlayers(innerWidth,innerHeight);updateHud()}}requestAnimationFrame(loop)}requestAnimationFrame(loop);
 setInterval(()=>{if(joined&&performance.now()-lastSnapshotAt>3000){net.textContent='● 동기화 지연';net.className='bad'}},1000);
 </script>
 </body>
