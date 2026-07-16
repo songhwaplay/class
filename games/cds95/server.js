@@ -364,6 +364,24 @@ function cleanRoom(value) {
     .slice(0, 10);
 }
 
+
+function generateClassCode() {
+  const used = new Set([
+    ...rooms.keys(),
+    ...teachers.values(),
+    ...Object.keys(store.state?.rooms || {})
+  ]);
+  for (let i = 0; i < 2000; i += 1) {
+    const code = String(Math.floor(100000 + Math.random() * 900000));
+    if (!used.has(code)) return code;
+  }
+  throw new Error('사용 가능한 학급 코드를 만들지 못했습니다. 잠시 후 다시 시도하세요.');
+}
+
+function isValidClassCode(value) {
+  return /^\d{6}$/.test(String(value || ''));
+}
+
 function cleanText(value, maxLength = MAX_MISSION_TEXT) {
   return String(value || '').normalize('NFKC').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, maxLength);
 }
@@ -1225,7 +1243,7 @@ io.on('connection', (socket) => {
       const name = cleanName(payload?.name);
       const roomCode = cleanRoom(payload?.roomCode);
       if (name.length < 2) return ack({ ok: false, error: '이름을 두 글자 이상 입력하세요.' });
-      if (roomCode.length < 2) return ack({ ok: false, error: '반 코드를 두 글자 이상 입력하세요.' });
+      if (!isValidClassCode(roomCode)) return ack({ ok: false, error: '학급 코드는 교사가 만든 숫자 6자리 코드입니다.' });
 
       let room = rooms.get(roomCode);
       if (!room) {
@@ -1631,9 +1649,25 @@ io.on('connection', (socket) => {
     ack({ ok: true, settings });
   });
 
+  socket.on('teacherCreateClass', (payload, ack = () => {}) => {
+    if (String(payload?.pin || '') !== TEACHER_PIN) return ack({ ok:false, error:'교사 PIN이 맞지 않습니다.' });
+    try {
+      const roomCode = generateClassCode();
+      const previousRoom = teachers.get(socket.id);
+      if (previousRoom) socket.leave(`teacher:${previousRoom}`);
+      teachers.set(socket.id, roomCode);
+      socket.join(`teacher:${roomCode}`);
+      const cleanSettings = store.setRoomSettings(roomCode, { paused:false, locked:false });
+      const classMinutes = claimTeacherClock(roomCode, socket.id);
+      ack({ ok:true, roomCode, classGameMinutes:classMinutes, clockRateHoursPerSecond:GAME_HOURS_PER_REAL_SECOND, mission:null, progress:[], settings:cleanSettings });
+    } catch (error) {
+      ack({ ok:false, error:error.message || '학급 코드를 만들지 못했습니다.' });
+    }
+  });
+
   socket.on('teacherJoin', (payload, ack = () => {}) => {
     const roomCode = cleanRoom(payload?.roomCode);
-    if (!roomCode || String(payload?.pin || '') !== TEACHER_PIN) return ack({ ok: false, error: '반 코드 또는 교사 PIN이 맞지 않습니다.' });
+    if (!isValidClassCode(roomCode) || String(payload?.pin || '') !== TEACHER_PIN) return ack({ ok:false, error:'숫자 6자리 학급 코드 또는 교사 PIN이 맞지 않습니다.' });
     const previousRoom = teachers.get(socket.id);
     if (previousRoom) socket.leave(`teacher:${previousRoom}`);
     teachers.set(socket.id, roomCode);
