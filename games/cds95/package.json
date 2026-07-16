@@ -1,16 +1,16 @@
 {
   "name": "cds95-classroom",
-  "version": "23.0.0",
+  "version": "28.0.0",
   "private": true,
   "description": "CDS95 실시간 도착 미션 학습 플랫폼",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && npm run check:catalog && npm run check:html",
+    "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && node --check lib/arrival-zones.js && npm run check:catalog && npm run check:html",
     "check:html": "node tests/html-script-syntax.js",
-    "check:catalog": "node -e \"for (const f of ['places','items','templates','ready-missions']) JSON.parse(require('node:fs').readFileSync('data/catalog/'+f+'.json','utf8')); console.log('catalog JSON ok')\"",
-    "test": "npm run check && npm run test:terrain && npm run test:v23 && npm run test:v23:current",
+    "check:catalog": "node -e \"for (const f of ['places','original-cities','items','templates','ready-missions','arrival-zones']) JSON.parse(require('node:fs').readFileSync('data/catalog/'+f+'.json','utf8')); console.log('catalog JSON ok')\"",
+    "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current",
     "test:terrain": "node tests/terrain-unit.js",
     "test:v23": "node tests/v23-simplified-ui-unit.js",
     "test:v23:current": "node tests/v23-current-balance-unit.js",
@@ -23,7 +23,12 @@
     "test:clock": "node tests/shared-clock-port-smoke.js",
     "test:fatigue": "node tests/fatigue-speed-smoke.js",
     "test:status": "node tests/status-supplies-smoke.js",
-    "test:current-visual": "node tests/current-visual-unit.js"
+    "test:current-visual": "node tests/current-visual-unit.js",
+    "test:arrival-zones": "node tests/arrival-zones-unit.js",
+    "test:start-lock": "node tests/v26-teacher-start-lock-smoke.js",
+    "test:cities": "node tests/original-city-catalog-unit.js",
+    "test:ports": "node tests/all-original-ports-smoke.js",
+    "test:city-access": "node tests/original-city-access-unit.js"
   },
   "engines": {
     "node": ">=22"

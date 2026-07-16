@@ -5,11 +5,12 @@ const path = require('node:path');
 const CATALOG_DIR = path.join(__dirname, '..', 'data', 'catalog');
 
 function loadJson(filename) {
-  // require() keeps startup simple and validates JSON syntax immediately.
   return require(path.join(CATALOG_DIR, filename));
 }
 
-const PLACES = Object.freeze(loadJson('places.json'));
+const ORIGINAL_CITIES = Object.freeze(loadJson('original-cities.json'));
+const LANDMARKS = Object.freeze(loadJson('places.json'));
+const PLACES = Object.freeze([...ORIGINAL_CITIES, ...LANDMARKS]);
 const ITEMS = Object.freeze(loadJson('items.json'));
 const TEMPLATES = Object.freeze(loadJson('templates.json'));
 const READY_MISSIONS = Object.freeze(loadJson('ready-missions.json'));
@@ -21,10 +22,24 @@ function latLonToCell(lat, lon) {
   };
 }
 
+function placeCell(place) {
+  const x = Number(place?.cellX);
+  const y = Number(place?.cellY);
+  if (Number.isFinite(x) && Number.isFinite(y)) {
+    const width = Math.max(1, Number(place.markerWidth) || 1);
+    const height = Math.max(1, Number(place.markerHeight) || 1);
+    return { x: x + width / 2, y: y + height / 2 };
+  }
+  return latLonToCell(place?.lat, place?.lon);
+}
+
 function publicCatalog() {
   return {
-    version: 1,
-    places: PLACES.map((place) => ({ ...place, facilities: place.facilities ? [...place.facilities] : undefined })),
+    version: 2,
+    places: PLACES.map((place) => {
+      const { originalMarkerCells, originalSeaEntryCells, originalLandEntryCells, ...publicPlace } = place;
+      return { ...publicPlace, facilities: place.facilities ? [...place.facilities] : undefined };
+    }),
     items: ITEMS.map((item) => ({ ...item })),
     templates: TEMPLATES.map((template) => ({ ...template, needs: [...template.needs] })),
     readyMissions: READY_MISSIONS.map((mission) => ({ ...mission }))
@@ -32,10 +47,13 @@ function publicCatalog() {
 }
 
 module.exports = {
+  ORIGINAL_CITIES,
+  LANDMARKS,
   PLACES,
   ITEMS,
   TEMPLATES,
   READY_MISSIONS,
   latLonToCell,
+  placeCell,
   publicCatalog
 };
