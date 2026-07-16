@@ -46,7 +46,7 @@ async function nextMatching(s,pred,timeout=6000){const end=Date.now()+timeout;wh
   teacher.disconnect();
   await new Promise(r=>setTimeout(r,250));
   const frozen1=await once(a,'snapshot');await new Promise(r=>setTimeout(r,700));const frozen2=await once(a,'snapshot');
-  assert.ok(Math.abs(frozen2.classGameMinutes-frozen1.classGameMinutes)<2,'clock must freeze when teacher authority disconnects');
-  console.log(JSON.stringify({ok:true,sharedClockDelta:+(advanced.classGameMinutes-before).toFixed(1),entryMinutes:+(city.classGameMinutes-during.classGameMinutes).toFixed(1),cityContinues:+(cityLater.classGameMinutes-cityClock).toFixed(1),teacherDisconnectFreezes:true}));
+  assert.ok(frozen2.classGameMinutes-frozen1.classGameMinutes>120,'server clock must continue after teacher disconnect while mission is running');
+  console.log(JSON.stringify({ok:true,sharedClockDelta:+(advanced.classGameMinutes-before).toFixed(1),entryMinutes:+(city.classGameMinutes-during.classGameMinutes).toFixed(1),cityContinues:+(cityLater.classGameMinutes-cityClock).toFixed(1),teacherDisconnectContinues:true}));
   a.disconnect();b.disconnect();
 })().catch(e=>{console.error(e);process.exit(1);});

@@ -37,8 +37,7 @@ const GAME_HOURS_PER_REAL_SECOND = 8;
 // V47: V45의 '시간 2배'를 날짜만이 아니라 전체 시뮬레이션에 동일 적용한다.
 const SIMULATION_RATE = 2;
 const PORT_ENTRY_GAME_MINUTES = 360;
-const PORT_EXIT_GAME_MINUTES = 240;
-const LAND_PREP_GAME_MINUTES = 360;
+const PORT_TRANSFER_GAME_MINUTES = 240;
 const RETURN_CITY_GAME_MINUTES = 120;
 const STARTING_MONEY = 5000;
 const MAX_WATER = 100;
@@ -47,7 +46,6 @@ const WATER_PER_GAME_DAY_SEA = 1.2;
 const FOOD_PER_GAME_DAY_SEA = 1.0;
 const WATER_PER_GAME_DAY_LAND = 1.8;
 const FOOD_PER_GAME_DAY_LAND = 1.2;
-const TEACHER_CLOCK_TIMEOUT_MS = 8000;
 const TICK_HZ = 20;
 const SNAPSHOT_HZ = 10;
 const NEARBY_RADIUS = 34 * TILE;
@@ -291,10 +289,9 @@ function roomClockShouldRun(roomCode) {
 
 function classGameMinutes(roomCode, now = Date.now()) {
   const clock = clockForRoom(roomCode);
-  const ownerAlive = clock.ownerSocketId
-    && io.sockets.sockets.has(clock.ownerSocketId)
-    && now - clock.lastTeacherSyncAt <= TEACHER_CLOCK_TIMEOUT_MS;
-  if (!roomClockShouldRun(roomCode) || !ownerAlive) return clock.baseGameMinutes;
+  // 교사 탭의 heartbeat가 브라우저 절전·백그라운드 제한으로 늦어져도
+  // 이미 시작된 수업 시간은 서버가 권위 있게 계속 진행한다.
+  if (!roomClockShouldRun(roomCode)) return clock.baseGameMinutes;
   return clock.baseGameMinutes + ((now - clock.baseServerMs) / 1000) * GAME_HOURS_PER_REAL_SECOND * 60;
 }
 
@@ -1150,13 +1147,18 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
   const raceProgress = isArrivalRace(activeMission) ? progressFor(p.roomCode, p.name, activeMission.id, false) : null;
   const raceCompleted = raceProgress?.status === 'completed';
   const finishRank = Number.isFinite(raceProgress?.finishRank) ? raceProgress.finishRank : null;
-  const transition = p.transition ? {
-    kind: p.transition.kind,
-    label: p.transition.label,
-    startedAtGameMinutes: p.transition.startedAtGameMinutes,
-    endsAtGameMinutes: p.transition.endsAtGameMinutes,
-    remainingGameMinutes: Math.max(0, p.transition.endsAtGameMinutes - nowGameMinutes)
-  } : null;
+  const transition = p.transition ? (() => {
+    const remainingRealMs = Math.max(0, Number(p.transition.endsAtRealMs || 0) - Date.now());
+    const remainingGameMinutes = remainingRealMs / 1000 * GAME_HOURS_PER_REAL_SECOND * 60;
+    return {
+      kind: p.transition.kind,
+      label: p.transition.label,
+      startedAtGameMinutes: p.transition.startedAtGameMinutes,
+      endsAtGameMinutes: p.transition.endsAtGameMinutes,
+      remainingGameMinutes,
+      durationGameMinutes: p.transition.durationGameMinutes || Math.max(1, p.transition.endsAtGameMinutes - p.transition.startedAtGameMinutes)
+    };
+  })() : null;
   return {
     id: p.id,
     name: p.name,
@@ -1220,12 +1222,20 @@ function setModeAt(p, mode, point) {
 function beginTimedTransition(p, options) {
   if (p.transition) return false;
   const nowGameMinutes = classGameMinutes(p.roomCode);
+  const nowRealMs = Date.now();
+  const durationGameMinutes = Math.max(1, options.durationGameMinutes);
+  // 항구 전환은 항구 데이터나 교사 heartbeat에 따라 달라지지 않도록
+  // 서버 실시간 타이머로 처리한다. 현재 8시간/초 기준 240분 = 0.5초다.
+  const durationRealMs = Math.max(250, durationGameMinutes / (GAME_HOURS_PER_REAL_SECOND * 60) * 1000);
   stopPlayer(p);
   p.transition = {
     kind: options.kind,
     label: options.label,
     startedAtGameMinutes: nowGameMinutes,
-    endsAtGameMinutes: nowGameMinutes + Math.max(1, options.durationGameMinutes),
+    endsAtGameMinutes: nowGameMinutes + durationGameMinutes,
+    durationGameMinutes,
+    startedAtRealMs: nowRealMs,
+    endsAtRealMs: nowRealMs + durationRealMs,
     destinationMode: options.destinationMode,
     destinationPoint: { x: options.destinationPoint.x, y: options.destinationPoint.y },
     missionAfter: options.missionAfter || p.mission,
@@ -1234,13 +1244,14 @@ function beginTimedTransition(p, options) {
     lastCityIdAfter: options.lastCityIdAfter || options.cityIdAfter || null,
     shipPortIdAfter: options.shipPortIdAfter || null
   };
-  p.lastSeen = Date.now();
+  p.lastSeen = nowRealMs;
   return true;
 }
 
-function updateTimedTransition(p, nowGameMinutes) {
+function updateTimedTransition(p, _nowGameMinutes, nowRealMs = Date.now()) {
   const action = p.transition;
-  if (!action || nowGameMinutes < action.endsAtGameMinutes) return false;
+  if (!action || nowRealMs < action.endsAtRealMs) return false;
+  if (!roomClockShouldRun(p.roomCode)) return false;
   p.transition = null;
   setModeAt(p, action.destinationMode, action.destinationPoint);
   if (action.destinationMode === 'city') p.currentCityId = action.cityIdAfter || action.lastCityIdAfter || null;
@@ -1529,7 +1540,7 @@ io.on('connection', (socket) => {
     beginTimedTransition(p, {
       kind:fromSea?'directDisembark':'directEmbark',
       label:fromSea?`${place.name} 상륙 준비 중`:`${place.name} 승선 준비 중`,
-      durationGameMinutes:fromSea?LAND_PREP_GAME_MINUTES:PORT_EXIT_GAME_MINUTES,
+      durationGameMinutes:PORT_TRANSFER_GAME_MINUTES,
       destinationMode, destinationPoint, lastCityIdAfter:place.id, shipPortIdAfter:place.id,
       missionAfter:fromSea?`${place.name}에서 육상 탐험`:`${place.name}에서 항해`,
       noticeAfter:fromSea?`${place.name}에 배를 정박하고 육상 탐험을 시작합니다.`:`${place.name}에 정박한 내 배에 승선했습니다.`
@@ -2009,6 +2020,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v47: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v49: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

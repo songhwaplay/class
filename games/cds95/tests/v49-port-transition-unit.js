@@ -1,0 +1,15 @@
+'use strict';
+const fs=require('node:fs');
+const assert=require('node:assert/strict');
+const server=fs.readFileSync('server.js','utf8');
+const student=fs.readFileSync('public/index.html','utf8');
+assert.match(server,/const PORT_TRANSFER_GAME_MINUTES = 240;/);
+assert.doesNotMatch(server,/LAND_PREP_GAME_MINUTES/);
+assert.doesNotMatch(server,/PORT_EXIT_GAME_MINUTES/);
+assert.match(server,/durationGameMinutes:PORT_TRANSFER_GAME_MINUTES/);
+assert.match(server,/durationRealMs = Math\.max\(250, durationGameMinutes \/ \(GAME_HOURS_PER_REAL_SECOND \* 60\) \* 1000\)/);
+assert.match(server,/nowRealMs < action\.endsAtRealMs/);
+assert.match(server,/if \(!roomClockShouldRun\(roomCode\)\) return clock\.baseGameMinutes/);
+assert.doesNotMatch(server,/ownerAlive/);
+assert.match(student,/tr\.durationGameMinutes\|\|tr\.endsAtGameMinutes-tr\.startedAtGameMinutes/);
+console.log(JSON.stringify({ok:true,allPortsSameTransferMinutes:240,realSecondsAt8HoursPerSecond:0.5,serverClockIndependentOfTeacherHeartbeat:true}));

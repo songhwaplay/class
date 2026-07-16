@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v47</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v50</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -26,17 +26,17 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 .statusItem{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:34px;padding:4px 8px;border:1px solid #756849;background:#071820cc;white-space:nowrap;overflow:hidden}
 .statusItem small{font-size:10px;color:#c7b991}.statusItem b{font-size:12px;color:#fff0c8;overflow:hidden;text-overflow:ellipsis}.statusItem .fatigueTrack{width:54px;flex:0 0 54px}
 .statusSub{display:flex;align-items:center;gap:8px;min-height:23px;padding:3px 5px 0;font-size:10px;white-space:nowrap;overflow:hidden}.statusSub>span,.statusSub>div{overflow:hidden;text-overflow:ellipsis}.statusSub .grow{flex:1}.statusDivider{opacity:.45}
-#messageWindow{position:fixed;left:188px;right:12px;bottom:12px;z-index:26;height:92px;border-radius:3px;padding:7px 12px;background:#071b24f2;overflow:hidden;pointer-events:none}
-#messageHeader{height:18px;font-size:10px;font-weight:800;color:#d9c28a;border-bottom:1px solid #665c43;margin-bottom:4px;letter-spacing:.04em}
-#messageLines{display:grid;gap:1px;font-size:12px;line-height:1.42}.guideLine{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.guideLine::before{content:'▶';display:inline-block;width:17px;color:#e4c66f}.guideLine.warn{color:#ffc98d}.guideLine.good{color:#aee7b9}.guideLine.system{color:#acd9e5}
-.actionPrompt{bottom:116px}.actionPrompt.show{display:flex}
-#zoom{top:92px}#cityView{padding:92px 18px 116px}#cityCard{height:100%}#missionPanel{top:140px;max-height:calc(100vh - 260px)}#missionToggle{top:140px}
+#messageWindow{position:fixed;left:188px;right:12px;bottom:12px;z-index:26;height:118px;border-radius:3px;padding:7px 12px 10px;background:#071b24f2;overflow:hidden;pointer-events:none}
+#messageHeader{height:20px;line-height:18px;font-size:10px;font-weight:800;color:#d9c28a;border-bottom:1px solid #665c43;margin-bottom:5px;letter-spacing:.04em}
+#messageLines{display:grid;grid-template-rows:repeat(4,minmax(17px,auto));gap:2px;font-size:12px;line-height:1.45;overflow:hidden}.guideLine{min-height:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.guideLine::before{content:'▶';display:inline-block;width:17px;color:#e4c66f}.guideLine.warn{color:#ffc98d}.guideLine.good{color:#aee7b9}.guideLine.system{color:#acd9e5}
+.actionPrompt{bottom:142px}.actionPrompt.show{display:flex}
+#zoom{top:92px}#cityView{padding:92px 18px 142px}#cityCard{height:100%}#missionPanel{top:140px;max-height:calc(100vh - 260px)}#missionToggle{top:140px}
 
 #missionBanner{position:fixed;left:50%;top:91px;z-index:29;transform:translateX(-50%);display:none;min-width:min(680px,calc(100vw - 150px));max-width:calc(100vw - 150px);padding:8px 14px;border-radius:5px;text-align:center;font-size:14px;font-weight:900;color:#fff2c3;background:#102832f2;border:1px solid #bca36d;box-shadow:0 4px 16px #0009;pointer-events:none}
 #missionBanner.show{display:block}#missionBanner.done{color:#b8f1c5;border-color:#74b784}
 #missionPanel.choiceRequired{display:block!important;left:50%;right:auto;top:50%;width:min(720px,calc(100vw - 28px));max-height:min(78vh,700px);transform:translate(-50%,-50%);padding:20px;z-index:70;background:#0c2630fa;border:2px solid #d3b66d;box-shadow:0 15px 55px #000}
 #missionPanel.choiceRequired h3{font-size:25px;text-align:center}.choiceRequired #missionInstructions{text-align:center;font-size:14px}.choiceRequired .atlasGuide{text-align:center;font-size:15px;padding:13px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr 1fr;gap:12px}.choiceRequired .missionChoiceCard{min-height:108px;padding:15px}.choiceRequired .missionChoiceCard b{font-size:20px}.choiceRequired .missionChoiceCard span{font-size:13px}.choiceRequired .missionActions{display:none}
-@media(max-width:650px){.statusMain{grid-template-columns:repeat(3,1fr)}.statusItem{min-height:29px;padding:3px 5px}.statusItem small{font-size:8px}.statusItem b{font-size:10px}.statusSub{font-size:8px}.statusSub #identity,.statusSub #terrainHud{display:none}#hud{font-size:9px}.joinRow{grid-template-columns:1fr}#zoom{top:126px}#messageWindow{left:8px;right:8px;bottom:8px;height:82px}#messageLines{font-size:10px}#pad{width:132px;height:132px;bottom:98px}.actionPrompt{bottom:238px;width:max-content;max-width:92vw}#missionPanel{right:8px;top:126px;max-height:43vh}#missionToggle{right:8px;top:126px}#missionBanner{top:126px;min-width:calc(100vw - 150px);max-width:calc(100vw - 150px);font-size:11px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr}#cityInfo{max-width:90%;bottom:138px}#departBtn{margin-left:0}}
+@media(max-width:650px){.statusMain{grid-template-columns:repeat(3,1fr)}.statusItem{min-height:29px;padding:3px 5px}.statusItem small{font-size:8px}.statusItem b{font-size:10px}.statusSub{font-size:8px}.statusSub #identity,.statusSub #terrainHud{display:none}#hud{font-size:9px}.joinRow{grid-template-columns:1fr}#zoom{top:126px}#messageWindow{left:8px;right:8px;bottom:8px;height:106px;padding-bottom:9px}#messageHeader{height:18px;line-height:16px;margin-bottom:4px}#messageLines{font-size:10px;line-height:1.42;gap:1px;grid-template-rows:repeat(4,minmax(14px,auto))}.guideLine{min-height:14px}#pad{width:132px;height:132px;bottom:122px}.actionPrompt{bottom:262px;width:max-content;max-width:92vw}#missionPanel{right:8px;top:126px;max-height:43vh}#missionToggle{right:8px;top:126px}#missionBanner{top:126px;min-width:calc(100vw - 150px);max-width:calc(100vw - 150px);font-size:11px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr}#cityInfo{max-width:90%;bottom:162px}#departBtn{margin-left:0}}
 </style>
 </head>
 <body>
@@ -93,8 +93,8 @@ const identity=document.getElementById('identity'),net=document.getElementById('
 const missionActionPrompt=document.getElementById('missionActionPrompt'),missionActionText=document.getElementById('missionActionText'),missionActionBtn=document.getElementById('missionActionBtn');
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
 const pauseOverlay=document.getElementById('pauseOverlay'),lockTitle=document.getElementById('lockTitle'),lockDetail=document.getElementById('lockDetail'),transitionOverlay=document.getElementById('transitionOverlay'),transitionLabel=document.getElementById('transitionLabel'),transitionFill=document.getElementById('transitionFill');
-const atlas=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();atlas.src='/assets/maps/ocean_original_tiles.png';shipAtlas.src='/assets/ships/ship_original_8dir.png';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png';
-let world=null,assetsReady=false,joined=false,dpr=1,zoom=1.7,last=performance.now(),mode='sea',lastLocalBlock=0,lastNoticeSeq=0,roomCodeCurrent='',lastModeMessage=null,lastTerrainMessage=null,lastFatigueBand=0,lastWaterBand=100,lastFoodBand=100,mapCities=[];
+const atlas=new Image(),lushAtlas=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();atlas.src='/assets/maps/ocean_original_tiles.png';lushAtlas.src='/assets/maps/ocean_original_tiles_lush.png';shipAtlas.src='/assets/ships/ship_original_8dir.png';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png';
+let world=null,biomePaletteMask=null,assetsReady=false,joined=false,dpr=1,zoom=1.7,last=performance.now(),mode='sea',lastLocalBlock=0,lastNoticeSeq=0,roomCodeCurrent='',lastModeMessage=null,lastTerrainMessage=null,lastFatigueBand=0,lastWaterBand=100,lastFoodBand=100,mapCities=[];
 let self=null,serverSelf=null,remote=new Map(),lastSnapshotAt=0,activeMission=null,missionProgress=null,missionInteraction=null,portInteraction=null,classGameMinutes=0,classSettings={paused:false,locked:false};
 // 해류는 바다 물결 애니메이션으로, 바람은 원작 CLOUD.CDS의 구름 애니메이션으로 구분한다.
 const currentTracers=[];
@@ -242,7 +242,7 @@ function applyModeUI(){
   const busy=!!serverSelf?.transition,travelAllowed=canTravelNow();
   transitionOverlay.classList.toggle('show',busy);
   if(busy){
-    const tr=serverSelf.transition,total=Math.max(1,tr.endsAtGameMinutes-tr.startedAtGameMinutes),remaining=Math.max(0,tr.remainingGameMinutes||0),progress=Math.max(0,Math.min(1,1-remaining/total));
+    const tr=serverSelf.transition,total=Math.max(1,tr.durationGameMinutes||tr.endsAtGameMinutes-tr.startedAtGameMinutes),remaining=Math.max(0,tr.remainingGameMinutes||0),progress=Math.max(0,Math.min(1,1-remaining/total));
     transitionLabel.textContent=tr.label||'이동 수단 전환 중';transitionFill.style.width=`${Math.round(progress*100)}%`;
   }
   const missionReady=travelAllowed&&!busy&&!!missionInteraction?.canInteract;
@@ -261,7 +261,7 @@ function applyModeUI(){
 }
 
 async function ungzipResponse(url){const response=await fetch(url);if(!response.ok)throw new Error('지도 파일을 받지 못했습니다.');if(!('DecompressionStream' in window))throw new Error('최신 Chrome이 필요합니다.');const ds=new DecompressionStream('gzip');return await new Response(response.body.pipeThrough(ds)).arrayBuffer()}
-Promise.all([ungzipResponse('/assets/maps/world.cds.gz'),atlas.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()})]).then(([buf,_a,_s,_w,catalog])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
+Promise.all([ungzipResponse('/assets/maps/world.cds.gz'),ungzipResponse('/assets/maps/biome_palette_mask.bin.gz'),atlas.decode(),lushAtlas.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()})]).then(([buf,maskBuf,_a,_l,_s,_w,catalog])=>{world=new Uint16Array(buf);biomePaletteMask=new Uint8Array(maskBuf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');if(biomePaletteMask.length!==WW*WH)throw new Error('지형 색상 마스크 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
 
 socket.on('connect',()=>{net.textContent='● 서버 연결';net.className='good'});
 socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});
@@ -346,7 +346,7 @@ function movePrediction(dt){
 function drawMap(cw,ch){
   ctx.fillStyle='#07141a';ctx.fillRect(0,0,cw,ch);if(!self)return null;
   const viewW=cw/zoom,viewH=ch/zoom,left=self.x-viewW/2,top=self.y-viewH/2,c0x=Math.floor(left/TS),c1x=Math.floor((left+viewW)/TS)+1,c0y=Math.floor(top/TS),c1y=Math.floor((top+viewH)/TS)+1;
-  for(let cy=c0y;cy<=c1y;cy++){if(cy<0||cy>=WH)continue;for(let cx=c0x;cx<=c1x;cx++){const v=cellValue(cx,cy),id=v&0x3fff,sx=(id&127)*TS,sy=(id>>7)*TS,dx=(cx*TS-left)*zoom,dy=(cy*TS-top)*zoom;ctx.drawImage(atlas,sx,sy,TS,TS,Math.floor(dx),Math.floor(dy),Math.ceil(TS*zoom)+1,Math.ceil(TS*zoom)+1)}}
+  for(let cy=c0y;cy<=c1y;cy++){if(cy<0||cy>=WH)continue;for(let cx=c0x;cx<=c1x;cx++){const wrappedCx=((cx%WW)+WW)%WW,v=cellValue(cx,cy),id=v&0x3fff,sx=(id&127)*TS,sy=(id>>7)*TS,dx=(cx*TS-left)*zoom,dy=(cy*TS-top)*zoom,dw=Math.ceil(TS*zoom)+1,dh=Math.ceil(TS*zoom)+1;ctx.drawImage(atlas,sx,sy,TS,TS,Math.floor(dx),Math.floor(dy),dw,dh);const paletteAlpha=biomePaletteMask?.[cy*WW+wrappedCx]||0;if(paletteAlpha>3){ctx.globalAlpha=paletteAlpha/255;ctx.drawImage(lushAtlas,sx,sy,TS,TS,Math.floor(dx),Math.floor(dy),dw,dh);ctx.globalAlpha=1}}}
   drawOceanCurrents(cw,ch,left,top);
   drawWindClouds(cw,ch,left,top);
   const stageMarker=activeMission?.kind==='staged'?currentStage():null;
