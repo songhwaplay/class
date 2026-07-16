@@ -11,7 +11,7 @@
 <header class="header"><div><h2><span id="roomLabel"></span> 도착 미션</h2><span id="status" class="ok">서버 연결</span></div><div class="summary"><span>수업 날짜 <b id="classClock">1492년 1월 1일 00:00</b></span><span>접속 <b id="count">0</b>명</span></div></header>
 <div class="layout">
 <section class="setup">
-<div class="panel"><h3 style="margin-top:0">미션 설정</h3><p class="muted">도착지 한 곳과 학생이 고를 출발 도시 네 곳만 지정합니다.</p><label>도착 도시·지형<select id="target"></select></label><div class="startGrid"><label>출발 도시 1<select id="start1"></select></label><label>출발 도시 2<select id="start2"></select></label><label>출발 도시 3<select id="start3"></select></label><label>출발 도시 4<select id="start4"></select></label></div><button id="publish" class="publish">미션 준비 · 출발지 선택 시작</button><button id="startRace" class="startRace" disabled>전원 출발</button><button id="clear" class="danger">미션 종료</button><p id="missionError" class="err"></p></div>
+<div class="panel"><h3 style="margin-top:0">미션 설정</h3><p class="muted">도착지 한 곳과 학생이 고를 출발 도시 네 곳만 지정합니다.</p><label>도착지 지역<select id="targetRegion"></select></label><label>도착지 검색<input id="targetSearch" placeholder="도시·지형 이름 검색"></label><label>도착 도시·지형<select id="target"></select></label><div class="startGrid"><label>출발 도시 1<select id="start1"></select></label><label>출발 도시 2<select id="start2"></select></label><label>출발 도시 3<select id="start3"></select></label><label>출발 도시 4<select id="start4"></select></label></div><button id="publish" class="publish">미션 준비 · 출발지 선택 시작</button><button id="startRace" class="startRace" disabled>전원 출발</button><button id="clear" class="danger">미션 종료</button><p id="missionError" class="err"></p></div>
 <div id="activeMission" class="panel"><p class="muted">아직 미션이 없습니다.</p></div>
 </section>
 <section id="rankBoard" class="panel rankBoard"><div class="rankHeader"><h3 style="margin:0">실시간 도착 순위</h3><button id="fullRank">TV 전체화면</button></div><div id="rankMission" class="missionTitle">미션 대기 중</div><div id="rankList" class="rankList"><div class="empty">도착한 학생이 없습니다.</div></div><h3 class="waitingTitle">이동 중</h3><div id="waitingList"></div></section>
@@ -20,7 +20,64 @@
 'use strict';
 const socket=io({transports:['websocket','polling']}),$=id=>document.getElementById(id);let players=[],activeMission=null,progress=[],catalog={places:[]},teacherClockActive=false,clockRate=4,clockBaseMinutes=0,clockBaseReal=Date.now();
 function ack(e,p={}){return new Promise(r=>socket.emit(e,p,r))}function esc(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function formatGameDate(m){const d=new Date(Date.UTC(1492,0,1)+Math.max(0,m||0)*60000);return `${d.getUTCFullYear()}년 ${d.getUTCMonth()+1}월 ${d.getUTCDate()}일 ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`}function teacherMinutes(){return clockBaseMinutes+(Date.now()-clockBaseReal)/1000*clockRate*60}function resetClock(m){clockBaseMinutes=Math.max(0,Number(m)||0);clockBaseReal=Date.now();$('classClock').textContent=formatGameDate(m)}setInterval(()=>{if(!teacherClockActive)return;const m=teacherMinutes();$('classClock').textContent=formatGameDate(m);socket.emit('teacherClockSync',{gameMinutes:m})},500);
-function opt(sel,v,t){const o=document.createElement('option');o.value=v;o.textContent=t;sel.append(o)}async function loadCatalog(){const r=await fetch('/api/mission-catalog');catalog=await r.json();const places=[...catalog.places].sort((a,b)=>(a.category||'').localeCompare(b.category||'','ko')||a.name.localeCompare(b.name,'ko')),ports=places.filter(p=>p.access==='port');$('target').replaceChildren();for(const p of places)opt($('target'),p.id,`[${p.category}] ${p.name}`);for(const id of ['start1','start2','start3','start4']){const e=$(id);e.replaceChildren();for(const p of ports)opt(e,p.id,p.name)}$('target').value='crimea_peninsula';$('start1').value='lisbon';$('start2').value='london';$('start3').value='istanbul';$('start4').value='original_city_111'}
+function opt(sel,v,t){const o=document.createElement('option');o.value=v;o.textContent=t;sel.append(o)}
+const ORIGINAL_REGION_ORDER=['이베리아','프랑스','네덜란드','이탈리아','브리튼','독일','동유럽','북유럽','발칸','북아프리카','서아프리카','동아프리카','흑해','근동','중동','중앙아시아','인도','동남아시아','동북아시아','서인도제도','중앙아메리카','남동아메리카','남서아메리카'];
+const LANDMARK_REGION_ORDER=['유럽','아프리카','서아시아·중앙아시아','남아시아','동아시아','동남아시아','북아메리카','중앙아메리카·카리브','남아메리카','오세아니아','극지·대양','복합 지역','기타'];
+const CATEGORY_ORDER=['해협','반도','제도','열도','섬','강','폭포','삼각주','산맥','사막','지협','곶','지구대'];
+function landmarkRegion(p){
+  const c=String(p.continent||'');
+  if(c.includes('·')||c.includes('유럽·')||c.includes('아시아·')||c.includes('아프리카·'))return '복합 지역';
+  if(c.includes('유럽'))return '유럽';if(c.includes('아프리카'))return '아프리카';if(c.includes('북아메리카'))return '북아메리카';if(c.includes('남아메리카'))return '남아메리카';if(c.includes('오세아니아'))return '오세아니아';
+  const lat=Number(p.lat),lon=Number(p.lon);
+  if(!Number.isFinite(lat)||!Number.isFinite(lon))return '기타';
+  if(lat>66||lat<-60)return '극지·대양';
+  if(lon>=-25&&lon<45&&lat>=35)return '유럽';
+  if(lon>=-20&&lon<55&&lat<35)return '아프리카';
+  if(lon>=45&&lon<75&&lat>=5)return '서아시아·중앙아시아';
+  if(lon>=65&&lon<100&&lat>=5)return '남아시아';
+  if(lon>=100&&lon<=150&&lat>=20)return '동아시아';
+  if(lon>=90&&lon<=150&&lat<20&&lat>-15)return '동남아시아';
+  if(lon>150||lon<-150)return lat<10?'오세아니아':'극지·대양';
+  if(lon>=-170&&lon<-50&&lat>=15)return lat<30?'중앙아메리카·카리브':'북아메리카';
+  if(lon>=-120&&lon<-30&&lat<15)return '남아메리카';
+  return '기타';
+}
+function originalOrder(p){const n=Number(p.originalOrder);return Number.isFinite(n)?n:9999}
+function appendOriginalCities(select,items,labelCategory=false){
+  select.replaceChildren();let current='',group=null;
+  for(const p of [...items].sort((a,b)=>originalOrder(a)-originalOrder(b))){
+    const region=p.originalRegion||p.region||'원작 도시';
+    if(region!==current){current=region;group=document.createElement('optgroup');group.label=region;select.append(group)}
+    const o=document.createElement('option');o.value=p.id;o.textContent=labelCategory?`도시 · ${p.name}`:p.name;group.append(o)
+  }
+}
+function appendLandmarks(select,items){
+  let current='',group=null;
+  const catRank=p=>{const i=CATEGORY_ORDER.indexOf(p.category||'');return i<0?999:i};
+  const regionRank=p=>{const i=LANDMARK_REGION_ORDER.indexOf(landmarkRegion(p));return i<0?999:i};
+  for(const p of [...items].sort((a,b)=>regionRank(a)-regionRank(b)||catRank(a)-catRank(b)||(a.name||'').localeCompare(b.name||'','ko'))){
+    const region=`주요 지형 · ${landmarkRegion(p)}`;
+    if(region!==current){current=region;group=document.createElement('optgroup');group.label=region;select.append(group)}
+    const o=document.createElement('option');o.value=p.id;o.textContent=`${p.category||'지형'} · ${p.name}`;group.append(o)
+  }
+}
+function renderTargetOptions(){
+  const q=$('targetSearch').value.trim().toLocaleLowerCase('ko'),region=$('targetRegion').value,previous=$('target').value;
+  const cities=catalog.places.filter(p=>p.isOriginalCity&&(!region||region===(p.originalRegion||p.region))&&(!q||`${p.name} ${p.originalRegion||p.region||''}`.toLocaleLowerCase('ko').includes(q)));
+  const landmarks=catalog.places.filter(p=>!p.isOriginalCity&&(!region||region==='주요 지형')&&(!q||`${p.name} ${p.category||''} ${p.continent||''}`.toLocaleLowerCase('ko').includes(q)));
+  appendOriginalCities($('target'),cities,true);appendLandmarks($('target'),landmarks);
+  const all=[...cities,...landmarks];if(all.some(p=>p.id===previous))$('target').value=previous
+}
+async function loadCatalog(){
+  const r=await fetch('/api/mission-catalog');catalog=await r.json();
+  const cities=catalog.places.filter(p=>p.isOriginalCity),ports=cities.filter(p=>p.access==='port');
+  $('targetRegion').replaceChildren();opt($('targetRegion'),'','전체');
+  for(const region of ORIGINAL_REGION_ORDER){if(cities.some(p=>(p.originalRegion||p.region)===region))opt($('targetRegion'),region,region)}
+  opt($('targetRegion'),'주요 지형','주요 지형');renderTargetOptions();
+  for(const id of ['start1','start2','start3','start4'])appendOriginalCities($(id),ports,false);
+  $('targetRegion').onchange=renderTargetOptions;$('targetSearch').oninput=renderTargetOptions;
+  $('target').value='crimea_peninsula';$('start1').value='lisbon';$('start2').value='london';$('start3').value='istanbul';$('start4').value='original_city_111'
+}
 function progressOf(name){return progress.find(p=>p.name===name)||{status:'assigned'}}function formatArrival(m){return Number.isFinite(m)?formatGameDate(m).replace(/^1492년 /,''):'-'}
 function renderMission(){const box=$('activeMission'),startBtn=$('startRace');if(!activeMission){box.innerHTML='<p class="muted">아직 미션이 없습니다.</p>';startBtn.disabled=true;startBtn.textContent='전원 출발';return}const selected=progress.filter(p=>p.selectedStartPlaceId).length,done=progress.filter(p=>p.status==='completed').length,running=activeMission.phase==='running',allReady=players.length>0&&selected===players.length;const starts=(activeMission.startOptions||[]).map((o,i)=>`<div class="countCard"><b>${i+1}. ${esc(o.startPlace.name)}</b><br>선택 ${progress.filter(p=>p.selectedStartPlaceId===o.startPlace.id).length}명</div>`).join('');box.innerHTML=`<div class="missionNow"><span>${running?'진행 중':'출발 준비 중'} · 도착지</span><strong>${esc(activeMission.targetPlace?.name||activeMission.title)}</strong></div><div class="counts">${starts}</div><p><b>출발지 선택</b> ${selected}/${players.length}명 · <b>도착</b> ${done}/${players.length}명</p>${!running&&players.length&&!allReady?'<p class="muted">모든 학생이 출발 도시를 선택하면 전원 출발 버튼이 활성화됩니다.</p>':''}`;startBtn.disabled=running||!allReady;startBtn.textContent=running?'출발 완료':allReady?'전원 출발':'선택 완료 대기'}
 function renderRanking(){const done=progress.filter(p=>p.status==='completed'&&p.finishRank).sort((a,b)=>a.finishRank-b.finishRank||a.completedAt-b.completedAt),waiting=players.map(p=>({player:p,pr:progressOf(p.name)})).filter(x=>x.pr.status!=='completed');$('rankMission').textContent=activeMission?`${activeMission.targetPlace?.name||activeMission.title} 도착`:'미션 대기 중';$('rankList').innerHTML=done.length?done.map(p=>`<div class="rankRow"><div class="rankNo">${p.finishRank}위</div><div class="rankName">${esc(p.name)}</div><div class="rankStart">${esc(p.selectedStartPlaceName||'')}</div><div class="rankTime">${formatArrival(p.completedGameMinutes)}</div></div>`).join(''):'<div class="empty">도착한 학생이 없습니다.</div>';$('waitingList').innerHTML=waiting.length?waiting.sort((a,b)=>(a.pr.selectedStartPlaceName?1:0)-(b.pr.selectedStartPlaceName?1:0)||a.player.name.localeCompare(b.player.name,'ko')).map(({player,pr})=>`<div class="waiting"><span><b>${esc(player.name)}</b> · ${esc(pr.selectedStartPlaceName||'출발지 선택 전')}</span><span>${pr.selectedStartPlaceName?(activeMission?.phase==='running'?'이동 중':'출발 준비 완료'):'출발지 선택 전'}</span></div>`).join(''):'<div class="empty">모든 학생이 도착했습니다.</div>'}
