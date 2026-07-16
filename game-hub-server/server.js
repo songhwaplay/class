@@ -1,14 +1,13 @@
 const express = require("express");
 const http = require("http");
-const { WebSocketServer } = require("ws");
+const crypto = require("crypto");
+const { WebSocketServer, WebSocket } = require("ws");
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 const PORT = process.env.PORT || 10000;
-
-// gameId:roomCode 단위로 방을 구분
 const rooms = new Map();
 
 app.get("/", (req, res) => {
@@ -18,40 +17,41 @@ app.get("/", (req, res) => {
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
-    rooms: rooms.size
+    rooms: rooms.size,
+    connections: wss.clients.size
   });
 });
 
-function getRoomKey(gameId, roomCode) {
+function makeRoomKey(gameId, roomCode) {
   return `${gameId}:${roomCode}`;
 }
 
 function send(ws, data) {
-  if (ws.readyState === ws.OPEN) {
+  if (ws.readyState === WebSocket.OPEN) {
     ws.send(JSON.stringify(data));
   }
 }
 
 function broadcast(room, data, except = null) {
-  room.clients.forEach((client) => {
+  for (const client of room.clients) {
     if (client !== except) {
       send(client, data);
     }
-  });
+  }
 }
 
-function leaveCurrentRoom(ws) {
+function leaveRoom(ws) {
   if (!ws.roomKey) return;
 
   const room = rooms.get(ws.roomKey);
-  if (!room) return;
+
+  if (!room) {
+    ws.roomKey = null;
+    ws.isHost = false;
+    return;
+  }
 
   room.clients.delete(ws);
-
-  broadcast(room, {
-    type: "PLAYER_LEFT",
-    playerId: ws.playerId
-  });
 
   if (room.host === ws) {
     broadcast(room, {
@@ -59,18 +59,25 @@ function leaveCurrentRoom(ws) {
       reason: "HOST_LEFT"
     });
 
-    room.clients.forEach((client) => {
-      try {
-        client.close();
-      } catch (_) {}
-    });
+    for (const client of room.clients) {
+      client.roomKey = null;
+      client.isHost = false;
+    }
 
     rooms.delete(ws.roomKey);
-  } else if (room.clients.size === 0) {
-    rooms.delete(ws.roomKey);
+  } else {
+    broadcast(room, {
+      type: "PLAYER_LEFT",
+      playerId: ws.playerId
+    });
+
+    if (room.clients.size === 0) {
+      rooms.delete(ws.roomKey);
+    }
   }
 
   ws.roomKey = null;
+  ws.isHost = false;
 }
 
 wss.on("connection", (ws) => {
@@ -88,7 +95,7 @@ wss.on("connection", (ws) => {
 
     try {
       data = JSON.parse(rawData.toString());
-    } catch (_) {
+    } catch {
       send(ws, {
         type: "ERROR",
         message: "잘못된 데이터입니다."
@@ -97,7 +104,7 @@ wss.on("connection", (ws) => {
     }
 
     if (data.type === "CREATE_ROOM") {
-      leaveCurrentRoom(ws);
+      leaveRoom(ws);
 
       const gameId = String(data.gameId || "").trim();
       const roomCode = String(data.roomCode || "").trim();
@@ -110,7 +117,7 @@ wss.on("connection", (ws) => {
         return;
       }
 
-      const roomKey = getRoomKey(gameId, roomCode);
+      const roomKey = makeRoomKey(gameId, roomCode);
 
       if (rooms.has(roomKey)) {
         send(ws, {
@@ -142,16 +149,23 @@ wss.on("connection", (ws) => {
     }
 
     if (data.type === "JOIN_ROOM") {
-      leaveCurrentRoom(ws);
+      leaveRoom(ws);
 
       const gameId = String(data.gameId || "").trim();
       const roomCode = String(data.roomCode || "").trim();
-      const roomKey = getRoomKey(gameId, roomCode);
+      const roomKey = makeRoomKey(gameId, roomCode);
       const room = rooms.get(roomKey);
 
       if (!room) {
         send(ws, {
           type: "ROOM_NOT_FOUND"
+        });
+        return;
+      }
+
+      if (room.clients.size >= 4) {
+        send(ws, {
+          type: "ROOM_FULL"
         });
         return;
       }
@@ -167,15 +181,11 @@ wss.on("connection", (ws) => {
         playerId: ws.playerId
       });
 
-      broadcast(
-        room,
-        {
-          type: "PLAYER_JOINED",
-          playerId: ws.playerId,
-          name: String(data.name || "Player").slice(0, 20)
-        },
-        ws
-      );
+      send(room.host, {
+        type: "PLAYER_JOINED",
+        playerId: ws.playerId,
+        name: String(data.name || "Player").slice(0, 20)
+      });
 
       return;
     }
@@ -186,24 +196,32 @@ wss.on("connection", (ws) => {
       const room = rooms.get(ws.roomKey);
       if (!room) return;
 
-      broadcast(
-        room,
-        {
+      if (ws.isHost) {
+        broadcast(
+          room,
+          {
+            type: "GAME_MESSAGE",
+            senderId: ws.playerId,
+            payload: data.payload
+          },
+          ws
+        );
+      } else {
+        send(room.host, {
           type: "GAME_MESSAGE",
           senderId: ws.playerId,
           payload: data.payload
-        },
-        ws
-      );
+        });
+      }
     }
   });
 
   ws.on("close", () => {
-    leaveCurrentRoom(ws);
+    leaveRoom(ws);
   });
 
-  ws.on("error", () => {
-    leaveCurrentRoom(ws);
+  ws.on("error", (error) => {
+    console.error("WebSocket error:", error.message);
   });
 });
 
