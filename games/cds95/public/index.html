@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v44</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v45</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -174,7 +174,7 @@ function renderMission(){
         const title=document.createElement('b');title.textContent=city.name||'출발 도시';
         const text=document.createElement('span');text.textContent=[city.region,city.continent].filter(Boolean).join(' · ');
         button.dataset.optionId=option.id;
-        button.append(title,text);button.onclick=()=>chooseStartCity(option.id,city.name,button);grid.append(button);
+        button.append(title,text);bindStartChoiceButton(button,option.id,city.id||option.id,city.name);grid.append(button);
       }
       missionTarget.append(grid);
       const warning=document.createElement('div');warning.className='choiceWarning';warning.textContent='출발 도시 네 곳 중 하나를 선택하세요. 선택 후에는 바꿀 수 없습니다.';missionTarget.append(warning);
@@ -191,7 +191,7 @@ function renderMission(){
     missionTarget.replaceChildren();
     const guide=document.createElement('div');guide.className='atlasGuide';guide.innerHTML=`<b>${escapeHtml(activeMission.goalLabel||activeMission.title||'목표 지점')}</b>`;missionTarget.append(guide);
     const grid=document.createElement('div');grid.className='missionChoiceGrid';
-    for(const option of activeMission.startOptions||[]){const city=option.startPlace||{},button=document.createElement('button');button.type='button';button.className='missionChoiceCard';button.dataset.optionId=option.id;const title=document.createElement('b');title.textContent=city.name||'출발 도시';const text=document.createElement('span');text.textContent=[city.region,city.continent].filter(Boolean).join(' · ');button.append(title,text);button.onclick=()=>chooseStartCity(option.id,city.name,button);grid.append(button)}missionTarget.append(grid);
+    for(const option of activeMission.startOptions||[]){const city=option.startPlace||{},button=document.createElement('button');button.type='button';button.className='missionChoiceCard';button.dataset.optionId=option.id;const title=document.createElement('b');title.textContent=city.name||'출발 도시';const text=document.createElement('span');text.textContent=[city.region,city.continent].filter(Boolean).join(' · ');button.append(title,text);bindStartChoiceButton(button,option.id,city.id||option.id,city.name);grid.append(button)}missionTarget.append(grid);
   }else if(activeMission.kind==='staged'){
     const stage=currentStage(),cargo=activeMission.item&&missionProgress?.cargoItemId===activeMission.item.id?activeMission.item.name:null;
     missionTarget.innerHTML=`<div class="stageBox"><div class="stageNow">${escapeHtml(missionConditionText())}</div><p>${escapeHtml(stage?.instruction||'모든 단계를 완료했습니다.')}</p>${cargo?`<div class="cargo">현재 적재 물품: ${escapeHtml(cargo)}</div>`:''}</div>`;
@@ -202,30 +202,41 @@ function renderMission(){
   updateMissionBanner();if(!missionPanel.classList.contains('show'))missionToggle.classList.add('show');
 }
 
-let startChoicePending=false;
-function chooseStartCity(optionId,cityName,selectedCard){
+let startChoicePending=false,pendingStartChoice=null,startChoiceRollback=null;
+function bindStartChoiceButton(button,optionId,placeId,cityName){
+  const choose=e=>{e.preventDefault();chooseStartCity(optionId,placeId,cityName,button)};
+  // snapshot이 버튼 DOM을 다시 만들기 전에 pointerdown에서 즉시 처리한다.
+  button.addEventListener('pointerdown',choose,{passive:false});
+  button.addEventListener('click',e=>{if(e.detail===0)choose(e)});
+}
+function chooseStartCity(optionId,placeId,cityName,selectedCard){
   if(startChoicePending)return;
-  startChoicePending=true;
+  startChoicePending=true;pendingStartChoice={optionId:String(optionId),placeId:String(placeId||optionId),cityName:String(cityName||'출발 도시')};startChoiceRollback=missionProgress?{...missionProgress}:missionProgress;
   for(const k in keys)keys[k]=false;
   const cards=[...missionPanel.querySelectorAll('.missionChoiceCard')];
   for(const card of cards){card.disabled=true;card.classList.toggle('isSelecting',card===selectedCard||card.dataset.optionId===String(optionId))}
-  missionFeedback.className='good';missionFeedback.textContent=`${cityName} 선택 중…`;
-  socket.emit('chooseStartCity',{optionId},result=>{
-    startChoicePending=false;
-    if(!result?.ok){
-      for(const card of cards){card.disabled=false;card.classList.remove('isSelecting')}
-      missionFeedback.className='bad';missionFeedback.textContent=result?.error||'출발 도시를 선택하지 못했습니다.';
-      showToast(result?.error||'출발 도시를 선택하지 못했습니다.','warn');
+  missionFeedback.className='good';missionFeedback.textContent=`${cityName} 선택 완료 · 서버 확인 중`;
+  // 서버 응답 전에도 즉시 선택 완료 화면으로 전환한다. 실패할 때만 원상 복구한다.
+  missionProgress=mergePendingStartChoice(missionProgress);lastMissionRenderKey='';renderMission();updateTravelLockOverlay();
+  socket.timeout(5000).emit('chooseStartCity',{optionId},(timeoutError,result)=>{
+    const failed=!!timeoutError||!result?.ok;
+    if(failed){
+      const message=timeoutError?'서버 응답이 늦습니다. 다시 선택하세요.':result?.error||'출발 도시를 선택하지 못했습니다.';
+      startChoicePending=false;pendingStartChoice=null;missionProgress=startChoiceRollback;startChoiceRollback=null;lastMissionRenderKey='';renderMission();setMissionPanelOpen(true);
+      missionFeedback.className='bad';missionFeedback.textContent=message;showToast(message,'warn');
       return;
     }
-    serverSelf=result.self||serverSelf;if(result.self){self={...result.self};mode=result.self.mode}
-    applyMissionState(result.mission,result.progress,false);
+    startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;serverSelf=result.self||serverSelf;if(result.self){self={...result.self};mode=result.self.mode}
+    lastMissionRenderKey='';applyMissionState(result.mission,result.progress,false);
     showToast(`${cityName} 선택 완료. 교사의 출발 신호를 기다리세요.`,'good');
     missionPanel.classList.remove('show','choiceRequired');missionToggle.classList.add('show');updateTravelLockOverlay();
   });
 }
 function escapeHtml(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function applyMissionState(mission,progress,announce=false){const changed=mission?.id&&mission?.id!==activeMission?.id,wasCompleted=missionProgress?.status==='completed';activeMission=mission||null;missionProgress=progress||null;const justCompleted=!wasCompleted&&missionProgress?.status==='completed';renderMission();updateTravelLockOverlay();if(justCompleted)showToast(`${medalText(missionProgress.finishRank)} 미션 성공! 이제 이동속도 ${formatSpeedBoost(completionBoost())}배로 자유 탐험할 수 있습니다.`,'good');if(announce&&activeMission){showToast(`새 수행 미션: ${activeMission.title}`);setMissionPanelOpen(true)}else if(changed&&activeMission)setMissionPanelOpen(true)}
+let lastMissionRenderKey='';
+function missionRenderKey(mission,progress){return [mission?.id||'',mission?.phase||'',progress?.selectedStartPlaceId||'',progress?.selectedStartPlaceName||'',progress?.status||'',progress?.finishRank||'',progress?.stageIndex||0,startChoicePending?pendingStartChoice?.optionId||'pending':''].join('|')}
+function mergePendingStartChoice(progress){if(!startChoicePending||!pendingStartChoice||progress?.selectedStartPlaceId)return progress;return {...(progress||{}),selectedStartPlaceId:pendingStartChoice.placeId,selectedStartPlaceName:pendingStartChoice.cityName,status:'assigned',statusLabel:'수행 전'}}
+function applyMissionState(mission,progress,announce=false){const changed=mission?.id&&mission?.id!==activeMission?.id,wasCompleted=missionProgress?.status==='completed';activeMission=mission||null;missionProgress=mergePendingStartChoice(progress)||null;const justCompleted=!wasCompleted&&missionProgress?.status==='completed',renderKey=missionRenderKey(activeMission,missionProgress);if(renderKey!==lastMissionRenderKey){lastMissionRenderKey=renderKey;renderMission()}updateTravelLockOverlay();if(justCompleted)showToast(`${medalText(missionProgress.finishRank)} 미션 성공! 이제 이동속도 ${formatSpeedBoost(completionBoost())}배로 자유 탐험할 수 있습니다.`,'good');if(announce&&activeMission){showToast(`새 수행 미션: ${activeMission.title}`);setMissionPanelOpen(true)}else if(changed&&activeMission)setMissionPanelOpen(true)}
 function applyClassSettings(next){classSettings={...classSettings,...(next||{})};updateTravelLockOverlay();if(classSettings.paused)clearKeys()}
 function applyModeUI(){
   const busy=!!serverSelf?.transition,travelAllowed=canTravelNow();
@@ -253,7 +264,7 @@ async function ungzipResponse(url){const response=await fetch(url);if(!response.
 Promise.all([ungzipResponse('/assets/maps/world.cds.gz'),atlas.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()})]).then(([buf,_a,_s,_w,catalog])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
 
 socket.on('connect',()=>{net.textContent='● 서버 연결';net.className='good'});
-socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});
+socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});
 socket.on('connect_error',()=>{net.textContent='● 연결 실패';net.className='bad'});
 socket.on('missionPublished',data=>applyMissionState(data?.mission,{status:'assigned',statusLabel:'수행 전'},true));
 socket.on('missionStarted',data=>{applyMissionState(data?.mission||activeMission,missionProgress,false);showToast('출발! 목적지를 향해 이동하세요.','good');clearKeys();updateTravelLockOverlay()});
@@ -401,7 +412,7 @@ function drawCityLabels(cw,ch,left,top){
 }
 
 function medalText(rank){const n=Number(rank)||0;return n===1?'🥇':n===2?'🥈':n===3?'🥉':n?`${n}위 완료`:'완료'}
-function speedBoostForRank(rank){const n=Number(rank)||0;return n===1?4:n===2?3:n===3?2:n>=4?1.5:1}function formatSpeedBoost(value){const n=Number(value)||1;return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'')}function completionBoost(){if(missionProgress?.status!=='completed')return 1;const serverBoost=Number(serverSelf?.speedBoostMultiplier);return serverBoost>1?serverBoost:speedBoostForRank(missionProgress?.finishRank)}
+function speedBoostForRank(rank){const n=Number(rank)||0;return n===1?10:n===2?5:n===3?3:1}function formatSpeedBoost(value){const n=Number(value)||1;return Number.isInteger(n)?String(n):n.toFixed(1).replace(/\.0$/,'')}function completionBoost(){if(missionProgress?.status!=='completed')return 1;const serverBoost=Number(serverSelf?.speedBoostMultiplier);return serverBoost>1?serverBoost:speedBoostForRank(missionProgress?.finishRank)}
 function drawMedalBadge(screenX,screenY,rank){const n=Number(rank)||0;if(!n)return;const colors=n===1?['#f6d365','#9b6a17']:n===2?['#e5edf2','#7b8a94']:n===3?['#d99763','#7b4325']:['#9fe1b0','#356b45'];ctx.save();ctx.translate(Math.round(screenX),Math.round(screenY));ctx.fillStyle=n<=3?'#b7353d':'#407b55';ctx.beginPath();ctx.moveTo(-7,-10);ctx.lineTo(-2,1);ctx.lineTo(0,-4);ctx.lineTo(2,1);ctx.lineTo(7,-10);ctx.closePath();ctx.fill();const g=ctx.createRadialGradient(-3,-4,1,0,0,10);g.addColorStop(0,colors[0]);g.addColorStop(1,colors[1]);ctx.fillStyle=g;ctx.strokeStyle='#3b2a17';ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,0,10,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle=n<=3?'#4b3216':'#173a25';ctx.font='bold 10px "Malgun Gothic",sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n<=3?String(n):'✓',0,.5);ctx.restore()}
 function completionSuffix(p){const n=Number(p?.finishRank)||0;if(!n)return'';const boost=Number(p?.speedBoostMultiplier)>1?Number(p.speedBoostMultiplier):speedBoostForRank(n);return`${n}위 완료 · 속도×${formatSpeedBoost(boost)}`}
 function drawNameLabel(screenX,screenY,name,isMine,suffix=''){

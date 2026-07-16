@@ -16,12 +16,12 @@ function distance(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
   assert.equal((await ack(teacher,'teacherStartArrivalRace',{})).ok,true);
   student.emit('setTarget',published.mission.targetPlace.point);
   const completed=await once(student,'snapshot',s=>s.progress?.status==='completed',20000);
-  assert.equal(completed.you.finishRank,1);assert.equal(completed.you.speedBoostMultiplier,4);assert.equal(completed.you.missionCompleted,true);
+  assert.equal(completed.you.finishRank,1);assert.equal(completed.you.speedBoostMultiplier,10);assert.equal(completed.you.missionCompleted,true);
   const origin={x:completed.you.x,y:completed.you.y};let moved=null;
   for(const dir of ['right','left','down','up']){student.emit('input',{[dir]:true});await new Promise(r=>setTimeout(r,650));student.emit('input',{[dir]:false});const snap=await once(student,'snapshot',s=>s.you?.missionCompleted===true,5000);if(distance(origin,snap.you)>10){moved=snap;break;}}
   assert.ok(moved,'완료한 학생이 자유 탐험으로 이동하지 못했습니다.');
-  const teacherSnap=await once(teacher,'teacherSnapshot',s=>s.players?.some(p=>p.name==='완료자'&&p.finishRank===1&&p.speedBoostMultiplier===4));
+  const teacherSnap=await once(teacher,'teacherSnapshot',s=>s.players?.some(p=>p.name==='완료자'&&p.finishRank===1&&p.speedBoostMultiplier===10));
   assert.ok(teacherSnap.players.some(p=>p.name==='완료자'&&p.missionCompleted));
-  console.log(JSON.stringify({ok:true,rank:1,speedBoost:4,movedPixels:Math.round(distance(origin,moved.you))}));
+  console.log(JSON.stringify({ok:true,rank:1,speedBoost:10,movedPixels:Math.round(distance(origin,moved.you))}));
   teacher.disconnect();student.disconnect();
 })().catch(error=>{console.error(error);process.exit(1);});

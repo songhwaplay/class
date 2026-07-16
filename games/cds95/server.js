@@ -33,7 +33,7 @@ const CURRENT_HEAD_FACTOR = 0.23;
 const CURRENT_CROSS_FACTOR = 0.14;
 const WIND_TAIL_FACTOR = 1.00;
 const WIND_HEAD_FACTOR = 0.65;
-const GAME_HOURS_PER_REAL_SECOND = 4;
+const GAME_HOURS_PER_REAL_SECOND = 8;
 const PORT_ENTRY_GAME_MINUTES = 360;
 const PORT_EXIT_GAME_MINUTES = 240;
 const LAND_PREP_GAME_MINUTES = 360;
@@ -52,6 +52,10 @@ const NEARBY_RADIUS = 34 * TILE;
 const MAX_ROOM_PLAYERS = 45;
 const PORT_RADIUS = 2.15 * TILE;
 const LAND_GATE_RADIUS = 2.25 * TILE;
+// 항구 행동은 도시 근처가 아니라 원작의 실제 해상/육상 출입 셀에 닿았을 때만 허용한다.
+// 파나마처럼 좁은 지협 반대편 바다에서 항구 명령이 뜨는 것을 막는다.
+const SEA_PORT_TOUCH_RADIUS_TILES = 1.10;
+const LAND_PORT_TOUCH_RADIUS_TILES = 1.25;
 const MAX_MISSION_TITLE = 50;
 const MAX_MISSION_TEXT = 500;
 const store = new ClassroomStore();
@@ -934,7 +938,7 @@ function advanceStagedMission(roomCode, player, mission, progress, stage, label)
 
 
 function nearbyCatalogPort(player) {
-  const place = nearestOriginalCityAccess(player, 3.2);
+  const place = nearestOriginalCityAccess(player);
   if (!place) return null;
   // 내륙 도시는 육상 통과·도착만 가능하다. 실제 바다 출입구가 있는 도시만 승선 후보가 된다.
   if (player.mode === 'land' && (!Array.isArray(place.originalSeaEntryPoints) || !place.originalSeaEntryPoints.length)) return null;
@@ -970,11 +974,11 @@ function arrivedAtOriginalCity(player, place) {
   if (!player || !place?.isOriginalCity) return false;
   const nearAny = (points, radiusTiles) => Array.isArray(points) && points.some((point) => distanceXY(player.x, player.y, point.x, point.y) <= radiusTiles * TILE);
   if (player.mode === 'sea') {
-    return !!place.canEnterFromSea && nearAny(place.originalSeaEntryPoints, 3.2);
+    return !!place.canEnterFromSea && nearAny(place.originalSeaEntryPoints, SEA_PORT_TOUCH_RADIUS_TILES);
   }
   if (player.mode === 'land') {
     // 도시 마커 자체는 통행 불가 타일일 수 있으므로 원작 육상 출입 경계에 닿으면 도착으로 인정한다.
-    return nearAny(place.originalLandEntryPoints, 2.2) || nearAny(place.originalMarkerPoints, 2.6);
+    return nearAny(place.originalLandEntryPoints, LAND_PORT_TOUCH_RADIUS_TILES) || nearAny(place.originalMarkerPoints, 1.35);
   }
   return false;
 }
@@ -1058,8 +1062,11 @@ function currentCityForPlayer(player) {
   return place?.isOriginalCity ? place : null;
 }
 
-function nearestOriginalCityAccess(player, radiusTiles = 3.2) {
+function nearestOriginalCityAccess(player, radiusTiles = null) {
   if (!player || (player.mode !== 'sea' && player.mode !== 'land')) return null;
+  const touchRadiusTiles = Number.isFinite(radiusTiles)
+    ? Math.max(0.25, Number(radiusTiles))
+    : (player.mode === 'sea' ? SEA_PORT_TOUCH_RADIUS_TILES : LAND_PORT_TOUCH_RADIUS_TILES);
   let best = null;
   let bestDistance = Infinity;
   for (const place of RESOLVED_PLACES.values()) {
@@ -1068,7 +1075,7 @@ function nearestOriginalCityAccess(player, radiusTiles = 3.2) {
     if (!Array.isArray(points) || !points.length) continue;
     for (const point of points) {
       const d = distanceXY(player.x, player.y, point.x, point.y);
-      if (d <= radiusTiles * TILE && d < bestDistance) {
+      if (d <= touchRadiusTiles * TILE && d < bestDistance) {
         best = place;
         bestDistance = d;
       }
@@ -1512,7 +1519,8 @@ io.on('connection', (socket) => {
       const shipPortName = RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name || '출발 항구';
       return ack({ ok:false, error:`${place.name}에는 내 배가 없습니다. 배는 ${shipPortName}에 정박해 있습니다.` });
     }
-    const near = entryPoints.some((point) => distanceXY(p.x, p.y, point.x, point.y) <= 3.2 * TILE);
+    const touchRadiusTiles = fromSea ? SEA_PORT_TOUCH_RADIUS_TILES : LAND_PORT_TOUCH_RADIUS_TILES;
+    const near = entryPoints.some((point) => distanceXY(p.x, p.y, point.x, point.y) <= touchRadiusTiles * TILE);
     if (!near) return ack({ ok:false, error:`${place.name}에 더 가까이 이동하세요.` });
     const destinationMode = fromSea ? 'land' : 'sea';
     const destinationPoint = fromSea ? safeLandSpawn(room, place) : safeHarborSpawn(room, place);
@@ -1999,6 +2007,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v44: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v45: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
