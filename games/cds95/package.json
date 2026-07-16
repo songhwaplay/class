@@ -1,6 +1,6 @@
 {
   "name": "cds95-classroom",
-  "version": "29.0.0",
+  "version": "30.0.0",
   "private": true,
   "description": "CDS95 실시간 도착 미션 학습 플랫폼",
   "main": "server.js",

@@ -895,12 +895,27 @@ function advanceStagedMission(roomCode, player, mission, progress, stage, label)
 function nearbyCatalogPort(player) {
   const place = nearestOriginalCityAccess(player, 3.2);
   if (!place) return null;
+  // 내륙 도시는 육상 통과·도착만 가능하다. 실제 바다 출입구가 있는 도시만 승선 버튼을 표시한다.
+  if (player.mode === 'land' && (!Array.isArray(place.originalSeaEntryPoints) || !place.originalSeaEntryPoints.length)) return null;
   return {
     placeId: place.id,
     placeName: place.name,
     actionLabel: player.mode === 'sea' ? `${place.name} 상륙` : `${place.name} 승선`,
     nextMode: player.mode === 'sea' ? 'land' : 'sea'
   };
+}
+
+function arrivedAtOriginalCity(player, place) {
+  if (!player || !place?.isOriginalCity) return false;
+  const nearAny = (points, radiusTiles) => Array.isArray(points) && points.some((point) => distanceXY(player.x, player.y, point.x, point.y) <= radiusTiles * TILE);
+  if (player.mode === 'sea') {
+    return !!place.canEnterFromSea && nearAny(place.originalSeaEntryPoints, 3.2);
+  }
+  if (player.mode === 'land') {
+    // 도시 마커 자체는 통행 불가 타일일 수 있으므로 원작 육상 출입 경계에 닿으면 도착으로 인정한다.
+    return nearAny(place.originalLandEntryPoints, 2.2) || nearAny(place.originalMarkerPoints, 2.6);
+  }
+  return false;
 }
 
 function activeMissionState(roomCode, studentName, player = null) {
@@ -1672,7 +1687,7 @@ function updateMissionProgress(roomCode, p) {
     p.mission = `${target.name} 도착`;
     const resolvedTarget = RESOLVED_PLACES.get(target.id);
     const arrived = resolvedTarget?.isOriginalCity
-      ? p.mode === 'city' && p.currentCityId === resolvedTarget.id
+      ? arrivedAtOriginalCity(p, resolvedTarget)
       : ArrivalZones.containsPlayer(
           p,
           resolvedTarget,
