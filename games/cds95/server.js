@@ -24,6 +24,7 @@ const LISBON = Object.freeze({
 });
 const SEA_BASE_SPEED = 132;
 const LAND_BASE_SPEED = 96;
+const COMPLETION_SPEED_MULTIPLIER = 2;
 const CURRENT_TAIL_FACTOR = 0.30;
 const CURRENT_HEAD_FACTOR = 0.08;
 const CURRENT_CROSS_FACTOR = 0.14;
@@ -202,11 +203,12 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => res.json(publicMissionCatalog()));
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 29,
+  version: 35,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
   landBaseSpeed: LAND_BASE_SPEED,
+  completionSpeedMultiplier: COMPLETION_SPEED_MULTIPLIER,
   currentTailAssistPercent: Math.round(CURRENT_TAIL_FACTOR * 100),
   currentHeadPenaltyPercent: Math.round(CURRENT_HEAD_FACTOR * 100),
   gameHoursPerRealSecond: GAME_HOURS_PER_REAL_SECOND,
@@ -419,8 +421,7 @@ function arrivalRaceTravelGate(player) {
   const progress = progressFor(player.roomCode, player.name, mission.id, false);
   if (!progress?.selectedStartPlaceId) return { ok: false, error: '먼저 출발 도시를 선택하세요.' };
   if (mission.phase !== 'running') return { ok: false, error: '출발 준비 완료. 교사가 출발 버튼을 누를 때까지 기다리세요.' };
-  if (progress.status === 'completed') return { ok: false, error: '이미 목적지에 도착했습니다.' };
-  return { ok: true, mission, progress };
+  return { ok: true, mission, progress, completed: progress.status === 'completed' };
 }
 
 function selectedMission(activeMission, progress) {
@@ -1094,6 +1095,10 @@ function updateSupplies(p, nowGameMinutes) {
 }
 
 function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
+  const activeMission = store.room(p.roomCode).activeMission;
+  const raceProgress = isArrivalRace(activeMission) ? progressFor(p.roomCode, p.name, activeMission.id, false) : null;
+  const raceCompleted = raceProgress?.status === 'completed';
+  const finishRank = Number.isFinite(raceProgress?.finishRank) ? raceProgress.finishRank : null;
   const transition = p.transition ? {
     kind: p.transition.kind,
     label: p.transition.label,
@@ -1115,6 +1120,9 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     noticeSeq: p.noticeSeq || 0,
     noticeText: p.noticeText || '',
     missionStatus: p.missionStatus || 'assigned',
+    finishRank,
+    missionCompleted: raceCompleted,
+    speedBoostMultiplier: raceCompleted ? COMPLETION_SPEED_MULTIPLIER : 1,
     currentCityId: p.currentCityId || null,
     currentCityName: currentCityForPlayer(p)?.name || '',
     lastCityId: p.lastCityId || null,
@@ -1199,8 +1207,7 @@ function completeMission(roomCode, p, mission, progress, label) {
   p.missionStatus = 'completed';
   p.mission = `${mission.title} · 완료`;
   const rankText = progress.finishRank ? ` ${progress.finishRank}위로` : '';
-  setNotice(p, `미션 성공!${rankText} ${label || mission.title}에 도착했습니다.`);
-  stopPlayer(p);
+  setNotice(p, `미션 성공!${rankText} ${label || mission.title}에 도착했습니다. 메달을 달고 이동속도 2배로 자유 탐험할 수 있습니다.`);
   store.scheduleSave();
   const activeMission = store.room(roomCode).activeMission;
   const result = publicProgress(progress, isArrivalRace(activeMission) ? activeMission : mission);
@@ -1790,11 +1797,13 @@ function movePlayer(p, dt) {
 
   let vx = (p.input.right ? 1 : 0) - (p.input.left ? 1 : 0);
   let vy = (p.input.down ? 1 : 0) - (p.input.up ? 1 : 0);
+  let targetDistance = Infinity;
 
   if (p.target) {
     const dx = wrapDx(p.target.x, p.x);
     const dy = p.target.y - p.y;
     const dist = Math.hypot(dx, dy);
+    targetDistance = dist;
     if (dist < 4) {
       p.target = null;
       p.moving = false;
@@ -1818,7 +1827,8 @@ function movePlayer(p, dt) {
   const multiplier = p.mode === 'sea' ? TERRAIN_SPEED.sea : currentTerrain.multiplier;
   const baseSpeed = p.mode === 'sea' ? SEA_BASE_SPEED : LAND_BASE_SPEED;
   const fatigueMultiplier = Fatigue.speedMultiplier(p.fatigue);
-  const step = baseSpeed * multiplier * fatigueMultiplier * dt;
+  const completionMultiplier = travel.completed ? COMPLETION_SPEED_MULTIPLIER : 1;
+  const step = Math.min(baseSpeed * multiplier * fatigueMultiplier * completionMultiplier * dt, targetDistance);
   const ox = p.x;
   const oy = p.y;
   let driftX = 0;
@@ -1827,7 +1837,7 @@ function movePlayer(p, dt) {
     const current = OceanCurrent.currentAtPixel(ox, oy);
     const alignment = vx * current.x + vy * current.y;
     const factor = OceanCurrent.movementFactor(alignment, CURRENT_TAIL_FACTOR, CURRENT_HEAD_FACTOR, CURRENT_CROSS_FACTOR);
-    const driftSpeed = SEA_BASE_SPEED * factor * current.strength;
+    const driftSpeed = SEA_BASE_SPEED * factor * current.strength * completionMultiplier;
     driftX = current.x * driftSpeed * dt;
     driftY = current.y * driftSpeed * dt;
     p.currentName = current.name;
@@ -1903,6 +1913,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v28: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v35: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

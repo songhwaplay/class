@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>NIM & COIN MATCH</title>
     <style>
         :root {
@@ -914,11 +914,99 @@
                 justify-content: space-between;
             }
         }
-    </style>
-    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
-            onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';"></script>
+    
+/* iPad·터치 기기 공통 보완 */
+button,
+input,
+select,
+textarea,
+[onclick],
+.set-card,
+.point,
+.piece,
+.gem,
+.coin,
+.pole,
+.disk,
+.quiz-btn,
+.action-btn,
+.option-btn,
+.small-btn,
+.primary-btn,
+.secondary-btn,
+.danger-btn,
+.tab,
+.room-tab,
+.seg,
+.music-segment,
+.vol-block,
+.diff-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (pointer: coarse) {
+    button,
+    .action-btn,
+    .option-btn,
+    .small-btn,
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn,
+    .tab,
+    .room-tab,
+    .quiz-btn,
+    .diff-btn {
+        min-height: 44px;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px; /* iOS Safari 자동 확대 방지 */
+    }
+
+    .point,
+    .set-card,
+    .gem,
+    .coin,
+    .pole,
+    .disk {
+        cursor: pointer;
+    }
+}
+
+.tablet-landscape-hint {
+    display: none;
+}
+
+@media (pointer: coarse) and (orientation: portrait) and (max-width: 900px) {
+    .tablet-landscape-hint {
+        display: block;
+        position: fixed;
+        left: 50%;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        z-index: 10000;
+        width: max-content;
+        max-width: calc(100vw - 24px);
+        padding: 8px 12px;
+        border: 1px solid rgba(240, 215, 124, .65);
+        border-radius: 7px;
+        background: rgba(5, 7, 11, .90);
+        color: #fff4cc;
+        font: 12px/1.4 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+        text-align: center;
+        box-shadow: 0 5px 18px rgba(0,0,0,.45);
+        pointer-events: none;
+    }
+}
+
+</style>
 </head>
 <body>
+<div class="tablet-landscape-hint" aria-hidden="true">화면이 좁으면 기기를 가로로 돌리면 더 편하게 플레이할 수 있습니다.</div>
+
 <audio id="bgm" src="../../assets/sound/nimgame.mp3" loop></audio>
 
 <div class="app-shell">
@@ -950,7 +1038,7 @@
                         <button class="small-btn" onclick="switchRoomMode('host')">NEW CODE</button>
                     </div>
                 </div>
-                <div class="room-help">상대방에게 이 3자리 번호만 알려주세요. 상대방은 같은 홈페이지에서 ‘방 입장’을 누릅니다.</div>
+                <div class="room-help"><strong style="color:var(--gold-bright)">방을 만든 사람이 PLAYER 1로 첫 라운드를 선공합니다.</strong><br>실력 차이가 있다면 님게임을 덜 해본 사람이 방을 만드세요.</div>
             </div>
 
             <div class="room-pane hidden" id="join-room-pane">
@@ -1038,7 +1126,7 @@
         </div>
 
         <div class="foot-note" id="lobby-foot-note">
-            방장은 3자리 방 번호를 알려주고, 상대방은 같은 홈페이지에서 방 번호를 입력합니다.
+            <strong style="color:var(--gold-bright)">방을 만든 사람이 PLAYER 1로 첫 라운드를 선공합니다.</strong><br>실력 차이가 있다면 님게임을 덜 해본 사람이 방을 만들고, 상대방은 방 번호로 입장하세요.
         </div>
 
         <div class="music-control">
@@ -1142,8 +1230,7 @@
     };
 
     let myRole = null;               // "host" | "guest"
-    let peer = null;
-    let conn = null;
+    let socket = null;
     let connected = false;
     let targetPeerId = null;
     let currentRoomCode = null;
@@ -1162,8 +1249,7 @@
     window.addEventListener("load", initialize);
     document.addEventListener("pointerdown", startBackgroundMusic, { once: true });
     window.addEventListener("beforeunload", () => {
-        try { if (conn) conn.close(); } catch (_) {}
-        try { if (peer) peer.destroy(); } catch (_) {}
+        try { if (socket) socket.close(); } catch (_) {}
     });
 
     document.addEventListener("keydown", (event) => {
@@ -1183,6 +1269,9 @@
         }
     });
 
+    const GAME_ID = "nimgame";
+    const GAME_SERVER_URL = "wss://classroom-game-hub.onrender.com";
+
     function initialize() {
         setMusicVolume(0.6, 3);
         const params = new URLSearchParams(location.search);
@@ -1194,6 +1283,7 @@
             roomMode = "join";
             myRole = "guest";
             targetPeerId = roomCode;
+            currentRoomCode = roomCode;
             $("join-code-input").value = roomCode;
             showRoomPane("join");
             $("share-panel").classList.add("hidden");
@@ -1201,7 +1291,7 @@
             $("lobby-foot-note").textContent = `방 ${roomCode}에 연결하고 있습니다.`;
             lockGuestSettings(true);
             setLobbyStatus("connecting", `방 ${roomCode}에 연결하는 중...`);
-            startPeer(false);
+            openSocket("join", roomCode);
         } else {
             switchRoomMode("host");
         }
@@ -1237,7 +1327,10 @@
             $("lobby-foot-note").textContent = "화면의 3자리 방 번호를 상대방에게 알려주세요.";
             lockGuestSettings(false);
             setLobbyStatus("connecting", "새 방 번호를 만드는 중...");
-            startPeer(true);
+            currentRoomCode = generateRoomCode();
+            $("room-code-display").textContent = currentRoomCode;
+            $("room-url").value = "방 주소 생성 중...";
+            openSocket("host", currentRoomCode);
         }
     }
 
@@ -1252,7 +1345,6 @@
     function generateRoomCode() {
         const cryptoObj = window.crypto || window.msCrypto;
         let number;
-
         if (cryptoObj && cryptoObj.getRandomValues) {
             const value = new Uint32Array(1);
             cryptoObj.getRandomValues(value);
@@ -1264,14 +1356,7 @@
     }
 
     function normalizeRoomCode(value) {
-        return String(value || "")
-            .toUpperCase()
-            .replace(/[^0-9]/g, "")
-            .slice(0, 3);
-    }
-
-    function peerIdForRoom(code) {
-        return `nim-class-${normalizeRoomCode(code)}`;
+        return String(value || "").replace(/[^0-9]/g, "").slice(0, 3);
     }
 
     function formatJoinCode(input) {
@@ -1280,7 +1365,6 @@
 
     function joinRoom() {
         if (connected) return;
-
         const code = normalizeRoomCode($("join-code-input").value);
         $("join-code-input").value = code;
 
@@ -1300,141 +1384,110 @@
         $("start-btn").textContent = "CONNECTING...";
         $("lobby-foot-note").textContent = `방 ${code}에 연결하고 있습니다.`;
         setLobbyStatus("connecting", `방 ${code}에 연결하는 중...`);
-        startPeer(false);
+        openSocket("join", code);
     }
 
     function resetPeerTransport() {
         connected = false;
-        try { if (conn) conn.close(); } catch (_) {}
-        try { if (peer) peer.destroy(); } catch (_) {}
-        conn = null;
-        peer = null;
+        try { if (socket) socket.close(); } catch (_) {}
+        socket = null;
     }
 
-    function startPeer(isHost) {
-        if (typeof Peer === "undefined") {
-            setLobbyStatus("error", "PeerJS를 불러오지 못했습니다. 인터넷 연결을 확인하세요.");
+    function openSocket(mode, roomCode) {
+        resetPeerTransport();
+        socket = new WebSocket(GAME_SERVER_URL);
+
+        socket.addEventListener("open", () => {
+            socket.send(JSON.stringify({
+                type: mode === "host" ? "CREATE_ROOM" : "JOIN_ROOM",
+                gameId: GAME_ID,
+                roomCode,
+                name: "Player"
+            }));
+        });
+
+        socket.addEventListener("message", event => {
+            let message;
+            try { message = JSON.parse(event.data); } catch (_) { return; }
+            handleServerMessage(message);
+        });
+
+        socket.addEventListener("close", () => {
+            if (connected) handleDisconnect("상대방 또는 통신 서버와의 연결이 끊어졌습니다.");
+        });
+
+        socket.addEventListener("error", () => {
+            setLobbyStatus("error", "게임 서버에 연결할 수 없습니다.");
+        });
+    }
+
+    function handleServerMessage(message) {
+        if (!message || !message.type) return;
+
+        if (message.type === "ROOM_CREATED") {
+            currentRoomCode = message.roomCode;
+            hostCreateAttempts = 0;
+            $("room-code-display").textContent = currentRoomCode;
+            $("room-url").value = `${location.origin}${location.pathname}?room=${encodeURIComponent(currentRoomCode)}`;
+            setLobbyStatus("connecting", `방 ${currentRoomCode} — 상대방 접속 대기 중...`);
             return;
         }
 
-        if (isHost) {
-            currentRoomCode = generateRoomCode();
-            $("room-code-display").textContent = currentRoomCode;
-            $("room-url").value = "방 주소 생성 중...";
-            peer = new Peer(peerIdForRoom(currentRoomCode), { debug: 1 });
-        } else {
-            peer = new Peer(undefined, { debug: 1 });
+        if (message.type === "ROOM_EXISTS") {
+            if (myRole === "host" && hostCreateAttempts < 10) {
+                hostCreateAttempts += 1;
+                currentRoomCode = generateRoomCode();
+                $("room-code-display").textContent = currentRoomCode;
+                openSocket("host", currentRoomCode);
+            } else {
+                setLobbyStatus("error", "빈 방 번호를 만들지 못했습니다. 다시 시도하세요.");
+            }
+            return;
         }
 
-        peer.on("open", () => {
-            if (isHost) {
-                hostCreateAttempts = 0;
-                const shareUrl = `${location.origin}${location.pathname}?room=${encodeURIComponent(currentRoomCode)}`;
-                $("room-url").value = shareUrl;
-                setLobbyStatus("connecting", `방 ${currentRoomCode} — 상대방 접속 대기 중...`);
-            } else {
-                const connection = peer.connect(peerIdForRoom(targetPeerId), {
-                    reliable: true,
-                    serialization: "json",
-                    metadata: { roomCode: targetPeerId }
-                });
-                bindConnection(connection);
-            }
-        });
-
-        peer.on("connection", (connection) => {
-            if (!isHost) {
-                connection.close();
-                return;
-            }
-
-            if (conn && conn.open) {
-                connection.close();
-                return;
-            }
-            bindConnection(connection);
-        });
-
-        peer.on("disconnected", () => {
-            if (!connected) setLobbyStatus("error", "통신 서버 연결이 끊겼습니다.");
-        });
-
-        peer.on("error", (error) => {
-            if (isHost && error && error.type === "unavailable-id" && hostCreateAttempts < 3) {
-                hostCreateAttempts += 1;
-                try { peer.destroy(); } catch (_) {}
-                setTimeout(() => startPeer(true), 120);
-                return;
-            }
-
-            const message = peerErrorMessage(error);
-            setLobbyStatus("error", message);
-            if (myRole === "guest") {
-                $("start-btn").textContent = "ROOM NOT FOUND";
-            }
-            if (!$("game-screen").classList.contains("hidden")) {
-                $("connection-chip").textContent = "● CONNECTION ERROR";
-                $("connection-chip").style.color = "var(--red)";
-            }
-        });
-    }
-
-    function bindConnection(connection) {
-        conn = connection;
-
-        connection.on("open", () => {
-            if (conn !== connection) return;
-
+        if (message.type === "PLAYER_JOINED" && myRole === "host") {
             connected = true;
-            setLobbyStatus("connected", myRole === "host"
-                ? "상대방이 접속했습니다. 게임을 시작할 수 있습니다."
-                : "방장과 연결되었습니다. 시작을 기다리는 중입니다.");
+            setLobbyStatus("connected", "상대방이 접속했습니다. 게임을 시작할 수 있습니다.");
+            $("start-btn").disabled = false;
+            $("start-btn").textContent = "START MATCH";
+            $("share-heading").textContent = "상대방 접속 완료";
+            $("copy-btn").disabled = true;
+            $("share-btn").disabled = true;
+            $("copy-code-btn").disabled = true;
+            sendPacket({ type: "config", config: getConfigSnapshot() });
+            return;
+        }
 
-            if (myRole === "host") {
-                $("start-btn").disabled = false;
-                $("start-btn").textContent = "START MATCH";
-                $("share-heading").textContent = "상대방 접속 완료";
-                $("copy-btn").disabled = true;
-                $("share-btn").disabled = true;
-                $("copy-code-btn").disabled = true;
-                $("room-code-display").textContent = currentRoomCode || "---";
-                sendPacket({ type: "config", config: getConfigSnapshot() });
-            } else {
-                $("start-btn").disabled = true;
-                $("start-btn").textContent = "WAITING FOR HOST";
-                $("lobby-foot-note").textContent = `방 ${currentRoomCode || targetPeerId}에 입장했습니다.`;
-                sendPacket({ type: "guest_ready" });
-            }
-        });
+        if (message.type === "ROOM_JOINED" && myRole === "guest") {
+            connected = true;
+            setLobbyStatus("connected", "방장과 연결되었습니다. 시작을 기다리는 중입니다.");
+            $("start-btn").disabled = true;
+            $("start-btn").textContent = "WAITING FOR HOST";
+            $("lobby-foot-note").textContent = `방 ${currentRoomCode || targetPeerId}에 입장했습니다.`;
+            sendPacket({ type: "guest_ready" });
+            return;
+        }
 
-        connection.on("data", (packet) => {
-            if (conn !== connection) return;
-            handlePacket(packet);
-        });
+        if (message.type === "ROOM_NOT_FOUND") {
+            $("start-btn").textContent = "ROOM NOT FOUND";
+            setLobbyStatus("error", "방을 찾지 못했습니다. 방 번호를 확인하세요.");
+            return;
+        }
 
-        connection.on("close", () => {
-            if (conn !== connection) return;
+        if (message.type === "ROOM_FULL") {
+            setLobbyStatus("error", "방이 가득 찼습니다.");
+            return;
+        }
 
-            conn = null;
+        if (message.type === "GAME_MESSAGE") {
+            handlePacket(message.payload);
+            return;
+        }
+
+        if (message.type === "PLAYER_LEFT" || message.type === "ROOM_CLOSED") {
             connected = false;
-            handleDisconnect("상대방과의 연결이 끊어졌습니다.");
-        });
-
-        connection.on("error", () => {
-            if (conn !== connection) return;
-
-            conn = null;
-            connected = false;
-            handleDisconnect("상대방과 통신하는 중 오류가 발생했습니다.");
-        });
-    }
-
-    function peerErrorMessage(error) {
-        const type = error && error.type ? error.type : "";
-        if (type === "peer-unavailable") return "방을 찾지 못했습니다. 방 번호를 확인하거나 방장이 나갔는지 확인하세요.";
-        if (type === "network") return "네트워크 오류가 발생했습니다. 학교 Wi-Fi 상태를 확인하세요.";
-        if (type === "server-error" || type === "socket-error") return "통신 서버에 연결할 수 없습니다.";
-        return "온라인 연결 중 오류가 발생했습니다.";
+            handleDisconnect("상대방이 방에서 나갔습니다.");
+        }
     }
 
     function handleDisconnect(message) {
@@ -1442,7 +1495,6 @@
         $("cancel-btn").disabled = true;
         $("connection-chip").textContent = "● DISCONNECTED";
         $("connection-chip").style.color = "var(--red)";
-
         showModal("연결 종료", `<p>${message}</p><p>페이지를 새로 열어 다시 방을 만들어 주세요.</p>`, [
             { label: "RELOAD", className: "primary-btn", action: () => location.reload() }
         ]);
@@ -1450,8 +1502,8 @@
 
     function sendPacket(packet) {
         try {
-            if (!conn || !conn.open) return false;
-            conn.send(packet);
+            if (!socket || socket.readyState !== WebSocket.OPEN) return false;
+            socket.send(JSON.stringify({ type: "GAME_MESSAGE", payload: packet }));
             return true;
         } catch (_) {
             return false;
@@ -2256,7 +2308,7 @@
                 ${modeRules}
                 <li>선택을 확인한 뒤 <strong>TAKE</strong> 버튼을 누릅니다.</li>
                 <li>${endingRule}</li>
-                <li>선공은 새 라운드마다 PLAYER 1과 PLAYER 2가 번갈아 맡습니다.</li>
+                <li><strong>첫 라운드는 방을 만든 PLAYER 1이 선공</strong>합니다. 이후 새 라운드에서는 PLAYER 1과 PLAYER 2가 번갈아 선공합니다.</li>
              </ul>`,
             [{ label: "CLOSE", className: "secondary-btn", action: closeModal }]
         );

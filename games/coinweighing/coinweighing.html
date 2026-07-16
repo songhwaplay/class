@@ -2,8 +2,8 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>대항해시대 3 - Coin Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>동전 무게 찾기</title>
     <style>
         body {
             background:
@@ -496,15 +496,211 @@
         }
         .text-success { color: #1e4620; }
         .text-danger { color: #8b0000; }
-    </style>
+    
+/* iPad·터치 기기 공통 보완 */
+button,
+input,
+select,
+textarea,
+[onclick],
+.set-card,
+.point,
+.piece,
+.gem,
+.coin,
+.pole,
+.disk,
+.quiz-btn,
+.action-btn,
+.option-btn,
+.small-btn,
+.primary-btn,
+.secondary-btn,
+.danger-btn,
+.tab,
+.room-tab,
+.seg,
+.music-segment,
+.vol-block,
+.diff-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (pointer: coarse) {
+    button,
+    .action-btn,
+    .option-btn,
+    .small-btn,
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn,
+    .tab,
+    .room-tab,
+    .quiz-btn,
+    .diff-btn {
+        min-height: 44px;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px; /* iOS Safari 자동 확대 방지 */
+    }
+
+    .point,
+    .set-card,
+    .gem,
+    .coin,
+    .pole,
+    .disk {
+        cursor: pointer;
+    }
+}
+
+.tablet-landscape-hint {
+    display: none;
+}
+
+@media (pointer: coarse) and (orientation: portrait) and (max-width: 900px) {
+    .tablet-landscape-hint {
+        display: block;
+        position: fixed;
+        left: 50%;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        z-index: 10000;
+        width: max-content;
+        max-width: calc(100vw - 24px);
+        padding: 8px 12px;
+        border: 1px solid rgba(240, 215, 124, .65);
+        border-radius: 7px;
+        background: rgba(5, 7, 11, .90);
+        color: #fff4cc;
+        font: 12px/1.4 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+        text-align: center;
+        box-shadow: 0 5px 18px rgba(0,0,0,.45);
+        pointer-events: none;
+    }
+}
+
+
+/* TODAY’S FINISHERS */
+.player-entry {
+    width: min(420px, 100%);
+    margin: 0 auto 14px;
+    text-align: left;
+}
+.player-entry label {
+    display: block;
+    margin-bottom: 6px;
+    color: #b4c6da;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.player-name-input {
+    width: 100%;
+    min-height: 43px;
+    padding: 9px 12px;
+    border: 1px solid #8a6c2d;
+    background: rgba(4, 8, 13, .82);
+    color: #f3e7c4;
+    text-align: center;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+    outline: none;
+    user-select: text;
+    -webkit-user-select: text;
+}
+.player-name-input:focus {
+    border-color: #f0d77c;
+    box-shadow: 0 0 0 2px rgba(240, 215, 124, .15);
+}
+.player-name-help {
+    min-height: 18px;
+    margin-top: 5px;
+    color: #9aa7b7;
+    font: 12px/1.4 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    text-align: center;
+}
+.player-name-help.error { color: #e0786f; }
+
+.finishers-panel {
+    width: min(460px, 100%);
+    margin: 14px auto;
+    padding: 11px 13px;
+    border: 1px solid rgba(198, 170, 85, .34);
+    background: rgba(2, 5, 9, .54);
+    color: #e7e0ce;
+    font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+.finishers-title {
+    margin-bottom: 8px;
+    color: #f0d77c;
+    font: bold 13px/1.3 Georgia, "Times New Roman", serif;
+    letter-spacing: 1.4px;
+    text-align: center;
+}
+.finishers-list {
+    max-height: 132px;
+    overflow-y: auto;
+}
+.finisher-row {
+    display: grid;
+    grid-template-columns: 46px minmax(54px, .75fr) minmax(110px, 1.4fr);
+    gap: 8px;
+    align-items: center;
+    padding: 5px 3px;
+    border-top: 1px solid rgba(198, 170, 85, .13);
+    font-size: 12px;
+}
+.finisher-row:first-child { border-top: 0; }
+.finisher-time { color: #91a0b3; font-family: Consolas, monospace; }
+.finisher-name {
+    overflow: hidden;
+    color: #fff0b6;
+    font-weight: bold;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.finisher-difficulty {
+    overflow: hidden;
+    color: #cbd4df;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.finisher-empty {
+    padding: 8px 4px;
+    color: #8e9bab;
+    font-size: 12px;
+    text-align: center;
+}
+.result-finishers {
+    margin-top: 14px;
+}
+
+</style>
 </head>
 <body>
+<div class="tablet-landscape-hint" aria-hidden="true">화면이 좁으면 기기를 가로로 돌리면 더 편하게 플레이할 수 있습니다.</div>
+
 
 <audio id="bgm" src="../../assets/sound/coinweighing.mp3" loop></audio>
 
 <div class="start-screen" id="start-screen">
-    <div class="start-title">대항해시대 Ⅲ</div>
-    <div class="start-subtitle">Coin Weighing Game</div>
+    <div class="start-title">동전 무게 찾기</div>
+    <div class="start-subtitle">COIN WEIGHING GAME</div>
+
+    <div class="player-entry">
+        <label for="player-name">PLAYER NAME · 한글 2~6자</label>
+        <input id="player-name" class="player-name-input" type="text" maxlength="6"
+               autocomplete="name" placeholder="이름 입력"
+               oninput="handlePlayerNameInput(this)">
+        <div class="player-name-help" id="player-name-help">영어·숫자·공백은 입력할 수 없습니다.</div>
+    </div>
     
     <div class="difficulty-container">
         <div class="difficulty-label">SELECT COINS COUNT</div>
@@ -532,7 +728,13 @@
         </div>
     </div>
 
-    <button class="action-btn" onclick="startGame()">START GAME</button>
+
+    <div class="finishers-panel">
+        <div class="finishers-title">🏆 TODAY’S FINISHERS</div>
+        <div class="finishers-list" id="today-finishers-list"></div>
+    </div>
+
+    <button class="action-btn" id="start-game-button" onclick="startGame()" disabled>START GAME</button>
 </div>
 
 <div class="game-board" id="game-board">
@@ -618,6 +820,126 @@
 
     const bgm = document.getElementById('bgm');
 
+    const FINISHER_API_URL = "https://classroom-game-hub.onrender.com/api/finishers";
+    const FINISHER_GAME_ID = "coinweighing";
+    const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
+    let playerName = "";
+
+    function escapeFinisherHtml(value) {
+        return String(value ?? "")
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function normalizeKoreanName(value) {
+        return String(value || "").replace(/[^가-힣]/g, "").slice(0, 6);
+    }
+
+    function isValidKoreanName(value) {
+        return KOREAN_NAME_PATTERN.test(String(value || ""));
+    }
+
+    function getSavedPlayerName() {
+        const saved = normalizeKoreanName(localStorage.getItem("classPlayerName") || "");
+        return isValidKoreanName(saved) ? saved : "";
+    }
+
+    function savePlayerName(name) {
+        if (isValidKoreanName(name)) localStorage.setItem("classPlayerName", name);
+    }
+
+    function finishersHtml(records) {
+        if (!Array.isArray(records) || records.length === 0) {
+            return '<div class="finisher-empty">아직 오늘의 클리어 기록이 없습니다.</div>';
+        }
+        return records.map(record => `
+            <div class="finisher-row">
+                <span class="finisher-time">${escapeFinisherHtml(record.time || "--:--")}</span>
+                <span class="finisher-name">${escapeFinisherHtml(record.name)}</span>
+                <span class="finisher-difficulty">${escapeFinisherHtml(record.difficulty)}</span>
+            </div>
+        `).join("");
+    }
+
+    function renderFinishers(targetId, records) {
+        const target = document.getElementById(targetId);
+        if (target) target.innerHTML = finishersHtml(records);
+    }
+
+    async function loadTodayFinishers(targetId = "today-finishers-list") {
+        const target = document.getElementById(targetId);
+        if (target) target.innerHTML = '<div class="finisher-empty">명단을 불러오는 중...</div>';
+        try {
+            const response = await fetch(`${FINISHER_API_URL}?gameId=${encodeURIComponent(FINISHER_GAME_ID)}`, {
+                cache: "no-store"
+            });
+            if (!response.ok) throw new Error("load failed");
+            const data = await response.json();
+            renderFinishers(targetId, data.records || []);
+            return data.records || [];
+        } catch (_) {
+            if (target) target.innerHTML = '<div class="finisher-empty">명단 서버에 연결하지 못했습니다.</div>';
+            return [];
+        }
+    }
+
+    async function registerFinisher(difficulty, rank, targetId = "result-finishers-list") {
+        if (!isValidKoreanName(playerName)) return loadTodayFinishers(targetId);
+        const target = document.getElementById(targetId);
+        if (target) target.innerHTML = '<div class="finisher-empty">기록을 등록하는 중...</div>';
+        try {
+            const response = await fetch(FINISHER_API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    gameId: FINISHER_GAME_ID,
+                    name: playerName,
+                    difficulty,
+                    rank
+                })
+            });
+            if (!response.ok) throw new Error("save failed");
+            const data = await response.json();
+            renderFinishers(targetId, data.records || []);
+            renderFinishers("today-finishers-list", data.records || []);
+            return data.records || [];
+        } catch (_) {
+            if (target) target.innerHTML = '<div class="finisher-empty">기록 서버에 연결하지 못했지만 게임 클리어는 인정됩니다.</div>';
+            return [];
+        }
+    }
+
+    function handlePlayerNameInput(input) {
+        const normalized = normalizeKoreanName(input.value);
+        if (input.value !== normalized) input.value = normalized;
+        playerName = normalized;
+
+        const valid = isValidKoreanName(playerName);
+        const help = document.getElementById("player-name-help");
+        const startButton = document.getElementById("start-game-button");
+        if (help) {
+            help.textContent = valid
+                ? `${playerName} 이름으로 시작합니다.`
+                : "한글 이름을 2~6자로 입력하세요.";
+            help.classList.toggle("error", !valid && playerName.length > 0);
+        }
+        if (startButton) startButton.disabled = !valid;
+        if (valid) savePlayerName(playerName);
+    }
+
+    function initializePlayerEntry() {
+        playerName = getSavedPlayerName();
+        const input = document.getElementById("player-name");
+        if (input) {
+            input.value = playerName;
+            handlePlayerNameInput(input);
+        }
+        loadTodayFinishers();
+    }
+
     function setVolume(vol) {
         currentVolume = vol;
         if(bgm) {
@@ -675,6 +997,11 @@
     }
 
     function startGame() {
+        if (!isValidKoreanName(playerName)) {
+            const input = document.getElementById("player-name");
+            if (input) input.focus();
+            return;
+        }
         if (bgm && bgm.paused) {
             bgm.volume = currentVolume;
             bgm.play().catch(e => console.log("BGM 재생 차단:", e));
@@ -1082,6 +1409,9 @@
                 <li><strong>WEIGH</strong> 버튼으로 최대 세 번까지 무게를 비교할 수 있습니다.</li>
                 <li>판단이 끝나면 <strong>DECIDE</strong>를 누른 뒤 가짜라고 생각하는 동전을 선택하십시오.</li>
             </ul>
+            <div style="margin-top:14px; padding-top:10px; border-top:1px solid rgba(140,117,53,.35); color:#6f6041; font-size:12px; line-height:1.55; text-align:center;">
+                이 퍼즐은 고전 게임 <strong>『대항해시대Ⅲ』</strong>에 등장하는 동전 무게 찾기 이벤트에서 착안해 교육용으로 재구성했습니다.
+            </div>
         `;
 
         showModalLayout("GAME RULES", rulesHTML, false);
@@ -1103,9 +1433,14 @@
                     <strong class="${weightClass}">${weightType} 동전</strong>이었습니다.<br><br>
                     <strong class="text-success">판별에 성공했습니다!</strong>
                 </div>
+                <div class="finishers-panel result-finishers">
+                    <div class="finishers-title">🏆 TODAY’S FINISHERS</div>
+                    <div class="finishers-list" id="result-finishers-list"></div>
+                </div>
             `;
 
             showModalLayout("✅ 판별 성공", successHTML, true);
+            registerFinisher(`동전 ${coinCount}개`, coinCount);
         } else {
             const failHTML = `
                 <div class="result-body">
@@ -1140,6 +1475,7 @@
 
     setVolume(currentVolume);
     setGlobalDifficulty(coinCount, true);
+    initializePlayerEntry();
 </script>
 
 </body>

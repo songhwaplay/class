@@ -2,11 +2,9 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>SET MATCH</title>
-    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"
-            onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js';"></script>
-    <style>
+<style>
         :root {
             --bg: #070a10;
             --panel: #111722;
@@ -665,15 +663,105 @@
             box-shadow: 0 0 9px rgba(255,179,77,0.58);
         }
 
-    </style>
+    
+/* iPad·터치 기기 공통 보완 */
+button,
+input,
+select,
+textarea,
+[onclick],
+.set-card,
+.point,
+.piece,
+.gem,
+.coin,
+.pole,
+.disk,
+.quiz-btn,
+.action-btn,
+.option-btn,
+.small-btn,
+.primary-btn,
+.secondary-btn,
+.danger-btn,
+.tab,
+.room-tab,
+.seg,
+.music-segment,
+.vol-block,
+.diff-btn {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+@media (pointer: coarse) {
+    button,
+    .action-btn,
+    .option-btn,
+    .small-btn,
+    .primary-btn,
+    .secondary-btn,
+    .danger-btn,
+    .tab,
+    .room-tab,
+    .quiz-btn,
+    .diff-btn {
+        min-height: 44px;
+    }
+
+    input,
+    select,
+    textarea {
+        font-size: 16px; /* iOS Safari 자동 확대 방지 */
+    }
+
+    .point,
+    .set-card,
+    .gem,
+    .coin,
+    .pole,
+    .disk {
+        cursor: pointer;
+    }
+}
+
+.tablet-landscape-hint {
+    display: none;
+}
+
+@media (pointer: coarse) and (orientation: portrait) and (max-width: 900px) {
+    .tablet-landscape-hint {
+        display: block;
+        position: fixed;
+        left: 50%;
+        bottom: max(10px, env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        z-index: 10000;
+        width: max-content;
+        max-width: calc(100vw - 24px);
+        padding: 8px 12px;
+        border: 1px solid rgba(240, 215, 124, .65);
+        border-radius: 7px;
+        background: rgba(5, 7, 11, .90);
+        color: #fff4cc;
+        font: 12px/1.4 "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+        text-align: center;
+        box-shadow: 0 5px 18px rgba(0,0,0,.45);
+        pointer-events: none;
+    }
+}
+
+</style>
 </head>
 <body>
+<div class="tablet-landscape-hint" aria-hidden="true">화면이 좁으면 기기를 가로로 돌리면 더 편하게 플레이할 수 있습니다.</div>
+
 <audio id="bgm" src="../../assets/sound/setgame.mp3" loop preload="auto"></audio>
 
 
 <div class="lobby-card" id="lobby-card">
     <div class="lobby-title">SET MATCH</div>
-    <div class="lobby-subtitle">실시간 멀티플레이 패턴 찾기 · 2~4명</div>
+    <div class="lobby-subtitle">2~4명</div>
 
     <div class="input-group">
         <label>PLAYER NAME</label>
@@ -847,20 +935,23 @@
         return null;
     }
 
-    // --- 2. 다중 접속 (PeerJS 1:N) 네트워크 엔진 설계 ---
-    let peer = null;
-    let connections = []; // 호스트가 관리하는 모든 게스트 커넥션 리스트
+    // --- 2. 다중 접속 (Render WebSocket) 네트워크 엔진 ---
+    const GAME_ID = "setgame";
+    const GAME_SERVER_URL = "wss://classroom-game-hub.onrender.com";
+
+    let socket = null;
     let myRole = null;    // "host" | "guest"
-    let hostPeerId = null;
     let currentRoomCode = null;
     let hostCreateAttempts = 0;
     let myId = null;
-    let players = {};     // { peerId: { name, score, active } }
-    let selectedCards = []; // 내가 현재 선택 중인 카드들의 엘리먼트 배열
+    let players = {};
+    let selectedCards = [];
+    let pendingSocketAction = null;
+    let intentionalSocketClose = false;
 
-    let activeSetter = null; // 현재 "세트!"를 선언하고 선택권을 가진 피어 ID
+    let activeSetter = null;
     let setCountdownTimer = null;
-    let submissionSent = false; // 제한시간 직전 중복 제출 방지
+    let submissionSent = false;
     let gameStarted = false;
     let blockedPlayersThisBoard = new Set();
     let resultRevealTimer = null;
@@ -868,8 +959,6 @@
     let audioCtx = null;
     let currentMusicVolume = 0.6;
     let musicStarted = false;
-
-    const ROOM_PREFIX = "set-match-";
 
     function getNickname() {
         return document.getElementById("player-nickname").value.trim() || "Player";
@@ -886,7 +975,6 @@
     function generateRoomCode() {
         const cryptoObj = window.crypto || window.msCrypto;
         let value;
-
         if (cryptoObj && cryptoObj.getRandomValues) {
             const random = new Uint32Array(1);
             cryptoObj.getRandomValues(random);
@@ -894,12 +982,7 @@
         } else {
             value = Math.floor(Math.random() * 9000) + 1000;
         }
-
         return String(value);
-    }
-
-    function peerIdForRoom(code) {
-        return `${ROOM_PREFIX}${normalizeRoomCode(code)}`;
     }
 
     function getRoomInviteUrl() {
@@ -926,12 +1009,8 @@
             input.style.opacity = "0";
             document.body.appendChild(input);
             input.select();
-
             let copied = false;
-            try {
-                copied = document.execCommand("copy");
-            } catch (_) {}
-
+            try { copied = document.execCommand("copy"); } catch (_) {}
             input.remove();
             return copied;
         }
@@ -948,97 +1027,169 @@
     async function copyRoomLink() {
         if (!currentRoomCode) return;
         const copied = await copyText(getRoomInviteUrl());
-        setRoomShareStatus(copied
-            ? "초대 링크가 복사되었습니다."
-            : "링크를 복사하지 못했습니다.");
+        setRoomShareStatus(copied ? "초대 링크가 복사되었습니다." : "링크를 복사하지 못했습니다.");
     }
 
-    function closePeerTransport() {
-        connections.forEach(connection => {
-            try { connection.close(); } catch (_) {}
-        });
-        connections = [];
+    function socketSend(data) {
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(data));
+            return true;
+        }
+        return false;
+    }
+
+    function sendGameMessage(payload) {
+        return socketSend({ type: "GAME_MESSAGE", payload });
+    }
+
+    function closeSocketTransport() {
+        pendingSocketAction = null;
+        intentionalSocketClose = true;
+        if (socket) {
+            try { socket.close(); } catch (_) {}
+        }
+        socket = null;
+        setTimeout(() => { intentionalSocketClose = false; }, 0);
+    }
+
+    function connectSocket(action) {
+        closeSocketTransport();
+        pendingSocketAction = action;
+        intentionalSocketClose = false;
 
         try {
-            if (peer) peer.destroy();
-        } catch (_) {}
+            socket = new WebSocket(GAME_SERVER_URL);
+        } catch (_) {
+            handleSocketFailure("서버에 연결하지 못했습니다.");
+            return;
+        }
 
-        peer = null;
+        socket.addEventListener("open", () => {
+            if (myRole === "host") {
+                setRoomShareStatus("서버에 연결되었습니다. 방을 등록하는 중입니다.");
+            }
+        });
+
+        socket.addEventListener("message", (event) => {
+            let message;
+            try {
+                message = JSON.parse(event.data);
+            } catch (_) {
+                return;
+            }
+            handleSocketMessage(message);
+        });
+
+        socket.addEventListener("close", () => {
+            if (intentionalSocketClose) return;
+            if (gameStarted || myRole === "guest") {
+                alert("게임 서버와의 연결이 종료되었습니다. 페이지를 새로고침합니다.");
+                location.reload();
+            } else {
+                handleSocketFailure("게임 서버 연결이 끊어졌습니다. 잠시 후 다시 시도하세요.");
+            }
+        });
+
+        socket.addEventListener("error", () => {
+            handleSocketFailure("게임 서버 연결 중 오류가 발생했습니다.");
+        });
+    }
+
+    function handleSocketFailure(message) {
+        if (myRole === "host") {
+            document.getElementById("lobby-room-code").innerText = "ERROR";
+            setRoomShareStatus(message);
+        } else {
+            const status = document.getElementById("connect-status");
+            if (status) status.innerText = message;
+        }
+    }
+
+    function handleSocketMessage(message) {
+        if (!message || typeof message.type !== "string") return;
+
+        if (message.type === "CONNECTED") {
+            myId = message.playerId;
+            if (pendingSocketAction) {
+                const action = pendingSocketAction;
+                pendingSocketAction = null;
+                socketSend(action);
+            }
+        }
+        else if (message.type === "ROOM_CREATED") {
+            currentRoomCode = message.roomCode;
+            players = {};
+            players[myId] = { name: getNickname(), score: 0 };
+            document.getElementById("lobby-room-code").innerText = currentRoomCode;
+            setRoomShareStatus("방 번호를 상대방에게 알려주세요.");
+            updateLobbyList();
+        }
+        else if (message.type === "ROOM_EXISTS") {
+            if (myRole === "host" && hostCreateAttempts < 8) {
+                hostCreateAttempts += 1;
+                currentRoomCode = generateRoomCode();
+                socketSend({ type: "CREATE_ROOM", gameId: GAME_ID, roomCode: currentRoomCode });
+            } else {
+                handleSocketFailure("빈 방 번호를 만들지 못했습니다. 다시 시도하세요.");
+            }
+        }
+        else if (message.type === "ROOM_JOINED") {
+            document.getElementById("connect-status").innerText =
+                "연결되었습니다. 방장이 게임을 시작하기를 기다리는 중입니다.";
+            players = {};
+            players[myId] = { name: getNickname(), score: 0 };
+            sendGameMessage({ type: "JOIN_REQ", name: getNickname() });
+        }
+        else if (message.type === "ROOM_NOT_FOUND") {
+            document.getElementById("connect-status").innerText =
+                "방을 찾지 못했습니다. 방 번호를 다시 확인하세요.";
+        }
+        else if (message.type === "ROOM_FULL") {
+            alert("방이 가득 찼습니다. 최대 4명까지 입장할 수 있습니다.");
+            location.reload();
+        }
+        else if (message.type === "ROOM_CLOSED") {
+            alert("방장이 나가서 방이 종료되었습니다.");
+            location.reload();
+        }
+        else if (message.type === "GAME_MESSAGE") {
+            handleIncomingData(message.senderId, message.payload);
+        }
+        else if (message.type === "PLAYER_LEFT") {
+            if (myRole === "host") {
+                handleDisconnect(message.playerId);
+            } else {
+                handleIncomingData(null, { type: "PLAYER_DISCONNECTED", peerId: message.playerId });
+            }
+        }
+        else if (message.type === "ERROR") {
+            handleSocketFailure(message.message || "서버 오류가 발생했습니다.");
+        }
     }
 
     // [호스트] 4자리 숫자 방 생성
     function initAsHost() {
-        closePeerTransport();
-
         myRole = "host";
         players = {};
         gameStarted = false;
         activeSetter = null;
         submissionSent = false;
-        currentRoomCode = null;
+        currentRoomCode = generateRoomCode();
         hostCreateAttempts = 0;
 
         document.getElementById("host-wait-panel").style.display = "flex";
         document.getElementById("guest-join-panel").style.display = "none";
         document.getElementById("lobby-room-code").innerText = "----";
         document.getElementById("start-game-btn").disabled = true;
-        setRoomShareStatus("새 방 번호를 만드는 중입니다.");
+        setRoomShareStatus("공용 게임 서버에 연결하는 중입니다.");
 
-        createHostPeer(getNickname());
-    }
-
-    function createHostPeer(nickname) {
-        currentRoomCode = generateRoomCode();
-        hostPeerId = peerIdForRoom(currentRoomCode);
-        peer = new Peer(hostPeerId, { debug: 1 });
-
-        peer.on("open", (id) => {
-            myId = id;
-            players = {};
-            players[id] = { name: nickname, score: 0 };
-
-            document.getElementById("lobby-room-code").innerText = currentRoomCode;
-            setRoomShareStatus("방 번호를 상대방에게 알려주세요.");
-            updateLobbyList();
-        });
-
-        peer.on("connection", (connection) => {
-            connection.on("open", () => {
-                const openGuests = connections.filter(item => item.open);
-
-                if (gameStarted) {
-                    connection.send({ type: "REJECT", reason: "GAME_STARTED" });
-                    setTimeout(() => connection.close(), 300);
-                    return;
-                }
-
-                if (openGuests.length >= 3) {
-                    connection.send({ type: "REJECT", reason: "ROOM_FULL" });
-                    setTimeout(() => connection.close(), 300);
-                    return;
-                }
-
-                connections.push(connection);
-                connection.on("data", (data) => handleIncomingData(connection.peer, data));
-                connection.on("close", () => handleDisconnect(connection.peer));
-                connection.on("error", () => handleDisconnect(connection.peer));
-            });
-        });
-
-        peer.on("error", (error) => {
-            if (error && error.type === "unavailable-id" && hostCreateAttempts < 8) {
-                hostCreateAttempts += 1;
-                try { peer.destroy(); } catch (_) {}
-                setTimeout(() => createHostPeer(nickname), 100);
-                return;
-            }
-
-            document.getElementById("lobby-room-code").innerText = "ERROR";
-            setRoomShareStatus("방을 만들지 못했습니다. 인터넷 연결을 확인하세요.");
+        connectSocket({
+            type: "CREATE_ROOM",
+            gameId: GAME_ID,
+            roomCode: currentRoomCode
         });
     }
 
-    // [게스트] 입장 화면 활성화
     function showJoinPanel() {
         document.getElementById("guest-join-panel").style.display = "flex";
         document.getElementById("host-wait-panel").style.display = "none";
@@ -1057,60 +1208,24 @@
             return;
         }
 
-        closePeerTransport();
-
         myRole = "guest";
         gameStarted = false;
         activeSetter = null;
         submissionSent = false;
         currentRoomCode = roomCode;
-        hostPeerId = peerIdForRoom(roomCode);
-        const nickname = getNickname();
 
         document.getElementById("connect-status").innerText = `방 ${roomCode}에 연결하는 중...`;
 
-        peer = new Peer(undefined, { debug: 1 });
-
-        peer.on("open", (id) => {
-            myId = id;
-            const connection = peer.connect(hostPeerId, {
-                reliable: true,
-                serialization: "json",
-                metadata: { roomCode }
-            });
-            connections = [connection];
-
-            connection.on("open", () => {
-                document.getElementById("connect-status").innerText =
-                    "연결되었습니다. 방장이 게임을 시작하기를 기다리는 중입니다.";
-                connection.send({ type: "JOIN_REQ", name: nickname });
-            });
-
-            connection.on("data", (data) => handleIncomingData(hostPeerId, data));
-            connection.on("close", () => {
-                alert("방장과의 연결이 종료되었습니다.");
-                location.reload();
-            });
-            connection.on("error", () => {
-                document.getElementById("connect-status").innerText =
-                    "방장과 통신하는 중 오류가 발생했습니다.";
-            });
-        });
-
-        peer.on("error", (error) => {
-            const status = document.getElementById("connect-status");
-            if (error && error.type === "peer-unavailable") {
-                status.innerText = "방을 찾지 못했습니다. 방 번호를 다시 확인하세요.";
-            } else {
-                status.innerText = "온라인 연결 중 오류가 발생했습니다.";
-            }
+        connectSocket({
+            type: "JOIN_ROOM",
+            gameId: GAME_ID,
+            roomCode,
+            name: getNickname()
         });
     }
 
     // 게스트 연결 소실 예외 처리
     function handleDisconnect(peerId) {
-        connections = connections.filter(c => c.peer !== peerId);
-
         if (!players[peerId]) return;
 
         const playerName = players[peerId].name;
@@ -1150,11 +1265,9 @@
         }
     }
 
-    // 호스트의 게스트를 포함한 전체 브로드캐스트 전송 함수
+    // 호스트가 공용 WebSocket 서버를 통해 방 전체에 전송
     function broadcastState(payload) {
-        connections.forEach(conn => {
-            if (conn.open) conn.send(payload);
-        });
+        if (myRole === "host") sendGameMessage(payload);
     }
 
     // --- 3. 데이터 송수신 핸들러 및 핵심 게임 루프 ---
@@ -1382,10 +1495,7 @@
         }
 
         if (myRole === "guest") {
-            const connection = connections[0];
-            if (connection && connection.open) {
-                connection.send({ type: "DECLARE_SET" });
-            }
+            sendGameMessage({ type: "DECLARE_SET" });
         } else if (myRole === "host") {
             processSetDeclaration(myId);
         }
@@ -1492,12 +1602,10 @@
         const cardIds = selectedCards.map(el => Number(el.dataset.cardId));
 
         if (myRole === "guest") {
-            const connection = connections[0];
-            if (!connection || !connection.open) {
+            if (!sendGameMessage({ type: "SET_SELECTION_SUBMIT", cardIds })) {
                 releaseSetLockdown();
                 return;
             }
-            connection.send({ type: "SET_SELECTION_SUBMIT", cardIds });
         } else if (myRole === "host") {
             verifySetSubmission(myId, cardIds);
         }
@@ -1916,7 +2024,7 @@
         }
     });
 
-    window.addEventListener("beforeunload", closePeerTransport);
+    window.addEventListener("beforeunload", closeSocketTransport);
 
     // 키보드 스페이스 바 단축키 연동
     document.addEventListener("keydown", (e) => {
