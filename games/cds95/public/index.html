@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v27</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v28</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -289,7 +289,7 @@ function enterPort(){if(portInteraction&&mode==='sea')doMissionOrPortAction()}
 function depart(){if(mode==='city')transition('departPort',`${serverSelf?.currentCityName||'항구 도시'} 출항 준비를 시작합니다.`)}
 function startLand(){if(mode==='city')transition('startLandExpedition',`${serverSelf?.currentCityName||'항구 도시'}에서 육상 탐험대를 편성합니다.`)}
 function returnToCity(){if(portInteraction&&mode==='land')doMissionOrPortAction()}
-document.getElementById('enterBtn').onclick=enterPort;document.getElementById('departBtn').onclick=depart;document.getElementById('exploreBtn').onclick=startLand;document.getElementById('returnBtn').onclick=returnToCity;
+const enterBtn=document.getElementById('enterBtn'),departBtn=document.getElementById('departBtn'),exploreBtn=document.getElementById('exploreBtn'),returnBtn=document.getElementById('returnBtn');if(enterBtn)enterBtn.onclick=enterPort;if(departBtn)departBtn.onclick=depart;if(exploreBtn)exploreBtn.onclick=startLand;if(returnBtn)returnBtn.onclick=returnToCity;
 resupplyBtn.onclick=()=>{if(mode!=='city'||serverSelf?.transition)return;socket.emit('resupply',{},result=>{if(!result?.ok){showToast(result?.error||'보급하지 못했습니다.','warn');return}serverSelf=result.self||serverSelf;if(result.self)self={...result.self};showToast(result.message||'물과 식량을 보급했습니다.','good');updateHud()})};
 missionToggle.onclick=()=>setMissionPanelOpen(true);missionClose.onclick=()=>setMissionPanelOpen(false);
 
