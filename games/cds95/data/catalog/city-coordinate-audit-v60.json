@@ -1082,13 +1082,13 @@
   {
     "id": "original_city_134",
     "name": "베르데 곶",
-    "modernLocationName": "Praia / Cape Verde",
-    "countryCode": "CV",
+    "modernLocationName": "Cap-Vert / Dakar",
+    "countryCode": "SN",
     "oldLat": 14.832,
     "oldLon": -17.28,
-    "lat": 14.9177,
-    "lon": -23.5092,
-    "shiftDegrees": 6.2298,
+    "lat": 14.7167,
+    "lon": -17.4677,
+    "shiftDegrees": 0.2203,
     "coordinateSource": "manual-historical"
   },
   {
@@ -1201,7 +1201,7 @@
   },
   {
     "id": "original_city_124",
-    "name": "르완다",
+    "name": "루안다",
     "modernLocationName": "Luanda",
     "countryCode": "AO",
     "oldLat": -8.64,
@@ -1405,8 +1405,8 @@
   },
   {
     "id": "original_city_107",
-    "name": "앙골라",
-    "modernLocationName": "Ankara",
+    "name": "앙고라",
+    "modernLocationName": "Ankara (Angora)",
     "countryCode": "TR",
     "oldLat": 39.9334,
     "oldLon": 32.8597,

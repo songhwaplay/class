@@ -37,14 +37,14 @@ assert.equal(bgm.cityTrack({region:'발칸',countryCode:'GR'}),'city_mediterrane
 assert.equal(bgm.cityTrack({region:'흑해',countryCode:'TR'}),'city_middle_east');
 assert.equal(bgm.cityTrack({region:'중앙아메리카',countryCode:'MX'}),'city_america');
 
-// 항해 분류: 지중해도 별도 항해곡이 아니라 Track15 Near Europe을 사용한다.
+// 항해 분류: V72부터 원작의 실제 사용 감각을 반영한다.
 assert.equal(bgm.seaTrack({lat:70,lon:20}),'sailing_polar');
 assert.equal(bgm.seaTrack({lat:-65,lon:20}),'sailing_polar');
 assert.equal(bgm.seaTrack({lat:36,lon:15}),'sailing_near_europe');
 assert.equal(bgm.seaTrack({lat:55,lon:3}),'sailing_near_europe');
 assert.equal(bgm.seaTrack({lat:-15,lon:75}),'sailing_indian_ocean');
-assert.equal(bgm.seaTrack({lat:20,lon:150}),'sailing_pacific');
-assert.equal(bgm.seaTrack({lat:25,lon:-45}),'sailing_atlantic');
+assert.equal(bgm.seaTrack({lat:20,lon:150}),'sailing_indian_ocean');
+assert.equal(bgm.seaTrack({lat:25,lon:-45}),'sailing_indian_ocean');
 
 assert.equal(bgm.resolveTrack({joined:false}),'voyage_preparation');
 assert.equal(bgm.resolveTrack({joined:true,waitingForStart:true,mode:'sea',position:{lat:20,lon:-45}}),'voyage_preparation');

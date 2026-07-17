@@ -8,8 +8,8 @@ const world = new Uint16Array(worldBuffer.buffer, worldBuffer.byteOffset, worldB
 const W = 2500;
 function isLand(x, y) { return ((world[y * W + x] >> 14) & 1) === 1; }
 assert.equal(cities.length, 225);
-assert.equal(cities.filter((c) => c.canEnterFromSea).length, 136);
-assert.equal(cities.filter((c) => !c.canEnterFromSea).length, 89);
+assert.equal(cities.filter((c) => c.canEnterFromSea).length, 134);
+assert.equal(cities.filter((c) => !c.canEnterFromSea).length, 91);
 for (const city of cities) {
   assert.ok(city.originalMarkerCells.length > 0, `${city.name}: marker missing`);
   assert.ok(city.originalLandEntryCells.length > 0, `${city.name}: land entry missing`);
@@ -25,4 +25,4 @@ assert.equal(byName.get('카이로').canEnterFromSea, false);
 assert.equal(byName.get('리스본').canEnterFromSea, true);
 assert.equal(byName.get('런던').canEnterFromSea, true);
 assert.equal(byName.get('포토시').canEnterFromSea, false);
-console.log(JSON.stringify({ok:true,cities:225,seaAccessible:136,landOnly:89,hanyang:'sea+land',beijing:'land-only'}));
+console.log(JSON.stringify({ok:true,cities:225,seaAccessible:134,landOnly:91,hanyang:'sea+land',beijing:'land-only'}));

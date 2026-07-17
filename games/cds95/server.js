@@ -266,7 +266,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 68,
+  version: 72,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -287,7 +287,7 @@ app.get('/health', (_req, res) => res.json({
   soloExplorationMode: true,
   originalCityCount: MissionCatalog.ORIGINAL_CITIES.length,
   originalPortCityCount: MissionCatalog.ORIGINAL_CITIES.filter((place) => place.canEnterFromSea === true).length,
-  originalCityAccessRule: 'WORLD.CDS marker adjacency (original behavior)',
+  originalCityAccessRule: '원작 도시표 기준 + 확정 오류 교정',
   allOriginalPortTransitions: true,
   mapCityLabels: true,
   destinationArrivalZones: Object.keys(ARRIVAL_ZONES).length,
@@ -2390,6 +2390,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v71 · 최종 문제 선택 즉시 반응: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v72 · 원작 체감형 항해 BGM·도시 오류 교정: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

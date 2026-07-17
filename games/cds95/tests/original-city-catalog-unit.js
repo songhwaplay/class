@@ -4,7 +4,7 @@ const catalog = require('../lib/mission-catalog.js');
 const cities = catalog.ORIGINAL_CITIES;
 assert.equal(cities.length, 225, '원작 도시 수는 225개여야 함');
 assert.equal(new Set(cities.map((c) => c.id)).size, 225, '도시 ID 중복');
-assert.equal(cities.filter((c) => c.canEnterFromSea === true).length, 136, '원작 지도 기준 바다 입항 가능 도시 수 불일치');
+assert.equal(cities.filter((c) => c.canEnterFromSea === true).length, 134, '원작 지도 기준 바다 입항 가능 도시 수 불일치');
 for (const city of cities) {
   assert.ok(Number.isFinite(city.cellX) && Number.isFinite(city.cellY), `${city.name} 원작 좌표 누락`);
   assert.ok(city.displayOnMap, `${city.name} 지도 표시 누락`);

@@ -8,10 +8,10 @@
   const TRACKS=Object.freeze({
     voyage_preparation:{file:'Track23.mp3',label:'출항 준비'},
     sailing_near_europe:{file:'Track15.mp3',label:'유럽 근해 항해'},
-    sailing_atlantic:{file:'Track25.mp3',label:'대서양 항해'},
-    sailing_indian_ocean:{file:'Track13.mp3',label:'인도양 항해'},
-    sailing_pacific:{file:'Track24.mp3',label:'태평양 항해'},
-    sailing_polar:{file:'Track19.mp3',label:'극지방 항해'},
+    sailing_atlantic:{file:'Track25.mp3',label:'남대서양 항해'},
+    sailing_indian_ocean:{file:'Track13.mp3',label:'신대륙·동방 원양 항해'},
+    sailing_pacific:{file:'Track24.mp3',label:'남방·카리브 항해'},
+    sailing_polar:{file:'Track19.mp3',label:'극지 항해'},
     city_iberia:{file:'Track10.mp3',label:'이베리아 도시'},
     city_mediterranean:{file:'Track05.mp3',label:'지중해 도시'},
     city_scandinavia:{file:'Track09.mp3',label:'북유럽 도시'},
@@ -59,15 +59,26 @@
 
   function seaTrack(position){
     const lat=Number(position?.lat)||0,lon=normalizeLongitude(position?.lon);
-    // 원작의 Arctic Ocean 곡을 북극·남극 인근의 극지방 공통곡으로 사용한다.
+    // V72: 현대식 대양 이름으로 사각 분할하지 않고, 원작 곡의 실제 사용 감각을 따른다.
+    // Track19: 북극·남극 인근.
     if(lat>=66||lat<=-60)return 'sailing_polar';
-    // 원작 Near Europe 곡은 지중해·흑해·북해·발트해 등 유럽 근해를 함께 담당한다.
+
+    // Track15 Near Europe: 지중해·흑해·북해·발트해와 유럽 서안 근해.
     if(lat>=29&&lat<66&&lon>=-30&&lon<=45)return 'sailing_near_europe';
-    // 홍해·아라비아해·벵골만·인도네시아 서부를 포함한다.
-    if(lat>-60&&lat<32&&lon>=20&&lon<120)return 'sailing_indian_ocean';
-    // 아시아·오세아니아 동쪽 및 아메리카 서안.
-    if(lon>=120||lon<=-100||(lon<=-70&&lat<=10))return 'sailing_pacific';
-    return 'sailing_atlantic';
+
+    // Track24 Pacific Ocean: 원작 설명의 카리브해 남쪽과 남방대륙(호주) 주변.
+    const caribbeanSouth=lat>=-5&&lat<14&&lon>=-90&&lon<=-55;
+    const southernContinent=lat>-60&&lat<10&&lon>=110;
+    const southEastPacific=lat>-60&&lat<-10&&lon<=-70;
+    if(caribbeanSouth||southernContinent||southEastPacific)return 'sailing_pacific';
+
+    // Track25 Atlantic Ocean: 원작에서 주로 남대서양에 사용된다.
+    const southAtlantic=lat>-60&&lat<12&&lon>-70&&lon<25;
+    if(southAtlantic)return 'sailing_atlantic';
+
+    // Track13 Indian Ocean: 인도양뿐 아니라 서태평양, 카리브해 북쪽,
+    // 북대서양의 신대륙 항로 등 넓은 원양 구간을 담당한다.
+    return 'sailing_indian_ocean';
   }
 
   function resolveTrack(state){
