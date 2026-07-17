@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v63</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v66</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -37,12 +37,13 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 #missionBanner.show{display:block}#missionBanner.done{color:#b8f1c5;border-color:#74b784}
 #missionPanel.choiceRequired{display:block!important;left:50%;right:auto;top:50%;width:min(720px,calc(100vw - 28px));max-height:min(78vh,700px);transform:translate(-50%,-50%);padding:20px;z-index:70;background:#0c2630fa;border:2px solid #d3b66d;box-shadow:0 15px 55px #000}
 #missionPanel.choiceRequired h3{font-size:25px;text-align:center}.choiceRequired #missionInstructions{text-align:center;font-size:14px}.choiceRequired .atlasGuide{text-align:center;font-size:15px;padding:13px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr 1fr;gap:12px}.choiceRequired .missionChoiceCard{min-height:108px;padding:15px}.choiceRequired .missionChoiceCard b{font-size:20px}.choiceRequired .missionChoiceCard span{font-size:13px}.choiceRequired .missionActions{display:none}
-@media(max-width:650px){.entryModes{grid-template-columns:1fr}.entryMode{min-height:104px}.statusMain{grid-template-columns:repeat(3,1fr)}.statusItem{min-height:29px;padding:3px 5px}.statusItem small{font-size:8px}.statusItem b{font-size:10px}.statusSub{font-size:8px}.statusSub #identity,.statusSub #terrainHud{display:none}#hud{font-size:9px}.joinRow{grid-template-columns:1fr}#zoom{top:126px}#messageWindow{left:8px;right:8px;bottom:8px;height:106px;padding-bottom:9px}#messageHeader{height:18px;line-height:16px;margin-bottom:4px}#messageLines{font-size:10px;line-height:1.42;gap:1px;grid-template-rows:repeat(4,minmax(14px,auto))}.guideLine{min-height:14px}#pad{width:132px;height:132px;bottom:122px}.actionPrompt{bottom:262px;width:max-content;max-width:92vw}#missionPanel{right:8px;top:126px;max-height:43vh}#missionToggle{right:8px;top:126px}#missionBanner{top:126px;min-width:calc(100vw - 150px);max-width:calc(100vw - 150px);font-size:11px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr}#cityView{padding:126px 6px 6px}#cityCard{width:100%;max-height:calc(100vh - 132px);border-radius:5px}#cityTitle{left:9px;top:9px;font-size:17px;padding:5px 9px}#cityInfo{left:11px;bottom:64px;max-width:92%;font-size:10px}#cityMenu{left:8px;right:8px;bottom:8px}#cityMenu button{min-height:38px;padding:0 11px}#leaveCityBtn{margin-left:0}#libraryView{padding:6px}#libraryCard{height:97vh}#libraryBody{grid-template-columns:1fr;grid-template-rows:36% minmax(0,1fr)}#bookList{border-right:0;border-bottom:1px solid #53645c}#bookReader{padding:18px}#bookReader h2{font-size:22px}}
+#bgmControl{position:fixed;right:12px;bottom:142px;z-index:32;display:flex;align-items:center;gap:8px;max-width:min(360px,calc(100vw - 24px));padding:6px 9px;border-radius:8px;touch-action:auto}#bgmToggle{min-width:46px;min-height:34px;padding:0 9px;font-weight:900;background:#72552d}#bgmVolume{width:92px;accent-color:#d7bb6d;touch-action:auto}#bgmTrack{max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;color:#ead9a8}#bgmControl.locked #bgmTrack::after{content:' · 화면을 한 번 누르면 재생';color:#9fcbd5}
+@media(max-width:650px){.entryModes{grid-template-columns:1fr}.entryMode{min-height:104px}.statusMain{grid-template-columns:repeat(3,1fr)}.statusItem{min-height:29px;padding:3px 5px}.statusItem small{font-size:8px}.statusItem b{font-size:10px}.statusSub{font-size:8px}.statusSub #identity,.statusSub #terrainHud{display:none}#hud{font-size:9px}.joinRow{grid-template-columns:1fr}#zoom{top:126px}#messageWindow{left:8px;right:8px;bottom:8px;height:106px;padding-bottom:9px}#messageHeader{height:18px;line-height:16px;margin-bottom:4px}#messageLines{font-size:10px;line-height:1.42;gap:1px;grid-template-rows:repeat(4,minmax(14px,auto))}.guideLine{min-height:14px}#pad{width:132px;height:132px;bottom:122px}.actionPrompt{bottom:262px;width:max-content;max-width:92vw}#missionPanel{right:8px;top:126px;max-height:43vh}#missionToggle{right:8px;top:126px}#missionBanner{top:126px;min-width:calc(100vw - 150px);max-width:calc(100vw - 150px);font-size:11px}.choiceRequired .missionChoiceGrid{grid-template-columns:1fr}#cityView{padding:126px 6px 6px}#cityCard{width:100%;max-height:calc(100vh - 132px);border-radius:5px}#cityTitle{left:9px;top:9px;font-size:17px;padding:5px 9px}#cityInfo{left:11px;bottom:64px;max-width:92%;font-size:10px}#cityMenu{left:8px;right:8px;bottom:8px}#cityMenu button{min-height:38px;padding:0 11px}#leaveCityBtn{margin-left:0}#libraryView{padding:6px}#libraryCard{height:97vh}#libraryBody{grid-template-columns:1fr;grid-template-rows:36% minmax(0,1fr)}#bookList{border-right:0;border-bottom:1px solid #53645c}#bookReader{padding:18px}#bookReader h2{font-size:22px}#bgmControl{right:8px;bottom:120px;padding:4px 6px;gap:5px}#bgmToggle{min-width:40px;min-height:32px;padding:0 7px}#bgmVolume{width:72px}#bgmTrack{display:none}}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="loading">Natural Earth 16K 원본 지도(V63)를 불러오는 중…</div>
+<div id="loading">Natural Earth 16K 원본 지도(V66)를 불러오는 중…</div>
 <div id="join">
   <form id="joinCard" class="panel">
     <h1>세계 항해·육상 탐험</h1>
@@ -72,6 +73,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 </div>
 <div id="missionBanner" class="panel" aria-live="polite"></div>
 <div id="zoom"><button id="minus" aria-label="축소">−</button><button id="plus" aria-label="확대">＋</button><button id="home" aria-label="현재 임무 지점">⌂</button></div>
+<div id="bgmControl" class="panel locked" aria-label="배경음악 조절"><button id="bgmToggle" type="button" aria-label="배경음악 음소거">🔊</button><input id="bgmVolume" type="range" min="0" max="1" step="0.05" aria-label="배경음악 음량"><span id="bgmTrack">출항 준비</span></div>
 <div id="pad"><button class="blank"></button><button data-dir="up">▲</button><button class="blank"></button><button data-dir="left">◀</button><button data-dir="stop">■</button><button data-dir="right">▶</button><button class="blank"></button><button data-dir="down">▼</button><button class="blank"></button></div>
 <div id="missionActionPrompt" class="actionPrompt panel"><span id="missionActionText"><b>행동</b></span><button id="cityActionBtn" hidden>도시 들어가기</button><button id="missionActionBtn" hidden>확인 Enter</button></div>
 <section id="cityView" aria-label="도시 내부">
@@ -105,6 +107,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 <script src="/js/terrain.js?v=61"></script>
 <script src="/js/ocean-current.js"></script>
 <script src="/js/wind.js"></script>
+<script src="/js/bgm.js?v=65"></script>
 <script>
 'use strict';
 const {WORLD_W:WW,WORLD_H:WH,TILE:TS,WORLD_PIXEL_W:SPAN,WORLD_PIXEL_H:MAP_H,SPEED:TERRAIN_SPEED,LABEL:TERRAIN_LABEL}=UW3Terrain;
@@ -118,6 +121,7 @@ const missionActionPrompt=document.getElementById('missionActionPrompt'),mission
 const cityView=document.getElementById('cityView'),cityScene=document.getElementById('cityScene'),cityTitle=document.getElementById('cityTitle'),cityInfo=document.getElementById('cityInfo'),libraryBtn=document.getElementById('libraryBtn'),leaveCityBtn=document.getElementById('leaveCityBtn'),libraryView=document.getElementById('libraryView'),libraryTitle=document.getElementById('libraryTitle'),libraryClose=document.getElementById('libraryClose'),bookList=document.getElementById('bookList'),bookTitle=document.getElementById('bookTitle'),bookMeta=document.getElementById('bookMeta'),bookIntro=document.getElementById('bookIntro'),bookSections=document.getElementById('bookSections'),messageWindow=document.getElementById('messageWindow');
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
 const pauseOverlay=document.getElementById('pauseOverlay'),lockTitle=document.getElementById('lockTitle'),lockDetail=document.getElementById('lockDetail'),transitionOverlay=document.getElementById('transitionOverlay'),transitionLabel=document.getElementById('transitionLabel'),transitionFill=document.getElementById('transitionFill');
+const bgmControl=document.getElementById('bgmControl'),bgmToggle=document.getElementById('bgmToggle'),bgmVolume=document.getElementById('bgmVolume'),bgmTrack=document.getElementById('bgmTrack');
 const naturalMapOverview=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();
 naturalMapOverview.src='/assets/maps/natural-earth-v58/overview.jpg?v=58';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=58';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=58';
 const NATURAL_MAP=Object.freeze({width:16200,height:8100,tileSize:1024,cols:16,rows:8});
@@ -178,6 +182,29 @@ function minimumMapZoom(){return isPhoneMapView()?MOBILE_MIN_ZOOM:DESKTOP_MIN_ZO
 let world=null,assetsReady=false,joined=false,dpr=1,zoom=recommendedMapZoom(),zoomManuallyAdjusted=false,last=performance.now(),mode='sea',sessionMode='',entryMode='',lastLocalBlock=0,lastNoticeSeq=0,roomCodeCurrent='',lastModeMessage=null,lastTerrainMessage=null,lastFatigueBand=0,lastWaterBand=100,lastFoodBand=100,mapCities=[];
 let self=null,serverSelf=null,remote=new Map(),lastSnapshotAt=0,activeMission=null,missionProgress=null,missionInteraction=null,cityInteraction=null,portInteraction=null,classGameMinutes=0,clockAnchorGameMinutes=0,clockAnchorAt=performance.now(),classSettings={paused:false,locked:false};
 let libraryCatalog={books:[]},cityCatalogById=new Map(),renderedCityId='',openedBookId='';
+const backgroundMusic=UW3BGM.createController({basePath:'/assets/bgm',fadeMs:900,storage:localStorage,onStateChange:updateBgmControl});
+function updateBgmControl(state){
+  bgmControl.classList.toggle('locked',!state.unlocked);bgmToggle.textContent=state.muted?'🔇':'🔊';bgmToggle.setAttribute('aria-label',state.muted?'배경음악 켜기':'배경음악 음소거');bgmVolume.value=String(state.volume);bgmTrack.textContent=state.label||'배경음악';
+}
+function waitingForVoyageStart(){
+  if(!joined)return true;
+  if(sessionMode!=='competition')return false;
+  if(missionProgress?.status==='completed')return false;
+  return !activeMission||activeMission.phase!=='running';
+}
+function currentMusicPosition(){
+  if(!self)return {lat:0,lon:0};
+  const cx=wrapX(self.x)/TS,cy=self.y/TS;return {lon:cx/WW*360-180,lat:90-cy/WH*180};
+}
+function syncBackgroundMusic(){
+  const city=mode==='city'?(cityCatalogById.get(serverSelf?.currentCityId)||{region:serverSelf?.currentCityRegion||'',countryCode:''}):null;
+  backgroundMusic.request(UW3BGM.resolveTrack({joined,waitingForStart:waitingForVoyageStart(),mode,city,position:currentMusicPosition()}));
+}
+bgmToggle.addEventListener('click',()=>backgroundMusic.toggleMuted());
+bgmVolume.addEventListener('input',()=>backgroundMusic.setVolume(bgmVolume.value));
+addEventListener('pointerdown',()=>backgroundMusic.unlock(),{capture:true,once:true});
+addEventListener('keydown',()=>backgroundMusic.unlock(),{capture:true,once:true});
+syncBackgroundMusic();
 // 해류는 바다 물결 애니메이션으로, 바람은 원작 CLOUD.CDS의 구름 애니메이션으로 구분한다.
 const currentTracers=[];
 const CURRENT_FLOW_FRAME_W=96,CURRENT_FLOW_FRAME_H=30,CURRENT_FLOW_FRAME_COUNT=8;
@@ -322,7 +349,7 @@ function escapeHtml(v){return String(v||'').replace(/[&<>"']/g,c=>({'&':'&amp;',
 let lastMissionRenderKey='';
 function missionRenderKey(mission,progress){return [mission?.id||'',mission?.phase||'',progress?.selectedStartPlaceId||'',progress?.selectedStartPlaceName||'',progress?.status||'',progress?.finishRank||'',progress?.stageIndex||0,startChoicePending?pendingStartChoice?.optionId||'pending':''].join('|')}
 function mergePendingStartChoice(progress){if(!startChoicePending||!pendingStartChoice||progress?.selectedStartPlaceId)return progress;return {...(progress||{}),selectedStartPlaceId:pendingStartChoice.placeId,selectedStartPlaceName:pendingStartChoice.cityName,status:'assigned',statusLabel:'수행 전'}}
-function applyMissionState(mission,progress,announce=false){const changed=mission?.id&&mission?.id!==activeMission?.id,wasCompleted=missionProgress?.status==='completed';activeMission=mission||null;missionProgress=mergePendingStartChoice(progress)||null;const justCompleted=!wasCompleted&&missionProgress?.status==='completed',renderKey=missionRenderKey(activeMission,missionProgress);if(renderKey!==lastMissionRenderKey){lastMissionRenderKey=renderKey;renderMission()}updateTravelLockOverlay();if(justCompleted)showToast(`${medalText(missionProgress.finishRank)} 미션 성공! 이제 이동속도 ${formatSpeedBoost(completionBoost())}배로 자유 탐험할 수 있습니다.`,'good');if(announce&&activeMission){showToast(`새 수행 미션: ${activeMission.title}`);setMissionPanelOpen(true)}else if(changed&&activeMission)setMissionPanelOpen(true)}
+function applyMissionState(mission,progress,announce=false){const changed=mission?.id&&mission?.id!==activeMission?.id,wasCompleted=missionProgress?.status==='completed';activeMission=mission||null;missionProgress=mergePendingStartChoice(progress)||null;const justCompleted=!wasCompleted&&missionProgress?.status==='completed',renderKey=missionRenderKey(activeMission,missionProgress);if(renderKey!==lastMissionRenderKey){lastMissionRenderKey=renderKey;renderMission()}updateTravelLockOverlay();syncBackgroundMusic();if(justCompleted)showToast(`${medalText(missionProgress.finishRank)} 미션 성공! 이제 이동속도 ${formatSpeedBoost(completionBoost())}배로 자유 탐험할 수 있습니다.`,'good');if(announce&&activeMission){showToast(`새 수행 미션: ${activeMission.title}`);setMissionPanelOpen(true)}else if(changed&&activeMission)setMissionPanelOpen(true)}
 function applyClassSettings(next){const before=displayedGameMinutes();classSettings={...classSettings,...(next||{})};clockAnchorGameMinutes=before;clockAnchorAt=performance.now();classGameMinutes=before;updateTravelLockOverlay();if(classSettings.paused)clearKeys()}
 function cityBooks(city){
   const region=String(city?.currentCityRegion||'');
@@ -384,6 +411,7 @@ function applyModeUI(){
   identity.textContent=mode==='sea'?`${roomCodeCurrent} · ${medal}${self.name}의 배`:mode==='city'?`${roomCodeCurrent} · ${medal}${self.name} · ${serverSelf?.currentCityName||'도시'}`:`${roomCodeCurrent} · ${medal}${self.name} 탐험대`;
   const shipInfo=mode==='land'&&serverSelf?.shipPortName?` · 배 정박: ${serverSelf.shipPortName}`:'';
   modeHud.textContent=`현재 상태: ${busy?(serverSelf.transition.label||'전환 중'):modeLabel(mode)}${shipInfo}`;
+  syncBackgroundMusic();
 }
 
 async function ungzipResponse(url){const response=await fetch(url);if(!response.ok)throw new Error('지도 파일을 받지 못했습니다.');if(!('DecompressionStream' in window))throw new Error('최신 Chrome이 필요합니다.');const ds=new DecompressionStream('gzip');return await new Response(response.body.pipeThrough(ds)).arrayBuffer()}
