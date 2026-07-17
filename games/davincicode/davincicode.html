@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>CLASS DAVINCI CODE ONLINE v3</title>
+<title>CLASS DAVINCI CODE ONLINE v4</title>
 <style>
 :root{
   --bg:#08111f;--panel:#14243a;--panel2:#0f1d31;--line:#385777;
@@ -96,10 +96,10 @@ input{min-height:43px;border:1px solid #456789;background:#0c192b;color:white;bo
 <body>
 <audio id="bgm" src="../../assets/sound/davincicode.mp3" loop></audio>
 
-<section id="lobby" class="screen hidden">
+<section id="lobby" class="screen">
   <div class="panel">
     <h1>CLASS DAVINCI CODE</h1>
-    <div class="subtitle">온라인 2·3·4인 v3 · 조커 없음</div>
+    <div class="subtitle">온라인 2·3·4인 v4 · 조커 없음</div>
 
     <div class="box status">PLAYER <strong id="nameLabel"></strong></div>
 
@@ -864,46 +864,41 @@ document.querySelectorAll(".music-segment").forEach(button=>{
     setMusicVolume(Number(button.dataset.volume),Number(button.dataset.level));
   });
 });
-$("music-mute-btn").onclick=toggleMusicMute;
-$("music-mute-btn-game").onclick=toggleMusicMute;
+if($("music-mute-btn"))$("music-mute-btn").onclick=toggleMusicMute;
+if($("music-mute-btn-game"))$("music-mute-btn-game").onclick=toggleMusicMute;
 
 const showRules=()=>$("rules").classList.add("show");
 $("rulesLobby").onclick=showRules;
 $("rulesGame").onclick=showRules;
 $("closeRules").onclick=()=>$("rules").classList.remove("show");
 
-(function init(){
-  const name=savedName();
+function initialize(){
+  try{
+    const name=savedName()||"Player";
+    $("nameLabel").textContent=name;
+    $("lobby").classList.remove("hidden");
+    setMusicVolume(0.6,3);
 
-  if(!name){
-    document.body.innerHTML=`
-      <section class="screen">
-        <div class="panel" style="max-width:560px;text-align:center">
-          <h1>PLAYER NAME REQUIRED</h1>
-          <div class="subtitle">메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</div>
-          <button class="btn primary" id="backToIndexBtn">메인 화면으로 돌아가기</button>
-        </div>
-      </section>`;
-    document.getElementById("backToIndexBtn").onclick=()=>history.back();
-    return;
+    const q=new URLSearchParams(location.search).get("room");
+    if(q){
+      myRole="join";
+      $("hostTab").classList.remove("active");
+      $("joinTab").classList.add("active");
+      $("hostPane").classList.add("hidden");
+      $("joinPane").classList.remove("hidden");
+      $("joinCode").value=String(q).replace(/\D/g,"").slice(0,4);
+    }else{
+      createRoom();
+    }
+  }catch(error){
+    console.error(error);
+    const lobby=document.getElementById("lobby");
+    if(lobby)lobby.classList.remove("hidden");
+    const guide=document.getElementById("lobbyGuide");
+    if(guide)guide.textContent="초기화 오류: "+(error?.message||String(error));
   }
-
-  $("nameLabel").textContent=name;
-  $("lobby").classList.remove("hidden");
-  setMusicVolume(0.6,3);
-
-  const q=new URLSearchParams(location.search).get("room");
-  if(q){
-    myRole="join";
-    $("hostTab").classList.remove("active");
-    $("joinTab").classList.add("active");
-    $("hostPane").classList.add("hidden");
-    $("joinPane").classList.remove("hidden");
-    $("joinCode").value=String(q).replace(/\D/g,"").slice(0,4);
-  }else{
-    createRoom();
-  }
-})();
+}
+window.addEventListener("load",initialize);
 </script>
 </body>
 </html>
