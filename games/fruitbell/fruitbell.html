@@ -111,6 +111,21 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
   .music-control{display:none!important}
 }
 
+
+.rules-overlay{
+  position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;
+  padding:16px;background:rgba(0,0,0,.76)
+}
+.rules-overlay.show{display:flex}
+.rules-modal{
+  width:min(520px,100%);max-height:88vh;overflow:auto;padding:22px;
+  border:2px solid #9a7b3d;border-radius:15px;background:#f7eed9;color:#32210e;
+  text-align:left;box-shadow:0 18px 50px rgba(0,0,0,.6)
+}
+.rules-modal h2{margin:0 0 14px;text-align:center;color:#6b4517}
+.rules-modal ul{margin:0;padding-left:22px;line-height:1.75}
+.rules-modal .rules-close{display:block;margin:18px auto 0;min-width:130px}
+
 </style>
 </head>
 <body>
@@ -139,7 +154,7 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
       </div>
     </div>
     <div class="box"><div class="status">참가 가능 인원: 2~4명</div><div class="players" id="lobbyPlayers"></div></div>
-    <div class="actions"><button id="startBtn" class="primary" onclick="startMatch()" disabled>상대방 대기 중</button></div>
+    <div class="actions"><button id="startBtn" class="primary" onclick="startMatch()" disabled>상대방 대기 중</button><button class="small" type="button" onclick="openRules()">RULES</button></div>
 
     <div class="music-control">
       <span class="music-label">MUSIC VOLUME</span>
@@ -158,7 +173,7 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 <section id="gameScreen" class="screen hidden">
   <div class="game" id="game">
     <div id="teamScoreboard" class="team-scoreboard hidden"></div>
-    <div class="top"><div class="scoreboard" id="scoreboard"></div><div class="small">공개 카드 <span id="potCount">0</span>장</div><button class="small" onclick="location.reload()">나가기</button></div>
+    <div class="top"><div class="scoreboard" id="scoreboard"></div><div class="small">공개 카드 <span id="potCount">0</span>장</div><button class="small" type="button" onclick="openRules()">RULES</button><button class="small" onclick="location.reload()">나가기</button></div>
     <div class="message" id="message">게임 준비 중...</div><div class="turn-timer"><div id="turnTimerBar" class="turn-timer-bar"></div></div>
     <div class="board" id="board"></div>
     <button class="bell" onclick="pressBell()"><span class="knob"></span><span class="dome"></span><span class="base"></span></button>
@@ -179,6 +194,22 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
   </div>
 </section>
 
+<div class="rules-overlay" id="rulesOverlay" onclick="closeRulesOnBackdrop(event)">
+  <div class="rules-modal">
+    <h2>FRUIT BELL RULES</h2>
+    <ul>
+      <li>각 플레이어는 자기 차례에 <strong>내 카드 뒤집기</strong>를 눌러 카드 한 장을 공개합니다.</li>
+      <li>공개된 카드들 가운데 같은 과일의 합이 정확히 <strong>5개</strong>가 되면 종을 누릅니다.</li>
+      <li>정답일 때 가장 먼저 종을 누른 플레이어가 공개 카드들을 가져갑니다.</li>
+      <li>과일 합이 5개가 아닌데 종을 누르면 벌칙을 받습니다.</li>
+      <li>제한 시간 안에 카드를 뒤집지 않으면 카드 1장 벌칙을 받거나 차례가 넘어갑니다.</li>
+      <li>개인전은 가장 많은 카드를 모은 플레이어가 승리합니다.</li>
+      <li>2 대 2 팀전은 파랑팀과 빨강팀의 획득 카드 합계로 승부합니다.</li>
+    </ul>
+    <button class="primary rules-close" type="button" onclick="closeRules()">확인</button>
+  </div>
+</div>
+
 <script>
 "use strict";
 const GAME_ID="fruitbell";
@@ -194,6 +225,19 @@ let lastBellNoticeText="";
 const $=id=>document.getElementById(id);
 const KOREAN_NAME_PATTERN=/^[가-힣]{2,6}$/;
 const NAME_STORAGE_KEY="classPlayerName";
+
+
+function openRules(){
+ const overlay=$("rulesOverlay");
+ if(overlay)overlay.classList.add("show");
+}
+function closeRules(){
+ const overlay=$("rulesOverlay");
+ if(overlay)overlay.classList.remove("show");
+}
+function closeRulesOnBackdrop(event){
+ if(event.target===event.currentTarget)closeRules();
+}
 
 function getSavedPlayerName(){
  const saved=normalizeName(localStorage.getItem(NAME_STORAGE_KEY)||"");
@@ -220,6 +264,11 @@ function isValidName(v){return KOREAN_NAME_PATTERN.test(String(v||""))}
 function cleanName(v){const n=normalizeName(v);return isValidName(n)?n:"플레이어"}
 function code4(){return String(Math.floor(1000+Math.random()*9000))}
 window.addEventListener("DOMContentLoaded",applySavedPlayerName);
+
+document.addEventListener("keydown",event=>{
+ if(event.key==="Escape")closeRules();
+});
+
 
 
 const MUSIC_VOLUME_KEY="fruitbellVolumeLevel";
