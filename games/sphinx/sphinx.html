@@ -406,9 +406,7 @@ textarea,
     }
 }
 
-.tablet-landscape-hint {
-    display: none;
-}
+.tablet-landscape-hint { display: none !important; }
 
 @media (pointer: coarse) and (orientation: portrait) and (max-width: 900px) {
     .tablet-landscape-hint {
@@ -576,11 +574,27 @@ textarea,
     margin-top: 8px;
 }
 
+
+.source-credit {
+    margin: -10px 0 13px;
+    color: rgba(222, 195, 143, 0.68);
+    font-size: 10px;
+    line-height: 1.4;
+    letter-spacing: 0.3px;
+    text-align: right;
+}
+
+@media (max-width: 760px) {
+    .source-credit {
+        margin: -8px 2px 11px;
+        font-size: 9px;
+        text-align: center;
+    }
+}
+
 </style>
 </head>
 <body>
-<div class="tablet-landscape-hint" aria-hidden="true">화면이 좁으면 기기를 가로로 돌리면 더 편하게 플레이할 수 있습니다.</div>
-
 
 <div class="game-frame">
     <aside class="sphinx-panel">
@@ -590,6 +604,7 @@ textarea,
 
     <div class="quiz-container">
         <div class="quiz-title">스핑크스</div>
+        <div class="source-credit">문제 구성 출처: 《대항해시대 III》 스핑크스 이벤트</div>
         <div id="display-area"></div>
 
         <div class="volume-control">
