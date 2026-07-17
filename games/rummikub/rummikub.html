@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>CLASS RUMMIKUB ONLINE v8</title>
+<title>CLASS RUMMIKUB ONLINE v9</title>
 <style>
 :root{--bg:#09111e;--panel:#14243a;--panel2:#1b304d;--line:#38577a;--text:#f3f6fb;--muted:#9fb2ca;--gold:#ffd166;--good:#55d98b;--bad:#ff6b77}
 *{box-sizing:border-box}
@@ -54,11 +54,23 @@ input{min-height:43px;border:1px solid #456789;background:#0c192b;color:white;bo
 </head>
 <body>
 
-<section id="missing" class="screen hidden"><div class="panel"><h1>이름이 없습니다</h1><p class="status">메인 화면에서 이름을 먼저 입력하세요.</p></div></section>
+<section id="missing" class="screen hidden">
+  <div class="panel" style="max-width:520px">
+    <h1>PLAYER NAME</h1>
+    <div class="subtitle">직접 접속 테스트도 가능합니다.</div>
+    <div class="box">
+      <div class="row">
+        <input id="nameInput" maxlength="12" autocomplete="off" placeholder="이름을 입력하세요" style="flex:1">
+        <button class="btn primary" id="saveNameBtn">입장</button>
+      </div>
+      <div class="status" id="nameStatus">이름은 이 기기에 저장됩니다.</div>
+    </div>
+  </div>
+</section>
 
 <section id="lobby" class="screen hidden">
 <div class="panel">
-<h1>CLASS RUMMIKUB</h1><div class="subtitle">온라인 검증 수정판 v8 · 2·3·4인</div>
+<h1>CLASS RUMMIKUB</h1><div class="subtitle">직접 접속 지원판 v9 · 2·3·4인</div>
 <div class="box status">PLAYER <strong id="nameLabel"></strong></div>
 <div class="tabs"><button class="tab active" id="hostTab">방 만들기</button><button class="tab" id="joinTab">방 입장</button></div>
 <div class="box" id="hostPane"><div class="room-code" id="roomCode">----</div><div class="status" id="hostStatus">방을 만드는 중입니다.</div><div class="row"><input id="shareUrl" style="flex:1" readonly><button class="btn" id="copyBtn">주소 복사</button></div></div>
@@ -71,7 +83,7 @@ input{min-height:43px;border:1px solid #456789;background:#0c192b;color:white;bo
 <section id="game" class="screen hidden">
 <div class="panel">
 <div class="topbar">
-<div><strong>CLASS RUMMIKUB</strong><div class="muted">온라인 검증 수정판 v8</div></div>
+<div><strong>CLASS RUMMIKUB</strong><div class="muted">직접 접속 지원판 v9</div></div>
 <div class="turn" id="turnLabel">게임 준비 중</div>
 <div class="actions"><button class="btn" id="rulesGame">RULES</button><button class="btn warn" id="leaveBtn">나가기</button></div>
 </div>
@@ -98,7 +110,7 @@ input{min-height:43px;border:1px solid #456789;background:#0c192b;color:white;bo
 
 <div class="cover" id="cover"><div class="coverbox"><h2 id="coverTitle">알림</h2><p id="coverText"></p><button class="btn primary" id="coverBtn">확인</button></div></div>
 <div class="rules" id="rules"><div class="dialog"><h2>RULES</h2><ol>
-<li>조커 없는 104개 타일을 사용합니다.</li><li>그룹은 같은 숫자 3~4장, 색은 모두 달라야 합니다.</li><li>연속은 같은 색 숫자 3장 이상이며 숫자가 이어져야 합니다.</li><li>첫 등록은 손패에서 낸 타일 합계 30점 이상이어야 합니다.</li><li>첫 등록 전에는 기존 테이블 타일을 움직일 수 없습니다.</li><li>클릭 선택과 드래그를 모두 지원합니다.</li><li>턴 종료 시 방장 클라이언트가 타일 ID·속성·중복·누락·첫 등록 규칙을 다시 검사합니다.</li></ol><button class="btn primary" id="closeRules">확인</button></div></div>
+<li>조커 없는 104개 타일을 사용합니다.</li><li>그룹은 같은 숫자 3~4장, 색은 모두 달라야 합니다.</li><li>연속은 같은 색 숫자 3장 이상이며 숫자가 이어져야 합니다.</li><li>첫 등록은 손패에서 낸 타일 합계 30점 이상이어야 합니다.</li><li>첫 등록 전에는 기존 테이블 타일을 움직일 수 없습니다.</li><li>클릭 선택과 드래그를 모두 지원합니다.</li><li>턴 종료 시 방장 클라이언트가 타일 ID·속성·중복·누락·첫 등록 규칙을 다시 검사합니다.</li><li>메인 화면을 거치지 않고 직접 접속해도 이름을 입력하고 참여할 수 있습니다.</li></ol><button class="btn primary" id="closeRules">확인</button></div></div>
 
 <script>
 "use strict";
@@ -368,12 +380,62 @@ function draw(){
 }
 function setMessage(t,good=null){$("message").textContent=t;$("message").className="message"+(good===false?" bad":good===true?" good":"")}
 function showGame(){$("lobby").classList.add("hidden");$("game").classList.remove("hidden")}function cover(t,x){$("coverTitle").textContent=t;$("coverText").textContent=x;$("cover").classList.add("show")}
+$("saveNameBtn").onclick=enterWithName;
+$("nameInput").addEventListener("keydown",e=>{if(e.key==="Enter")enterWithName()});
 $("hostTab").onclick=()=>setMode("host");$("joinTab").onclick=()=>setMode("join");$("joinBtn").onclick=joinRoom;$("startBtn").onclick=startGame;$("drawBtn").onclick=draw;$("endBtn").onclick=endTurn;
 $("undoBtn").onclick=()=>{if(turnSnapshot){draftHand=clone(turnSnapshot.hand);draftMelds=clone(turnSnapshot.melds);selected.clear();renderAll()}};
 $("clearBtn").onclick=()=>{selected.clear();renderAll()};$("sortNum").onclick=()=>{draftHand.sort((a,b)=>a.n-b.n||COLOR_ORDER[a.color]-COLOR_ORDER[b.color]);renderAll()};$("sortColor").onclick=()=>{draftHand.sort((a,b)=>COLOR_ORDER[a.color]-COLOR_ORDER[b.color]||a.n-b.n);renderAll()};
 $("copyBtn").onclick=async()=>{try{await navigator.clipboard.writeText($("shareUrl").value);$("copyBtn").textContent="복사됨"}catch(_){}};$("leaveBtn").onclick=()=>location.reload();$("coverBtn").onclick=()=>$("cover").classList.remove("show");
 const showRules=()=>$("rules").classList.add("show");$("rulesLobby").onclick=showRules;$("rulesGame").onclick=showRules;$("closeRules").onclick=()=>$("rules").classList.remove("show");
-(function init(){const n=savedName();if(!n){$("missing").classList.remove("hidden");return}$("nameLabel").textContent=n;$("lobby").classList.remove("hidden");const q=new URLSearchParams(location.search).get("room");if(q){myRole="join";$("hostTab").classList.remove("active");$("joinTab").classList.add("active");$("hostPane").classList.add("hidden");$("joinPane").classList.remove("hidden");$("joinCode").value=String(q).replace(/\D/g,"").slice(0,4)}else createRoom()})();
+
+function enterWithName(){
+  const name=String($("nameInput")?.value||"").trim().slice(0,12);
+  if(!name){
+    $("nameStatus").textContent="이름을 입력하세요.";
+    return;
+  }
+  localStorage.setItem(NAME_KEY,name);
+  $("missing").classList.add("hidden");
+  $("nameLabel").textContent=name;
+  $("lobby").classList.remove("hidden");
+
+  const q=new URLSearchParams(location.search).get("room");
+  if(q){
+    myRole="join";
+    $("hostTab").classList.remove("active");
+    $("joinTab").classList.add("active");
+    $("hostPane").classList.add("hidden");
+    $("joinPane").classList.remove("hidden");
+    $("joinCode").value=String(q).replace(/\D/g,"").slice(0,4);
+    setTimeout(()=>$("joinCode").focus(),50);
+  }else{
+    createRoom();
+  }
+}
+(function init(){
+  const n=savedName();
+  if(!n){
+    $("missing").classList.remove("hidden");
+    setTimeout(()=>$("nameInput").focus(),50);
+    return;
+  }
+
+  $("nameLabel").textContent=n;
+  $("lobby").classList.remove("hidden");
+
+  const q=new URLSearchParams(location.search).get("room");
+  if(q){
+    myRole="join";
+    $("hostTab").classList.remove("active");
+    $("joinTab").classList.add("active");
+    $("hostPane").classList.add("hidden");
+    $("joinPane").classList.remove("hidden");
+    $("joinCode").value=String(q).replace(/\D/g,"").slice(0,4);
+    setTimeout(()=>$("joinCode").focus(),50);
+  }else{
+    createRoom();
+  }
+})();
 </script>
 </body>
 </html>
