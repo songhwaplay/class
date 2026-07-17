@@ -5,7 +5,7 @@ const path=require('node:path');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
 const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
-const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/assets/maps/natural-earth/manifest.json'),'utf8'));
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/assets/maps/natural-earth-v58/manifest.json'),'utf8'));
 assert.equal(manifest.width,16200);assert.equal(manifest.height,8100);
 assert.doesNotMatch(html,/forestAtlas|desertAtlas|riverAtlas|biomePaletteMask|ocean_original_tiles/);
 assert.match(html,/const portVisible=!inCity&&!busy&&!!portInteraction/);

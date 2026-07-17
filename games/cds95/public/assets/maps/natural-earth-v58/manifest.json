@@ -1,0 +1,11 @@
+{
+  "width": 16200,
+  "height": 8100,
+  "tileSize": 1024,
+  "cols": 16,
+  "rows": 8,
+  "format": "jpg",
+  "quality": 96,
+  "sourceFile": "source/3_no_ice_clouds_16k.jpg",
+  "sourceBytes": 30041042
+}

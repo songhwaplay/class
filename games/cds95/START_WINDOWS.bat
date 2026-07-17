@@ -4,7 +4,7 @@ cd /d "%~dp0"
 echo [1/2] 필요한 서버 모듈을 확인합니다.
 if not exist node_modules call npm install
 if errorlevel 1 goto error
-echo [2/2] 실시간 학습 서버를 시작합니다.
+echo [2/2] V58 Natural Earth 16K 서버를 시작합니다.
 echo 학생: http://localhost:3000/
 echo 교사: http://localhost:3000/teacher.html
 call npm start

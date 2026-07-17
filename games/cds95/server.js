@@ -2231,6 +2231,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v57: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v58 · Natural Earth 16K: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v57</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v58</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -41,7 +41,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="loading">고해상도 Natural Earth 지도와 실시간 탐험 모듈을 불러오는 중…</div>
+<div id="loading">Natural Earth 16K 원본 지도(V58)를 불러오는 중…</div>
 <div id="join">
   <form id="joinCard" class="panel">
     <h1>세계 항해·육상 탐험</h1>
@@ -118,8 +118,8 @@ const cityView=document.getElementById('cityView'),cityScene=document.getElement
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
 const pauseOverlay=document.getElementById('pauseOverlay'),lockTitle=document.getElementById('lockTitle'),lockDetail=document.getElementById('lockDetail'),transitionOverlay=document.getElementById('transitionOverlay'),transitionLabel=document.getElementById('transitionLabel'),transitionFill=document.getElementById('transitionFill');
 const naturalMapOverview=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();
-naturalMapOverview.src='/assets/maps/natural-earth/overview.jpg?v=57';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=57';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=57';
-const NATURAL_MAP=Object.freeze({width:16200,height:8100,tileSize:512,cols:32,rows:16});
+naturalMapOverview.src='/assets/maps/natural-earth-v58/overview.jpg?v=58';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=58';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=58';
+const NATURAL_MAP=Object.freeze({width:16200,height:8100,tileSize:1024,cols:16,rows:8});
 const naturalMapTileCache=new Map();
 const NATURAL_MAP_TILE_CACHE_LIMIT=72;
 function naturalMapTileKey(col,row){return `${col}:${row}`}
@@ -133,7 +133,7 @@ function naturalMapTile(col,row){
   const key=naturalMapTileKey(col,row),now=performance.now();let entry=naturalMapTileCache.get(key);
   if(entry){entry.lastUsed=now;return entry.state==='ready'?entry.img:null}
   const img=new Image();entry={img,state:'loading',lastUsed:now};naturalMapTileCache.set(key,entry);
-  img.decoding='async';img.src=`/assets/maps/natural-earth/tiles/tile_${col}_${row}.jpg?v=57`;
+  img.decoding='async';img.src=`/assets/maps/natural-earth-v58/tiles/tile_${col}_${row}.jpg?v=58`;
   img.onload=()=>{entry.state='ready';entry.lastUsed=performance.now();trimNaturalMapTileCache()};
   img.onerror=()=>{entry.state='error';entry.lastUsed=performance.now()};
   return null;
@@ -170,7 +170,7 @@ function drawNaturalEarthLayer(cw,ch,left,top){
   ctx.restore();ctx.imageSmoothingEnabled=false;
 }
 
-const DESKTOP_MAP_ZOOM=1.7,MOBILE_MAP_ZOOM_PORTRAIT=.88,MOBILE_MAP_ZOOM_LANDSCAPE=1.0,DESKTOP_MIN_ZOOM=.75,MOBILE_MIN_ZOOM=.55;
+const DESKTOP_MAP_ZOOM=1.0,MOBILE_MAP_ZOOM_PORTRAIT=.68,MOBILE_MAP_ZOOM_LANDSCAPE=.78,DESKTOP_MIN_ZOOM=.55,MOBILE_MIN_ZOOM=.45;
 function isPhoneMapView(){return (matchMedia('(pointer:coarse)').matches||innerWidth<=650)&&Math.min(innerWidth,innerHeight)<=650}
 function recommendedMapZoom(){if(!isPhoneMapView())return DESKTOP_MAP_ZOOM;return innerWidth>innerHeight?MOBILE_MAP_ZOOM_LANDSCAPE:MOBILE_MAP_ZOOM_PORTRAIT}
 function minimumMapZoom(){return isPhoneMapView()?MOBILE_MIN_ZOOM:DESKTOP_MIN_ZOOM}
@@ -386,7 +386,7 @@ function applyModeUI(){
 }
 
 async function ungzipResponse(url){const response=await fetch(url);if(!response.ok)throw new Error('지도 파일을 받지 못했습니다.');if(!('DecompressionStream' in window))throw new Error('최신 Chrome이 필요합니다.');const ds=new DecompressionStream('gzip');return await new Response(response.body.pipeThrough(ds)).arrayBuffer()}
-Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=57'),naturalMapOverview.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=57').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=57').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,_map,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
+Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=58'),naturalMapOverview.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=58').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=58').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,_map,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
 
 socket.on('connect',()=>{net.textContent='● 서버 연결';net.className='good'});
 socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});

@@ -2,9 +2,9 @@
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const html=fs.readFileSync('public/index.html','utf8');
-assert.match(html,/MOBILE_MAP_ZOOM_PORTRAIT=\.88/);
-assert.match(html,/MOBILE_MAP_ZOOM_LANDSCAPE=1\.0/);
-assert.match(html,/MOBILE_MIN_ZOOM=\.55/);
+assert.match(html,/MOBILE_MAP_ZOOM_PORTRAIT=\.68/);
+assert.match(html,/MOBILE_MAP_ZOOM_LANDSCAPE=\.78/);
+assert.match(html,/MOBILE_MIN_ZOOM=\.45/);
 assert.match(html,/function isPhoneMapView\(\)/);
 assert.match(html,/zoom=recommendedMapZoom\(\)/);
 assert.match(html,/function resetMapZoomForDevice\(\)/);
