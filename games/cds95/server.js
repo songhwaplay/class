@@ -244,7 +244,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 59,
+  version: 63,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -2250,6 +2250,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v60 · Natural Earth 16K · 225개 도시 실제 좌표: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v63 · 낮/밤 항구 배경 분리 적용: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

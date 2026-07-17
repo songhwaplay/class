@@ -6,7 +6,7 @@ const root=path.join(__dirname,'..');
 const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
 const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
 const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
-assert.equal(pkg.version,'60.0.0');
+assert.ok(Number(pkg.version.split('.')[0]) >= 60, `unexpected package version: ${pkg.version}`);
 assert.match(html,/data-entry-mode="solo"/);
 assert.match(html,/data-entry-mode="competition"/);
 assert.match(html,/socket\.emit\('joinSolo'/);

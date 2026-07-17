@@ -48,6 +48,34 @@
     84,85,86,96,98,99,100,101,102,103,104
   ]);
 
+  // Natural Earth의 0.144도 격자 마스크에서는 폭이 매우 좁은 해협이 육지로 닫힐 수 있다.
+  // 실제로 선박이 통과해야 하는 자연 해협만 별도 항로로 열어 둔다.
+  // path 좌표는 [위도, 경도], widthDeg는 항로 중심선에서 허용할 반폭이다.
+  const NAVIGABLE_SEA_CORRIDORS = Object.freeze([
+    Object.freeze({
+      id: 'dardanelles',
+      widthDeg: 0.22,
+      path: Object.freeze([
+        Object.freeze([39.96, 26.05]),
+        Object.freeze([40.12, 26.27]),
+        Object.freeze([40.28, 26.47]),
+        Object.freeze([40.43, 26.66]),
+        Object.freeze([40.56, 26.83])
+      ])
+    }),
+    Object.freeze({
+      id: 'bosporus',
+      widthDeg: 0.20,
+      path: Object.freeze([
+        Object.freeze([40.94, 28.78]),
+        Object.freeze([41.02, 28.92]),
+        Object.freeze([41.10, 29.03]),
+        Object.freeze([41.18, 29.10]),
+        Object.freeze([41.27, 29.16])
+      ])
+    })
+  ]);
+
   function wrapCellX(cx) {
     cx %= WORLD_W;
     return cx < 0 ? cx + WORLD_W : cx;
@@ -79,9 +107,36 @@
     return true;
   }
 
+  function pointToSegmentDistanceDeg(lat, lon, a, b) {
+    const refLat = (lat + a[0] + b[0]) / 3 * Math.PI / 180;
+    const lonScale = Math.max(0.2, Math.cos(refLat));
+    const px = lon * lonScale;
+    const py = lat;
+    const ax = a[1] * lonScale;
+    const ay = a[0];
+    const bx = b[1] * lonScale;
+    const by = b[0];
+    const dx = bx - ax;
+    const dy = by - ay;
+    const denom = dx * dx + dy * dy;
+    const t = denom > 0 ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / denom)) : 0;
+    return Math.hypot(px - (ax + dx * t), py - (ay + dy * t));
+  }
+
+  function navigableSeaCorridorAtCell(cx, cy) {
+    const { lon, lat } = lonLat(cx + 0.5, cy + 0.5);
+    for (const corridor of NAVIGABLE_SEA_CORRIDORS) {
+      for (let i = 1; i < corridor.path.length; i += 1) {
+        if (pointToSegmentDistanceDeg(lat, lon, corridor.path[i - 1], corridor.path[i]) <= corridor.widthDeg) return corridor.id;
+      }
+    }
+    return null;
+  }
+
   function isLandAt(world, cx, cy) {
     cx = wrapCellX(Math.floor(cx));
     cy = Math.max(0, Math.min(WORLD_H - 1, Math.floor(cy)));
+    if (navigableSeaCorridorAtCell(cx, cy)) return false;
     if (naturalEarthLandMask && usesNaturalEarthMask(cx, cy)) return naturalEarthLandMask[cy * WORLD_W + cx] === 1;
     return isLandValue(cellValue(world, cx, cy));
   }
@@ -150,6 +205,6 @@
 
   return Object.freeze({
     WORLD_W, WORLD_H, TILE, WORLD_PIXEL_W, WORLD_PIXEL_H,
-    SPEED, LABEL, HIGH_MOUNTAIN_FAMILIES, wrapCellX, wrapPixelX, cellValue, setNaturalEarthLandMask, terrainAtCell, terrainAtPixel, lonLat
+    SPEED, LABEL, HIGH_MOUNTAIN_FAMILIES, NAVIGABLE_SEA_CORRIDORS, wrapCellX, wrapPixelX, cellValue, setNaturalEarthLandMask, navigableSeaCorridorAtCell, terrainAtCell, terrainAtPixel, lonLat
   });
 }));
