@@ -112,6 +112,10 @@ function defaultArrivalRadiusTiles(source) {
   return byCategory[source?.category] || (source?.access === 'port' ? 3.1 : 6);
 }
 
+const ORIGINAL_CITY_IMAGE_INDEX = new Map(
+  MissionCatalog.ORIGINAL_CITIES.map((city, index) => [String(city.id), index])
+);
+
 function resolveCatalog() {
   const byId = new Map();
   for (const source of MissionCatalog.PLACES) {
@@ -159,8 +163,13 @@ function resolveCatalog() {
     const point = source.isOriginalCity
       ? (source.canEnterFromSea ? resolvedSeaPoint : resolvedLandPoint)
       : source.access === 'sea' ? seaPoint : source.access === 'land' ? landPoint : seaPoint;
+    const cityImageIndex = source.isOriginalCity ? ORIGINAL_CITY_IMAGE_INDEX.get(String(source.id)) : null;
     byId.set(source.id, {
       ...source,
+      cityImageIndex: Number.isInteger(cityImageIndex) ? cityImageIndex : null,
+      interiorImage: Number.isInteger(cityImageIndex)
+        ? `/assets/cities/original/city_${String(cityImageIndex).padStart(3, '0')}.png?v=52`
+        : null,
       x: point.x,
       y: point.y,
       point,
@@ -195,6 +204,8 @@ function publicMissionCatalog() {
         seaPoint: resolved ? { x: resolved.seaPoint.x, y: resolved.seaPoint.y } : null,
         landPoint: resolved ? { x: resolved.landPoint.x, y: resolved.landPoint.y } : null,
         canEnterFromSea: resolved?.canEnterFromSea === true,
+        cityImageIndex: Number.isInteger(resolved?.cityImageIndex) ? resolved.cityImageIndex : null,
+        interiorImage: resolved?.interiorImage || null,
         arrivalRadiusTiles: resolved?.arrivalRadiusTiles || null
       };
     })
@@ -213,12 +224,12 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => res.json(publicMissionCatalog()));
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 41,
+  version: 52,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
   landBaseSpeed: LAND_BASE_SPEED,
-  completionSpeedMultipliers: { first: 4, second: 3, third: 2, fourthAndAfter: 1.5 },
+  completionSpeedMultipliers: { first: 10, second: 5, third: 3, fourthAndAfter: 1 },
   currentTailAssistPercent: Math.round(CURRENT_TAIL_FACTOR * 100),
   currentStrongCoreTailAssistPercent: Math.round(CURRENT_STRONG_CORE_TAIL_FACTOR * 100),
   currentHeadPenaltyPercent: Math.round(CURRENT_HEAD_FACTOR * 100),
@@ -226,6 +237,10 @@ app.get('/health', (_req, res) => res.json({
   windHeadPenaltyPercent: Math.round(WIND_HEAD_FACTOR * 100),
   gameHoursPerRealSecond: GAME_HOURS_PER_REAL_SECOND,
   landMode: true,
+  cityInteriorMode: true,
+  cityInteriorImageCount: MissionCatalog.ORIGINAL_CITIES.length,
+  cityEntryExitGameMinutes: 0,
+  libraryReading: true,
   missionSystem: 'one-destination-four-start-cities-teacher-start-gated-arrival-race',
   originalCityCount: MissionCatalog.ORIGINAL_CITIES.length,
   originalPortCityCount: MissionCatalog.ORIGINAL_CITIES.filter((place) => place.canEnterFromSea === true).length,
@@ -969,6 +984,51 @@ function nearbyCatalogPort(player) {
   };
 }
 
+function nearCityLandPoint(player, place, radiusTiles = 1.35) {
+  if (!player || player.mode !== 'land' || !place?.isOriginalCity) return false;
+  const points = [
+    ...(Array.isArray(place.originalLandEntryPoints) ? place.originalLandEntryPoints : []),
+    ...(Array.isArray(place.originalMarkerPoints) ? place.originalMarkerPoints : []),
+    ...(place.landPoint ? [place.landPoint] : [])
+  ];
+  return points.some((point) => distanceXY(player.x, player.y, point.x, point.y) <= radiusTiles * TILE);
+}
+
+function nearestCityEntrance(player, radiusTiles = 1.35) {
+  if (!player || player.mode !== 'land') return null;
+  let best = null;
+  let bestDistance = Infinity;
+  for (const place of RESOLVED_PLACES.values()) {
+    if (!place.isOriginalCity) continue;
+    const points = [
+      ...(Array.isArray(place.originalLandEntryPoints) ? place.originalLandEntryPoints : []),
+      ...(Array.isArray(place.originalMarkerPoints) ? place.originalMarkerPoints : []),
+      ...(place.landPoint ? [place.landPoint] : [])
+    ];
+    for (const point of points) {
+      const d = distanceXY(player.x, player.y, point.x, point.y);
+      if (d <= radiusTiles * TILE && d < bestDistance) {
+        best = place;
+        bestDistance = d;
+      }
+    }
+  }
+  return best;
+}
+
+function cityInteractionForPlayer(player) {
+  const place = nearestCityEntrance(player);
+  if (!place) return null;
+  return {
+    placeId: place.id,
+    placeName: place.name,
+    actionLabel: '도시 들어가기',
+    canUse: true,
+    interiorImage: place.interiorImage,
+    cityImageIndex: place.cityImageIndex
+  };
+}
+
 function arrivedAtOriginalCity(player, place) {
   if (!player || !place?.isOriginalCity) return false;
   const nearAny = (points, radiusTiles) => Array.isArray(points) && points.some((point) => distanceXY(player.x, player.y, point.x, point.y) <= radiusTiles * TILE);
@@ -988,6 +1048,7 @@ function activeMissionState(roomCode, studentName, player = null) {
     mission: missionForStudentWithProgress(activeMission, progress),
     progress: publicProgress(progress, mission),
     interaction: player && mission ? missionInteractionForPlayer(player, mission, progress) : null,
+    cityInteraction: player ? cityInteractionForPlayer(player) : null,
     portInteraction: player ? nearbyCatalogPort(player) : null
   };
 }
@@ -1144,6 +1205,7 @@ function updateSupplies(p, nowGameMinutes) {
 
 function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
   const activeMission = store.room(p.roomCode).activeMission;
+  const currentCity = currentCityForPlayer(p);
   const raceProgress = isArrivalRace(activeMission) ? progressFor(p.roomCode, p.name, activeMission.id, false) : null;
   const raceCompleted = raceProgress?.status === 'completed';
   const finishRank = Number.isFinite(raceProgress?.finishRank) ? raceProgress.finishRank : null;
@@ -1183,7 +1245,10 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     windStrength: Math.round((Number(p.windStrength) || 0) * 1000) / 1000,
     windAssistPercent: Number.isFinite(p.windAssistPercent) ? p.windAssistPercent : 0,
     currentCityId: p.currentCityId || null,
-    currentCityName: currentCityForPlayer(p)?.name || '',
+    currentCityName: currentCity?.name || '',
+    currentCityRegion: currentCity?.region || '',
+    currentCityImageIndex: Number.isInteger(currentCity?.cityImageIndex) ? currentCity.cityImageIndex : null,
+    currentCityImage: currentCity?.interiorImage || '',
     lastCityId: p.lastCityId || null,
     shipPortId: p.shipPortId || null,
     shipPortName: RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name || '',
@@ -1372,6 +1437,7 @@ io.on('connection', (socket) => {
         noticeAt: 0,
         stageArrivalKey: null,
         currentCityId: null,
+        cityReturnPoint: null,
         lastCityId: savedRaceStart?.id || null,
         shipPortId: savedProgress?.shipPortId || savedRaceStart?.id || null,
         fatigue: 0,
@@ -1428,15 +1494,53 @@ io.on('connection', (socket) => {
     p.lastSeen = Date.now();
   });
 
-  socket.on('enterPort', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
+  socket.on('enterCity', (payload, ack = () => {}) => {
+    const p = playerForSocket(socket);
+    if (!p || p.mode !== 'land') return ack({ ok:false, error:'육상 탐험대 상태에서 도시 입구에 접근하세요.' });
+    const travel = arrivalRaceTravelGate(p);
+    if (!travel.ok) return ack({ ok:false, error:travel.error });
+    if (p.transition) return ack({ ok:false, error:'이동 수단 전환이 진행 중입니다.' });
+    const place = RESOLVED_PLACES.get(String(payload?.placeId || ''));
+    if (!place?.isOriginalCity) return ack({ ok:false, error:'도시 정보를 찾지 못했습니다.' });
+    if (!nearCityLandPoint(p, place)) return ack({ ok:false, error:`${place.name} 입구에 더 가까이 이동하세요.` });
+    p.cityReturnPoint = { x:p.x, y:p.y };
+    setModeAt(p, 'city', p.cityReturnPoint);
+    p.currentCityId = place.id;
+    p.lastCityId = place.id;
+    setNotice(p, `${place.name}에 들어왔습니다.`);
+    ack({ ok:true, city:{ id:place.id, name:place.name, region:place.region || '', interiorImage:place.interiorImage }, self:publicPlayer(p) });
+  });
 
-  socket.on('departPort', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
+  socket.on('leaveCity', (_payload, ack = () => {}) => {
+    const room = roomForSocket(socket);
+    const p = playerForSocket(socket);
+    if (!p || p.mode !== 'city') return ack({ ok:false, error:'현재 도시에 있지 않습니다.' });
+    const place = currentCityForPlayer(p);
+    if (!place) return ack({ ok:false, error:'현재 도시 정보를 찾지 못했습니다.' });
+    const saved = p.cityReturnPoint;
+    const validSaved = saved && terrainAtPixel(saved.x, saved.y).type !== 'sea';
+    const destination = validSaved ? saved : safeLandSpawn(room, place);
+    setModeAt(p, 'land', destination);
+    p.cityReturnPoint = null;
+    p.lastCityId = place.id;
+    setNotice(p, `${place.name} 밖으로 나왔습니다.`);
+    ack({ ok:true, city:place.name, self:publicPlayer(p) });
+  });
 
-  socket.on('resupply', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
+  // 이전 클라이언트와의 호환용 별칭. 도시 입장·퇴장에는 게임 시간 비용이 없다.
+  socket.on('enterPort', (payload, ack = () => {}) => {
+    const p = playerForSocket(socket);
+    if (!p || p.mode !== 'land') return ack({ ok:false, error:'도시 입구에 접근하세요.' });
+    const place = nearestCityEntrance(p);
+    if (!place) return ack({ ok:false, error:'도시 입구에 더 가까이 이동하세요.' });
+    socket.emit('compatEnterCityIgnored');
+    ack({ ok:false, error:'새 화면을 사용하려면 브라우저를 새로고침하세요.' });
+  });
 
-  socket.on('startLandExpedition', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
-
-  socket.on('returnToCity', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 화면 기능은 현재 사용하지 않습니다. 항구에서 상륙·승선을 이용하세요.' }));
+  socket.on('departPort', (_payload, ack = () => {}) => ack({ ok:false, error:'새 화면을 사용하려면 브라우저를 새로고침하세요.' }));
+  socket.on('resupply', (_payload, ack = () => {}) => ack({ ok:false, error:'보급 기능은 항구 전환과 별도로 제공하지 않습니다.' }));
+  socket.on('startLandExpedition', (_payload, ack = () => {}) => ack({ ok:false, error:'항구에서 상륙 명령을 사용하세요.' }));
+  socket.on('returnToCity', (_payload, ack = () => {}) => ack({ ok:false, error:'도시 입구에서 도시 들어가기를 사용하세요.' }));
 
   socket.on('missionUpdate', (payload) => {
     const p = playerForSocket(socket);
@@ -2020,6 +2124,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v49: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v52: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

@@ -7,11 +7,11 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'public/index.html'), 'utf8');
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
-assert.equal(pkg.version, '50.0.0');
+assert.ok(Number(pkg.version.split('.')[0]) >= 50);
 assert.match(html, /ocean_original_tiles_lush\.png/);
 assert.match(html, /biome_palette_mask\.bin\.gz/);
 assert.match(html, /paletteAlpha=biomePaletteMask/);
-assert.match(html, /ctx\.globalAlpha=paletteAlpha\/255/);
+assert.match(html, /paletteMix|ctx\.globalAlpha=paletteAlpha\/255/);
 
 const lush = path.join(root, 'public/assets/maps/ocean_original_tiles_lush.png');
 assert.ok(fs.existsSync(lush));

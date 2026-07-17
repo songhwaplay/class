@@ -1,0 +1,11 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
+assert.match(html,/ocean_original_tiles_lush\.png\?v=51/);
+assert.match(html,/biome_palette_mask\.bin\.gz\?v=51/);
+assert.match(html,/Math\.pow\(paletteAlpha\/255,\.82\)\*1\.04/);
+const lush=fs.statSync(path.join(root,'public/assets/maps/ocean_original_tiles_lush.png'));
+assert.ok(lush.size>500000,'recolored atlas must be present');
+console.log('v51 rainforest palette ok');
