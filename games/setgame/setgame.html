@@ -528,6 +528,35 @@
 
         .rules-list strong { color: var(--gold-bright); }
 
+        .rules-video-wrap {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            margin: 0 0 16px;
+            border: 2px solid var(--gold-dark);
+            background: #000;
+            box-shadow: 0 8px 20px rgba(0,0,0,.45);
+        }
+
+        .rules-video-wrap iframe {
+            width: 100%;
+            height: 100%;
+            border: 0;
+            display: block;
+        }
+
+        .rules-video-link {
+            display: inline-block;
+            margin-top: 12px;
+            color: var(--gold-bright);
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .rules-video-link:hover {
+            text-decoration: underline;
+        }
+
+
         /* 세트 선언 시 타이머 오버레이 */
         .setter-timer-overlay {
             position: absolute;
@@ -965,6 +994,7 @@ textarea,
         <button class="action-btn" style="flex: 1;" onclick="initAsHost()">CREATE ROOM</button>
         <button class="action-btn" style="flex: 1;" onclick="showJoinPanel()">JOIN ROOM</button>
     </div>
+    <button class="action-btn" type="button" onclick="showRules()">HOW TO PLAY</button>
 
     <div id="host-wait-panel" style="display: none; flex-direction: column; gap: 12px; margin-top: 15px;">
         <div class="room-code-block">
@@ -1031,7 +1061,6 @@ textarea,
             <div class="game-title">SET MATCH</div>
             <div class="target-score-label" id="target-score-label">FIRST TO 3 POINTS</div>
         </div>
-        <button class="action-btn" style="padding: 6px 14px; font-size: 13px;" onclick="showRules()">HOW TO PLAY</button>
     </div>
 
     <div class="scoreboard" id="scoreboard">
@@ -2254,15 +2283,25 @@ textarea,
 
     function showRules() {
         const rulesHTML = `
+            <div class="rules-video-wrap">
+                <iframe
+                    src="https://www.youtube.com/embed/uFKi9g6X3ng?rel=0"
+                    title="SET 게임 규칙 설명 영상"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowfullscreen>
+                </iframe>
+            </div>
             <ul class="rules-list">
-                <li><strong>1~4명</strong>이 플레이할 수 있으며, 혼자서 SET 찾기 연습도 할 수 있습니다.</li>
-                <li>바닥에 깔린 카드 중 4가지 속성(모양, 색상, 개수, 음영)이 <strong>모두 같거나 혹은 모두 다른 3장</strong>의 조합(SET)을 찾습니다.</li>
-                <li>세트를 찾았다면 마우스 클릭이나 키보드 <strong style="color: var(--red);">[SPACE BAR]</strong>를 눌러 <strong>SET!</strong>을 외치십시오!</li>
-                <li>세트 선언 즉시 게임판이 <strong>4초 동안 일시정지(Freeze)</strong>되며, 선언한 유저만 카드를 3장 고를 수 있습니다.</li>
-                <li>정확히 매칭하면 <strong>+1점</strong>이며, 정답 카드 3장을 모두가 약 4초 동안 확인한 뒤 카드가 교체됩니다.</li>
-                <li>방장이 정한 목표 점수에 가장 먼저 도달한 플레이어가 승리합니다.</li>
-                <li>잘못 매칭하거나 4초 안에 고르지 못하면 <strong>-1점</strong>입니다. 0점인 플레이어는 현재 카드판에 다시 참여할 수 없습니다.</li>
+                <li>카드의 <strong>모양, 색상, 개수, 음영</strong>을 비교합니다.</li>
+                <li>각 속성이 세 장 모두 같거나, 세 장 모두 다르면 <strong>SET</strong>입니다.</li>
+                <li>SET을 찾으면 먼저 <strong>SET!</strong>을 누르고 4초 안에 카드 3장을 고릅니다.</li>
             </ul>
+            <a class="rules-video-link"
+               href="https://www.youtube.com/watch?v=uFKi9g6X3ng"
+               target="_blank"
+               rel="noopener noreferrer">
+                유튜브에서 크게 보기
+            </a>
         `;
         showModal("HOW TO PLAY", rulesHTML);
     }
