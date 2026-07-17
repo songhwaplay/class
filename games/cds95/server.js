@@ -168,7 +168,7 @@ function resolveCatalog() {
       ...source,
       cityImageIndex: Number.isInteger(cityImageIndex) ? cityImageIndex : null,
       interiorImage: Number.isInteger(cityImageIndex)
-        ? `/assets/cities/original/city_${String(cityImageIndex).padStart(3, '0')}.png?v=52`
+        ? `/assets/cities/original/city_${String(cityImageIndex).padStart(3, '0')}.png?v=53`
         : null,
       x: point.x,
       y: point.y,
@@ -219,12 +219,13 @@ app.use(express.static(path.join(__dirname, 'public'), {
   maxAge: '1h',
   setHeaders(res, filePath) {
     if (filePath.endsWith('.gz')) res.setHeader('Content-Type', 'application/gzip');
+    if (filePath.endsWith('.html')) res.setHeader('Cache-Control', 'no-store, max-age=0');
   }
 }));
-app.get('/api/mission-catalog', (_req, res) => res.json(publicMissionCatalog()));
+app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 52,
+  version: 53,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -2124,6 +2125,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v52: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v53: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
