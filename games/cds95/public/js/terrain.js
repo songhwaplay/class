@@ -10,6 +10,7 @@
   const TILE = 16;
   const WORLD_PIXEL_W = WORLD_W * TILE;
   const WORLD_PIXEL_H = WORLD_H * TILE;
+  let naturalEarthLandMask = null;
 
   const SPEED = Object.freeze({
     sea: 1.00,
@@ -66,6 +67,25 @@
     return (value & 0x4000) !== 0;
   }
 
+  function setNaturalEarthLandMask(mask) {
+    if (!mask) { naturalEarthLandMask = null; return; }
+    const view = mask instanceof Uint8Array ? mask : new Uint8Array(mask);
+    if (view.length !== WORLD_W * WORLD_H) throw new Error('Natural Earth land mask size mismatch');
+    naturalEarthLandMask = view;
+  }
+
+  function usesNaturalEarthMask() {
+    // V60: Natural Earth 배경과 이동 판정을 전 세계에서 같은 해안선으로 통일한다.
+    return true;
+  }
+
+  function isLandAt(world, cx, cy) {
+    cx = wrapCellX(Math.floor(cx));
+    cy = Math.max(0, Math.min(WORLD_H - 1, Math.floor(cy)));
+    if (naturalEarthLandMask && usesNaturalEarthMask(cx, cy)) return naturalEarthLandMask[cy * WORLD_W + cx] === 1;
+    return isLandValue(cellValue(world, cx, cy));
+  }
+
   function lonLat(cx, cy) {
     return {
       lon: wrapCellX(cx) / WORLD_W * 360 - 180,
@@ -100,14 +120,14 @@
 
   function isCoastalLand(world, cx, cy) {
     const neighbors = [[1,0],[-1,0],[0,1],[0,-1]];
-    return neighbors.some(([dx, dy]) => !isLandValue(cellValue(world, cx + dx, cy + dy)));
+    return neighbors.some(([dx, dy]) => !isLandAt(world, cx + dx, cy + dy));
   }
 
   function terrainAtCell(world, cx, cy) {
     cx = wrapCellX(Math.floor(cx));
     cy = Math.floor(cy);
     const value = cellValue(world, cx, cy);
-    if (!isLandValue(value)) return { type: 'sea', multiplier: SPEED.sea, passable: true };
+    if (!isLandAt(world, cx, cy)) return { type: 'sea', multiplier: SPEED.sea, passable: true };
 
     const tileId = value & 0x3fff;
     const family = tileId >> 7;
@@ -130,6 +150,6 @@
 
   return Object.freeze({
     WORLD_W, WORLD_H, TILE, WORLD_PIXEL_W, WORLD_PIXEL_H,
-    SPEED, LABEL, HIGH_MOUNTAIN_FAMILIES, wrapCellX, wrapPixelX, cellValue, terrainAtCell, terrainAtPixel, lonLat
+    SPEED, LABEL, HIGH_MOUNTAIN_FAMILIES, wrapCellX, wrapPixelX, cellValue, setNaturalEarthLandMask, terrainAtCell, terrainAtPixel, lonLat
   });
 }));

@@ -13,7 +13,7 @@ for (const city of cities) {
 }
 const byName = new Map(cities.map((c) => [c.name, c]));
 assert.deepEqual([byName.get('리스본').cellX, byName.get('리스본').cellY], [1185,355]);
-assert.deepEqual([byName.get('런던').cellX, byName.get('런던').cellY], [1254,266]);
+assert.deepEqual([byName.get('런던').cellX, byName.get('런던').cellY], [1248,266]);
 assert.equal(byName.get('카이로').access, 'land');
 assert.equal(byName.get('한양').access, 'port');
 console.log(JSON.stringify({ok:true,cities:cities.length,ports:cities.filter((c)=>c.canEnterFromSea).length,inland:cities.filter((c)=>!c.canEnterFromSea).length}));

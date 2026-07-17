@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v58</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v60</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -41,7 +41,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="loading">Natural Earth 16K 원본 지도(V58)를 불러오는 중…</div>
+<div id="loading">Natural Earth 16K 원본 지도(V60)를 불러오는 중…</div>
 <div id="join">
   <form id="joinCard" class="panel">
     <h1>세계 항해·육상 탐험</h1>
@@ -386,7 +386,7 @@ function applyModeUI(){
 }
 
 async function ungzipResponse(url){const response=await fetch(url);if(!response.ok)throw new Error('지도 파일을 받지 못했습니다.');if(!('DecompressionStream' in window))throw new Error('최신 Chrome이 필요합니다.');const ds=new DecompressionStream('gzip');return await new Response(response.body.pipeThrough(ds)).arrayBuffer()}
-Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=58'),naturalMapOverview.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=58').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=58').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,_map,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
+Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=58'),ungzipResponse('/assets/maps/natural-earth-land-mask-v59.bin.gz?v=60'),naturalMapOverview.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=60').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=58').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,landMask,_map,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');UW3Terrain.setNaturalEarthLandMask(new Uint8Array(landMask));mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
 
 socket.on('connect',()=>{net.textContent='● 서버 연결';net.className='good'});
 socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});

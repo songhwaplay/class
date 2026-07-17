@@ -73,6 +73,8 @@ if (worldBuffer.length !== WORLD_W * WORLD_H * 2) {
   throw new Error(`WORLD.CDS 크기 불일치: ${worldBuffer.length}`);
 }
 const world = new Uint16Array(worldBuffer.buffer, worldBuffer.byteOffset, worldBuffer.length / 2);
+const naturalEarthMaskBuffer = fs.readFileSync(path.join(__dirname, 'data', 'world', 'NATURAL_EARTH_LAND_MASK.bin'));
+Terrain.setNaturalEarthLandMask(new Uint8Array(naturalEarthMaskBuffer.buffer, naturalEarthMaskBuffer.byteOffset, naturalEarthMaskBuffer.length));
 
 function nearestTerrainPoint(baseX, baseY, predicate, maxRadiusTiles = 36) {
   const cx = Math.round(baseX / TILE);
@@ -119,7 +121,10 @@ const ORIGINAL_CITY_IMAGE_INDEX = new Map(
 function resolveCatalog() {
   const byId = new Map();
   for (const source of MissionCatalog.PLACES) {
-    const cell = MissionCatalog.placeCell(source);
+    const useNaturalEarthPosition = source?.naturalEarthPositionOverride === true;
+    const cell = useNaturalEarthPosition
+      ? MissionCatalog.latLonToCell(source.lat, source.lon)
+      : MissionCatalog.placeCell(source);
     const baseX = cell.x * TILE;
     const baseY = cell.y * TILE;
     const seaPoint = nearestTerrainPoint(baseX, baseY, (terrain) => terrain.type === 'sea');
@@ -136,16 +141,26 @@ function resolveCatalog() {
     const landPoint = preferredLandPoint && preferredTypes.includes(preferredLandPoint.terrain)
       ? preferredLandPoint
       : nearestTerrainPoint(baseX, baseY, (terrain) => terrain.type !== 'sea' && terrain.passable);
+    const displayOffsetX = Number(source?.displayOffsetCellsX) || 0;
+    const displayOffsetY = Number(source?.displayOffsetCellsY) || 0;
+    const displayedLandPoint = (displayOffsetX || displayOffsetY)
+      ? nearestTerrainPoint(
+          landPoint.x + displayOffsetX * TILE,
+          landPoint.y + displayOffsetY * TILE,
+          (terrain) => terrain.type !== 'sea' && terrain.passable,
+          5
+        )
+      : landPoint;
     const exactCellPoint = (cell, fallback) => Array.isArray(cell) && cell.length >= 2
       ? { x: (Number(cell[0]) + 0.5) * TILE, y: (Number(cell[1]) + 0.5) * TILE, terrain: terrainAtPixelRaw((Number(cell[0]) + 0.5) * TILE, (Number(cell[1]) + 0.5) * TILE).type }
       : fallback;
-    const originalMarkerPoints = source.isOriginalCity && Array.isArray(source.originalMarkerCells)
+    const originalMarkerPoints = source.isOriginalCity && !useNaturalEarthPosition && Array.isArray(source.originalMarkerCells)
       ? source.originalMarkerCells.map((cell) => exactCellPoint(cell, null)).filter(Boolean)
       : [];
-    const originalSeaEntryPoints = source.isOriginalCity && Array.isArray(source.originalSeaEntryCells)
+    const originalSeaEntryPoints = source.isOriginalCity && !useNaturalEarthPosition && Array.isArray(source.originalSeaEntryCells)
       ? source.originalSeaEntryCells.map((cell) => exactCellPoint(cell, null)).filter(Boolean)
       : [];
-    const originalLandEntryPoints = source.isOriginalCity && Array.isArray(source.originalLandEntryCells)
+    const originalLandEntryPoints = source.isOriginalCity && !useNaturalEarthPosition && Array.isArray(source.originalLandEntryCells)
       ? source.originalLandEntryCells.map((cell) => exactCellPoint(cell, null)).filter(Boolean)
       : [];
     const markerCenter = originalMarkerPoints.length
@@ -157,9 +172,13 @@ function resolveCatalog() {
       : { x: baseX, y: baseY, terrain: terrainAtPixelRaw(baseX, baseY).type };
     const exactSeaPoint = exactCellPoint(source.originalSeaSpawnCell, originalSeaEntryPoints[0] || seaPoint);
     const exactLandPoint = exactCellPoint(source.originalLandSpawnCell, originalLandEntryPoints[0] || landPoint);
-    const cityPoint = source.isOriginalCity ? markerCenter : landPoint;
-    const resolvedSeaPoint = source.isOriginalCity ? exactSeaPoint : seaPoint;
-    const resolvedLandPoint = source.isOriginalCity ? exactLandPoint : landPoint;
+    const naturalEarthBasePoint = { x: wrapX(baseX), y: Math.max(TILE, Math.min(WORLD_PIXEL_H - TILE, baseY)), terrain: terrainAtPixelRaw(baseX, baseY).type };
+    const cityPoint = useNaturalEarthPosition ? displayedLandPoint : (source.isOriginalCity ? markerCenter : landPoint);
+    const resolvedSeaPoint = useNaturalEarthPosition ? seaPoint : (source.isOriginalCity ? exactSeaPoint : seaPoint);
+    const resolvedLandPoint = useNaturalEarthPosition ? displayedLandPoint : (source.isOriginalCity ? exactLandPoint : landPoint);
+    const resolvedMarkerPoints = useNaturalEarthPosition && cityPoint ? [cityPoint] : originalMarkerPoints;
+    const resolvedSeaEntryPoints = useNaturalEarthPosition && source.canEnterFromSea && resolvedSeaPoint ? [resolvedSeaPoint] : originalSeaEntryPoints;
+    const resolvedLandEntryPoints = useNaturalEarthPosition && resolvedLandPoint ? [resolvedLandPoint] : originalLandEntryPoints;
     const point = source.isOriginalCity
       ? (source.canEnterFromSea ? resolvedSeaPoint : resolvedLandPoint)
       : source.access === 'sea' ? seaPoint : source.access === 'land' ? landPoint : seaPoint;
@@ -176,9 +195,9 @@ function resolveCatalog() {
       cityPoint,
       seaPoint: resolvedSeaPoint,
       landPoint: resolvedLandPoint,
-      originalMarkerPoints,
-      originalSeaEntryPoints,
-      originalLandEntryPoints,
+      originalMarkerPoints: resolvedMarkerPoints,
+      originalSeaEntryPoints: resolvedSeaEntryPoints,
+      originalLandEntryPoints: resolvedLandEntryPoints,
       arrivalRadiusTiles: defaultArrivalRadiusTiles(source),
       interactionRadiusTiles: source.isOriginalCity ? 3.2 : Math.max(2.2, Math.min(8, Number(source.interactionRadiusTiles) || 3.2))
     });
@@ -225,7 +244,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 55,
+  version: 59,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -2231,6 +2250,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v58 · Natural Earth 16K: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v60 · Natural Earth 16K · 225개 도시 실제 좌표: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
