@@ -25,7 +25,7 @@
             font-family: 'Malgun Gothic', sans-serif;
             background:
                 linear-gradient(rgba(30, 18, 10, 0.24), rgba(18, 10, 7, 0.48)),
-                url('../../assets/images/sphinxbg.png') center / cover fixed;
+                url('../../assets/images/mainbg.png') center / cover fixed;
         }
 
         body::before {
@@ -592,6 +592,13 @@ textarea,
     }
 }
 
+
+@media (max-width: 760px), (pointer: coarse) {
+    .volume-control {
+        display: none !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -808,9 +815,13 @@ textarea,
                     <div class="finishers-list" id="today-finishers-list"></div>
                 </div>`;
             const nameInput = document.getElementById("player-name");
+            const playerEntry = document.querySelector(".player-entry");
             if (nameInput) {
                 bindKoreanNameInput(nameInput);
                 handlePlayerNameInput(nameInput, true);
+            }
+            if (playerName && playerEntry) {
+                playerEntry.style.display = "none";
             }
             loadTodayFinishers();
             return;

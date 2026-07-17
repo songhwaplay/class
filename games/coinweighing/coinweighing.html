@@ -8,7 +8,7 @@
         body {
             background:
                 linear-gradient(rgba(30, 20, 12, 0.18), rgba(18, 10, 6, 0.34)),
-                url('../../assets/images/sphinxbg.png') center / cover fixed;
+                url('../../assets/images/mainbg.png') center / cover fixed;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -34,9 +34,7 @@
         .game-board {
             width: 780px;
             height: 540px;
-            background:
-                linear-gradient(rgba(4, 18, 31, 0.34), rgba(4, 18, 31, 0.52)),
-                url('../../assets/images/coinweighingbg.png') center / cover no-repeat;
+            background: url('../../assets/images/mainbg2.png') center / cover no-repeat;
             border: 6px solid #bda85d;
             box-shadow:
                 0 0 0 4px #4a3c18,
@@ -52,7 +50,9 @@
         .start-screen {
             width: 780px;
             height: 540px;
-            background: radial-gradient(circle at center, #1a2a3a 0%, #050b11 100%);
+            background:
+                linear-gradient(rgba(5,11,17,.62), rgba(5,11,17,.78)),
+                url('../../assets/images/mainbg2.png') center / cover no-repeat;
             border: 6px solid #bda85d;
             box-shadow: 0 0 0 4px #4a3c18, inset 0 0 30px rgba(0,0,0,0.9);
             display: flex;
@@ -1044,6 +1044,14 @@ textarea,
     }
 }
 
+
+@media (max-width: 760px), (pointer: coarse) {
+    .volume-container,
+    .ingame-controls-wrapper {
+        display: none !important;
+    }
+}
+
 </style>
 </head>
 <body>
@@ -1324,11 +1332,24 @@ textarea,
     function initializePlayerEntry() {
         playerName = getSavedPlayerName();
         const input = document.getElementById("player-name");
+        const entry = document.querySelector(".player-entry");
+        const startButton = document.getElementById("start-game-button");
+
         if (input) {
             input.value = playerName;
             bindKoreanNameInput(input);
             handlePlayerNameInput(input, true);
         }
+
+        if (playerName && entry) {
+            entry.style.display = "none";
+        }
+
+        if (playerName && startButton) {
+            startButton.disabled = false;
+            startButton.textContent = `${playerName} START`;
+        }
+
         loadTodayFinishers();
     }
 

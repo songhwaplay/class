@@ -9,7 +9,7 @@
         body { 
             background:
                 linear-gradient(rgba(30, 20, 12, 0.18), rgba(18, 10, 6, 0.34)),
-                url('../../assets/images/sphinxbg.png') center / cover fixed;
+                url('../../assets/images/mainbg.png') center / cover fixed;
             color: #e6cb9c; 
             font-family: 'Georgia', 'Times New Roman', serif; 
             display: flex; 
@@ -35,7 +35,9 @@
         
         /* 스타트 화면 스타일 */
         .start-screen {
-            background: linear-gradient(135deg, #2b1a0e 0%, #150d07 100%);
+            background:
+                linear-gradient(rgba(43,26,14,.82), rgba(21,13,7,.90)),
+                url('../../assets/images/mainbg2.png') center / cover;
             border: 3px solid #a27d4f;
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 15px rgba(0,0,0,0.6);
             width: 450px;
@@ -66,12 +68,16 @@
             max-width: 900px;
             flex-direction: column;
             align-items: center;
+            background: url('../../assets/images/mainbg2.png') center / cover no-repeat;
+            padding: 16px;
+            border: 2px solid rgba(138, 90, 54, 0.78);
+            box-shadow: 0 12px 30px rgba(0,0,0,.45);
         }
 
         /* 상단 제어판 */
         .controls { 
             margin-bottom: 30px; 
-            background: linear-gradient(135deg, #4a2f1b 0%, #2b1a0e 100%); 
+            background: rgba(43,26,14,.78); 
             padding: 20px; 
             border: 3px solid #8a5a36; 
             box-shadow: 0 10px 20px rgba(0,0,0,0.5), inset 0 0 10px rgba(0,0,0,0.5);
@@ -158,9 +164,7 @@
             margin-top: 20px; 
             align-items: flex-end; 
             padding: 20px 40px;
-            background:
-                linear-gradient(rgba(6, 17, 27, 0.30), rgba(6, 17, 27, 0.48)),
-                url('../../assets/images/hanoitowerbg.png') center / cover no-repeat;
+            background: rgba(6, 17, 27, 0.34);
             border: 2px solid rgba(138, 90, 54, 0.78);
             border-radius: 8px;
             box-shadow:
@@ -568,6 +572,7 @@ textarea,
 
 /* 모바일 가로모드 화면 맞춤 */
 @media (max-height: 520px) and (orientation: landscape) {
+    .controls .option-group:nth-of-type(3) { display:none!important; }
     html, body {
         width: 100%;
         height: 100%;
@@ -693,6 +698,7 @@ textarea,
 }
 
 @media (max-width: 760px) and (orientation: portrait) {
+    .controls .option-group:nth-of-type(3) { display:none!important; }
     body {
         padding: 6px;
         align-items: flex-start;
@@ -994,11 +1000,24 @@ textarea,
     function initializePlayerEntry() {
         playerName = getSavedPlayerName();
         const input = document.getElementById("player-name");
+        const entry = document.querySelector(".player-entry");
+        const startButton = document.getElementById("start-game-button");
+
         if (input) {
             input.value = playerName;
             bindKoreanNameInput(input);
             handlePlayerNameInput(input, true);
         }
+
+        if (playerName && entry) {
+            entry.style.display = "none";
+        }
+
+        if (playerName && startButton) {
+            startButton.disabled = false;
+            startButton.textContent = `${playerName} START`;
+        }
+
         loadTodayFinishers();
     }
     bgm.loop = true;
