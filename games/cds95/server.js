@@ -172,10 +172,13 @@ function resolveCatalog() {
       : { x: baseX, y: baseY, terrain: terrainAtPixelRaw(baseX, baseY).type };
     const exactSeaPoint = exactCellPoint(source.originalSeaSpawnCell, originalSeaEntryPoints[0] || seaPoint);
     const exactLandPoint = exactCellPoint(source.originalLandSpawnCell, originalLandEntryPoints[0] || landPoint);
+    const naturalEarthSeaPoint = exactCellPoint(source.naturalEarthSeaSpawnCell, seaPoint);
+    const naturalEarthLandPoint = exactCellPoint(source.naturalEarthLandSpawnCell, displayedLandPoint);
+    const naturalEarthMarkerPoint = exactCellPoint(source.naturalEarthMarkerCell, naturalEarthLandPoint || displayedLandPoint);
     const naturalEarthBasePoint = { x: wrapX(baseX), y: Math.max(TILE, Math.min(WORLD_PIXEL_H - TILE, baseY)), terrain: terrainAtPixelRaw(baseX, baseY).type };
-    const cityPoint = useNaturalEarthPosition ? displayedLandPoint : (source.isOriginalCity ? markerCenter : landPoint);
-    const resolvedSeaPoint = useNaturalEarthPosition ? seaPoint : (source.isOriginalCity ? exactSeaPoint : seaPoint);
-    const resolvedLandPoint = useNaturalEarthPosition ? displayedLandPoint : (source.isOriginalCity ? exactLandPoint : landPoint);
+    const cityPoint = useNaturalEarthPosition ? (naturalEarthMarkerPoint || displayedLandPoint) : (source.isOriginalCity ? markerCenter : landPoint);
+    const resolvedSeaPoint = useNaturalEarthPosition ? (naturalEarthSeaPoint || seaPoint) : (source.isOriginalCity ? exactSeaPoint : seaPoint);
+    const resolvedLandPoint = useNaturalEarthPosition ? (naturalEarthLandPoint || displayedLandPoint) : (source.isOriginalCity ? exactLandPoint : landPoint);
     const resolvedMarkerPoints = useNaturalEarthPosition && cityPoint ? [cityPoint] : originalMarkerPoints;
     const resolvedSeaEntryPoints = useNaturalEarthPosition && source.canEnterFromSea && resolvedSeaPoint ? [resolvedSeaPoint] : originalSeaEntryPoints;
     const resolvedLandEntryPoints = useNaturalEarthPosition && resolvedLandPoint ? [resolvedLandPoint] : originalLandEntryPoints;

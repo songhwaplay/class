@@ -13156,7 +13156,20 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Istanbul",
     "countryCode": "TR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "naturalEarthLandSpawnCell": [
+      1448,
+      339
+    ],
+    "naturalEarthSeaSpawnCell": [
+      1449,
+      339
+    ],
+    "naturalEarthMarkerCell": [
+      1448,
+      339
+    ],
+    "naturalEarthNote": "보스포루스 유럽측 고정"
   },
   {
     "id": "original_city_111",
