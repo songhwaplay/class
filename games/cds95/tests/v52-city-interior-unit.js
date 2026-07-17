@@ -24,6 +24,6 @@ assert.match(server,/cityEntryExitGameMinutes: 0/);
 assert.match(server,/currentCityImage:/);
 assert.match(student,/id="cityView"/);
 assert.match(student,/id="libraryView"/);
-assert.match(student,/fetch\('\/data\/library-books\.json\?v=53'/);
+assert.match(student,/fetch\('\/data\/library-books\.json\?v=54'/);
 assert.match(student,/cityScene\.src=serverSelf\.currentCityImage/);
 console.log(JSON.stringify({ok:true,cityImages:files.length,size:'400x320',libraryBooks:books.books.length,entryExitTimeCost:0}));

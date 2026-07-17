@@ -37,7 +37,7 @@
             background:
                 radial-gradient(circle at 50% 12%, rgba(52, 70, 96, 0.20), transparent 42%),
                 linear-gradient(rgba(7, 10, 16, 0.48), rgba(3, 5, 9, 0.72)),
-                url('../../assets/images/sphinxbg.png') center / cover fixed;
+                url('../../assets/images/mainbg.png') center / cover fixed no-repeat;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -49,7 +49,9 @@
         /* 메인 프레임 */
         .game-container {
             width: 960px;
-            background: var(--panel);
+            background:
+                linear-gradient(rgba(17,23,34,.88), rgba(11,16,25,.92)),
+                url('../../assets/images/mainbg2.png') center / cover no-repeat;
             border: 4px solid var(--gold);
             box-shadow: 0 12px 36px var(--shadow), inset 0 0 24px rgba(0,0,0,0.8);
             padding: 16px 18px;
@@ -62,7 +64,9 @@
         /* 로비 / 조인 화면 */
         .lobby-card {
             width: 500px;
-            background: var(--panel);
+            background:
+                linear-gradient(rgba(17,23,34,.88), rgba(11,16,25,.92)),
+                url('../../assets/images/mainbg2.png') center / cover no-repeat;
             border: 4px solid var(--gold);
             padding: 40px 30px;
             box-shadow: 0 12px 36px var(--shadow);
@@ -935,6 +939,11 @@ textarea,
     .call-set-btn { min-height:42px; padding:5px; font-size:19px; }
 }
 
+
+@media (max-width: 620px) {
+    .music-control { display: none !important; }
+}
+
 </style>
 </head>
 <body>
@@ -946,10 +955,10 @@ textarea,
     <div class="lobby-title">SET MATCH</div>
     <div class="lobby-subtitle">1~4명 · 혼자 연습 가능</div>
 
-    <div class="input-group">
-        <label>이름 · 한글 2~6자</label>
+    <div class="input-group" id="nickname-input-group">
+        <label>이름 · 한글 3~6자</label>
         <input type="text" class="input-field" id="player-nickname" value="" maxlength="6" placeholder="한글 이름 입력" autocomplete="off" inputmode="text">
-        <div id="nickname-help" style="min-height:18px;color:var(--muted);font-size:12px;">한글 이름을 2~6자로 입력하세요.</div>
+        <div id="nickname-help" style="min-height:18px;color:var(--muted);font-size:12px;">한글 이름을 3~6자로 입력하세요.</div>
     </div>
 
     <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -1144,7 +1153,7 @@ textarea,
     let currentMusicVolume = 0.6;
     let musicStarted = false;
 
-    const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
+    const KOREAN_NAME_PATTERN = /^[가-힣]{3,6}$/;
 
     function normalizeNickname(value) {
         return String(value || "").replace(/[^가-힣]/g, "").slice(0, 6);
@@ -1166,13 +1175,20 @@ textarea,
         if (help) {
             help.textContent = valid
                 ? "사용할 수 있는 이름입니다."
-                : "한글 이름을 2~6자로 입력하세요.";
+                : "한글 이름을 3~6자로 입력하세요.";
             help.style.color = valid ? "var(--green)" : "var(--muted)";
         }
         return valid;
     }
 
+    const SAVED_PLAYER_NAME_KEY = "classPlayerName";
+
+    function getSavedPlayerName() {
+        return String(localStorage.getItem(SAVED_PLAYER_NAME_KEY) || "").trim().slice(0, 12);
+    }
+
     function requireValidNickname() {
+        if (getSavedPlayerName()) return true;
         const input = document.getElementById("player-nickname");
         if (updateNicknameUI()) return true;
         if (input) input.focus();
@@ -1180,13 +1196,23 @@ textarea,
     }
 
     function getNickname() {
+        const savedName = getSavedPlayerName();
+        if (savedName) return savedName;
         return normalizeNickname(document.getElementById("player-nickname")?.value);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
         const input = document.getElementById("player-nickname");
-        if (!input) return;
+        const inputGroup = document.getElementById("nickname-input-group");
+        const savedName = getSavedPlayerName();
 
+        if (savedName) {
+            if (input) input.value = savedName;
+            if (inputGroup) inputGroup.style.display = "none";
+            return;
+        }
+
+        if (!input) return;
         let composing = false;
         input.addEventListener("compositionstart", () => { composing = true; });
         input.addEventListener("compositionend", () => {
@@ -1514,8 +1540,8 @@ textarea,
 
         if (data.type === "JOIN_REQ") {
             if (myRole !== "host" || gameStarted) return;
-            const incomingName = normalizeNickname(data.name);
-            if (!isValidNickname(incomingName)) {
+            const incomingName = String(data.name || "").trim().slice(0, 12);
+            if (!incomingName) {
                 broadcastState({ type: "REJECT_PLAYER", targetId: senderPeerId, reason: "INVALID_NAME" });
                 return;
             }
@@ -1532,7 +1558,7 @@ textarea,
         }
         else if (data.type === "REJECT_PLAYER") {
             if (!data.targetId || data.targetId === myId) {
-                alert("이름은 한글 2~6자로 입력해야 합니다.");
+                alert("이름은 한글 3~6자로 입력해야 합니다.");
                 location.reload();
             }
         }

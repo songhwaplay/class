@@ -9,11 +9,20 @@
 body{
   background:
     linear-gradient(rgba(20,16,11,.18),rgba(20,16,11,.32)),
-    url('../../assets/images/sphinxbg.png') center / cover fixed;
+    url('../../assets/images/mainbg.png') center / cover fixed no-repeat;
 }
 button,input{font:inherit}.hidden{display:none!important}
 .screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:16px}
-.panel,.game{width:min(980px,100%);border:3px solid #9a7b3d;border-radius:18px;background:linear-gradient(#173a38,#0b211f);box-shadow:0 18px 50px rgba(0,0,0,.55);padding:22px}
+.panel,.game{
+  width:min(980px,100%);
+  border:3px solid #9a7b3d;
+  border-radius:18px;
+  background:
+    linear-gradient(rgba(8,24,23,.34),rgba(5,16,15,.46)),
+    url('../../assets/images/mainbg2.png') center / cover no-repeat;
+  box-shadow:0 18px 50px rgba(0,0,0,.55);
+  padding:22px
+}
 h1{margin:0;text-align:center;color:#f3d77d;font:900 clamp(34px,7vw,58px)/1 Georgia,serif;letter-spacing:4px}
 .sub{text-align:center;color:#bad0c8;margin:8px 0 20px}.tabs,.row,.players,.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 button{cursor:pointer;touch-action:manipulation}.tab,.small,.primary{border:1px solid #a88b4a;border-radius:9px;background:#102c2a;color:#f6e8b4;font-weight:900;padding:10px 14px}.tab.active,.primary{background:#f0cf73;color:#1c302d}
@@ -70,9 +79,42 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 .team-tag.a{background:#397ca9;color:#fff}
 .team-tag.b{background:#a84646;color:#fff}
 
+
+.saved-name-hidden{display:none!important}
+
+
+.music-control{
+  display:flex;justify-content:center;align-items:center;gap:9px;flex-wrap:wrap;
+  margin:12px auto 0;padding:7px 10px;width:max-content;max-width:100%;
+  border:1px solid rgba(240,207,115,.28);border-radius:8px;
+  background:rgba(4,14,18,.62)
+}
+.music-label{
+  color:#d8c28c;font:900 13px/1 Georgia,"Times New Roman",serif;letter-spacing:1px
+}
+.music-mute{
+  min-height:30px;padding:4px 10px;border:1px solid #6b4d1e;border-radius:0;
+  background:linear-gradient(#d19a3c,#9a6722);color:#17120a;font-weight:900
+}
+.music-mute.active{
+  background:linear-gradient(#4b3019,#22140b);color:#f2d792;border-color:#8a6632
+}
+.music-bars{
+  display:flex;gap:3px;padding:4px 5px;border:2px solid #6f431d;background:#1a100b;
+  box-shadow:inset 0 2px 5px rgba(0,0,0,.75)
+}
+.music-segment{
+  width:24px;height:20px;padding:0;border:1px solid #80572b;background:#302014
+}
+.music-segment.on{background:linear-gradient(135deg,#b56d21,#ffb24c);border-color:#ffd18a}
+@media(max-width:760px){
+  .music-control{display:none!important}
+}
+
 </style>
 </head>
 <body>
+<audio id="bgm" src="../../assets/sound/fruitbell.mp3" loop preload="auto"></audio>
 <section id="lobby" class="screen">
   <div class="panel">
     <h1>FRUIT BELL</h1><div class="sub">과일 종 대결 · 2~4인 · 카드 56장</div>
@@ -98,6 +140,18 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
     </div>
     <div class="box"><div class="status">참가 가능 인원: 2~4명</div><div class="players" id="lobbyPlayers"></div></div>
     <div class="actions"><button id="startBtn" class="primary" onclick="startMatch()" disabled>상대방 대기 중</button></div>
+
+    <div class="music-control">
+      <span class="music-label">MUSIC VOLUME</span>
+      <button class="music-mute" type="button" data-music-mute>MUTE</button>
+      <div class="music-bars" aria-label="배경음악 볼륨">
+        <button class="music-segment" type="button" data-music-level="1" aria-label="볼륨 1"></button>
+        <button class="music-segment" type="button" data-music-level="2" aria-label="볼륨 2"></button>
+        <button class="music-segment" type="button" data-music-level="3" aria-label="볼륨 3"></button>
+        <button class="music-segment" type="button" data-music-level="4" aria-label="볼륨 4"></button>
+        <button class="music-segment" type="button" data-music-level="5" aria-label="볼륨 5"></button>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -109,6 +163,18 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
     <div class="board" id="board"></div>
     <button class="bell" onclick="pressBell()"><span class="knob"></span><span class="dome"></span><span class="base"></span></button>
     <button id="flipBtn" class="flip" onclick="requestFlip()">내 카드 뒤집기</button>
+
+    <div class="music-control">
+      <span class="music-label">MUSIC VOLUME</span>
+      <button class="music-mute" type="button" data-music-mute>MUTE</button>
+      <div class="music-bars" aria-label="배경음악 볼륨">
+        <button class="music-segment" type="button" data-music-level="1" aria-label="볼륨 1"></button>
+        <button class="music-segment" type="button" data-music-level="2" aria-label="볼륨 2"></button>
+        <button class="music-segment" type="button" data-music-level="3" aria-label="볼륨 3"></button>
+        <button class="music-segment" type="button" data-music-level="4" aria-label="볼륨 4"></button>
+        <button class="music-segment" type="button" data-music-level="5" aria-label="볼륨 5"></button>
+      </div>
+    </div>
     <div class="overlay" id="overlay"><div class="modal"><h2 id="modalTitle"></h2><div id="modalBody"></div><button class="primary" onclick="location.reload()">처음으로</button></div></div>
   </div>
 </section>
@@ -127,10 +193,101 @@ let lastBellNoticeText="";
 
 const $=id=>document.getElementById(id);
 const KOREAN_NAME_PATTERN=/^[가-힣]{2,6}$/;
+const NAME_STORAGE_KEY="classPlayerName";
+
+function getSavedPlayerName(){
+ const saved=normalizeName(localStorage.getItem(NAME_STORAGE_KEY)||"");
+ return isValidName(saved)?saved:"";
+}
+
+function applySavedPlayerName(){
+ const saved=getSavedPlayerName();
+ const input=$("nameInput");
+ const help=$("nameHelp");
+ if(!input||!help)return;
+
+ if(saved){
+   input.value=saved;
+   input.classList.add("saved-name-hidden");
+   help.classList.add("saved-name-hidden");
+ }else{
+   input.classList.remove("saved-name-hidden");
+   help.classList.remove("saved-name-hidden");
+ }
+}
 function normalizeName(v){return String(v||"").replace(/[^가-힣]/g,"").slice(0,6)}
 function isValidName(v){return KOREAN_NAME_PATTERN.test(String(v||""))}
 function cleanName(v){const n=normalizeName(v);return isValidName(n)?n:"플레이어"}
 function code4(){return String(Math.floor(1000+Math.random()*9000))}
+window.addEventListener("DOMContentLoaded",applySavedPlayerName);
+
+
+const MUSIC_VOLUME_KEY="fruitbellVolumeLevel";
+const MUSIC_MUTED_KEY="fruitbellMuted";
+const bgm=$("bgm");
+let musicLevel=Number(localStorage.getItem(MUSIC_VOLUME_KEY));
+if(!Number.isInteger(musicLevel)||musicLevel<1||musicLevel>5)musicLevel=3;
+let musicMuted=localStorage.getItem(MUSIC_MUTED_KEY)==="true";
+let musicStarted=false;
+
+function renderMusicControls(){
+ document.querySelectorAll("[data-music-level]").forEach(btn=>{
+   const level=Number(btn.dataset.musicLevel);
+   btn.classList.toggle("on",!musicMuted&&level<=musicLevel);
+ });
+ document.querySelectorAll("[data-music-mute]").forEach(btn=>{
+   btn.textContent=musicMuted?"PLAY":"MUTE";
+   btn.classList.toggle("active",musicMuted);
+ });
+}
+async function startMusic(){
+ if(!bgm)return;
+ bgm.volume=musicLevel/5;
+ bgm.muted=false;
+ try{
+   await bgm.play();
+   musicStarted=true;
+   musicMuted=false;
+   localStorage.setItem(MUSIC_MUTED_KEY,"false");
+ }catch(e){}
+ renderMusicControls();
+}
+function setMusicLevel(level){
+ musicLevel=Math.max(1,Math.min(5,Number(level)||3));
+ musicMuted=false;
+ localStorage.setItem(MUSIC_VOLUME_KEY,String(musicLevel));
+ localStorage.setItem(MUSIC_MUTED_KEY,"false");
+ if(bgm){
+   bgm.volume=musicLevel/5;
+   bgm.muted=false;
+ }
+ startMusic();
+}
+function toggleMusic(){
+ if(!bgm)return;
+ if(musicMuted||bgm.paused){
+   startMusic();
+ }else{
+   bgm.pause();
+   musicMuted=true;
+   localStorage.setItem(MUSIC_MUTED_KEY,"true");
+   renderMusicControls();
+ }
+}
+document.addEventListener("click",e=>{
+ const levelButton=e.target.closest("[data-music-level]");
+ if(levelButton)setMusicLevel(levelButton.dataset.musicLevel);
+ const muteButton=e.target.closest("[data-music-mute]");
+ if(muteButton)toggleMusic();
+});
+window.addEventListener("DOMContentLoaded",()=>{
+ if(bgm)bgm.volume=musicLevel/5;
+ renderMusicControls();
+ if(!musicMuted)startMusic();
+});
+document.addEventListener("pointerdown",()=>{
+ if(!musicMuted&&!musicStarted)startMusic();
+},{once:true});
 
 function setGameMode(mode){
  if(myRole!=="host"||started)return;
@@ -202,7 +359,7 @@ function createRoom(){
  connect({type:"CREATE_ROOM",gameId:GAME_ID,roomCode});
 }
 function joinRoom(){
- const enteredName=normalizeName($("nameInput").value);
+ const enteredName=getSavedPlayerName()||normalizeName($("nameInput").value);
  if(!isValidName(enteredName)){
    $("nameHelp").textContent="한글 이름을 2~6자로 입력해야 합니다.";
    $("nameHelp").classList.add("error");
@@ -216,11 +373,11 @@ function joinRoom(){
 function handleServer(m){
  if(m.type==="CONNECTED"){myId=m.playerId}
  else if(m.type==="ROOM_CREATED"){
-   connected=true;roomCode=m.roomCode;players={[myId]:{name:normalizeName($("nameInput").value),score:0}};
+   connected=true;roomCode=m.roomCode;players={[myId]:{name:getSavedPlayerName()||normalizeName($("nameInput").value),score:0}};
    $("roomCode").textContent=roomCode;$("hostStatus").textContent="상대방 접속 대기 중";renderLobby();
  }
  else if(m.type==="ROOM_JOINED"){
-   connected=true;players={[myId]:{name:normalizeName($("nameInput").value),score:0}};
+   connected=true;players={[myId]:{name:getSavedPlayerName()||normalizeName($("nameInput").value),score:0}};
    $("joinStatus").textContent=`방 ${roomCode} 입장 완료`;send({type:"JOIN_REQ",name:players[myId].name});
  }
  else if(m.type==="PLAYER_JOINED"&&myRole==="host"){
@@ -260,7 +417,7 @@ function renderLobby(){
  Object.entries(players).forEach(([id,p])=>{const d=document.createElement("div");d.className="player-chip";d.textContent=(isValidName(p.name)?p.name:"이름 입력 중")+(id===myId?" (나)":"");box.appendChild(d)});
  if(myRole==="host"){
    const n=Object.keys(players).length;
-   const hostValid=isValidName(normalizeName($("nameInput").value));
+   const hostValid=isValidName(getSavedPlayerName()||normalizeName($("nameInput").value));
    const allNamesValid=Object.values(players).every(p=>isValidName(p.name));
    const enoughPlayers=gameMode==="team"?n===4:n>=2;
    $("startBtn").disabled=!enoughPlayers||!hostValid||!allNamesValid;
@@ -284,7 +441,7 @@ function makeDeck(){
 function startMatch(){
  if(myRole!=="host"||Object.keys(players).length<2)return;
  if(gameMode==="team"&&Object.keys(players).length!==4)return;
- const hostName=normalizeName($("nameInput").value);
+ const hostName=getSavedPlayerName()||normalizeName($("nameInput").value);
  if(!isValidName(hostName)){
    $("nameHelp").textContent="한글 이름을 2~6자로 입력해야 합니다.";
    $("nameHelp").classList.add("error");

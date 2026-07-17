@@ -1,12 +1,7 @@
+'use strict';
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const path=require('node:path');
-const root=path.join(__dirname,'..');
-const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
-assert.match(html,/ocean_original_tiles_forest_v53\.png\?v=53/);
-assert.match(html,/ocean_original_tiles_river_v53\.png\?v=53/);
-assert.match(html,/ocean_original_tiles_desert_v53\.png\?v=53/);
-assert.match(html,/biome_palette_mask\.bin\.gz\?v=53/);
-assert.match(html,/terrainInfo\.type==='river'/);
-for(const f of ['ocean_original_tiles_forest_v53.png','ocean_original_tiles_river_v53.png','ocean_original_tiles_desert_v53.png'])assert.ok(fs.statSync(path.join(root,'public/assets/maps',f)).size>500000,f);
-console.log('v51/v53 biome palette ok');
+const html=fs.readFileSync('public/index.html','utf8');
+assert.doesNotMatch(html,/forestAtlas|desertAtlas|riverAtlas|ocean_original_tiles_(?:lush|forest|desert|river)/);
+assert.match(html,/ctx\.drawImage\(atlas,sx,sy,TS,TS/);
+console.log('synthetic biome recoloring removed');

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v53</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v54</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -109,8 +109,8 @@ const missionActionPrompt=document.getElementById('missionActionPrompt'),mission
 const cityView=document.getElementById('cityView'),cityScene=document.getElementById('cityScene'),cityTitle=document.getElementById('cityTitle'),cityInfo=document.getElementById('cityInfo'),libraryBtn=document.getElementById('libraryBtn'),leaveCityBtn=document.getElementById('leaveCityBtn'),libraryView=document.getElementById('libraryView'),libraryTitle=document.getElementById('libraryTitle'),libraryClose=document.getElementById('libraryClose'),bookList=document.getElementById('bookList'),bookTitle=document.getElementById('bookTitle'),bookMeta=document.getElementById('bookMeta'),bookIntro=document.getElementById('bookIntro'),bookSections=document.getElementById('bookSections'),messageWindow=document.getElementById('messageWindow');
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
 const pauseOverlay=document.getElementById('pauseOverlay'),lockTitle=document.getElementById('lockTitle'),lockDetail=document.getElementById('lockDetail'),transitionOverlay=document.getElementById('transitionOverlay'),transitionLabel=document.getElementById('transitionLabel'),transitionFill=document.getElementById('transitionFill');
-const atlas=new Image(),forestAtlas=new Image(),desertAtlas=new Image(),riverAtlas=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();atlas.src='/assets/maps/ocean_original_tiles.png?v=53';forestAtlas.src='/assets/maps/ocean_original_tiles_forest_v53.png?v=53';desertAtlas.src='/assets/maps/ocean_original_tiles_desert_v53.png?v=53';riverAtlas.src='/assets/maps/ocean_original_tiles_river_v53.png?v=53';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=53';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=53';
-let world=null,biomePaletteMask=null,assetsReady=false,joined=false,dpr=1,zoom=1.7,last=performance.now(),mode='sea',lastLocalBlock=0,lastNoticeSeq=0,roomCodeCurrent='',lastModeMessage=null,lastTerrainMessage=null,lastFatigueBand=0,lastWaterBand=100,lastFoodBand=100,mapCities=[];
+const atlas=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();atlas.src='/assets/maps/ocean_original_tiles.png?v=54';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=54';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=54';
+let world=null,assetsReady=false,joined=false,dpr=1,zoom=1.7,last=performance.now(),mode='sea',lastLocalBlock=0,lastNoticeSeq=0,roomCodeCurrent='',lastModeMessage=null,lastTerrainMessage=null,lastFatigueBand=0,lastWaterBand=100,lastFoodBand=100,mapCities=[];
 let self=null,serverSelf=null,remote=new Map(),lastSnapshotAt=0,activeMission=null,missionProgress=null,missionInteraction=null,cityInteraction=null,portInteraction=null,classGameMinutes=0,clockAnchorGameMinutes=0,clockAnchorAt=performance.now(),classSettings={paused:false,locked:false};
 let libraryCatalog={books:[]},cityCatalogById=new Map(),renderedCityId='',openedBookId='';
 // 해류는 바다 물결 애니메이션으로, 바람은 원작 CLOUD.CDS의 구름 애니메이션으로 구분한다.
@@ -135,7 +135,7 @@ function seedCurrentVisuals(){
   CDS95Current.MAJOR_CURRENTS.forEach((flow,index)=>{const count=flow.id==='antarctic-circumpolar'?24:13;for(let i=0;i<count;i++)currentTracers.push({currentIndex:index,offset:(i+.37*(index%3))/count,lane:((i*37+index*11)%101)/50-1,speed:.78+((i*17+index*7)%31)/100,scale:.76+((i*13)%35)/100,frameOffset:(i*3+index)%CURRENT_FLOW_FRAME_COUNT})});
 }
 seedCurrentVisuals();
-const WIND_CLOUD_CELL_W=700,WIND_CLOUD_CELL_H=410,WIND_CLOUD_FRAME_W=160,WIND_CLOUD_FRAME_H=60,WIND_CLOUD_SEQUENCE_FRAMES=6;
+const WIND_CLOUD_CELL_W=620,WIND_CLOUD_CELL_H=360,WIND_CLOUD_FRAME_W=160,WIND_CLOUD_FRAME_H=60,WIND_CLOUD_SEQUENCE_FRAMES=6,WIND_VISUAL_FLOW_RATE=4.2,WIND_CLOUD_FRAME_MS=72;
 function hashUnit(a,b,c=0){let x=Math.imul((a|0)^0x9e3779b9,0x85ebca6b)+Math.imul((b|0)^0xc2b2ae35,0x27d4eb2f)+(c|0);x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);x^=x>>>16;return(x>>>0)/4294967296}
 const keys={up:false,down:false,left:false,right:false};
 const socket=io({transports:['websocket','polling'],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500});
@@ -320,7 +320,7 @@ function applyModeUI(){
 }
 
 async function ungzipResponse(url){const response=await fetch(url);if(!response.ok)throw new Error('지도 파일을 받지 못했습니다.');if(!('DecompressionStream' in window))throw new Error('최신 Chrome이 필요합니다.');const ds=new DecompressionStream('gzip');return await new Response(response.body.pipeThrough(ds)).arrayBuffer()}
-Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=53'),ungzipResponse('/assets/maps/biome_palette_mask.bin.gz?v=53'),atlas.decode(),forestAtlas.decode(),desertAtlas.decode(),riverAtlas.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=53').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=53').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,maskBuf,_a,_f,_d,_r,_s,_w,catalog,books])=>{world=new Uint16Array(buf);biomePaletteMask=new Uint8Array(maskBuf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');if(biomePaletteMask.length!==WW*WH)throw new Error('지형 색상 마스크 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
+Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=54'),atlas.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=54').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=54').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,_a,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
 
 socket.on('connect',()=>{net.textContent='● 서버 연결';net.className='good'});
 socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});
@@ -411,7 +411,7 @@ function movePrediction(dt){
 function drawMap(cw,ch){
   ctx.fillStyle='#07141a';ctx.fillRect(0,0,cw,ch);if(!self)return null;
   const viewW=cw/zoom,viewH=ch/zoom,left=self.x-viewW/2,top=self.y-viewH/2,c0x=Math.floor(left/TS),c1x=Math.floor((left+viewW)/TS)+1,c0y=Math.floor(top/TS),c1y=Math.floor((top+viewH)/TS)+1;
-  for(let cy=c0y;cy<=c1y;cy++){if(cy<0||cy>=WH)continue;for(let cx=c0x;cx<=c1x;cx++){const wrappedCx=((cx%WW)+WW)%WW,v=cellValue(cx,cy),id=v&0x3fff,sx=(id&127)*TS,sy=(id>>7)*TS,dx=(cx*TS-left)*zoom,dy=(cy*TS-top)*zoom,dw=Math.ceil(TS*zoom)+1,dh=Math.ceil(TS*zoom)+1,terrainInfo=UW3Terrain.terrainAtCell(world,wrappedCx,cy);let tileAtlas=atlas;if(terrainInfo.type==='river')tileAtlas=riverAtlas;else if(terrainInfo.type==='forest')tileAtlas=forestAtlas;else if(terrainInfo.type==='desert')tileAtlas=desertAtlas;ctx.drawImage(tileAtlas,sx,sy,TS,TS,Math.floor(dx),Math.floor(dy),dw,dh);const paletteAlpha=biomePaletteMask?.[cy*WW+wrappedCx]||0;if(tileAtlas===atlas&&terrainInfo.type!=='sea'&&terrainInfo.type!=='river'&&paletteAlpha>24){const paletteMix=Math.min(.58,Math.pow(paletteAlpha/255,.95)*.58);ctx.globalAlpha=paletteMix;ctx.drawImage(forestAtlas,sx,sy,TS,TS,Math.floor(dx),Math.floor(dy),dw,dh);ctx.globalAlpha=1}}}
+  for(let cy=c0y;cy<=c1y;cy++){if(cy<0||cy>=WH)continue;for(let cx=c0x;cx<=c1x;cx++){const v=cellValue(cx,cy),id=v&0x3fff,sx=(id&127)*TS,sy=(id>>7)*TS,dx=(cx*TS-left)*zoom,dy=(cy*TS-top)*zoom,dw=Math.ceil(TS*zoom)+1,dh=Math.ceil(TS*zoom)+1;ctx.drawImage(atlas,sx,sy,TS,TS,Math.floor(dx),Math.floor(dy),dw,dh)}}
   drawOceanCurrents(cw,ch,left,top);
   drawWindClouds(cw,ch,left,top);
   const stageMarker=activeMission?.kind==='staged'?currentStage():null;
@@ -434,18 +434,18 @@ function choiceModalActive(){return awaitingStartChoice()&&missionPanel.classLis
 function drawOceanCurrents(cw,ch,left,top,now=performance.now()*SIMULATION_RATE){
   if(mode!=='sea'||choiceModalActive())return;ctx.save();ctx.globalCompositeOperation='screen';ctx.imageSmoothingEnabled=false;for(const tracer of currentTracers)drawCurrentTracer(tracer,now,cw,ch,left,top);ctx.restore();
 }
-function drawWindClouds(cw,ch,left,top,now=performance.now()*SIMULATION_RATE){
+function drawWindClouds(cw,ch,left,top,now=performance.now()){
   if(mode!=='sea'||choiceModalActive()||!windCloudAtlas.complete)return;
   const viewW=cw/zoom,viewH=ch/zoom,cellsX=Math.ceil(SPAN/WIND_CLOUD_CELL_W),c0x=Math.floor((left-WIND_CLOUD_CELL_W)/WIND_CLOUD_CELL_W),c1x=Math.ceil((left+viewW+WIND_CLOUD_CELL_W)/WIND_CLOUD_CELL_W),c0y=Math.max(0,Math.floor((top-WIND_CLOUD_CELL_H)/WIND_CLOUD_CELL_H)),c1y=Math.min(Math.ceil(MAP_H/WIND_CLOUD_CELL_H)-1,Math.ceil((top+viewH+WIND_CLOUD_CELL_H)/WIND_CLOUD_CELL_H));
   ctx.save();ctx.globalCompositeOperation='screen';ctx.imageSmoothingEnabled=false;
   for(let cy=c0y;cy<=c1y;cy++)for(let rawCx=c0x;rawCx<=c1x;rawCx++){
     const cx=((rawCx%cellsX)+cellsX)%cellsX,baseX=wrapX((cx+hashUnit(cx,cy,11)*.88+.06)*WIND_CLOUD_CELL_W),baseY=Math.max(25,Math.min(MAP_H-25,(cy+hashUnit(cx,cy,23)*.82+.09)*WIND_CLOUD_CELL_H)),wind=CDS95Wind.windAtPixel(baseX,baseY,classGameMinutes);
     if(wind.strength<.12)continue;
-    const speed=.70+hashUnit(cx,cy,37)*.68,track=560+hashUnit(cx,cy,41)*430,phase=(hashUnit(cx,cy,53)+now*.000015*speed*(.52+wind.strength))%1,travel=(phase-.5)*track,bob=Math.sin(now*.0014+hashUnit(cx,cy,59)*Math.PI*2)*9,x=wrapX(baseX+wind.x*travel-wind.y*bob),y=Math.max(18,Math.min(MAP_H-18,baseY+wind.y*travel+wind.x*bob)),screen=flowScreenPoint({x,y},left,top);
+    const speed=.70+hashUnit(cx,cy,37)*.68,track=560+hashUnit(cx,cy,41)*430,phase=(hashUnit(cx,cy,53)+now*.000015*WIND_VISUAL_FLOW_RATE*speed*(.52+wind.strength))%1,travel=(phase-.5)*track,bob=Math.sin(now*.0018+hashUnit(cx,cy,59)*Math.PI*2)*10,x=wrapX(baseX+wind.x*travel-wind.y*bob),y=Math.max(18,Math.min(MAP_H-18,baseY+wind.y*travel+wind.x*bob)),screen=flowScreenPoint({x,y},left,top);
     if(screen.x<-210||screen.x>cw+210||screen.y<-100||screen.y>ch+100)continue;
     // 원작 스프라이트는 큰 구름 6프레임과 작은 구름 6프레임이다. 서로 섞지 않고 각각 순환한다.
-    const small=hashUnit(cx,cy,67)>.58,sequenceBase=small?6:0,frameOffset=Math.floor(hashUnit(cx,cy,69)*WIND_CLOUD_SEQUENCE_FRAMES),frame=sequenceBase+(Math.floor(now/175)+frameOffset)%WIND_CLOUD_SEQUENCE_FRAMES,sx=(frame%2)*WIND_CLOUD_FRAME_W,sy=Math.floor(frame/2)*WIND_CLOUD_FRAME_H,scale=(small?.72:1.0)*(.72+hashUnit(cx,cy,71)*.58),w=150*scale*Math.max(.75,Math.min(1.22,zoom*.72)),h=w*(WIND_CLOUD_FRAME_H/WIND_CLOUD_FRAME_W),edgeFade=Math.pow(Math.max(0,Math.sin(Math.PI*phase)),.45);
-    ctx.globalAlpha=(.15+.22*wind.strength)*edgeFade;ctx.drawImage(windCloudAtlas,sx,sy,WIND_CLOUD_FRAME_W,WIND_CLOUD_FRAME_H,Math.round(screen.x-w/2),Math.round(screen.y-h/2),Math.round(w),Math.round(h));
+    const small=hashUnit(cx,cy,67)>.58,sequenceBase=small?6:0,frameOffset=Math.floor(hashUnit(cx,cy,69)*WIND_CLOUD_SEQUENCE_FRAMES),frame=sequenceBase+(Math.floor(now/WIND_CLOUD_FRAME_MS)+frameOffset)%WIND_CLOUD_SEQUENCE_FRAMES,sx=(frame%2)*WIND_CLOUD_FRAME_W,sy=Math.floor(frame/2)*WIND_CLOUD_FRAME_H,scale=(small?.72:1.0)*(.72+hashUnit(cx,cy,71)*.58),w=150*scale*Math.max(.75,Math.min(1.22,zoom*.72)),h=w*(WIND_CLOUD_FRAME_H/WIND_CLOUD_FRAME_W),edgeFade=Math.pow(Math.max(0,Math.sin(Math.PI*phase)),.45);
+    ctx.globalAlpha=(.22+.30*wind.strength)*edgeFade;ctx.drawImage(windCloudAtlas,sx,sy,WIND_CLOUD_FRAME_W,WIND_CLOUD_FRAME_H,Math.round(screen.x-w/2),Math.round(screen.y-h/2),Math.round(w),Math.round(h));
   }
   ctx.restore();
 }

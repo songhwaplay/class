@@ -1,0 +1,18 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.join(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
+const pkg=JSON.parse(fs.readFileSync(path.join(root,'package.json'),'utf8'));
+assert.equal(pkg.version,'54.0.0');
+assert.match(html,/ocean_original_tiles\.png\?v=54/);
+assert.match(html,/world\.cds\.gz\?v=54/);
+assert.doesNotMatch(html,/biome_palette_mask|forestAtlas|desertAtlas|riverAtlas|paletteAlpha|paletteMix/);
+const loop=html.match(/function drawMap\(cw,ch\)[\s\S]*?drawOceanCurrents/)?.[0]||'';
+assert.match(loop,/ctx\.drawImage\(atlas,sx,sy,TS,TS/);
+assert.match(html,/WIND_VISUAL_FLOW_RATE=4\.2/);
+assert.match(html,/WIND_CLOUD_FRAME_MS=72/);
+assert.match(html,/now\*\.000015\*WIND_VISUAL_FLOW_RATE/);
+assert.match(html,/ctx\.globalAlpha=\(\.22\+\.30\*wind\.strength\)\*edgeFade/);
+console.log(JSON.stringify({ok:true,originalMapDirect:true,syntheticPaletteRemoved:true,windVisualFlowRate:4.2,cloudFrameMs:72}));

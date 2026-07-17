@@ -1,6 +1,6 @@
 {
   "name": "cds95-classroom",
-  "version": "53.0.0",
+  "version": "54.0.0",
   "private": true,
   "description": "CDS95 실시간 도착 미션 학습 플랫폼",
   "main": "server.js",
@@ -10,7 +10,7 @@
     "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check public/js/wind.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && node --check lib/arrival-zones.js && node --check lib/completion-rewards.js && npm run check:catalog && npm run check:html",
     "check:html": "node tests/html-script-syntax.js",
     "check:catalog": "node -e \"for (const f of ['places','original-cities','items','templates','ready-missions','arrival-zones']) JSON.parse(require('node:fs').readFileSync('data/catalog/'+f+'.json','utf8')); console.log('catalog JSON ok')\"",
-    "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current && npm run test:current-visual && npm run test:wind && npm run test:v42 && npm run test:v43 && npm run test:v44 && npm run test:v45 && npm run test:v46 && npm run test:v47 && npm run test:v48 && npm run test:v49 && npm run test:v50 && npm run test:v51 && npm run test:v52 && npm run test:v53",
+    "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current && npm run test:current-visual && npm run test:wind && npm run test:v42 && npm run test:v43 && npm run test:v44 && npm run test:v45 && npm run test:v46 && npm run test:v47 && npm run test:v48 && npm run test:v49 && npm run test:v50 && npm run test:v51 && npm run test:v52 && npm run test:v53 && npm run test:v54",
     "test:terrain": "node tests/terrain-unit.js",
     "test:v23": "node tests/v23-simplified-ui-unit.js",
     "test:v23:current": "node tests/v23-current-balance-unit.js",
@@ -45,7 +45,8 @@
     "test:v50": "node tests/v50-original-palette-unit.js",
     "test:v51": "node tests/v51-rainforest-palette-unit.js",
     "test:v52": "node tests/v52-city-interior-unit.js",
-    "test:v53": "node tests/v53-regression-unit.js"
+    "test:v53": "node tests/v53-regression-unit.js",
+    "test:v54": "node tests/v54-original-map-wind-visual-unit.js"
   },
   "engines": {
     "node": ">=22"
