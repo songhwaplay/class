@@ -1,4 +1,6 @@
-# CDS95 v56
+> V57: 16K Natural Earth 세계지도 타일 렌더링을 적용했습니다. 자세한 내용은 `V57_CHANGELOG.md`와 `NATURAL_EARTH_NOTICE.md`를 확인하세요.
+
+# CDS95 v57
 
 ## 학생 접속 모드
 

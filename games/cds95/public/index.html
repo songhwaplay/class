@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v56</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v57</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -41,7 +41,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="loading">원본 지도와 실시간 탐험 모듈을 불러오는 중…</div>
+<div id="loading">고해상도 Natural Earth 지도와 실시간 탐험 모듈을 불러오는 중…</div>
 <div id="join">
   <form id="joinCard" class="panel">
     <h1>세계 항해·육상 탐험</h1>
@@ -117,7 +117,59 @@ const missionActionPrompt=document.getElementById('missionActionPrompt'),mission
 const cityView=document.getElementById('cityView'),cityScene=document.getElementById('cityScene'),cityTitle=document.getElementById('cityTitle'),cityInfo=document.getElementById('cityInfo'),libraryBtn=document.getElementById('libraryBtn'),leaveCityBtn=document.getElementById('leaveCityBtn'),libraryView=document.getElementById('libraryView'),libraryTitle=document.getElementById('libraryTitle'),libraryClose=document.getElementById('libraryClose'),bookList=document.getElementById('bookList'),bookTitle=document.getElementById('bookTitle'),bookMeta=document.getElementById('bookMeta'),bookIntro=document.getElementById('bookIntro'),bookSections=document.getElementById('bookSections'),messageWindow=document.getElementById('messageWindow');
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
 const pauseOverlay=document.getElementById('pauseOverlay'),lockTitle=document.getElementById('lockTitle'),lockDetail=document.getElementById('lockDetail'),transitionOverlay=document.getElementById('transitionOverlay'),transitionLabel=document.getElementById('transitionLabel'),transitionFill=document.getElementById('transitionFill');
-const atlas=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();atlas.src='/assets/maps/ocean_original_tiles.png?v=56';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=56';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=56';
+const naturalMapOverview=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();
+naturalMapOverview.src='/assets/maps/natural-earth/overview.jpg?v=57';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=57';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=57';
+const NATURAL_MAP=Object.freeze({width:16200,height:8100,tileSize:512,cols:32,rows:16});
+const naturalMapTileCache=new Map();
+const NATURAL_MAP_TILE_CACHE_LIMIT=72;
+function naturalMapTileKey(col,row){return `${col}:${row}`}
+function trimNaturalMapTileCache(){
+  if(naturalMapTileCache.size<=NATURAL_MAP_TILE_CACHE_LIMIT)return;
+  const removable=[...naturalMapTileCache.entries()].filter(([,entry])=>entry.state!=='loading').sort((a,b)=>a[1].lastUsed-b[1].lastUsed);
+  while(naturalMapTileCache.size>NATURAL_MAP_TILE_CACHE_LIMIT&&removable.length){naturalMapTileCache.delete(removable.shift()[0])}
+}
+function naturalMapTile(col,row){
+  if(col<0||col>=NATURAL_MAP.cols||row<0||row>=NATURAL_MAP.rows)return null;
+  const key=naturalMapTileKey(col,row),now=performance.now();let entry=naturalMapTileCache.get(key);
+  if(entry){entry.lastUsed=now;return entry.state==='ready'?entry.img:null}
+  const img=new Image();entry={img,state:'loading',lastUsed:now};naturalMapTileCache.set(key,entry);
+  img.decoding='async';img.src=`/assets/maps/natural-earth/tiles/tile_${col}_${row}.jpg?v=57`;
+  img.onload=()=>{entry.state='ready';entry.lastUsed=performance.now();trimNaturalMapTileCache()};
+  img.onerror=()=>{entry.state='error';entry.lastUsed=performance.now()};
+  return null;
+}
+function drawNaturalEarthLayer(cw,ch,left,top){
+  const viewW=cw/zoom,viewH=ch/zoom,right=left+viewW,bottom=top+viewH,sxScale=NATURAL_MAP.width/SPAN,syScale=NATURAL_MAP.height/MAP_H;
+  ctx.save();ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+  // 저해상도 전체 지도는 타일이 도착하기 전의 즉시 표시용이다.
+  if(naturalMapOverview.complete&&naturalMapOverview.naturalWidth){
+    const wrapStart=Math.floor(left/SPAN),wrapEnd=Math.floor(right/SPAN);
+    for(let wrap=wrapStart;wrap<=wrapEnd;wrap++){
+      const segLeft=Math.max(left,wrap*SPAN),segRight=Math.min(right,(wrap+1)*SPAN);if(segRight<=segLeft)continue;
+      const srcX=(segLeft-wrap*SPAN)*sxScale,srcW=(segRight-segLeft)*sxScale;
+      const srcY=Math.max(0,top*syScale),srcBottom=Math.min(NATURAL_MAP.height,bottom*syScale);if(srcBottom<=srcY)continue;
+      const dx=(segLeft-left)*zoom,dy=(srcY/syScale-top)*zoom,dw=(segRight-segLeft)*zoom,dh=((srcBottom-srcY)/syScale)*zoom;
+      ctx.drawImage(naturalMapOverview,srcX/NATURAL_MAP.width*naturalMapOverview.naturalWidth,srcY/NATURAL_MAP.height*naturalMapOverview.naturalHeight,srcW/NATURAL_MAP.width*naturalMapOverview.naturalWidth,(srcBottom-srcY)/NATURAL_MAP.height*naturalMapOverview.naturalHeight,dx,dy,dw,dh);
+    }
+  }
+  // 현재 화면에 필요한 16K 원본 조각만 불러와 덮어 그린다.
+  const wrapStart=Math.floor(left/SPAN),wrapEnd=Math.floor(right/SPAN);
+  for(let wrap=wrapStart;wrap<=wrapEnd;wrap++){
+    const segLeft=Math.max(left,wrap*SPAN),segRight=Math.min(right,(wrap+1)*SPAN);if(segRight<=segLeft)continue;
+    const srcLeft=(segLeft-wrap*SPAN)*sxScale,srcRight=(segRight-wrap*SPAN)*sxScale,srcTop=Math.max(0,top*syScale),srcBottom=Math.min(NATURAL_MAP.height,bottom*syScale);if(srcBottom<=srcTop)continue;
+    const col0=Math.max(0,Math.floor(srcLeft/NATURAL_MAP.tileSize)),col1=Math.min(NATURAL_MAP.cols-1,Math.floor((srcRight-1)/NATURAL_MAP.tileSize));
+    const row0=Math.max(0,Math.floor(srcTop/NATURAL_MAP.tileSize)),row1=Math.min(NATURAL_MAP.rows-1,Math.floor((srcBottom-1)/NATURAL_MAP.tileSize));
+    for(let row=row0;row<=row1;row++)for(let col=col0;col<=col1;col++){
+      const tile=naturalMapTile(col,row);if(!tile)continue;
+      const tileX=col*NATURAL_MAP.tileSize,tileY=row*NATURAL_MAP.tileSize,tileW=Math.min(NATURAL_MAP.tileSize,NATURAL_MAP.width-tileX),tileH=Math.min(NATURAL_MAP.tileSize,NATURAL_MAP.height-tileY);
+      const ix0=Math.max(srcLeft,tileX),ix1=Math.min(srcRight,tileX+tileW),iy0=Math.max(srcTop,tileY),iy1=Math.min(srcBottom,tileY+tileH);if(ix1<=ix0||iy1<=iy0)continue;
+      const worldX=wrap*SPAN+ix0/sxScale,worldY=iy0/syScale,dx=(worldX-left)*zoom,dy=(worldY-top)*zoom,dw=((ix1-ix0)/sxScale)*zoom,dh=((iy1-iy0)/syScale)*zoom;
+      ctx.drawImage(tile,ix0-tileX,iy0-tileY,ix1-ix0,iy1-iy0,dx,dy,dw+0.6,dh+0.6);
+    }
+  }
+  ctx.restore();ctx.imageSmoothingEnabled=false;
+}
+
 const DESKTOP_MAP_ZOOM=1.7,MOBILE_MAP_ZOOM_PORTRAIT=.88,MOBILE_MAP_ZOOM_LANDSCAPE=1.0,DESKTOP_MIN_ZOOM=.75,MOBILE_MIN_ZOOM=.55;
 function isPhoneMapView(){return (matchMedia('(pointer:coarse)').matches||innerWidth<=650)&&Math.min(innerWidth,innerHeight)<=650}
 function recommendedMapZoom(){if(!isPhoneMapView())return DESKTOP_MAP_ZOOM;return innerWidth>innerHeight?MOBILE_MAP_ZOOM_LANDSCAPE:MOBILE_MAP_ZOOM_PORTRAIT}
@@ -147,7 +199,7 @@ function seedCurrentVisuals(){
   CDS95Current.MAJOR_CURRENTS.forEach((flow,index)=>{const count=flow.id==='antarctic-circumpolar'?24:13;for(let i=0;i<count;i++)currentTracers.push({currentIndex:index,offset:(i+.37*(index%3))/count,lane:((i*37+index*11)%101)/50-1,speed:.78+((i*17+index*7)%31)/100,scale:.76+((i*13)%35)/100,frameOffset:(i*3+index)%CURRENT_FLOW_FRAME_COUNT})});
 }
 seedCurrentVisuals();
-const WIND_CLOUD_CELL_W=620,WIND_CLOUD_CELL_H=360,WIND_CLOUD_FRAME_W=160,WIND_CLOUD_FRAME_H=60,WIND_CLOUD_SEQUENCE_FRAMES=6,WIND_VISUAL_FLOW_RATE=4.2,WIND_CLOUD_FRAME_MS=72;
+const WIND_CLOUD_CELL_W=620,WIND_CLOUD_CELL_H=360,WIND_CLOUD_FRAME_W=160,WIND_CLOUD_FRAME_H=60,WIND_CLOUD_SEQUENCE_FRAMES=6,WIND_VISUAL_FLOW_RATE=5.6,WIND_CLOUD_FRAME_MS=64;
 function hashUnit(a,b,c=0){let x=Math.imul((a|0)^0x9e3779b9,0x85ebca6b)+Math.imul((b|0)^0xc2b2ae35,0x27d4eb2f)+(c|0);x^=x>>>16;x=Math.imul(x,0x7feb352d);x^=x>>>15;x=Math.imul(x,0x846ca68b);x^=x>>>16;return(x>>>0)/4294967296}
 const keys={up:false,down:false,left:false,right:false};
 const socket=io({transports:['websocket','polling'],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500});
@@ -334,7 +386,7 @@ function applyModeUI(){
 }
 
 async function ungzipResponse(url){const response=await fetch(url);if(!response.ok)throw new Error('지도 파일을 받지 못했습니다.');if(!('DecompressionStream' in window))throw new Error('최신 Chrome이 필요합니다.');const ds=new DecompressionStream('gzip');return await new Response(response.body.pipeThrough(ds)).arrayBuffer()}
-Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=55'),atlas.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=55').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=55').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,_a,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
+Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=57'),naturalMapOverview.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=57').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=57').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,_map,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
 
 socket.on('connect',()=>{net.textContent='● 서버 연결';net.className='good'});
 socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});
@@ -437,8 +489,9 @@ function movePrediction(dt){
 }
 function drawMap(cw,ch){
   ctx.fillStyle='#07141a';ctx.fillRect(0,0,cw,ch);if(!self)return null;
-  const viewW=cw/zoom,viewH=ch/zoom,left=self.x-viewW/2,top=self.y-viewH/2,c0x=Math.floor(left/TS),c1x=Math.floor((left+viewW)/TS)+1,c0y=Math.floor(top/TS),c1y=Math.floor((top+viewH)/TS)+1;
-  for(let cy=c0y;cy<=c1y;cy++){if(cy<0||cy>=WH)continue;for(let cx=c0x;cx<=c1x;cx++){const v=cellValue(cx,cy),id=v&0x3fff,sx=(id&127)*TS,sy=(id>>7)*TS,dx=(cx*TS-left)*zoom,dy=(cy*TS-top)*zoom,dw=Math.ceil(TS*zoom)+1,dh=Math.ceil(TS*zoom)+1;ctx.drawImage(atlas,sx,sy,TS,TS,Math.floor(dx),Math.floor(dy),dw,dh)}}
+  const viewW=cw/zoom,viewH=ch/zoom,left=self.x-viewW/2,top=self.y-viewH/2;
+  drawNaturalEarthLayer(cw,ch,left,top);
+  drawSeaSurface(cw,ch,left,top);
   drawOceanCurrents(cw,ch,left,top);
   drawWindClouds(cw,ch,left,top);
   const stageMarker=activeMission?.kind==='staged'?currentStage():null;
@@ -447,6 +500,23 @@ function drawMap(cw,ch){
   if(showMarker){const mx=(self.x+dxWrap(marker.x,self.x)-left)*zoom,my=(marker.y-top)*zoom;if(mx>-100&&mx<cw+100&&my>-100&&my<ch+100){ctx.save();ctx.strokeStyle=missionProgress?.status==='completed'?'#9fe1b0':'#ffdc79';ctx.fillStyle='#07141acc';ctx.lineWidth=3;ctx.beginPath();ctx.arc(mx,my,Math.max(10,(marker.radiusTiles||2)*TS*zoom),0,Math.PI*2);ctx.stroke();ctx.font='bold 12px "Malgun Gothic"';ctx.textAlign='center';ctx.fillRect(mx-78,my-31,156,19);ctx.fillStyle='#fff3c2';ctx.fillText(marker.label||'학습 지점',mx,my-17);ctx.restore()}}
   drawCityLabels(cw,ch,left,top);
   return {left,top};
+}
+
+function drawSeaSurface(cw,ch,left,top,now=performance.now()){
+  if(mode!=='sea'||choiceModalActive())return;
+  const spacing=isPhoneMapView()?180:145,viewW=cw/zoom,viewH=ch/zoom,c0x=Math.floor((left-spacing)/spacing),c1x=Math.ceil((left+viewW+spacing)/spacing),c0y=Math.max(0,Math.floor((top-spacing)/spacing)),c1y=Math.min(Math.ceil(MAP_H/spacing),Math.ceil((top+viewH+spacing)/spacing));
+  ctx.save();ctx.globalCompositeOperation='screen';ctx.lineCap='round';ctx.imageSmoothingEnabled=true;
+  for(let gy=c0y;gy<=c1y;gy++)for(let rawGx=c0x;rawGx<=c1x;rawGx++){
+    const gx=((rawGx%Math.ceil(SPAN/spacing))+Math.ceil(SPAN/spacing))%Math.ceil(SPAN/spacing),seed=hashUnit(gx,gy,89),baseX=wrapX((gx+seed*.86+.07)*spacing),baseY=Math.max(4,Math.min(MAP_H-4,(gy+hashUnit(gx,gy,91)*.82+.09)*spacing));
+    if(!screenPointIsSea(baseX,baseY))continue;
+    const wind=CDS95Wind.windAtPixel(baseX,baseY,classGameMinutes),phase=(hashUnit(gx,gy,93)+now*.000035*(.45+wind.strength))%1,track=spacing*.78,x=wrapX(baseX+wind.x*(phase-.5)*track),y=Math.max(4,Math.min(MAP_H-4,baseY+wind.y*(phase-.5)*track)),screen=flowScreenPoint({x,y},left,top);
+    if(screen.x<-70||screen.x>cw+70||screen.y<-40||screen.y>ch+40)continue;
+    const angle=Math.atan2(wind.y,wind.x),length=(18+hashUnit(gx,gy,97)*28)*Math.max(.76,Math.min(1.18,zoom*.72)),curve=(3+hashUnit(gx,gy,101)*5),fade=Math.sin(Math.PI*phase);
+    ctx.save();ctx.translate(screen.x,screen.y);ctx.rotate(angle);ctx.strokeStyle=`rgba(205,239,246,${(.055+.055*wind.strength)*fade})`;ctx.lineWidth=Math.max(.7,zoom*.55);ctx.beginPath();ctx.moveTo(-length*.5,0);ctx.quadraticCurveTo(0,-curve,length*.5,0);ctx.stroke();
+    if(hashUnit(gx,gy,103)>.46){ctx.globalAlpha=.62;ctx.beginPath();ctx.moveTo(-length*.28,6);ctx.quadraticCurveTo(length*.04,3,length*.36,6);ctx.stroke()}
+    ctx.restore();
+  }
+  ctx.restore();ctx.imageSmoothingEnabled=false;
 }
 
 function screenPointIsSea(x,y){return !!world&&terrainAtPixel(x,y).type==='sea'}

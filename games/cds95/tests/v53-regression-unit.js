@@ -5,8 +5,9 @@ const path=require('node:path');
 const root=path.join(__dirname,'..');
 const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
 const server=fs.readFileSync(path.join(root,'server.js'),'utf8');
-assert.ok(fs.statSync(path.join(root,'public/assets/maps/ocean_original_tiles.png')).size>1_000_000);
-assert.doesNotMatch(html,/forestAtlas|desertAtlas|riverAtlas|biomePaletteMask/);
+const manifest=JSON.parse(fs.readFileSync(path.join(root,'public/assets/maps/natural-earth/manifest.json'),'utf8'));
+assert.equal(manifest.width,16200);assert.equal(manifest.height,8100);
+assert.doesNotMatch(html,/forestAtlas|desertAtlas|riverAtlas|biomePaletteMask|ocean_original_tiles/);
 assert.match(html,/const portVisible=!inCity&&!busy&&!!portInteraction/);
 assert.match(html,/const cityVisible=!inCity&&!busy&&!!cityInteraction\?\.canUse/);
 assert.match(html,/setInterval\(\(\)=>\{if\(joined&&self\)updateHud\(\)\},100\)/);
@@ -16,4 +17,4 @@ assert.match(server,/cityInteraction: player \? cityInteractionForPlayer\(player
 assert.match(server,/portInteraction: player \? nearbyCatalogPort\(player\) : null/);
 assert.match(server,/socket\.on\('enterCity'/);
 assert.match(server,/socket\.on\('useCatalogPort'/);
-console.log(JSON.stringify({ok:true,portAndCityPromptIndependent:true,liveHud100ms:true,originalMapOnly:true}));
+console.log(JSON.stringify({ok:true,portAndCityPromptIndependent:true,liveHud100ms:true,naturalEarthMap:true}));
