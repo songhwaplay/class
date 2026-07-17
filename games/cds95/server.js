@@ -2390,6 +2390,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v70 · 전 도시 도서관·도착지 최종 3문제: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v71 · 최종 문제 선택 즉시 반응: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
