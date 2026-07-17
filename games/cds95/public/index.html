@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v55</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v56</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -117,8 +117,12 @@ const missionActionPrompt=document.getElementById('missionActionPrompt'),mission
 const cityView=document.getElementById('cityView'),cityScene=document.getElementById('cityScene'),cityTitle=document.getElementById('cityTitle'),cityInfo=document.getElementById('cityInfo'),libraryBtn=document.getElementById('libraryBtn'),leaveCityBtn=document.getElementById('leaveCityBtn'),libraryView=document.getElementById('libraryView'),libraryTitle=document.getElementById('libraryTitle'),libraryClose=document.getElementById('libraryClose'),bookList=document.getElementById('bookList'),bookTitle=document.getElementById('bookTitle'),bookMeta=document.getElementById('bookMeta'),bookIntro=document.getElementById('bookIntro'),bookSections=document.getElementById('bookSections'),messageWindow=document.getElementById('messageWindow');
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
 const pauseOverlay=document.getElementById('pauseOverlay'),lockTitle=document.getElementById('lockTitle'),lockDetail=document.getElementById('lockDetail'),transitionOverlay=document.getElementById('transitionOverlay'),transitionLabel=document.getElementById('transitionLabel'),transitionFill=document.getElementById('transitionFill');
-const atlas=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();atlas.src='/assets/maps/ocean_original_tiles.png?v=55';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=55';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=55';
-let world=null,assetsReady=false,joined=false,dpr=1,zoom=1.7,last=performance.now(),mode='sea',sessionMode='',entryMode='',lastLocalBlock=0,lastNoticeSeq=0,roomCodeCurrent='',lastModeMessage=null,lastTerrainMessage=null,lastFatigueBand=0,lastWaterBand=100,lastFoodBand=100,mapCities=[];
+const atlas=new Image(),shipAtlas=new Image(),windCloudAtlas=new Image();atlas.src='/assets/maps/ocean_original_tiles.png?v=56';shipAtlas.src='/assets/ships/ship_original_8dir.png?v=56';windCloudAtlas.src='/assets/weather/cloud_original_12frames.png?v=56';
+const DESKTOP_MAP_ZOOM=1.7,MOBILE_MAP_ZOOM_PORTRAIT=.88,MOBILE_MAP_ZOOM_LANDSCAPE=1.0,DESKTOP_MIN_ZOOM=.75,MOBILE_MIN_ZOOM=.55;
+function isPhoneMapView(){return (matchMedia('(pointer:coarse)').matches||innerWidth<=650)&&Math.min(innerWidth,innerHeight)<=650}
+function recommendedMapZoom(){if(!isPhoneMapView())return DESKTOP_MAP_ZOOM;return innerWidth>innerHeight?MOBILE_MAP_ZOOM_LANDSCAPE:MOBILE_MAP_ZOOM_PORTRAIT}
+function minimumMapZoom(){return isPhoneMapView()?MOBILE_MIN_ZOOM:DESKTOP_MIN_ZOOM}
+let world=null,assetsReady=false,joined=false,dpr=1,zoom=recommendedMapZoom(),zoomManuallyAdjusted=false,last=performance.now(),mode='sea',sessionMode='',entryMode='',lastLocalBlock=0,lastNoticeSeq=0,roomCodeCurrent='',lastModeMessage=null,lastTerrainMessage=null,lastFatigueBand=0,lastWaterBand=100,lastFoodBand=100,mapCities=[];
 let self=null,serverSelf=null,remote=new Map(),lastSnapshotAt=0,activeMission=null,missionProgress=null,missionInteraction=null,cityInteraction=null,portInteraction=null,classGameMinutes=0,clockAnchorGameMinutes=0,clockAnchorAt=performance.now(),classSettings={paused:false,locked:false};
 let libraryCatalog={books:[]},cityCatalogById=new Map(),renderedCityId='',openedBookId='';
 // 해류는 바다 물결 애니메이션으로, 바람은 원작 CLOUD.CDS의 구름 애니메이션으로 구분한다.
@@ -148,8 +152,9 @@ function hashUnit(a,b,c=0){let x=Math.imul((a|0)^0x9e3779b9,0x85ebca6b)+Math.imu
 const keys={up:false,down:false,left:false,right:false};
 const socket=io({transports:['websocket','polling'],reconnection:true,reconnectionAttempts:Infinity,reconnectionDelay:500});
 
-function resize(){dpr=Math.min(devicePixelRatio||1,1.25);canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false}
-addEventListener('resize',resize);resize();
+function resetMapZoomForDevice(){zoom=recommendedMapZoom();zoomManuallyAdjusted=false}
+function resize(){dpr=Math.min(devicePixelRatio||1,1.25);canvas.width=Math.round(innerWidth*dpr);canvas.height=Math.round(innerHeight*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;if(!zoomManuallyAdjusted)zoom=recommendedMapZoom()}
+addEventListener('resize',resize);addEventListener('orientationchange',()=>{if(!zoomManuallyAdjusted)setTimeout(resetMapZoomForDevice,80)});resize();
 function wrapX(x){return UW3Terrain.wrapPixelX(x)}
 function dxWrap(tx,x){let d=tx-x;if(d>SPAN/2)d-=SPAN;if(d<-SPAN/2)d+=SPAN;return d}
 function cellValue(cx,cy){return UW3Terrain.cellValue(world,cx,cy)}
@@ -368,7 +373,7 @@ function selectEntryMode(nextMode){
 for(const button of entryModes.querySelectorAll('.entryMode'))button.addEventListener('click',()=>selectEntryMode(button.dataset.entryMode));
 modeBackBtn.addEventListener('click',()=>{entryMode='';joinFields.hidden=true;joinError.textContent='';for(const button of entryModes.querySelectorAll('.entryMode'))button.classList.remove('selected')});
 function finishJoin(result,name){
-  joined=true;sessionMode=result.sessionMode||entryMode||'competition';roomCodeCurrent=result.roomLabel||result.roomCode||(sessionMode==='solo'?'개인 탐험':'경쟁 모드');self={...result.self};serverSelf={...result.self};syncClassClock(result.classGameMinutes);mode=result.self.mode;applyMissionState(result.mission,result.progress,false);missionInteraction=result.interaction||null;cityInteraction=result.cityInteraction||null;portInteraction=result.portInteraction||null;applyClassSettings(result.settings||{});join.style.display='none';joinError.textContent='';
+  joined=true;resetMapZoomForDevice();sessionMode=result.sessionMode||entryMode||'competition';roomCodeCurrent=result.roomLabel||result.roomCode||(sessionMode==='solo'?'개인 탐험':'경쟁 모드');self={...result.self};serverSelf={...result.self};syncClassClock(result.classGameMinutes);mode=result.self.mode;applyMissionState(result.mission,result.progress,false);missionInteraction=result.interaction||null;cityInteraction=result.cityInteraction||null;portInteraction=result.portInteraction||null;applyClassSettings(result.settings||{});join.style.display='none';joinError.textContent='';
   localStorage.setItem('uw3-name',name);if(sessionMode==='competition')localStorage.setItem('uw3-room',roomInput.value);guideHistory.length=0;
   onlineGroup.hidden=sessionMode==='solo';nearbyGroup.hidden=sessionMode==='solo';soloGroup.hidden=sessionMode!=='solo';
   showToast(sessionMode==='solo'?'개인 탐험을 시작했습니다. 세계를 자유롭게 탐험하세요.':'같은 반 친구들과 연결되었습니다.','good');showToast('상단에서 날짜·위치·바람·해류 영향을 확인하세요.','system');applyModeUI();sendInput();
@@ -398,8 +403,8 @@ addEventListener('keydown',e=>{
 });
 addEventListener('keyup',e=>{if(keyMap[e.key]){e.preventDefault();setDir(keyMap[e.key],false)}});
 canvas.addEventListener('pointerdown',e=>{if(!canTravelNow()||(mode!=='sea'&&mode!=='land')||!self)return;const r=canvas.getBoundingClientRect();const x=self.x+(e.clientX-r.left-r.width/2)/zoom,y=self.y+(e.clientY-r.top-r.height/2)/zoom;for(const k in keys)keys[k]=false;socket.emit('setTarget',{x,y})});
-canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.75,Math.min(3.6,zoom*(e.deltaY>0?.9:1.1)))},{passive:false});
-document.getElementById('minus').onclick=()=>zoom=Math.max(.75,zoom/1.18);document.getElementById('plus').onclick=()=>zoom=Math.min(3.6,zoom*1.18);document.getElementById('home').onclick=()=>{if(!joined)return;if(activeMission?.kind==='arrivalRace'){showToast('도착지는 지도에 자동 표시되지 않습니다. 직접 찾아 이동하세요.');setMissionPanelOpen(true);return}const stage=currentStage();if(activeMission?.kind==='staged'){if(activeMission.markerMode!=='exact'){showToast('목표 지점은 자동 표시되지 않습니다. 직접 찾아 이동하세요.');setMissionPanelOpen(true);return}if(stage&&(stage.mode==='any'||stage.mode===mode)){socket.emit('setTarget',stage.point);return}showToast('현재 단계에 맞는 이동 수단을 이용하세요.');return}const target=activeMission?.target&&((activeMission.mode==='any')||activeMission.mode===mode)?activeMission.target:START;socket.emit('setTarget',target)};
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoomManuallyAdjusted=true;zoom=Math.max(minimumMapZoom(),Math.min(3.6,zoom*(e.deltaY>0?.9:1.1)))},{passive:false});
+document.getElementById('minus').onclick=()=>{zoomManuallyAdjusted=true;zoom=Math.max(minimumMapZoom(),zoom/1.18)};document.getElementById('plus').onclick=()=>{zoomManuallyAdjusted=true;zoom=Math.min(3.6,zoom*1.18)};document.getElementById('home').onclick=()=>{if(!joined)return;if(activeMission?.kind==='arrivalRace'){showToast('도착지는 지도에 자동 표시되지 않습니다. 직접 찾아 이동하세요.');setMissionPanelOpen(true);return}const stage=currentStage();if(activeMission?.kind==='staged'){if(activeMission.markerMode!=='exact'){showToast('목표 지점은 자동 표시되지 않습니다. 직접 찾아 이동하세요.');setMissionPanelOpen(true);return}if(stage&&(stage.mode==='any'||stage.mode===mode)){socket.emit('setTarget',stage.point);return}showToast('현재 단계에 맞는 이동 수단을 이용하세요.');return}const target=activeMission?.target&&((activeMission.mode==='any')||activeMission.mode===mode)?activeMission.target:START;socket.emit('setTarget',target)};
 
 function doCityAction(){
   clearKeys();if(!cityInteraction?.canUse)return;

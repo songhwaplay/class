@@ -7,6 +7,6 @@ const html=fs.readFileSync(path.join(root,'public/index.html'),'utf8');
 const atlas=path.join(root,'public/assets/maps/ocean_original_tiles.png');
 assert.ok(fs.existsSync(atlas));
 assert.ok(fs.statSync(atlas).size>1_000_000);
-assert.match(html,/ocean_original_tiles\.png\?v=55/);
+assert.match(html,/ocean_original_tiles\.png\?v=56/);
 assert.doesNotMatch(html,/biome_palette_mask|paletteAlpha|paletteMix/);
 console.log('original map atlas direct rendering ok');
