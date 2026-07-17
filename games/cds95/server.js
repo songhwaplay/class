@@ -168,7 +168,7 @@ function resolveCatalog() {
       ...source,
       cityImageIndex: Number.isInteger(cityImageIndex) ? cityImageIndex : null,
       interiorImage: Number.isInteger(cityImageIndex)
-        ? `/assets/cities/original/city_${String(cityImageIndex).padStart(3, '0')}.png?v=54`
+        ? `/assets/cities/original/city_${String(cityImageIndex).padStart(3, '0')}.png?v=55`
         : null,
       x: point.x,
       y: point.y,
@@ -225,7 +225,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 53,
+  version: 55,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -242,7 +242,8 @@ app.get('/health', (_req, res) => res.json({
   cityInteriorImageCount: MissionCatalog.ORIGINAL_CITIES.length,
   cityEntryExitGameMinutes: 0,
   libraryReading: true,
-  missionSystem: 'one-destination-four-start-cities-teacher-start-gated-arrival-race',
+  missionSystem: 'solo-free-exploration-or-teacher-start-gated-arrival-race',
+  soloExplorationMode: true,
   originalCityCount: MissionCatalog.ORIGINAL_CITIES.length,
   originalPortCityCount: MissionCatalog.ORIGINAL_CITIES.filter((place) => place.canEnterFromSea === true).length,
   originalCityAccessRule: 'WORLD.CDS marker adjacency (original behavior)',
@@ -286,6 +287,10 @@ const teachers = new Map();
 const missionRuntime = new Map();
 const roomClocks = new Map();
 
+function isSoloRoom(roomCode) {
+  return typeof roomCode === 'string' && roomCode.startsWith('solo:');
+}
+
 function clockForRoom(roomCode) {
   if (!roomClocks.has(roomCode)) {
     roomClocks.set(roomCode, {
@@ -300,6 +305,7 @@ function clockForRoom(roomCode) {
 
 function roomClockShouldRun(roomCode) {
   const roomState = store.room(roomCode);
+  if (isSoloRoom(roomCode)) return roomState.settings.paused !== true && (rooms.get(roomCode)?.size || 0) > 0;
   return roomState.settings.paused !== true && roomState.activeMission?.phase === 'running';
 }
 
@@ -457,6 +463,9 @@ function isStartChoiceSet(mission) {
 
 function arrivalRaceTravelGate(player) {
   if (!player) return { ok: false, error: '학생 접속 상태가 아닙니다.' };
+  if (player.sessionMode === 'solo' || isSoloRoom(player.roomCode)) {
+    return { ok: true, mission: null, progress: null, completed: false, solo: true };
+  }
   const mission = store.room(player.roomCode).activeMission;
   if (!isArrivalRace(mission)) return { ok: false, error: '교사가 미션을 준비할 때까지 기다리세요.' };
   const progress = progressFor(player.roomCode, player.name, mission.id, false);
@@ -1225,6 +1234,7 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
   return {
     id: p.id,
     name: p.name,
+    sessionMode: p.sessionMode || 'competition',
     x: Math.round(p.x * 10) / 10,
     y: Math.round(p.y * 10) / 10,
     dir: p.dir,
@@ -1384,11 +1394,103 @@ function removePlayer(socket) {
   room.delete(socket.id);
   socket.leave(`class:${roomCode}`);
   socket.data.roomCode = null;
-  if (room.size === 0) rooms.delete(roomCode);
-  if (p) io.to(`teacher:${roomCode}`).emit('teacherEvent', { type: 'leave', name: p.name, at: Date.now() });
+  socket.data.sessionMode = null;
+  if (room.size === 0) {
+    rooms.delete(roomCode);
+    if (p?.sessionMode === 'solo' || isSoloRoom(roomCode)) {
+      roomClocks.delete(roomCode);
+      delete store.state.rooms[roomCode];
+      store.scheduleSave();
+    }
+  }
+  if (p?.sessionMode !== 'solo') io.to(`teacher:${roomCode}`).emit('teacherEvent', { type: 'leave', name: p.name, at: Date.now() });
 }
 
 io.on('connection', (socket) => {
+  socket.on('joinSolo', (payload, ack = () => {}) => {
+    try {
+      removePlayer(socket);
+      const name = cleanName(payload?.name);
+      if (name.length < 2) return ack({ ok: false, error: '이름을 두 글자 이상 입력하세요.' });
+
+      const roomCode = `solo:${socket.id}:${Date.now().toString(36)}`;
+      const room = new Map();
+      rooms.set(roomCode, room);
+      const roomState = store.room(roomCode);
+      roomState.activeMission = null;
+      roomState.progress = {};
+      roomState.settings = { paused: false, locked: false };
+      roomState.clock = { gameMinutes: 0 };
+      roomClocks.set(roomCode, {
+        baseGameMinutes: 0,
+        baseServerMs: Date.now(),
+        ownerSocketId: null,
+        lastTeacherSyncAt: 0
+      });
+
+      const startPlace = RESOLVED_PLACES.get('lisbon');
+      const spawn = safeHarborSpawn(room, startPlace);
+      const classMinutes = classGameMinutes(roomCode);
+      const player = {
+        id: socket.id,
+        name,
+        roomCode,
+        sessionMode: 'solo',
+        x: spawn.x,
+        y: spawn.y,
+        dir: 2,
+        moving: false,
+        mode: 'sea',
+        mission: '개인 자유 탐험',
+        activeMissionId: null,
+        missionStatus: 'free',
+        transition: null,
+        terrain: 'sea',
+        input: { up: false, down: false, left: false, right: false },
+        target: null,
+        lastInputAt: Date.now(),
+        lastSeen: Date.now(),
+        noticeSeq: 0,
+        noticeText: '',
+        noticeAt: 0,
+        stageArrivalKey: null,
+        currentCityId: null,
+        cityReturnPoint: null,
+        lastCityId: startPlace?.id || 'lisbon',
+        shipPortId: startPlace?.id || 'lisbon',
+        fatigue: 0,
+        money: STARTING_MONEY,
+        water: MAX_WATER,
+        food: MAX_FOOD,
+        waterBand: 100,
+        foodBand: 100,
+        lastSupplyGameMinutes: classMinutes
+      };
+      room.set(socket.id, player);
+      socket.data.roomCode = roomCode;
+      socket.data.sessionMode = 'solo';
+      socket.join(`class:${roomCode}`);
+      ack({
+        ok: true,
+        sessionMode: 'solo',
+        roomCode: '개인 탐험',
+        roomLabel: '개인 탐험',
+        self: publicPlayer(player, classMinutes),
+        classGameMinutes: classMinutes,
+        nearbyRadiusTiles: NEARBY_RADIUS / TILE,
+        settings: roomState.settings,
+        mission: null,
+        progress: null,
+        interaction: null,
+        cityInteraction: cityInteractionForPlayer(player),
+        portInteraction: nearbyCatalogPort(player)
+      });
+    } catch (error) {
+      console.error(error);
+      ack({ ok: false, error: '개인 탐험을 시작하는 중 오류가 발생했습니다.' });
+    }
+  });
+
   socket.on('joinClass', (payload, ack = () => {}) => {
     try {
       removePlayer(socket);
@@ -1419,6 +1521,7 @@ io.on('connection', (socket) => {
         id: socket.id,
         name,
         roomCode,
+        sessionMode: 'competition',
         x: spawn.x,
         y: spawn.y,
         dir: 2,
@@ -1451,8 +1554,9 @@ io.on('connection', (socket) => {
       };
       room.set(socket.id, player);
       socket.data.roomCode = roomCode;
+      socket.data.sessionMode = 'competition';
       socket.join(`class:${roomCode}`);
-      ack({ ok: true, self: publicPlayer(player, classMinutes), classGameMinutes: classMinutes, roomCode, nearbyRadiusTiles: NEARBY_RADIUS / TILE, settings: store.room(roomCode).settings, ...activeMissionState(roomCode, name, player) });
+      ack({ ok: true, sessionMode:'competition', roomLabel:`학급 ${roomCode}`, self: publicPlayer(player, classMinutes), classGameMinutes: classMinutes, roomCode, nearbyRadiusTiles: NEARBY_RADIUS / TILE, settings: store.room(roomCode).settings, ...activeMissionState(roomCode, name, player) });
       io.to(`teacher:${roomCode}`).emit('teacherEvent', { type: 'join', name, at: Date.now() });
     } catch (error) {
       console.error(error);
@@ -2115,16 +2219,18 @@ setInterval(() => {
         if (distance(p, other) <= NEARBY_RADIUS) nearby.push(publicPlayer(other, classMinutes));
       }
       const missionState = activeMissionState(roomCode, p.name, p);
-      io.to(p.id).emit('snapshot', { serverTime: now, classGameMinutes: classMinutes, you: publicPlayer(p, classMinutes), nearby, online: room.size, settings: store.room(roomCode).settings, ...missionState });
+      io.to(p.id).emit('snapshot', { serverTime: now, classGameMinutes: classMinutes, sessionMode:p.sessionMode || 'competition', roomLabel:p.sessionMode === 'solo' ? '개인 탐험' : `학급 ${roomCode}`, you: publicPlayer(p, classMinutes), nearby, online: room.size, settings: store.room(roomCode).settings, ...missionState });
     }
-    const activeMission = store.room(roomCode).activeMission;
-    io.to(`teacher:${roomCode}`).emit('teacherSnapshot', { serverTime: now, classGameMinutes: classMinutes, roomCode, players: [...room.values()].map((p) => publicPlayer(p, classMinutes)), mission: missionForTeacher(activeMission), progress: missionProgressList(roomCode, activeMission?.id), settings: store.room(roomCode).settings });
+    if (!isSoloRoom(roomCode)) {
+      const activeMission = store.room(roomCode).activeMission;
+      io.to(`teacher:${roomCode}`).emit('teacherSnapshot', { serverTime: now, classGameMinutes: classMinutes, roomCode, players: [...room.values()].map((p) => publicPlayer(p, classMinutes)), mission: missionForTeacher(activeMission), progress: missionProgressList(roomCode, activeMission?.id), settings: store.room(roomCode).settings });
+    }
   }
 }, 1000 / SNAPSHOT_HZ).unref();
 
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v54: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v55: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

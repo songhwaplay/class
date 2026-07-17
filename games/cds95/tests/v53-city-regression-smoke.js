@@ -17,7 +17,7 @@ function ack(s,e,p={}){return new Promise((r,j)=>{const x=setTimeout(()=>j(new E
  const landStart=await ack(student,'useCatalogPort',{placeId:sea.portInteraction.placeId});assert.equal(landStart.ok,true,landStart.error);
  const land=await once(student,'snapshot',x=>x.you.mode==='land'&&x.cityInteraction?.placeId==='lisbon',15000);
  const enterAt=land.classGameMinutes;
- const entered=await ack(student,'enterCity',{placeId:'lisbon'});assert.equal(entered.ok,true,entered.error);assert.equal(entered.self.mode,'city');assert.equal(entered.self.transition,null);assert.match(entered.self.currentCityImage,/city_000\.png\?v=54$/);
+ const entered=await ack(student,'enterCity',{placeId:'lisbon'});assert.equal(entered.ok,true,entered.error);assert.equal(entered.self.mode,'city');assert.equal(entered.self.transition,null);assert.match(entered.self.currentCityImage,/city_000\.png\?v=55$/);
  const cityA=await once(student,'snapshot',x=>x.you.mode==='city'&&x.you.currentCityId==='lisbon');
  await new Promise(r=>setTimeout(r,450));
  const cityB=await once(student,'snapshot',x=>x.you.mode==='city'&&x.classGameMinutes>cityA.classGameMinutes);
