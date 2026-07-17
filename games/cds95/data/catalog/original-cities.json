@@ -137,6 +137,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -147,7 +148,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Lisbon",
     "countryCode": "PT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "이베리아"
   },
   {
     "id": "original_city_223",
@@ -261,7 +264,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Porto",
     "countryCode": "PT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_222",
@@ -375,7 +380,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "A Coruña",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_221",
@@ -489,7 +496,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bilbao",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_220",
@@ -624,6 +633,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -634,7 +644,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Toledo",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "이베리아"
   },
   {
     "id": "original_city_219",
@@ -743,7 +755,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Zaragoza",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_218",
@@ -852,7 +866,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Córdoba",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_217",
@@ -992,6 +1008,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -1002,7 +1019,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Sevilla",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "이베리아"
   },
   {
     "id": "original_city_216",
@@ -1116,7 +1135,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Cadiz",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_215",
@@ -1230,7 +1251,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Málaga",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_214",
@@ -1329,6 +1352,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -1339,7 +1363,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Granada",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "이베리아"
   },
   {
     "id": "original_city_213",
@@ -1453,7 +1479,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Valencia",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_212",
@@ -1557,6 +1585,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -1567,7 +1596,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Barcelona",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "이베리아"
   },
   {
     "id": "original_city_211",
@@ -1681,7 +1712,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Palma",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_210",
@@ -1816,6 +1849,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -1826,7 +1860,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Paris",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "북유럽"
   },
   {
     "id": "original_city_209",
@@ -1940,7 +1976,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Rouen",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_208",
@@ -2049,7 +2087,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tours",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_207",
@@ -2163,7 +2203,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Nantes",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_206",
@@ -2277,7 +2319,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bordeaux",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_205",
@@ -2386,7 +2430,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Toulouse",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_204",
@@ -2495,7 +2541,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Lyon",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_203",
@@ -2609,7 +2657,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Marseille",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_202",
@@ -2723,7 +2773,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Brugge",
     "countryCode": "BE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_201",
@@ -2837,7 +2889,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Antwerpen",
     "countryCode": "BE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "amsterdam",
@@ -2941,6 +2995,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -2951,7 +3006,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Amsterdam",
     "countryCode": "NL",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "북유럽"
   },
   {
     "id": "original_city_199",
@@ -3060,7 +3117,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Brussels",
     "countryCode": "BE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_198",
@@ -3195,6 +3254,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -3205,7 +3265,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Milan",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "지중해"
   },
   {
     "id": "original_city_197",
@@ -3314,7 +3376,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Turin",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "genoa",
@@ -3418,6 +3482,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -3428,7 +3493,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Genoa",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "지중해"
   },
   {
     "id": "original_city_195",
@@ -3568,6 +3635,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -3578,7 +3646,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Venice",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "지중해"
   },
   {
     "id": "original_city_194",
@@ -3677,6 +3747,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -3687,7 +3758,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Florence",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "지중해"
   },
   {
     "id": "original_city_193",
@@ -3801,7 +3874,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Pisa",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_192",
@@ -3915,7 +3990,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ancona",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_191",
@@ -4055,6 +4132,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -4065,7 +4143,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Rome",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "지중해"
   },
   {
     "id": "original_city_190",
@@ -4205,6 +4285,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -4215,7 +4296,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Naples",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "지중해"
   },
   {
     "id": "original_city_189",
@@ -4329,7 +4412,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Cagliari",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_188",
@@ -4443,7 +4528,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Palermo",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_187",
@@ -4557,7 +4644,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Siracusa",
     "countryCode": "IT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "london",
@@ -4697,6 +4786,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -4707,7 +4797,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "London",
     "countryCode": "GB",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "북유럽"
   },
   {
     "id": "original_city_185",
@@ -4821,7 +4913,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Southampton",
     "countryCode": "GB",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_184",
@@ -4935,7 +5029,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bristol",
     "countryCode": "GB",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_183",
@@ -5044,7 +5140,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "York",
     "countryCode": "GB",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_182",
@@ -5158,7 +5256,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Edinburgh",
     "countryCode": "GB",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_181",
@@ -5272,7 +5372,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Dublin",
     "countryCode": "IE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_180",
@@ -5386,7 +5488,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Hamburg",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_179",
@@ -5500,7 +5604,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Lübeck",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_178",
@@ -5614,7 +5720,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bremen",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_177",
@@ -5723,7 +5831,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Köln",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_176",
@@ -5832,7 +5942,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Frankfurt am Main",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_175",
@@ -5941,7 +6053,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Strasbourg",
     "countryCode": "FR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_174",
@@ -6050,7 +6164,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Magdeburg",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_173",
@@ -6159,7 +6275,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Nürnberg",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_172",
@@ -6268,7 +6386,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Augsburg",
     "countryCode": "DE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_171",
@@ -6377,7 +6497,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Prague",
     "countryCode": "CZ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_170",
@@ -6476,6 +6598,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -6486,7 +6609,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Vienna",
     "countryCode": "AT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "북유럽"
   },
   {
     "id": "original_city_169",
@@ -6595,7 +6720,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bern",
     "countryCode": "CH",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_168",
@@ -6709,7 +6836,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Gdańsk",
     "countryCode": "PL",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_167",
@@ -6823,7 +6952,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kaliningrad",
     "countryCode": "RU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_166",
@@ -6937,7 +7068,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Riga",
     "countryCode": "LV",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_165",
@@ -7046,7 +7179,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Velikiy Novgorod",
     "countryCode": "RU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_164",
@@ -7191,7 +7326,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Moscow",
     "countryCode": "RU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_163",
@@ -7300,7 +7437,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kyiv",
     "countryCode": "UA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_162",
@@ -7399,6 +7538,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -7409,7 +7549,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Warsaw",
     "countryCode": "PL",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "북유럽"
   },
   {
     "id": "original_city_161",
@@ -7518,7 +7660,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Budapest",
     "countryCode": "HU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_160",
@@ -7632,7 +7776,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Stockholm",
     "countryCode": "SE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_159",
@@ -7746,7 +7892,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Visby",
     "countryCode": "SE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_158",
@@ -7850,6 +7998,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -7860,7 +8009,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Copenhagen",
     "countryCode": "DK",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "북유럽"
   },
   {
     "id": "original_city_157",
@@ -7974,7 +8125,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Oslo",
     "countryCode": "NO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_156",
@@ -8088,7 +8241,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bergen",
     "countryCode": "NO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_155",
@@ -8197,7 +8352,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Belgrade",
     "countryCode": "RS",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_154",
@@ -8306,7 +8463,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bucharest",
     "countryCode": "RO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_153",
@@ -8420,7 +8579,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Dubrovnik",
     "countryCode": "HR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_152",
@@ -8524,6 +8685,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -8534,7 +8696,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Athens",
     "countryCode": "GR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "지중해"
   },
   {
     "id": "original_city_151",
@@ -8648,7 +8812,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Thessaloníki",
     "countryCode": "GR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_150",
@@ -8802,7 +8968,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Irákleion",
     "countryCode": "GR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_149",
@@ -8916,7 +9084,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Famagusta",
     "countryCode": "CY",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_148",
@@ -9030,7 +9200,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Varna",
     "countryCode": "BG",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_147",
@@ -9144,7 +9316,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bilhorod-Dnistrovskyi",
     "countryCode": "UA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "alexandria",
@@ -9248,6 +9422,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -9258,7 +9433,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Alexandria",
     "countryCode": "EG",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_145",
@@ -9393,6 +9570,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -9403,7 +9581,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Cairo",
     "countryCode": "EG",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_144",
@@ -9512,7 +9692,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Aswān",
     "countryCode": "EG",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "tripoli",
@@ -9626,7 +9808,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tripoli",
     "countryCode": "LY",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_142",
@@ -9730,6 +9914,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -9740,7 +9925,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tunis",
     "countryCode": "TN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_141",
@@ -9854,7 +10041,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Algiers",
     "countryCode": "DZ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_140",
@@ -9968,7 +10157,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ceuta",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_139",
@@ -10082,7 +10273,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Casablanca",
     "countryCode": "MA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_138",
@@ -10196,7 +10389,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ponta Delgada",
     "countryCode": "PT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_137",
@@ -10310,7 +10505,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Funchal",
     "countryCode": "PT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_136",
@@ -10424,7 +10621,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Las Palmas de Gran Canaria",
     "countryCode": "ES",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_135",
@@ -10538,7 +10737,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Arguin",
     "countryCode": "MR",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_134",
@@ -10652,7 +10853,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Praia / Cape Verde",
     "countryCode": "CV",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_133",
@@ -10766,7 +10969,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Freetown",
     "countryCode": "SL",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_132",
@@ -10875,7 +11080,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Taghaza",
     "countryCode": "ML",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_131",
@@ -10984,7 +11191,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Timbuktu",
     "countryCode": "ML",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_130",
@@ -11093,7 +11302,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Gao",
     "countryCode": "ML",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_129",
@@ -11202,7 +11413,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Djenné",
     "countryCode": "ML",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_128",
@@ -11311,7 +11524,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kano",
     "countryCode": "NG",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_127",
@@ -11425,7 +11640,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "São Jorge da Mina / Elmina",
     "countryCode": "GH",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_126",
@@ -11539,7 +11756,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ile-Ife",
     "countryCode": "NG",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_125",
@@ -11653,7 +11872,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "São Tomé",
     "countryCode": "ST",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_124",
@@ -11767,7 +11988,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Luanda",
     "countryCode": "AO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_123",
@@ -11881,7 +12104,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Cape Town",
     "countryCode": "ZA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_122",
@@ -11995,7 +12220,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Sofala",
     "countryCode": "MZ",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_121",
@@ -12109,7 +12336,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Mozambique",
     "countryCode": "MZ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_120",
@@ -12218,7 +12447,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Great Zimbabwe",
     "countryCode": "ZW",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_119",
@@ -12332,7 +12563,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kilwa Kisiwani",
     "countryCode": "TZ",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_118",
@@ -12446,7 +12679,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Zanzibar",
     "countryCode": "TZ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "mombasa",
@@ -12560,7 +12795,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Mombasa",
     "countryCode": "KE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_116",
@@ -12674,7 +12911,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Malindi",
     "countryCode": "KE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_115",
@@ -12788,7 +13027,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Mogadishu",
     "countryCode": "SO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_114",
@@ -12897,7 +13138,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Aksum",
     "countryCode": "ET",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_113",
@@ -13006,7 +13249,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Khartoum",
     "countryCode": "SD",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "istanbul",
@@ -13146,6 +13391,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -13169,7 +13415,9 @@
       1448,
       339
     ],
-    "naturalEarthNote": "보스포루스 유럽측 고정"
+    "naturalEarthNote": "보스포루스 유럽측 고정",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_111",
@@ -13283,7 +13531,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Feodosiya",
     "countryCode": "UA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_110",
@@ -13397,7 +13647,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Azov",
     "countryCode": "RU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_109",
@@ -13511,7 +13763,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Sinop",
     "countryCode": "TR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_108",
@@ -13625,7 +13879,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Trabzon",
     "countryCode": "TR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_107",
@@ -13734,7 +13990,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ankara",
     "countryCode": "TR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_106",
@@ -13848,7 +14106,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Antakya",
     "countryCode": "TR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_105",
@@ -13947,6 +14207,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -13957,7 +14218,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Damascus",
     "countryCode": "SY",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_104",
@@ -14056,6 +14319,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -14066,7 +14330,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Jerusalem",
     "countryCode": "IL",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_103",
@@ -14180,7 +14446,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Beirut",
     "countryCode": "LB",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_102",
@@ -14289,7 +14557,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Madinah",
     "countryCode": "SA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_101",
@@ -14393,6 +14663,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -14403,7 +14674,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Makkah",
     "countryCode": "SA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_100",
@@ -14517,7 +14790,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Aden",
     "countryCode": "YE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_099",
@@ -14631,7 +14906,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Muscat",
     "countryCode": "OM",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_098",
@@ -14745,7 +15022,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Basrah",
     "countryCode": "IQ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_097",
@@ -14880,6 +15159,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -14890,7 +15170,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Baghdad",
     "countryCode": "IQ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_096",
@@ -15004,7 +15286,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Hormuz",
     "countryCode": "IR",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_095",
@@ -15113,7 +15397,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Shiraz",
     "countryCode": "IR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_094",
@@ -15248,6 +15534,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -15258,7 +15545,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Isfahan",
     "countryCode": "IR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중근동·북아프리카"
   },
   {
     "id": "original_city_093",
@@ -15367,7 +15656,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tabriz",
     "countryCode": "IR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_092",
@@ -15502,6 +15793,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -15512,7 +15804,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Samarkand",
     "countryCode": "UZ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중앙아시아"
   },
   {
     "id": "original_city_091",
@@ -15621,7 +15915,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tashkent",
     "countryCode": "UZ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_090",
@@ -15730,7 +16026,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Urganch",
     "countryCode": "UZ",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_089",
@@ -15839,7 +16137,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Herāt",
     "countryCode": "AF",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_088",
@@ -15948,7 +16248,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kabul",
     "countryCode": "AF",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_087",
@@ -16057,7 +16359,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kashgar",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_086",
@@ -16166,7 +16470,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Turpan",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_085",
@@ -16275,7 +16581,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Lhasa",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_084",
@@ -16384,7 +16692,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Astrakhan",
     "countryCode": "RU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_083",
@@ -16493,7 +16803,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kazan",
     "countryCode": "RU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_082",
@@ -16602,7 +16914,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Qashliq / Sibir",
     "countryCode": "RU",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_081",
@@ -16711,7 +17025,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Khovd",
     "countryCode": "MN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_080",
@@ -16820,7 +17136,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Karakorum / Kharkhorin",
     "countryCode": "MN",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_079",
@@ -16955,6 +17273,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -16965,7 +17284,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Delhi",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "인도"
   },
   {
     "id": "original_city_078",
@@ -17074,7 +17395,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Lahore",
     "countryCode": "PK",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_077",
@@ -17219,7 +17542,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ahmedabad",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_076",
@@ -17333,7 +17658,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Diu",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_075",
@@ -17478,7 +17805,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Vijayapura",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_074",
@@ -17592,7 +17921,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Old Goa",
     "countryCode": "IN",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_073",
@@ -17706,7 +18037,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kannur",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "calicut",
@@ -17820,7 +18153,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kozhikode",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_071",
@@ -17929,7 +18264,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Vijayanagara / Hampi",
     "countryCode": "IN",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_070",
@@ -18043,7 +18380,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kochi",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_069",
@@ -18157,7 +18496,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Colombo",
     "countryCode": "LK",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_068",
@@ -18266,7 +18607,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Golconda",
     "countryCode": "IN",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_067",
@@ -18380,7 +18723,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kolkata",
     "countryCode": "IN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_066",
@@ -18489,7 +18834,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ava / Inwa",
     "countryCode": "MM",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "malacca",
@@ -18603,7 +18950,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Malacca",
     "countryCode": "MY",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_064",
@@ -18717,7 +19066,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Nakhon Si Thammarat",
     "countryCode": "TH",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_063",
@@ -18831,7 +19182,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Phra Nakhon Si Ayutthaya",
     "countryCode": "TH",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_062",
@@ -18940,7 +19293,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Phnom Penh",
     "countryCode": "KH",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_061",
@@ -19054,7 +19409,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Huế",
     "countryCode": "VN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_060",
@@ -19168,7 +19525,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Haiphong",
     "countryCode": "VN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_059",
@@ -19282,7 +19641,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Banda Aceh",
     "countryCode": "ID",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_058",
@@ -19396,7 +19757,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Palembang",
     "countryCode": "ID",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_057",
@@ -19510,7 +19873,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Serang",
     "countryCode": "ID",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_056",
@@ -19624,7 +19989,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Surabaya",
     "countryCode": "ID",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_055",
@@ -19738,7 +20105,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bandar Seri Begawan",
     "countryCode": "BN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_054",
@@ -19852,7 +20221,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ternate",
     "countryCode": "ID",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_053",
@@ -19966,7 +20337,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Ambon",
     "countryCode": "ID",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_052",
@@ -20080,7 +20453,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Macau",
     "countryCode": "MO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_051",
@@ -20220,6 +20595,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -20230,7 +20606,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Guangzhou",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "original_city_050",
@@ -20380,7 +20758,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Quanzhou",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_049",
@@ -20494,7 +20874,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Fuzhou",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_048",
@@ -20634,6 +21016,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -20644,7 +21027,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Hangzhou",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "original_city_047",
@@ -20784,6 +21169,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -20794,7 +21180,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Nanjing",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "original_city_046",
@@ -20939,7 +21327,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Wuhan",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_045",
@@ -21048,7 +21438,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Guilin",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_044",
@@ -21157,7 +21549,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kunming",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_043",
@@ -21256,6 +21650,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -21266,7 +21661,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Chengdu",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "original_city_042",
@@ -21375,7 +21772,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Zhangye",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_041",
@@ -21510,6 +21909,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -21520,7 +21920,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Xi’an",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "original_city_040",
@@ -21655,6 +22057,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -21665,7 +22068,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kaifeng",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "original_city_039",
@@ -21810,7 +22215,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Jinan",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_038",
@@ -21919,7 +22326,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Taiyuan",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_037",
@@ -22054,6 +22463,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -22064,7 +22474,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Beijing",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "original_city_036",
@@ -22178,7 +22590,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Dalian",
     "countryCode": "CN",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_035",
@@ -22282,6 +22696,7 @@
     "facilities": [
       "항구",
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -22292,7 +22707,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Seoul",
     "countryCode": "KR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "중국·조선"
   },
   {
     "id": "nagasaki",
@@ -22406,7 +22823,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Nagasaki",
     "countryCode": "JP",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_033",
@@ -22520,7 +22939,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Sakai",
     "countryCode": "JP",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_032",
@@ -22619,6 +23040,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -22629,7 +23051,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kyoto",
     "countryCode": "JP",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": true,
+    "libraryRegion": "일본"
   },
   {
     "id": "original_city_031",
@@ -22743,7 +23167,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Santo Domingo",
     "countryCode": "DO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_030",
@@ -22857,7 +23283,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Santiago de Cuba",
     "countryCode": "CU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "havana",
@@ -22971,7 +23399,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Havana",
     "countryCode": "CU",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_028",
@@ -23085,7 +23515,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Kingston",
     "countryCode": "JM",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_027",
@@ -23199,7 +23631,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "San Juan",
     "countryCode": "PR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_026",
@@ -23313,7 +23747,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Veracruz",
     "countryCode": "MX",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_025",
@@ -23480,6 +23916,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -23492,7 +23929,9 @@
     "countryCode": "MX",
     "coordinateSource": "GeoNames",
     "displayOffsetCellsX": -0.85,
-    "displayOffsetCellsY": -0.45
+    "displayOffsetCellsY": -0.45,
+    "hasLibrary": true,
+    "libraryRegion": "아메리카"
   },
   {
     "id": "original_city_024",
@@ -23659,6 +24098,7 @@
     ],
     "facilities": [
       "도시",
+      "도서관",
       "육상 출입구"
     ],
     "arrivalRule": "enter-original-city",
@@ -23671,7 +24111,9 @@
     "countryCode": "MX",
     "coordinateSource": "GeoNames",
     "displayOffsetCellsX": 0.85,
-    "displayOffsetCellsY": 0.45
+    "displayOffsetCellsY": 0.45,
+    "hasLibrary": true,
+    "libraryRegion": "아메리카"
   },
   {
     "id": "original_city_023",
@@ -23780,7 +24222,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tlaxcala",
     "countryCode": "MX",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_022",
@@ -23889,7 +24333,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tlapa de Comonfort",
     "countryCode": "MX",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_021",
@@ -23998,7 +24444,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Mitla",
     "countryCode": "MX",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_020",
@@ -24112,7 +24560,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Acapulco de Juárez",
     "countryCode": "MX",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_019",
@@ -24226,7 +24676,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Mérida",
     "countryCode": "MX",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_018",
@@ -24335,7 +24787,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Guatemala City",
     "countryCode": "GT",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_017",
@@ -24449,7 +24903,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Trujillo",
     "countryCode": "HN",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_016",
@@ -24563,7 +25019,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "León",
     "countryCode": "NI",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_015",
@@ -24677,7 +25135,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Panamá",
     "countryCode": "PA",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_014",
@@ -24791,7 +25251,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Santa Marta",
     "countryCode": "CO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_013",
@@ -24905,7 +25367,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Coro",
     "countryCode": "VE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_012",
@@ -25019,7 +25483,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Cumaná",
     "countryCode": "VE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_011",
@@ -25133,7 +25599,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Recife",
     "countryCode": "BR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_010",
@@ -25247,7 +25715,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Salvador",
     "countryCode": "BR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "rio",
@@ -25361,7 +25831,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Rio de Janeiro",
     "countryCode": "BR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "buenos_aires",
@@ -25475,7 +25947,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Buenos Aires",
     "countryCode": "AR",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_007",
@@ -25584,7 +26058,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Bogotá",
     "countryCode": "CO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_006",
@@ -25693,7 +26169,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Quito",
     "countryCode": "EC",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_005",
@@ -25807,7 +26285,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Tumbes",
     "countryCode": "PE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_004",
@@ -25921,7 +26401,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Chan Chan",
     "countryCode": "PE",
-    "coordinateSource": "manual-historical"
+    "coordinateSource": "manual-historical",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "lima",
@@ -26035,7 +26517,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Lima",
     "countryCode": "PE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_002",
@@ -26180,7 +26664,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Cusco",
     "countryCode": "PE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_001",
@@ -26326,7 +26812,9 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Nazca",
     "countryCode": "PE",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   },
   {
     "id": "original_city_000",
@@ -26435,6 +26923,8 @@
     "naturalEarthPositionOverride": true,
     "modernLocationName": "Potosí",
     "countryCode": "BO",
-    "coordinateSource": "GeoNames"
+    "coordinateSource": "GeoNames",
+    "hasLibrary": false,
+    "libraryRegion": ""
   }
 ]

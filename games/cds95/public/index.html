@@ -82,12 +82,12 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
     <div id="cityShade"></div>
     <div id="cityTitle">도시</div>
     <div id="cityInfo"></div>
-    <div id="cityMenu"><button id="libraryBtn">도서관</button><button id="leaveCityBtn">도시 밖으로</button></div>
+    <div id="cityMenu"><button id="libraryBtn" hidden>도서관</button><button id="leaveCityBtn">도시 밖으로</button></div>
   </div>
 </section>
 <section id="libraryView" aria-label="도서관">
   <div id="libraryCard">
-    <header id="libraryHeader"><h2 id="libraryTitle">도서관</h2><span>책을 선택해 읽으세요.</span><button id="libraryClose">닫기</button></header>
+    <header id="libraryHeader"><h2 id="libraryTitle">도서관</h2><span id="libraryHint">지역 공동 장서를 선택해 읽으세요.</span><button id="libraryClose">닫기</button></header>
     <div id="libraryBody"><nav id="bookList"></nav><article id="bookReader"><h2 id="bookTitle"></h2><div id="bookMeta"></div><p id="bookIntro"></p><div id="bookSections"></div></article></div>
   </div>
 </section>
@@ -118,7 +118,7 @@ const loading=document.getElementById('loading'),join=document.getElementById('j
 const entryModes=document.getElementById('entryModes'),joinFields=document.getElementById('joinFields'),roomField=document.getElementById('roomField'),roomInput=document.getElementById('roomCode'),nameInput=document.getElementById('studentName'),joinStartBtn=document.getElementById('joinStartBtn'),modeBackBtn=document.getElementById('modeBackBtn'),joinError=document.getElementById('joinError');
 const identity=document.getElementById('identity'),net=document.getElementById('net'),onlineEl=document.getElementById('online'),nearbyEl=document.getElementById('nearby'),onlineGroup=document.getElementById('onlineGroup'),nearbyGroup=document.getElementById('nearbyGroup'),soloGroup=document.getElementById('soloGroup'),coord=document.getElementById('coord'),clockEl=document.getElementById('clock'),terrainHud=document.getElementById('terrainHud'),currentHud=document.getElementById('currentHud'),windHud=document.getElementById('windHud'),fatigueValue=document.getElementById('fatigueValue'),fatigueFill=document.getElementById('fatigueFill'),modeHud=document.getElementById('modeHud'),missionEl=document.getElementById('mission'),messageLines=document.getElementById('messageLines');
 const missionActionPrompt=document.getElementById('missionActionPrompt'),missionActionText=document.getElementById('missionActionText'),missionActionBtn=document.getElementById('missionActionBtn'),cityActionBtn=document.getElementById('cityActionBtn');
-const cityView=document.getElementById('cityView'),cityScene=document.getElementById('cityScene'),cityTitle=document.getElementById('cityTitle'),cityInfo=document.getElementById('cityInfo'),libraryBtn=document.getElementById('libraryBtn'),leaveCityBtn=document.getElementById('leaveCityBtn'),libraryView=document.getElementById('libraryView'),libraryTitle=document.getElementById('libraryTitle'),libraryClose=document.getElementById('libraryClose'),bookList=document.getElementById('bookList'),bookTitle=document.getElementById('bookTitle'),bookMeta=document.getElementById('bookMeta'),bookIntro=document.getElementById('bookIntro'),bookSections=document.getElementById('bookSections'),messageWindow=document.getElementById('messageWindow');
+const cityView=document.getElementById('cityView'),cityScene=document.getElementById('cityScene'),cityTitle=document.getElementById('cityTitle'),cityInfo=document.getElementById('cityInfo'),libraryBtn=document.getElementById('libraryBtn'),leaveCityBtn=document.getElementById('leaveCityBtn'),libraryView=document.getElementById('libraryView'),libraryTitle=document.getElementById('libraryTitle'),libraryHint=document.getElementById('libraryHint'),libraryClose=document.getElementById('libraryClose'),bookList=document.getElementById('bookList'),bookTitle=document.getElementById('bookTitle'),bookMeta=document.getElementById('bookMeta'),bookIntro=document.getElementById('bookIntro'),bookSections=document.getElementById('bookSections'),messageWindow=document.getElementById('messageWindow');
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
 const pauseOverlay=document.getElementById('pauseOverlay'),lockTitle=document.getElementById('lockTitle'),lockDetail=document.getElementById('lockDetail'),transitionOverlay=document.getElementById('transitionOverlay'),transitionLabel=document.getElementById('transitionLabel'),transitionFill=document.getElementById('transitionFill');
 const bgmControl=document.getElementById('bgmControl'),bgmToggle=document.getElementById('bgmToggle'),bgmVolume=document.getElementById('bgmVolume'),bgmTrack=document.getElementById('bgmTrack');
@@ -351,33 +351,44 @@ function missionRenderKey(mission,progress){return [mission?.id||'',mission?.pha
 function mergePendingStartChoice(progress){if(!startChoicePending||!pendingStartChoice||progress?.selectedStartPlaceId)return progress;return {...(progress||{}),selectedStartPlaceId:pendingStartChoice.placeId,selectedStartPlaceName:pendingStartChoice.cityName,status:'assigned',statusLabel:'수행 전'}}
 function applyMissionState(mission,progress,announce=false){const changed=mission?.id&&mission?.id!==activeMission?.id,wasCompleted=missionProgress?.status==='completed';activeMission=mission||null;missionProgress=mergePendingStartChoice(progress)||null;const justCompleted=!wasCompleted&&missionProgress?.status==='completed',renderKey=missionRenderKey(activeMission,missionProgress);if(renderKey!==lastMissionRenderKey){lastMissionRenderKey=renderKey;renderMission()}updateTravelLockOverlay();syncBackgroundMusic();if(justCompleted)showToast(`${medalText(missionProgress.finishRank)} 미션 성공! 이제 이동속도 ${formatSpeedBoost(completionBoost())}배로 자유 탐험할 수 있습니다.`,'good');if(announce&&activeMission){showToast(`새 수행 미션: ${activeMission.title}`);setMissionPanelOpen(true)}else if(changed&&activeMission)setMissionPanelOpen(true)}
 function applyClassSettings(next){const before=displayedGameMinutes();classSettings={...classSettings,...(next||{})};clockAnchorGameMinutes=before;clockAnchorAt=performance.now();classGameMinutes=before;updateTravelLockOverlay();if(classSettings.paused)clearKeys()}
+function currentLibraryCity(city=serverSelf){
+  const cityId=String(city?.currentCityId||'');
+  const catalogCity=cityCatalogById.get(cityId);
+  return catalogCity?.hasLibrary&&catalogCity?.libraryRegion?catalogCity:null;
+}
 function cityBooks(city){
-  const region=String(city?.currentCityRegion||'');
+  const catalogCity=currentLibraryCity(city);if(!catalogCity)return[];
+  const shelf=String(catalogCity.libraryRegion||'');
   const books=Array.isArray(libraryCatalog?.books)?libraryCatalog.books:[];
-  const local=books.filter(book=>Array.isArray(book.regions)&&book.regions.includes(region));
-  const common=books.filter(book=>Array.isArray(book.regions)&&book.regions.includes('공통'));
+  const local=books.filter(book=>Array.isArray(book.shelves)&&book.shelves.includes(shelf));
+  const common=books.filter(book=>Array.isArray(book.shelves)&&book.shelves.includes('공통'));
   const result=[];const seen=new Set();
-  for(const book of [...local,...common]){if(seen.has(book.id))continue;seen.add(book.id);result.push(book);if(result.length>=12)break}
+  for(const book of [...local,...common]){if(seen.has(book.id))continue;seen.add(book.id);result.push(book)}
   return result;
 }
 function renderBook(book){
-  if(!book)return;
-  openedBookId=book.id;bookTitle.textContent=book.title;bookMeta.textContent=[book.author,book.period].filter(Boolean).join(' · ');bookIntro.textContent=book.intro||'';bookSections.replaceChildren();
+  if(!book){bookTitle.textContent='읽을 책이 없습니다.';bookMeta.textContent='';bookIntro.textContent='';bookSections.replaceChildren();return}
+  openedBookId=book.id;bookTitle.textContent=book.title;bookMeta.textContent=[book.category,book.author,book.period].filter(Boolean).join(' · ');bookIntro.textContent=book.intro||'';bookSections.replaceChildren();
   for(const section of book.sections||[]){const h=document.createElement('h3');h.textContent=section.heading||'';const text=document.createElement('p');text.textContent=section.text||'';bookSections.append(h,text)}
   for(const button of bookList.querySelectorAll('button'))button.classList.toggle('active',button.dataset.bookId===book.id);
   document.getElementById('bookReader').scrollTop=0;
 }
 function openLibrary(){
   if(mode!=='city')return;
-  const books=cityBooks(serverSelf);libraryTitle.textContent=`${serverSelf?.currentCityName||'도시'} 도서관`;bookList.replaceChildren();
-  for(const book of books){const button=document.createElement('button');button.type='button';button.dataset.bookId=book.id;const title=document.createElement('b');title.textContent=book.title;const meta=document.createElement('small');meta.textContent=[book.author,book.period].filter(Boolean).join(' · ');button.append(title,meta);button.onclick=()=>renderBook(book);bookList.append(button)}
+  const catalogCity=currentLibraryCity(serverSelf);
+  if(!catalogCity){closeLibrary();showToast('이 도시는 원작 기준 도서관이 없습니다.');return}
+  const books=cityBooks(serverSelf);libraryTitle.textContent=`${serverSelf?.currentCityName||'도시'} 도서관 · ${catalogCity.libraryRegion} 장서`;
+  libraryHint.textContent=`지역 공통 ${books.length}권 · 총 ${books.reduce((sum,book)=>sum+(book.sections?.length||0),0)}개 학습 단락`;bookList.replaceChildren();
+  for(const book of books){const button=document.createElement('button');button.type='button';button.dataset.bookId=book.id;const title=document.createElement('b');title.textContent=book.title;const meta=document.createElement('small');meta.textContent=[book.category,book.author,book.period].filter(Boolean).join(' · ');button.append(title,meta);button.onclick=()=>renderBook(book);bookList.append(button)}
   libraryView.classList.add('show');renderBook(books.find(book=>book.id===openedBookId)||books[0]);
 }
 function closeLibrary(){libraryView.classList.remove('show')}
 function renderCityView(){
   if(mode!=='city'||!serverSelf?.currentCityId)return;
-  const cityId=serverSelf.currentCityId;
-  if(renderedCityId!==cityId){renderedCityId=cityId;cityScene.src=serverSelf.currentCityImage||cityCatalogById.get(cityId)?.interiorImage||'';cityScene.alt=`${serverSelf.currentCityName||'도시'} 내부`;cityTitle.textContent=serverSelf.currentCityName||'도시';cityInfo.textContent=[serverSelf.currentCityRegion,'도시 내부'].filter(Boolean).join(' · ');openedBookId='';closeLibrary()}
+  const cityId=serverSelf.currentCityId,catalogCity=cityCatalogById.get(String(cityId)),hasLibrary=!!(catalogCity?.hasLibrary&&catalogCity?.libraryRegion);
+  libraryBtn.hidden=!hasLibrary;libraryBtn.textContent=hasLibrary?`도서관 · ${catalogCity.libraryRegion}`:'도서관';
+  if(!hasLibrary)closeLibrary();
+  if(renderedCityId!==cityId){renderedCityId=cityId;cityScene.src=serverSelf.currentCityImage||catalogCity?.interiorImage||'';cityScene.alt=`${serverSelf.currentCityName||'도시'} 내부`;cityTitle.textContent=serverSelf.currentCityName||'도시';cityInfo.textContent=[serverSelf.currentCityRegion,'도시 내부',hasLibrary?`${catalogCity.libraryRegion} 도서관`:null].filter(Boolean).join(' · ');openedBookId='';closeLibrary()}
 }
 function applyModeUI(){
   const busy=!!serverSelf?.transition,travelAllowed=canTravelNow(),inCity=mode==='city';
@@ -415,7 +426,7 @@ function applyModeUI(){
 }
 
 async function ungzipResponse(url){const response=await fetch(url);if(!response.ok)throw new Error('지도 파일을 받지 못했습니다.');if(!('DecompressionStream' in window))throw new Error('최신 Chrome이 필요합니다.');const ds=new DecompressionStream('gzip');return await new Response(response.body.pipeThrough(ds)).arrayBuffer()}
-Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=58'),ungzipResponse('/assets/maps/natural-earth-land-mask-v59.bin.gz?v=61'),naturalMapOverview.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=61').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=58').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,landMask,_map,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');UW3Terrain.setNaturalEarthLandMask(new Uint8Array(landMask));mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
+Promise.all([ungzipResponse('/assets/maps/world.cds.gz?v=58'),ungzipResponse('/assets/maps/natural-earth-land-mask-v59.bin.gz?v=61'),naturalMapOverview.decode(),shipAtlas.decode(),windCloudAtlas.decode(),fetch('/api/mission-catalog?v=61').then(r=>{if(!r.ok)throw new Error('도시 목록을 받지 못했습니다.');return r.json()}),fetch('/data/library-books.json?v=67').then(r=>{if(!r.ok)throw new Error('도서관 자료를 받지 못했습니다.');return r.json()})]).then(([buf,landMask,_map,_s,_w,catalog,books])=>{world=new Uint16Array(buf);if(world.length!==WW*WH)throw new Error('지도 크기 불일치');UW3Terrain.setNaturalEarthLandMask(new Uint8Array(landMask));mapCities=(catalog.places||[]).filter(p=>p.isOriginalCity&&p.displayOnMap&&p.cityPoint);cityCatalogById=new Map((catalog.places||[]).filter(p=>p.isOriginalCity).map(p=>[p.id,p]));libraryCatalog=books||{books:[]};assetsReady=true;loading.remove()}).catch(err=>{loading.textContent='불러오기 실패: '+err.message;console.error(err)});
 
 socket.on('connect',()=>{net.textContent='● 서버 연결';net.className='good'});
 socket.on('disconnect',()=>{net.textContent='● 재연결 중';net.className='bad';startChoicePending=false;pendingStartChoice=null;startChoiceRollback=null;for(const card of missionPanel.querySelectorAll('.missionChoiceCard')){card.disabled=false;card.classList.remove('isSelecting')}if(awaitingStartChoice()){missionFeedback.className='bad';missionFeedback.textContent='서버 연결이 끊겼습니다. 재연결 후 다시 선택하세요.'}});
