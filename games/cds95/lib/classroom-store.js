@@ -21,6 +21,11 @@ function minimalProgress(value) {
   const selectedMissionId = typeof value?.selectedMissionId === 'string' ? value.selectedMissionId.slice(0, 80) : null;
   const selectedStartPlaceId = typeof value?.selectedStartPlaceId === 'string' ? value.selectedStartPlaceId.slice(0, 80) : null;
   const shipPortId = typeof value?.shipPortId === 'string' ? value.shipPortId.slice(0, 80) : selectedStartPlaceId;
+  const finalQuizStatus = ['none', 'answering', 'submitted'].includes(value?.finalQuizStatus) ? value.finalQuizStatus : 'none';
+  const finalQuizAnswers = Array.isArray(value?.finalQuizAnswers)
+    ? value.finalQuizAnswers.slice(0, 3).map((item) => Number.isInteger(item) ? item : null)
+    : [null, null, null];
+  while (finalQuizAnswers.length < 3) finalQuizAnswers.push(null);
   return {
     status,
     stageIndex,
@@ -28,6 +33,11 @@ function minimalProgress(value) {
     selectedMissionId,
     selectedStartPlaceId,
     shipPortId,
+    finalQuizStatus,
+    finalQuizArrivedAt: Number.isFinite(value?.finalQuizArrivedAt) ? value.finalQuizArrivedAt : null,
+    finalQuizAnswers,
+    finalCorrectCount: Number.isFinite(value?.finalCorrectCount) ? Math.max(0, Math.min(3, Math.floor(value.finalCorrectCount))) : null,
+    finalSubmittedAt: Number.isFinite(value?.finalSubmittedAt) ? value.finalSubmittedAt : null,
     completedAt: status === 'completed' && Number.isFinite(value?.completedAt) ? value.completedAt : null,
     completedGameMinutes: status === 'completed' && Number.isFinite(value?.completedGameMinutes) ? Math.max(0, value.completedGameMinutes) : null,
     finishRank: status === 'completed' && Number.isFinite(value?.finishRank) ? Math.max(1, Math.floor(value.finishRank)) : null
@@ -39,7 +49,7 @@ class ClassroomStore {
     const dataDir = options.dataDir || process.env.DATA_DIR || path.join(process.cwd(), 'runtime');
     fs.mkdirSync(dataDir, { recursive: true });
     this.filePath = path.join(dataDir, 'classroom-state.json');
-    this.state = { version: 9, rooms: {} };
+    this.state = { version: 10, rooms: {} };
     this.saveTimer = null;
     this.load();
   }
@@ -67,7 +77,7 @@ class ClassroomStore {
         }
         rooms[roomCode] = room;
       }
-      this.state = { version: 9, rooms };
+      this.state = { version: 10, rooms };
     } catch (error) {
       console.error('수업 상태 불러오기 실패:', error.message);
     }
@@ -98,6 +108,11 @@ class ClassroomStore {
         selectedMissionId: null,
         selectedStartPlaceId: null,
         shipPortId: null,
+        finalQuizStatus: 'none',
+        finalQuizArrivedAt: null,
+        finalQuizAnswers: [null, null, null],
+        finalCorrectCount: null,
+        finalSubmittedAt: null,
         completedAt: null,
         completedGameMinutes: null,
         finishRank: null

@@ -15,7 +15,10 @@ function distance(a,b){return Math.hypot(a.x-b.x,a.y-b.y);}
   assert.equal((await ack(student,'chooseStartCity',{optionId:'istanbul'})).ok,true);
   assert.equal((await ack(teacher,'teacherStartArrivalRace',{})).ok,true);
   student.emit('setTarget',published.mission.targetPlace.point);
-  const completed=await once(student,'snapshot',s=>s.progress?.status==='completed',20000);
+  await once(student,'snapshot',s=>s.progress?.finalQuizStatus==='answering',20000);
+  const answers=published.mission.finalQuiz.questions.map(q=>q.answerIndex);
+  const submitted=await ack(student,'submitFinalQuiz',{answers});assert.equal(submitted.ok,true,submitted.error);
+  const completed=await once(student,'snapshot',s=>s.progress?.status==='completed',10000);
   assert.equal(completed.you.finishRank,1);assert.equal(completed.you.speedBoostMultiplier,10);assert.equal(completed.you.missionCompleted,true);
   const origin={x:completed.you.x,y:completed.you.y};let moved=null;
   for(const dir of ['right','left','down','up']){student.emit('input',{[dir]:true});await new Promise(r=>setTimeout(r,650));student.emit('input',{[dir]:false});const snap=await once(student,'snapshot',s=>s.you?.missionCompleted===true,5000);if(distance(origin,snap.you)>10){moved=snap;break;}}

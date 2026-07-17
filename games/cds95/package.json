@@ -1,16 +1,16 @@
 {
   "name": "cds95-classroom",
-  "version": "67.0.0",
+  "version": "70.0.0",
   "private": true,
-  "description": "CDS95 실시간 도착 미션 학습 플랫폼",
+  "description": "CDS95 전 도시 도서관·도착지 3문제 실시간 학습 플랫폼",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check public/js/wind.js && node --check public/js/bgm.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && node --check lib/arrival-zones.js && node --check lib/completion-rewards.js && npm run check:catalog && npm run check:html",
+    "check": "node --check server.js && node --check public/js/terrain.js && node --check public/js/ocean-current.js && node --check public/js/wind.js && node --check public/js/bgm.js && node --check lib/mission-catalog.js && node --check lib/classroom-store.js && node --check lib/fatigue.js && node --check lib/arrival-zones.js && node --check lib/completion-rewards.js && node --check lib/final-quiz.js && npm run check:catalog && npm run check:html",
     "check:html": "node tests/html-script-syntax.js",
     "check:catalog": "node -e \"for (const f of ['places','original-cities','items','templates','ready-missions','arrival-zones']) JSON.parse(require('node:fs').readFileSync('data/catalog/'+f+'.json','utf8')); console.log('catalog JSON ok')\"",
-    "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current && npm run test:current-visual && npm run test:wind && npm run test:v42 && npm run test:v43 && npm run test:v44 && npm run test:v45 && npm run test:v46 && npm run test:v47 && npm run test:v48 && npm run test:v49 && npm run test:v50 && npm run test:v51 && npm run test:v52 && npm run test:v53 && npm run test:v54 && npm run test:v55 && npm run test:v56 && npm run test:v57 && npm run test:v58 && npm run test:v59 && npm run test:v60 && npm run test:v61 && npm run test:v66 && npm run test:v67",
+    "test": "npm run check && npm run test:terrain && npm run test:arrival-zones && npm run test:v23 && npm run test:v23:current && npm run test:current-visual && npm run test:wind && npm run test:v42 && npm run test:v43 && npm run test:v44 && npm run test:v45 && npm run test:v46 && npm run test:v47 && npm run test:v48 && npm run test:v49 && npm run test:v50 && npm run test:v51 && npm run test:v52 && npm run test:v53 && npm run test:v54 && npm run test:v55 && npm run test:v56 && npm run test:v57 && npm run test:v58 && npm run test:v59 && npm run test:v60 && npm run test:v61 && npm run test:v66 && npm run test:v70",
     "test:terrain": "node tests/terrain-unit.js",
     "test:v23": "node tests/v23-simplified-ui-unit.js",
     "test:v23:current": "node tests/v23-current-balance-unit.js",
@@ -56,7 +56,8 @@
     "test:v60": "node tests/v60-all-city-geography-unit.js",
     "test:v61": "node tests/v61-strait-navigation-unit.js",
     "test:v66": "node tests/v66-bgm-track-filenames-unit.js",
-    "test:v67": "node tests/v67-original-library-regions-unit.js"
+    "test:v70": "node tests/v70-all-city-library-unit.js && node tests/v70-final-quiz-unit.js",
+    "test:v70:smoke": "node tests/v70-final-quiz-smoke.js"
   },
   "engines": {
     "node": ">=22"

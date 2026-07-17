@@ -1,5 +1,53 @@
 'use strict';
-const {io}=require('socket.io-client');const assert=require('node:assert/strict');
-const BASE=process.env.TEST_URL||'http://127.0.0.1:3000',ROOM=`LANDR${Date.now().toString(36).slice(-4)}`;
-function c(){return io(BASE,{transports:['websocket'],forceNew:true,reconnection:false,timeout:7000})}function once(s,e,p=()=>true,t=12000){return new Promise((r,j)=>{const x=setTimeout(()=>{s.off(e,on);j(new Error(`timeout:${e}`))},t);function on(d){if(!p(d))return;clearTimeout(x);s.off(e,on);r(d)}s.on(e,on)})}function ack(s,e,p={}){return new Promise((r,j)=>{const x=setTimeout(()=>j(new Error(`ack:${e}`)),9000);s.emit(e,p,d=>{clearTimeout(x);r(d)})})}
-(async()=>{const t=c(),s=c();await Promise.all([once(t,'connect'),once(s,'connect')]);const tj=await ack(t,'teacherJoin',{roomCode:ROOM,pin:'2468'});assert.equal(tj.ok,true,tj.error);const real=Date.now(),base=tj.classGameMinutes,rate=tj.clockRateHoursPerSecond;const hb=setInterval(()=>t.emit('teacherClockSync',{gameMinutes:base+(Date.now()-real)/1000*rate*60}),300);const pub=await ack(t,'teacherPublishArrivalRace',{targetPlaceId:'crimea_peninsula',startPlaceIds:['sevastopol','istanbul','genoa','london']});assert.equal(pub.ok,true,pub.error);const j=await ack(s,'joinClass',{roomCode:ROOM,name:'크림학생'});assert.equal(j.ok,true,j.error);const ch=await ack(s,'chooseStartCity',{optionId:'sevastopol'});assert.equal(ch.ok,true,ch.error);const start=await ack(t,'teacherStartArrivalRace',{});assert.equal(start.ok,true,start.error);const port=await once(s,'snapshot',x=>x.portInteraction?.placeId==='sevastopol'&&x.you.mode==='sea');const land=await ack(s,'useCatalogPort',{placeId:port.portInteraction.placeId});assert.equal(land.ok,true,land.error);const done=await once(s,'snapshot',x=>x.progress?.status==='completed',12000);assert.equal(done.progress.finishRank,1);assert.match(done.you.noticeText,/크림반도/);console.log(JSON.stringify({ok:true,target:pub.mission.targetPlace.name,rank:done.progress.finishRank,notice:done.you.noticeText}));clearInterval(hb);t.disconnect();s.disconnect()})().catch(e=>{console.error(e);process.exit(1)});
+const { io } = require('socket.io-client');
+const assert = require('node:assert/strict');
+const BASE = process.env.TEST_URL || 'http://127.0.0.1:3000';
+function connect() { return io(BASE, { transports: ['websocket'], forceNew: true, reconnection: false, timeout: 7000 }); }
+function once(socket, event, predicate = () => true, timeout = 15000) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => { socket.off(event, on); reject(new Error(`timeout:${event}`)); }, timeout);
+    function on(data) { if (!predicate(data)) return; clearTimeout(timer); socket.off(event, on); resolve(data); }
+    socket.on(event, on);
+  });
+}
+function ack(socket, event, payload = {}) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`ack:${event}`)), 9000);
+    socket.emit(event, payload, (data) => { clearTimeout(timer); resolve(data); });
+  });
+}
+
+(async () => {
+  const teacher = connect();
+  const student = connect();
+  await Promise.all([once(teacher, 'connect'), once(student, 'connect')]);
+  const created = await ack(teacher, 'teacherCreateClass', { pin: process.env.TEST_TEACHER_PIN || '2468' });
+  assert.equal(created.ok, true, created.error);
+  const roomCode = created.roomCode;
+  const published = await ack(teacher, 'teacherPublishArrivalRace', {
+    targetPlaceId: 'nile_delta',
+    startPlaceIds: ['alexandria', 'istanbul', 'genoa', 'london']
+  });
+  assert.equal(published.ok, true, published.error);
+  const joined = await ack(student, 'joinClass', { roomCode, name: '크림학생' });
+  assert.equal(joined.ok, true, joined.error);
+  const chosen = await ack(student, 'chooseStartCity', { optionId: 'alexandria' });
+  assert.equal(chosen.ok, true, chosen.error);
+  const started = await ack(teacher, 'teacherStartArrivalRace');
+  assert.equal(started.ok, true, started.error);
+  const port = await once(student, 'snapshot', (snapshot) => snapshot.portInteraction?.placeId === 'alexandria' && snapshot.you.mode === 'sea');
+  const landed = await ack(student, 'useCatalogPort', { placeId: port.portInteraction.placeId });
+  assert.equal(landed.ok, true, landed.error);
+  const quiz = await once(student, 'snapshot', (snapshot) => snapshot.progress?.finalQuizStatus === 'answering', 20000);
+  assert.equal(quiz.progress.status, 'inProgress');
+  const answers = published.mission.finalQuiz.questions.map((question) => question.answerIndex);
+  const submitted = await ack(student, 'submitFinalQuiz', { answers });
+  assert.equal(submitted.ok, true, submitted.error);
+  const done = await once(student, 'snapshot', (snapshot) => snapshot.progress?.status === 'completed', 12000);
+  assert.equal(done.progress.finishRank, 1);
+  assert.equal(done.progress.finalCorrectCount, 3);
+  assert.equal(published.mission.targetPlace.name, '나일강 삼각주');
+  console.log(JSON.stringify({ ok: true, target: published.mission.targetPlace.name, rank: done.progress.finishRank, score: done.progress.finalCorrectCount }));
+  teacher.disconnect();
+  student.disconnect();
+})().catch((error) => { console.error(error); process.exit(1); });

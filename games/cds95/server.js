@@ -13,6 +13,7 @@ const MissionCatalog = require('./lib/mission-catalog.js');
 const Fatigue = require('./lib/fatigue.js');
 const ArrivalZones = require('./lib/arrival-zones.js');
 const CompletionRewards = require('./lib/completion-rewards.js');
+const FinalQuiz = require('./lib/final-quiz.js');
 const ARRIVAL_ZONES = require('./data/catalog/arrival-zones.json');
 
 const PORT = Number(process.env.PORT || 3000);
@@ -209,6 +210,16 @@ function resolveCatalog() {
 }
 
 const RESOLVED_PLACES = resolveCatalog();
+
+// V70 이전에 저장된 도착 미션은 최종 문제가 없으므로 현재 목적지 기준으로 보완한다.
+for (const room of Object.values(store.state?.rooms || {})) {
+  const mission = room?.activeMission;
+  if (!isArrivalRace(mission) || mission.finalQuiz) continue;
+  const target = RESOLVED_PLACES.get(String(mission.targetPlace?.id || '')) || mission.targetPlace;
+  mission.finalQuiz = FinalQuiz.createFinalQuiz(target);
+  mission.instructions = `${mission.targetPlace?.name || '목적지'}에 도착한 뒤 최종 문제 3개를 모두 제출하면 완주합니다. 출발 도시 네 곳 중 하나를 선택하세요.`;
+}
+store.scheduleSave();
 const ITEM_BY_ID = new Map(MissionCatalog.ITEMS.map((item) => [item.id, item]));
 const TEMPLATE_BY_ID = new Map(MissionCatalog.TEMPLATES.map((template) => [template.id, template]));
 const READY_BY_ID = new Map(MissionCatalog.READY_MISSIONS.map((mission) => [mission.id, mission]));
@@ -219,8 +230,16 @@ function publicMissionCatalog() {
     ...base,
     places: base.places.map((place) => {
       const resolved = RESOLVED_PLACES.get(place.id);
+      const educationalLibrary = place.isOriginalCity
+        ? {
+            hasLibrary: true,
+            libraryRegion: FinalQuiz.libraryShelfForCity(place),
+            facilities: [...new Set([...(Array.isArray(place.facilities) ? place.facilities : []), '도서관'])]
+          }
+        : {};
       return {
         ...place,
+        ...educationalLibrary,
         point: resolved ? { x: resolved.point.x, y: resolved.point.y } : null,
         cityPoint: resolved ? { x: resolved.cityPoint.x, y: resolved.cityPoint.y } : null,
         seaPoint: resolved ? { x: resolved.seaPoint.x, y: resolved.seaPoint.y } : null,
@@ -247,7 +266,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 63,
+  version: 68,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -493,6 +512,7 @@ function arrivalRaceTravelGate(player) {
   const progress = progressFor(player.roomCode, player.name, mission.id, false);
   if (!progress?.selectedStartPlaceId) return { ok: false, error: '먼저 출발 도시를 선택하세요.' };
   if (mission.phase !== 'running') return { ok: false, error: '출발 준비 완료. 교사가 출발 버튼을 누를 때까지 기다리세요.' };
+  if (progress.finalQuizStatus === 'answering') return { ok: false, error: '도착지 최종 문제 3개를 먼저 풀어야 합니다.' };
   return { ok: true, mission, progress, completed: progress.status === 'completed' };
 }
 
@@ -569,6 +589,8 @@ function missionForStudent(mission) {
       mode: mission.targetPlace.mode,
       radiusTiles: mission.targetPlace.radiusTiles
     } : null,
+    hasFinalQuiz: isArrivalRace(mission) && !!mission.finalQuiz,
+    finalQuizQuestionCount: isArrivalRace(mission) ? Number(mission.finalQuiz?.questionCount || 3) : null,
     startOptions: Array.isArray(mission.startOptions) ? mission.startOptions.map(startOptionSummary) : null,
     stages: Array.isArray(mission.stages) ? mission.stages.map((stage) => ({
       id: stage.id,
@@ -621,6 +643,14 @@ function publicProgress(progress, mission = null) {
     selectedStartPlaceId: progress.selectedStartPlaceId || selectedStartPlace?.id || null,
     selectedStartPlaceName: selectedStartPlace?.name || null,
     selectedMissionTitle: mission?.title || null,
+    finalQuizStatus: progress.finalQuizStatus || 'none',
+    finalQuizArrivedAt: Number.isFinite(progress.finalQuizArrivedAt) ? progress.finalQuizArrivedAt : null,
+    finalQuizAnswers: Array.isArray(progress.finalQuizAnswers) ? progress.finalQuizAnswers.slice(0, 3) : [null, null, null],
+    finalCorrectCount: Number.isFinite(progress.finalCorrectCount) ? progress.finalCorrectCount : null,
+    finalSubmittedAt: Number.isFinite(progress.finalSubmittedAt) ? progress.finalSubmittedAt : null,
+    finalQuiz: isArrivalRace(mission) && ['answering', 'submitted'].includes(progress.finalQuizStatus)
+      ? FinalQuiz.publicQuiz(mission.finalQuiz, progress.finalQuizStatus === 'submitted')
+      : null,
     completedAt: Number.isFinite(progress.completedAt) ? progress.completedAt : null,
     completedGameMinutes: Number.isFinite(progress.completedGameMinutes) ? progress.completedGameMinutes : null,
     finishRank: Number.isFinite(progress.finishRank) ? progress.finishRank : null
@@ -906,7 +936,7 @@ function buildArrivalRace(payload, roomCode) {
     kind: 'arrivalRace',
     mode: 'any',
     title,
-    instructions: `${target.name}에 도착하면 자동으로 성공 처리됩니다. 출발 도시 네 곳 중 하나를 선택하세요.`,
+    instructions: `${target.name}에 도착한 뒤 최종 문제 3개를 모두 제출하면 완주합니다. 출발 도시 네 곳 중 하나를 선택하세요.`,
     atlasInstruction: '',
     markerMode: 'hidden',
     targetPlace: {
@@ -920,6 +950,7 @@ function buildArrivalRace(payload, roomCode) {
       point: { x: targetPoint.x, y: targetPoint.y },
       radiusTiles: target.arrivalRadiusTiles
     },
+    finalQuiz: FinalQuiz.createFinalQuiz(target),
     startOptions: starts.map((start) => ({
       id: start.id,
       startPlace: {
@@ -1367,29 +1398,81 @@ function updateTimedTransition(p, _nowGameMinutes, nowRealMs = Date.now()) {
 }
 
 
+function recomputeArrivalRaceRanks(roomCode, mission) {
+  if (!isArrivalRace(mission)) return [];
+  const entries = Object.entries(store.room(roomCode).progress)
+    .map(([name, missions]) => ({ name, progress: missions?.[mission.id] }))
+    .filter((item) => item.progress?.status === 'completed')
+    .sort((a, b) => {
+      const scoreGap = (Number(b.progress.finalCorrectCount) || 0) - (Number(a.progress.finalCorrectCount) || 0);
+      if (scoreGap) return scoreGap;
+      const timeGap = (Number(a.progress.completedAt) || Infinity) - (Number(b.progress.completedAt) || Infinity);
+      if (timeGap) return timeGap;
+      return a.name.localeCompare(b.name, 'ko');
+    });
+  entries.forEach((item, index) => { item.progress.finishRank = index + 1; });
+  return entries;
+}
+
+function livePlayerByName(roomCode, name) {
+  const room = rooms.get(roomCode);
+  if (!room) return null;
+  return [...room.values()].find((player) => player.name === name) || null;
+}
+
+function emitArrivalProgressUpdates(roomCode, mission, entries = null) {
+  const ranked = entries || recomputeArrivalRaceRanks(roomCode, mission);
+  for (const { name, progress } of ranked) {
+    const result = publicProgress(progress, mission);
+    const player = livePlayerByName(roomCode, name);
+    if (player) {
+      player.missionStatus = progress.status;
+      io.to(player.id).emit('missionProgress', { mission: missionForStudent(mission), progress: result });
+    }
+    io.to(`teacher:${roomCode}`).emit('teacherMissionProgress', { name, progress: result, missionId: mission.id });
+  }
+}
+
+function beginFinalQuiz(roomCode, p, mission, progress) {
+  if (!isArrivalRace(mission) || progress.status === 'completed' || progress.finalQuizStatus === 'answering') return;
+  progress.status = 'inProgress';
+  progress.finalQuizStatus = 'answering';
+  progress.finalQuizArrivedAt = Date.now();
+  progress.finalQuizAnswers = Array.isArray(progress.finalQuizAnswers) ? progress.finalQuizAnswers.slice(0, 3) : [null, null, null];
+  while (progress.finalQuizAnswers.length < 3) progress.finalQuizAnswers.push(null);
+  p.missionStatus = 'inProgress';
+  p.mission = `${mission.targetPlace?.name || mission.title} · 최종 문제 풀이`;
+  stopPlayer(p);
+  setNotice(p, `${mission.targetPlace?.name || '목적지'}에 도착했습니다. 최종 문제 3개를 모두 제출하면 완주합니다.`);
+  store.scheduleSave();
+  const result = publicProgress(progress, mission);
+  io.to(p.id).emit('missionProgress', { mission: missionForStudent(mission), progress: result });
+  io.to(`teacher:${roomCode}`).emit('teacherMissionProgress', { name: p.name, progress: result, missionId: mission.id });
+}
+
 function completeMission(roomCode, p, mission, progress, label) {
   if (progress.status === 'completed') return;
+  const activeMission = store.room(roomCode).activeMission;
+  const arrivalRace = isArrivalRace(activeMission);
   progress.status = 'completed';
-  progress.completedAt = Date.now();
+  progress.completedAt = Number.isFinite(progress.finalSubmittedAt) ? progress.finalSubmittedAt : Date.now();
   progress.completedGameMinutes = classGameMinutes(roomCode);
-  if (isArrivalRace(store.room(roomCode).activeMission)) {
-    const all = Object.values(store.room(roomCode).progress)
-      .map((missions) => missions?.[store.room(roomCode).activeMission.id])
-      .filter(Boolean);
-    const usedRanks = all.map((item) => Number(item.finishRank) || 0);
-    progress.finishRank = Math.max(0, ...usedRanks) + 1;
-  }
-  missionRuntime.delete(runtimeKey(roomCode, p.name, store.room(roomCode).activeMission?.id || mission.id));
+  const ranked = arrivalRace ? recomputeArrivalRaceRanks(roomCode, activeMission) : [];
+  missionRuntime.delete(runtimeKey(roomCode, p.name, activeMission?.id || mission.id));
   p.missionStatus = 'completed';
   p.mission = `${mission.title} · 완료`;
   const rankText = progress.finishRank ? ` ${progress.finishRank}위로` : '';
   const speedBoost = CompletionRewards.speedMultiplier(progress.finishRank);
-  setNotice(p, `미션 성공!${rankText} ${label || mission.title}에 도착했습니다. 메달을 달고 이동속도 ${speedBoost}배로 자유 탐험할 수 있습니다.`);
+  const scoreText = arrivalRace ? ` 최종 문제 ${Number(progress.finalCorrectCount) || 0}/3 정답,` : '';
+  setNotice(p, `미션 성공!${scoreText}${rankText} 완주했습니다. 메달을 달고 이동속도 ${speedBoost}배로 자유 탐험할 수 있습니다.`);
   store.scheduleSave();
-  const activeMission = store.room(roomCode).activeMission;
-  const result = publicProgress(progress, isArrivalRace(activeMission) ? activeMission : mission);
-  io.to(p.id).emit('missionProgress', { mission: missionForStudent(isArrivalRace(activeMission) ? activeMission : mission), progress: result });
-  io.to(`teacher:${roomCode}`).emit('teacherMissionProgress', { name: p.name, progress: result, missionId: activeMission?.id || mission.id });
+  if (arrivalRace) {
+    emitArrivalProgressUpdates(roomCode, activeMission, ranked);
+  } else {
+    const result = publicProgress(progress, mission);
+    io.to(p.id).emit('missionProgress', { mission: missionForStudent(mission), progress: result });
+    io.to(`teacher:${roomCode}`).emit('teacherMissionProgress', { name: p.name, progress: result, missionId: mission.id });
+  }
 }
 
 function recordMovement(p, movedPixels) {
@@ -1694,6 +1777,50 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('saveFinalQuizAnswers', (payload, ack = () => {}) => {
+    const p = playerForSocket(socket);
+    if (!p) return ack({ ok: false, error: '학생 접속 상태가 아닙니다.' });
+    const mission = store.room(p.roomCode).activeMission;
+    if (!isArrivalRace(mission)) return ack({ ok: false, error: '진행 중인 도착 미션이 없습니다.' });
+    const progress = progressFor(p.roomCode, p.name, mission.id, false);
+    if (!progress || progress.finalQuizStatus !== 'answering') return ack({ ok: false, error: '도착지 최종 문제가 시작되지 않았습니다.' });
+    const source = Array.isArray(payload?.answers) ? payload.answers.slice(0, 3) : [];
+    while (source.length < 3) source.push(null);
+    const answers = source.map((value, index) => {
+      if (value == null || value === '') return null;
+      const choice = Number(value);
+      const count = mission.finalQuiz?.questions?.[index]?.choices?.length || 0;
+      return Number.isInteger(choice) && choice >= 0 && choice < count ? choice : null;
+    });
+    progress.finalQuizAnswers = answers;
+    store.scheduleSave();
+    ack({ ok: true, answers: [...answers] });
+  });
+
+  socket.on('submitFinalQuiz', (payload, ack = () => {}) => {
+    const p = playerForSocket(socket);
+    if (!p) return ack({ ok: false, error: '학생 접속 상태가 아닙니다.' });
+    const mission = store.room(p.roomCode).activeMission;
+    if (!isArrivalRace(mission)) return ack({ ok: false, error: '진행 중인 도착 미션이 없습니다.' });
+    const progress = progressFor(p.roomCode, p.name, mission.id, false);
+    if (!progress) return ack({ ok: false, error: '미션 진행 기록을 찾지 못했습니다.' });
+    if (progress.status === 'completed') {
+      return ack({ ok: true, self: publicPlayer(p), mission: missionForStudent(mission), progress: publicProgress(progress, mission) });
+    }
+    if (progress.finalQuizStatus !== 'answering') return ack({ ok: false, error: '목적지에 도착한 뒤 문제를 제출하세요.' });
+    try {
+      const graded = FinalQuiz.grade(mission.finalQuiz, payload?.answers);
+      progress.finalQuizAnswers = graded.answers;
+      progress.finalCorrectCount = graded.correctCount;
+      progress.finalSubmittedAt = Date.now();
+      progress.finalQuizStatus = 'submitted';
+      completeMission(p.roomCode, p, mission, progress, mission.targetPlace?.name || mission.title);
+      ack({ ok: true, self: publicPlayer(p), mission: missionForStudent(mission), progress: publicProgress(progress, mission) });
+    } catch (error) {
+      ack({ ok: false, error: error.message || '최종 문제를 제출하지 못했습니다.' });
+    }
+  });
+
   socket.on('chooseStartCity', (payload, ack = () => {}) => {
     const p = playerForSocket(socket);
     if (!p) return ack({ ok:false, error:'학생 접속 상태가 아닙니다.' });
@@ -1716,6 +1843,11 @@ io.on('connection', (socket) => {
       progress.completedAt = null;
       progress.completedGameMinutes = null;
       progress.finishRank = null;
+      progress.finalQuizStatus = 'none';
+      progress.finalQuizArrivedAt = null;
+      progress.finalQuizAnswers = [null, null, null];
+      progress.finalCorrectCount = null;
+      progress.finalSubmittedAt = null;
     } else {
       mission = activeMission.startOptions.find((option) => option.id === optionId);
       startPlace = mission?.startPlace || null;
@@ -1800,6 +1932,11 @@ io.on('connection', (socket) => {
           progress.completedAt = null;
           progress.completedGameMinutes = null;
           progress.finishRank = null;
+          progress.finalQuizStatus = 'none';
+          progress.finalQuizArrivedAt = null;
+          progress.finalQuizAnswers = [null, null, null];
+          progress.finalCorrectCount = null;
+          progress.finalSubmittedAt = null;
           p.activeMissionId = mission.id;
           p.shipPortId = null;
           p.mission = '출발 도시 선택 후 교사 출발 대기';
@@ -2063,7 +2200,7 @@ function updateMissionProgress(roomCode, p) {
           ARRIVAL_ZONES[target.id] || null,
           { worldPixelWidth: WORLD_PIXEL_W, worldPixelHeight: WORLD_PIXEL_H, tile: TILE }
         );
-    if (arrived) completeMission(roomCode, p, activeMission, progress, target.name);
+    if (arrived) beginFinalQuiz(roomCode, p, activeMission, progress);
     return;
   }
 
@@ -2253,6 +2390,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v63 · 낮/밤 항구 배경 분리 적용: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v70 · 전 도시 도서관·도착지 최종 3문제: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
