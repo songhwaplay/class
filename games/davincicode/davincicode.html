@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>CLASS DAVINCI CODE ONLINE v4</title>
+<title>CLASS DAVINCI CODE ONLINE v5</title>
 <style>
 :root{
   --bg:#08111f;--panel:#14243a;--panel2:#0f1d31;--line:#385777;
@@ -99,7 +99,7 @@ input{min-height:43px;border:1px solid #456789;background:#0c192b;color:white;bo
 <section id="lobby" class="screen">
   <div class="panel">
     <h1>CLASS DAVINCI CODE</h1>
-    <div class="subtitle">온라인 2·3·4인 v4 · 조커 없음</div>
+    <div class="subtitle">온라인 2·3·4인 v5 · 조커 없음</div>
 
     <div class="box status">PLAYER <strong id="nameLabel"></strong></div>
 
@@ -116,7 +116,7 @@ input{min-height:43px;border:1px solid #456789;background:#0c192b;color:white;bo
 
     <div class="box hidden" id="joinPane">
       <div class="row">
-        <input id="joinCode" maxlength="4" inputmode="numeric" placeholder="4자리 방 번호">
+        <input id="joinCode" maxlength="3" inputmode="numeric" placeholder="3자리 방 번호">
         <button class="btn primary" id="joinBtn">입장</button>
       </div>
       <div class="status" id="joinStatus">방 번호를 입력하세요.</div>
@@ -235,10 +235,10 @@ const SERVER="wss://classroom-game-hub.onrender.com";
 const NAME_KEY="classPlayerName";
 
 
-function code4(){
+function code3(){
   const a=new Uint32Array(1);
   crypto.getRandomValues(a);
-  return String(1000+a[0]%9000);
+  return String(100+a[0]%900);
 }
 function shuffle(a){
   a=[...a];
@@ -286,12 +286,27 @@ function connect(action){
   const ws=new WebSocket(SERVER);
   socket=ws;
 
+  ws.onopen=()=>{
+    if(socket!==ws)return;
+    if(pendingAction){
+      const request=pendingAction;
+      pendingAction=null;
+      sendRaw(request);
+    }
+  };
+
   ws.onmessage=e=>{
     if(socket!==ws)return;
     let m;
     try{m=JSON.parse(e.data)}catch(_){return}
     handleServer(m);
   };
+
+  ws.onerror=()=>{
+    if(socket!==ws)return;
+    setLobbyStatus("게임 서버에 연결할 수 없습니다.");
+  };
+
   ws.onclose=()=>{
     if(socket!==ws||intentionalClose)return;
     if(started)showCover("연결 종료","서버 연결이 끊어졌습니다.");
@@ -305,15 +320,15 @@ function createRoom(){
   players={};
   started=false;
   createAttempts=0;
-  roomCode=code4();
+  roomCode=code3();
   $("roomCode").textContent="----";
-  connect({type:"CREATE_ROOM",gameId:GAME_ID,roomCode});
+  connect({type:"CREATE_ROOM",gameId:GAME_ID,roomCode,name:savedName()||"Player"});
 }
 function joinRoom(){
-  roomCode=String($("joinCode").value||"").replace(/\D/g,"").slice(0,4);
+  roomCode=String($("joinCode").value||"").replace(/\D/g,"").slice(0,3);
   $("joinCode").value=roomCode;
-  if(roomCode.length!==4){
-    $("joinStatus").textContent="4자리 방 번호를 입력하세요.";
+  if(roomCode.length!==3){
+    $("joinStatus").textContent="3자리 방 번호를 입력하세요.";
     return;
   }
   myRole="guest";
@@ -338,11 +353,6 @@ function handleServer(m){
 
   if(m.type==="CONNECTED"){
     if(m.playerId!=null)myId=String(m.playerId);
-    if(pendingAction){
-      const a=pendingAction;
-      pendingAction=null;
-      sendRaw(a);
-    }
     return;
   }
 
@@ -362,7 +372,7 @@ function handleServer(m){
 
   if(m.type==="ROOM_EXISTS"){
     if(myRole==="host"&&createAttempts++<8){
-      roomCode=code4();
+      roomCode=code3();
       sendRaw({type:"CREATE_ROOM",gameId:GAME_ID,roomCode});
     }
     return;
@@ -886,7 +896,7 @@ function initialize(){
       $("joinTab").classList.add("active");
       $("hostPane").classList.add("hidden");
       $("joinPane").classList.remove("hidden");
-      $("joinCode").value=String(q).replace(/\D/g,"").slice(0,4);
+      $("joinCode").value=String(q).replace(/\D/g,"").slice(0,3);
     }else{
       createRoom();
     }
