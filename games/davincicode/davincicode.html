@@ -57,8 +57,8 @@ input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)
   <h1>DAVINCI CODE</h1>
   <div class="subtitle">ONLINE 2–4 PLAYER · NO JOKERS</div>
   <div class="tabs">
-    <button id="hostTab" class="tab active" type="button" onclick="switchMode('host')">방 만들기</button>
-    <button id="joinTab" class="tab" type="button" onclick="switchMode('join')">방 입장</button>
+    <button id="hostTab" class="tab active" type="button" onclick="switchMode('host')">CREATE ROOM</button>
+    <button id="joinTab" class="tab" type="button" onclick="switchMode('join')">JOIN ROOM</button>
   </div>
   <div class="box">
     <div id="nameWrap" class="name-wrap">
@@ -68,15 +68,15 @@ input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)
     <div id="hostPane">
       <div id="roomCode" class="code">----</div>
       <div id="hostStatus" class="status">방을 만드는 중...</div>
-      <div class="actions"><button class="small" type="button" onclick="copyRoomCode()">COPY CODE</button><button class="small" type="button" onclick="copyInviteLink()">COPY LINK</button></div>
+      <div class="actions"><button class="small" type="button" onclick="copyRoomCode()">COPY CODE</button></div>
     </div>
     <div id="joinPane" class="hidden">
-      <div class="row"><input id="joinCode" maxlength="4" inputmode="numeric" placeholder="4자리 방 번호"><button class="primary" type="button" onclick="joinRoom()">입장</button></div>
+      <div class="row"><input id="joinCode" maxlength="4" inputmode="numeric" placeholder="ROOM CODE · 4 DIGITS"><button class="primary" type="button" onclick="joinRoom()">JOIN ROOM</button></div>
       <div id="joinStatus" class="status">방장이 알려준 4자리 번호를 입력하세요.</div>
     </div>
   </div>
   <div class="box"><div class="status">참가 가능 인원: 2~4명</div><div id="lobbyPlayers" class="players"></div></div>
-  <div class="actions"><button id="startBtn" class="primary" type="button" onclick="startMatch()" disabled>상대방 대기 중</button><button class="small" type="button" onclick="openRules()">RULES</button></div>
+  <div class="actions"><button id="startBtn" class="primary" type="button" onclick="startMatch()" disabled>WAITING FOR PLAYERS</button><button class="small" type="button" onclick="openRules()">HOW TO PLAY</button></div>
   <div class="music-control">
     <span class="music-label">MUSIC VOLUME</span><button class="music-mute" type="button" data-music-mute>MUTE</button>
     <div class="music-bars"><button class="music-segment" type="button" data-music-level="1"></button><button class="music-segment" type="button" data-music-level="2"></button><button class="music-segment" type="button" data-music-level="3"></button><button class="music-segment" type="button" data-music-level="4"></button><button class="music-segment" type="button" data-music-level="5"></button></div>
@@ -114,7 +114,7 @@ let lastTurnOwner=null;
 
 function getSavedName(){try{return String(localStorage.getItem(NAME_KEY)||"").trim().slice(0,12)}catch(_){return ""}}
 function currentName(){return getSavedName()||String($("nameInput")?.value||"").trim().slice(0,12)||"Player"}
-function applySavedName(){const saved=getSavedName();if(saved){$("nameInput").value=saved;$("nameWrap").classList.add("saved-name-hidden")}}
+function applySavedName(){const saved=getSavedName();if(saved){$("nameInput").value=saved;$("nameWrap").classList.add("saved-name-hidden");const subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent=`PLAYER · ${saved} · ONLINE 2–4 PLAYER`}}
 function code4(){return ClassroomNetwork.generateRoomCode(4)}
 function normalizeCode(v){return String(v||"").replace(/\D/g,"").slice(0,4)}
 function openRules(){$("rulesOverlay").classList.add("show")}
@@ -136,7 +136,7 @@ document.addEventListener("click",e=>{const l=e.target.closest("[data-music-leve
 document.addEventListener("pointerdown",()=>{if(!musicMuted&&!musicStarted)startMusic()},{once:true});
 
 function setStatus(text,type=""){$("hostStatus").textContent=text;$("hostStatus").className="status "+type}
-function switchMode(mode){if(started)return;closeSocket();players={};connected=false;roomCode="";myRole=mode;$("hostTab").classList.toggle("active",mode==="host");$("joinTab").classList.toggle("active",mode==="join");$("hostPane").classList.toggle("hidden",mode!=="host");$("joinPane").classList.toggle("hidden",mode!=="join");$("lobbyPlayers").innerHTML="";$("startBtn").disabled=true;$("startBtn").textContent="상대방 대기 중";if(mode==="host"){createRoom()}else{$("joinStatus").textContent="방장이 알려준 4자리 번호를 입력하세요.";setTimeout(()=>$("joinCode").focus(),40)}}
+function switchMode(mode){if(started)return;closeSocket();players={};connected=false;roomCode="";myRole=mode;$("hostTab").classList.toggle("active",mode==="host");$("joinTab").classList.toggle("active",mode==="join");$("hostPane").classList.toggle("hidden",mode!=="host");$("joinPane").classList.toggle("hidden",mode!=="join");$("lobbyPlayers").innerHTML="";$("startBtn").disabled=true;$("startBtn").textContent="WAITING FOR PLAYERS";if(mode==="host"){createRoom()}else{$("joinStatus").textContent="방장이 알려준 4자리 번호를 입력하세요.";setTimeout(()=>$("joinCode").focus(),40)}}
 function closeSocket(){pendingSocketAction=null;intentionalSocketClose=true;if(socket){try{socket.close()}catch(_){}}socket=null;setTimeout(()=>intentionalSocketClose=false,0)}
 function socketSend(data){if(socket&&socket.readyState===WebSocket.OPEN){socket.send(JSON.stringify(data));return true}return false}
 function send(payload){return socketSend({type:"GAME_MESSAGE",payload})}
@@ -146,11 +146,10 @@ function handleSocketFailure(text){if(myRole==="host"){setStatus(text,"error")}e
 function createRoom(){players={};connected=false;started=false;roomCode=code4();$("roomCode").textContent="----";setStatus("방을 만드는 중...");connectSocket({type:"CREATE_ROOM",gameId:GAME_ID,roomCode,name:currentName()})}
 function joinRoom(){roomCode=normalizeCode($("joinCode").value);$("joinCode").value=roomCode;if(roomCode.length!==4){$("joinStatus").textContent="4자리 방 번호를 입력하세요.";return}myRole="guest";$("joinStatus").textContent=`방 ${roomCode}에 연결하는 중...`;connectSocket({type:"JOIN_ROOM",gameId:GAME_ID,roomCode,name:currentName()})}
 function handleServer(m){if(!m||!m.type)return;if(m.type==="CONNECTED"){myId=String(m.playerId);if(pendingSocketAction){const action=pendingSocketAction;pendingSocketAction=null;socketSend(action)}return}if(m.type==="ROOM_CREATED"){connected=true;roomCode=String(m.roomCode);players={[myId]:{name:currentName()}};$("roomCode").textContent=roomCode;setStatus("상대방 접속 대기 중","ok");renderLobby();return}if(m.type==="ROOM_EXISTS"){if(myRole==="host"&&hostCreateAttempts<8){hostCreateAttempts++;roomCode=code4();socketSend({type:"CREATE_ROOM",gameId:GAME_ID,roomCode,name:currentName()})}else handleSocketFailure("빈 방 번호를 만들지 못했습니다.");return}if(m.type==="ROOM_JOINED"){connected=true;players={[myId]:{name:currentName()}};$("joinStatus").textContent=`방 ${roomCode} 입장 완료`;send({type:"JOIN_REQ",name:currentName()});return}if(m.type==="PLAYER_JOINED"&&myRole==="host"){players[String(m.playerId)]={name:String(m.name||"Player").slice(0,12)};syncLobby();return}if(m.type==="PLAYER_LEFT"&&myRole==="host"){delete players[String(m.playerId)];syncLobby();return}if(m.type==="GAME_MESSAGE"){handleGame(String(m.senderId),m.payload);return}if(m.type==="ROOM_NOT_FOUND"){$("joinStatus").textContent="방을 찾지 못했습니다.";return}if(m.type==="ROOM_FULL"){$("joinStatus").textContent="방이 가득 찼습니다.";return}if(m.type==="ROOM_CLOSED"){showEnd("방 종료","방장이 나가서 방이 종료되었습니다.");return}if(m.type==="ERROR")handleSocketFailure(m.message||"서버 오류")}
-function renderLobby(){const box=$("lobbyPlayers");box.innerHTML="";Object.entries(players).forEach(([id,p])=>{const d=document.createElement("div");d.className="player-chip"+(String(id)===String(myId)?" me":"");d.textContent=p.name+(String(id)===String(myId)?" (나)":"");box.appendChild(d)});if(myRole==="host"){const n=Object.keys(players).length;$("startBtn").disabled=n<2||n>4;$("startBtn").textContent=n<2?"상대방 대기 중":`게임 시작 (${n}명)`}}
+function renderLobby(){const box=$("lobbyPlayers");box.innerHTML="";Object.entries(players).forEach(([id,p])=>{const d=document.createElement("div");d.className="player-chip"+(String(id)===String(myId)?" me":"");d.textContent=p.name+(String(id)===String(myId)?" (나)":"");box.appendChild(d)});if(myRole==="host"){const n=Object.keys(players).length;$("startBtn").disabled=n<2||n>4;$("startBtn").textContent=n<2?"WAITING FOR PLAYERS":`START GAME · ${n} PLAYERS`}}
 function syncLobby(){renderLobby();broadcast({type:"LOBBY",players})}
 async function copyText(v){try{await navigator.clipboard.writeText(v);return true}catch(_){const t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}t.remove();return ok}}
 async function copyRoomCode(){if(roomCode)await copyText(roomCode)}
-async function copyInviteLink(){if(!roomCode)return;const u=new URL(location.href);u.search="";u.hash="";u.searchParams.set("room",roomCode);await copyText(u.toString())}
 
 function makeDeck(){const a=[];COLORS.forEach(color=>{for(let number=0;number<=11;number++)a.push({id:`${color}-${number}`,color,number,revealed:false})});for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function sortHand(hand){hand.sort((a,b)=>a.number-b.number||(COLOR_ORDER[a.color]-COLOR_ORDER[b.color]))}
@@ -172,7 +171,7 @@ function tileButton(t,ownerId,isMine){const b=document.createElement("button");b
 function renderGame(){if(!publicState)return;const turnId=publicState.order[publicState.turnIndex];const mine=isMyTurn();$("turnBadge").textContent=publicState.winner?"GAME OVER":mine?"내 차례":`${players[turnId]?.name||"플레이어"} 차례`;$("turnBadge").classList.toggle("mine",mine&&!publicState.winner);if(lastTurnOwner!==turnId){selectedTarget=null;lastTurnOwner=turnId}$("message").textContent=publicState.winner?`${players[publicState.winner]?.name||"플레이어"} 승리!`:mine?(publicState.canStop?"계속 추측하거나 여기서 멈추세요.":"상대 타일을 선택하고 숫자를 추측하세요."):"상대방의 차례입니다.";const opponents=$("opponents");opponents.innerHTML="";publicState.order.filter(id=>String(id)!==String(myId)).forEach(id=>{const hand=publicState.hands[id]||[];const eliminated=hand.length>0&&hand.every(t=>t.revealed);const row=document.createElement("div");row.className="player-row"+(String(id)===String(turnId)?" current":"")+(eliminated?" eliminated":"");const title=document.createElement("div");title.className="row-title";title.innerHTML=`<span>${esc(players[id]?.name||"플레이어")}</span><span class="${eliminated?"eliminated-label":""}">${eliminated?"탈락":`${hand.filter(t=>t.revealed).length}/${hand.length} 공개`}</span>`;const tiles=document.createElement("div");tiles.className="tiles";hand.forEach(t=>tiles.appendChild(tileButton(t,id,false)));row.append(title,tiles);opponents.appendChild(row)});const myTiles=$("myTiles");myTiles.innerHTML="";myHand.forEach(t=>myTiles.appendChild(tileButton(t,myId,true)));const myElim=myHand.length>0&&myHand.every(t=>t.revealed);$("myTileStatus").textContent=myElim?"탈락":`${myHand.filter(t=>t.revealed).length}/${myHand.length} 공개`;$("guessTitle").textContent=selectedTarget?`${players[selectedTarget.playerId]?.name||"상대"}의 선택한 타일 숫자를 고르세요.`:"상대 타일을 먼저 선택하세요.";const grid=$("numberGrid");grid.innerHTML="";for(let n=0;n<=11;n++){const b=document.createElement("button");b.type="button";b.className="number-btn";b.textContent=n;b.disabled=!selectedTarget||!mine||!!publicState.winner;b.addEventListener("click",()=>requestGuess(n));grid.appendChild(b)}$("stopBtn").disabled=!mine||!publicState.canStop||!!publicState.winner;$("log").innerHTML=(publicState.logs||[]).slice(0,5).map(x=>`<div>${esc(x)}</div>`).join("")||"<div>게임 기록이 없습니다.</div>";if(publicState.winner)showEnd("GAME COMPLETE",`${esc(players[publicState.winner]?.name||"플레이어")} 승리!`)}
 function showEnd(title,body){$("modalTitle").textContent=title;$("modalBody").innerHTML=`<p>${body}</p>`;$("overlay").classList.add("show")}
 
-window.addEventListener("DOMContentLoaded",()=>{applySavedName();renderMusicControls();if(bgm)bgm.volume=musicLevel/5;const q=normalizeCode(new URLSearchParams(location.search).get("room"));if(q.length===4){myRole="guest";$("hostTab").classList.remove("active");$("joinTab").classList.add("active");$("hostPane").classList.add("hidden");$("joinPane").classList.remove("hidden");$("joinCode").value=q;joinRoom()}else createRoom()});
+window.addEventListener("DOMContentLoaded",()=>{applySavedName();renderMusicControls();if(bgm)bgm.volume=musicLevel/5;createRoom()});
 window.addEventListener("beforeunload",()=>{try{socket?.close()}catch(_){}});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRules()});
 </script>

@@ -987,9 +987,9 @@ textarea,
     <div class="lobby-subtitle">1~4명 · 혼자 연습 가능</div>
 
     <div class="input-group" id="nickname-input-group">
-        <label>이름 · 한글 3~6자</label>
+        <label>PLAYER NAME · 한글 2~6자</label>
         <input type="text" class="input-field" id="player-nickname" value="" maxlength="6" placeholder="한글 이름 입력" autocomplete="off" inputmode="text">
-        <div id="nickname-help" style="min-height:18px;color:var(--muted);font-size:12px;">한글 이름을 3~6자로 입력하세요.</div>
+        <div id="nickname-help" style="min-height:18px;color:var(--muted);font-size:12px;">한글 이름을 2~6자로 입력하세요.</div>
     </div>
 
     <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -1004,7 +1004,6 @@ textarea,
             <div class="room-code-display" id="lobby-room-code">----</div>
             <div class="room-code-actions">
                 <button class="action-btn" type="button" onclick="copyRoomCode()">COPY CODE</button>
-                <button class="action-btn" type="button" onclick="copyRoomLink()">COPY INVITE LINK</button>
             </div>
             <div class="room-share-status" id="room-share-status">방 번호를 상대방에게 알려주세요.</div>
         </div>
@@ -1029,10 +1028,10 @@ textarea,
             <label>ENTER 4-DIGIT ROOM CODE</label>
             <input type="text" class="input-field room-code-input" id="join-room-code"
                    maxlength="4" inputmode="numeric" autocomplete="off"
-                   placeholder="0000" oninput="formatRoomCodeInput(this)"
+                   placeholder="ROOM CODE · 4 DIGITS" oninput="formatRoomCodeInput(this)"
                    onkeydown="if(event.key === 'Enter') connectToHost()">
         </div>
-        <button class="action-btn" onclick="connectToHost()">CONNECT</button>
+        <button class="action-btn" onclick="connectToHost()">JOIN ROOM</button>
         <div class="room-share-status">혼자 연습하거나 최대 4명까지 함께 플레이할 수 있습니다.</div>
         <div class="player-list-title" id="connect-status" style="color: var(--muted); margin-top: 5px;"></div>
     </div>
@@ -1182,7 +1181,7 @@ textarea,
     let currentMusicVolume = 0.6;
     let musicStarted = false;
 
-    const KOREAN_NAME_PATTERN = /^[가-힣]{3,6}$/;
+    const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
 
     function normalizeNickname(value) {
         return String(value || "").replace(/[^가-힣]/g, "").slice(0, 6);
@@ -1238,6 +1237,8 @@ textarea,
         if (savedName) {
             if (input) input.value = savedName;
             if (inputGroup) inputGroup.style.display = "none";
+            const subtitle = document.querySelector(".lobby-subtitle");
+            if (subtitle) subtitle.textContent = `PLAYER · ${savedName} · 1~4명`;
             return;
         }
 
@@ -1264,14 +1265,6 @@ textarea,
 
     function generateRoomCode() {
         return ClassroomNetwork.generateRoomCode(4);
-    }
-
-    function getRoomInviteUrl() {
-        const url = new URL(location.href);
-        url.search = "";
-        url.hash = "";
-        url.searchParams.set("room", currentRoomCode || "");
-        return url.toString();
     }
 
     function setRoomShareStatus(message) {
@@ -1303,12 +1296,6 @@ textarea,
         setRoomShareStatus(copied
             ? `방 번호 ${currentRoomCode}가 복사되었습니다.`
             : `방 번호는 ${currentRoomCode}입니다.`);
-    }
-
-    async function copyRoomLink() {
-        if (!currentRoomCode) return;
-        const copied = await copyText(getRoomInviteUrl());
-        setRoomShareStatus(copied ? "초대 링크가 복사되었습니다." : "링크를 복사하지 못했습니다.");
     }
 
     function socketSend(data) {
@@ -1578,7 +1565,7 @@ textarea,
         }
         else if (data.type === "REJECT_PLAYER") {
             if (!data.targetId || data.targetId === myId) {
-                alert("이름은 한글 3~6자로 입력해야 합니다.");
+                alert("이름은 한글 2~6자로 입력해야 합니다.");
                 location.reload();
             }
         }
@@ -2335,18 +2322,7 @@ textarea,
 
     document.addEventListener("pointerdown", startBackgroundMusic, { once: true });
 
-    window.addEventListener("load", () => {
-        setMusicVolume(0.6, 3);
-        const params = new URLSearchParams(location.search);
-        const roomCode = normalizeRoomCode(params.get("room"));
-
-        if (roomCode.length === 4) {
-            showJoinPanel();
-            document.getElementById("join-room-code").value = roomCode;
-            document.getElementById("connect-status").innerText =
-                `초대받은 방 번호 ${roomCode}가 입력되었습니다. 이름을 확인하고 CONNECT를 누르세요.`;
-        }
-    });
+    window.addEventListener("load", () => setMusicVolume(0.6, 3));
 
     window.addEventListener("beforeunload", closeSocketTransport);
 

@@ -135,11 +135,11 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 <section id="lobby" class="screen">
   <div class="panel">
     <h1>FRUIT BELL</h1><div class="sub">과일 종 대결 · 2~4인 · 카드 56장</div>
-    <div class="tabs"><button id="hostTab" class="tab active" onclick="switchMode('host')">방 만들기</button><button id="joinTab" class="tab" onclick="switchMode('join')">방 입장</button></div>
+    <div class="tabs"><button id="hostTab" class="tab active" onclick="switchMode('host')">CREATE ROOM</button><button id="joinTab" class="tab" onclick="switchMode('join')">JOIN ROOM</button></div>
     <div class="box">
       <input id="nameInput" maxlength="6" placeholder="한글 이름 2~6자" autocomplete="off" inputmode="text"><div id="nameHelp" class="name-help">한글 이름을 2~6자로 입력하세요.</div>
       <div id="hostPane">
-        <div class="code" id="roomCode">----</div>
+        <div class="code" id="roomCode">----</div><button class="small" type="button" onclick="copyFruitBellRoomCode()">COPY CODE</button>
         <div class="status" id="hostStatus">방을 만드는 중...</div>
         <div class="mode-box">
           <div class="mode-title">게임 방식</div>
@@ -151,12 +151,12 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
         </div>
       </div>
       <div id="joinPane" class="hidden">
-        <div class="row"><input id="joinCode" inputmode="numeric" maxlength="4" placeholder="4자리 방 번호"><button class="primary" onclick="joinRoom()">입장</button></div>
+        <div class="row"><input id="joinCode" inputmode="numeric" maxlength="4" placeholder="ROOM CODE · 4 DIGITS"><button class="primary" onclick="joinRoom()">JOIN ROOM</button></div>
         <div class="status" id="joinStatus">방장이 알려준 번호를 입력하세요.</div>
       </div>
     </div>
     <div class="box"><div class="status">참가 가능 인원: 2~4명</div><div class="players" id="lobbyPlayers"></div></div>
-    <div class="actions"><button id="startBtn" class="primary" onclick="startMatch()" disabled>상대방 대기 중</button><button class="small" type="button" onclick="openRules()">RULES</button></div>
+    <div class="actions"><button id="startBtn" class="primary" onclick="startMatch()" disabled>WAITING FOR PLAYERS</button><button class="small" type="button" onclick="openRules()">HOW TO PLAY</button></div>
 
     <div class="music-control">
       <span class="music-label">MUSIC VOLUME</span>
@@ -255,6 +255,8 @@ function applySavedPlayerName(){
    input.value=saved;
    input.classList.add("saved-name-hidden");
    help.classList.add("saved-name-hidden");
+   const subtitle=document.querySelector(".sub");
+   if(subtitle)subtitle.textContent=`PLAYER · ${saved} · 과일 종 대결 · 2~4인`;
  }else{
    input.classList.remove("saved-name-hidden");
    help.classList.remove("saved-name-hidden");
@@ -264,6 +266,7 @@ function normalizeName(v){return String(v||"").replace(/[^가-힣]/g,"").slice(0
 function isValidName(v){return KOREAN_NAME_PATTERN.test(String(v||""))}
 function cleanName(v){const n=normalizeName(v);return isValidName(n)?n:"플레이어"}
 function code4(){return ClassroomNetwork.generateRoomCode(4)}
+async function copyFruitBellRoomCode(){const code=$("roomCode").textContent.trim();if(!/^\d{4}$/.test(code))return;try{await navigator.clipboard.writeText(code);$("hostStatus").textContent=`방 번호 ${code}가 복사되었습니다.`}catch(_){$("hostStatus").textContent=`방 번호는 ${code}입니다.`}}
 window.addEventListener("DOMContentLoaded",applySavedPlayerName);
 
 document.addEventListener("keydown",event=>{
@@ -386,7 +389,7 @@ function switchMode(mode){
  $("joinPane").classList.toggle("hidden",mode!=="join");
  $("lobbyPlayers").innerHTML="";
  $("startBtn").disabled=true;
- $("startBtn").textContent="상대방 대기 중";
+ $("startBtn").textContent="WAITING FOR PLAYERS";
 
  if(mode==="host"){
    $("roomCode").textContent="----";
@@ -478,7 +481,7 @@ function renderLobby(){
    $("startBtn").disabled=!enoughPlayers||!hostValid||!allNamesValid;
    $("startBtn").textContent=!hostValid
      ?"한글 이름 입력"
-     :(gameMode==="team"&&n<4?`팀전 참가자 대기 (${n}/4)`:(!enoughPlayers?"상대방 대기 중":`게임 시작 (${n}명)`));
+     :(gameMode==="team"&&n<4?`WAITING FOR PLAYERS · ${n}/4`:(!enoughPlayers?"WAITING FOR PLAYERS":`START GAME · ${n} PLAYERS`));
  }
 }
 function makeDeck(){

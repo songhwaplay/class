@@ -602,6 +602,7 @@ textarea,
 </style>
 <script src="../../assets/network/game-network.js"></script>
 <script src="../../assets/network/finisher-api.js"></script>
+<script src="../../assets/network/finisher-board.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
@@ -667,55 +668,14 @@ textarea,
         if (isValidKoreanName(name)) localStorage.setItem("classPlayerName", name);
     }
 
-    function finishersHtml(records) {
-        if (!Array.isArray(records) || records.length === 0) {
-            return '<div class="finisher-empty">아직 오늘의 클리어 기록이 없습니다.</div>';
-        }
-        return records.map(record => `
-            <div class="finisher-row">
-                <span class="finisher-time">${escapeFinisherHtml(record.time || "--:--")}</span>
-                <span class="finisher-name">${escapeFinisherHtml(record.name)}</span>
-                <span class="finisher-difficulty">${escapeFinisherHtml(record.difficulty)}</span>
-            </div>
-        `).join("");
-    }
-
-    function renderFinishers(targetId, records) {
-        const target = document.getElementById(targetId);
-        if (target) target.innerHTML = finishersHtml(records);
-    }
-
-    async function loadTodayFinishers(targetId = "today-finishers-list") {
-        const target = document.getElementById(targetId);
-        if (target) target.innerHTML = '<div class="finisher-empty">명단을 불러오는 중...</div>';
-        try {
-            const data = await ClassroomFinishers.list(FINISHER_GAME_ID);
-            renderFinishers(targetId, data.records || []);
-            return data.records || [];
-        } catch (_) {
-            if (target) target.innerHTML = '<div class="finisher-empty">명단 서버에 연결하지 못했습니다.</div>';
-            return [];
-        }
-    }
-
-    async function registerFinisher(difficulty, rank, targetId = "result-finishers-list") {
-        if (!isValidKoreanName(playerName)) return loadTodayFinishers(targetId);
-        const target = document.getElementById(targetId);
-        if (target) target.innerHTML = '<div class="finisher-empty">기록을 등록하는 중...</div>';
-        try {
-            const data = await ClassroomFinishers.save({
-                gameId: FINISHER_GAME_ID,
-                name: playerName,
-                difficulty,
-                rank
-            });
-            renderFinishers(targetId, data.records || []);
-            renderFinishers("today-finishers-list", data.records || []);
-            return data.records || [];
-        } catch (_) {
-            if (target) target.innerHTML = '<div class="finisher-empty">기록 서버에 연결하지 못했지만 게임 클리어는 인정됩니다.</div>';
-            return [];
-        }
+    const finisherBoard = ClassroomFinisherBoard.create({
+        gameId: FINISHER_GAME_ID,
+        getPlayerName: () => playerName,
+        isValidPlayerName: isValidKoreanName
+    });
+    function loadTodayFinishers(targetId = "today-finishers-list") { return finisherBoard.load(targetId); }
+    function registerFinisher(difficulty, rank, targetId = "result-finishers-list") {
+        return finisherBoard.register({ difficulty, rank, targetId });
     }
 
     function handlePlayerNameInput(input, forceNormalize = false) {
@@ -790,7 +750,7 @@ textarea,
     function loadQuestion() {
         if (currentStage === 0) {
             displayArea.innerHTML = `
-                <div class="question-text"><스핑크스> 도전할 자는 이름과 실력을 밝혀라.</div>
+                <div class="question-text">${playerName ? `PLAYER · ${escapeFinisherHtml(playerName)}` : "<스핑크스> 도전할 자는 이름과 실력을 밝혀라."}</div>
                 <div class="player-entry">
                     <label for="player-name">PLAYER NAME · 한글 2~6자</label>
                     <input id="player-name" class="player-name-input" type="text" maxlength="6"
@@ -800,8 +760,9 @@ textarea,
                     <div class="player-name-help" id="player-name-help">영어·숫자·공백은 입력할 수 없습니다.</div>
                 </div>
                 <div class="options-container">
-                    <button class="quiz-btn" data-difficulty-button onclick="setDiff(5)">초급 (1~5마리 범위)</button>
-                    <button class="quiz-btn" data-difficulty-button onclick="setDiff(10)">고급 (1~10마리 범위)</button>
+                    <button class="quiz-btn" data-difficulty-button onclick="setDiff(5)">START GAME · BEGINNER</button>
+                    <button class="quiz-btn" data-difficulty-button onclick="setDiff(10)">START GAME · ADVANCED</button>
+                    <button class="quiz-btn" type="button" onclick="showSphinxRules()">HOW TO PLAY</button>
                 </div>
                 <div class="finishers-panel">
                     <div class="finishers-title">🏆 TODAY’S FINISHERS</div>
@@ -848,6 +809,21 @@ textarea,
         let html = `<div class="question-text">${qText}</div><div class="options-container">`;
         standardOptions.forEach(o => html += `<button class="quiz-btn" onclick="check('${o}', '${ans}')">${o}</button>`);
         displayArea.innerHTML = html + `</div>`;
+    }
+
+    function showSphinxRules() {
+        displayArea.innerHTML = `
+            <div class="question-text">HOW TO PLAY</div>
+            <div style="text-align:left;line-height:1.75;margin:12px auto;max-width:620px">
+                <p>스핑크스가 내는 수수께끼와 수학 문제를 차례대로 해결하는 게임입니다.</p>
+                <ol>
+                    <li>초급은 1~5마리, 고급은 1~10마리 범위의 수가 사용됩니다.</li>
+                    <li>문제에 나온 다리의 총개수와 괴물의 수를 이용해 정답을 계산하세요.</li>
+                    <li>보기 중 하나를 선택하면 즉시 정답 여부를 확인합니다.</li>
+                    <li>모든 문제를 해결하면 오늘의 완료자 기록에 등록됩니다.</li>
+                </ol>
+            </div>
+            <div class="options-container"><button class="quiz-btn" type="button" onclick="loadQuestion()">BACK</button></div>`;
     }
 
     function setDiff(d) {

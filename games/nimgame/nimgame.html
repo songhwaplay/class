@@ -351,45 +351,6 @@
             text-align: center;
         }
 
-        .share-panel {
-            width: min(760px, 100%);
-            margin: 15px auto 0;
-            padding: 14px 16px 16px;
-            border: 1px solid rgba(143,181,223,0.28);
-            background: rgba(4, 10, 18, 0.58);
-        }
-
-        .share-heading {
-            color: #a9c7e8;
-            font-size: 13px;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .share-row {
-            display: grid;
-            grid-template-columns: 1fr auto auto;
-            gap: 8px;
-        }
-
-        .share-input {
-            width: 100%;
-            min-width: 0;
-            border: 1px solid var(--gold-dark);
-            background: #05070b;
-            color: #f2ead5;
-            padding: 9px 11px;
-            font-family: Consolas, monospace;
-            font-size: 12px;
-            user-select: text;
-            outline: none;
-        }
-
-        .share-input:focus {
-            border-color: var(--gold-bright);
-            box-shadow: 0 0 0 2px rgba(240,215,124,0.12);
-        }
-
         .lobby-actions {
             display: flex;
             justify-content: center;
@@ -873,9 +834,6 @@
 
             .option-group { justify-content: flex-start; }
 
-            .share-row { grid-template-columns: 1fr 1fr; }
-            .share-input { grid-column: 1 / -1; }
-
             .room-code-line { grid-template-columns: 1fr; }
             .room-code-actions { flex-direction: row; justify-content: center; }
             .join-room-row { grid-template-columns: 1fr; }
@@ -1030,8 +988,8 @@ textarea,
 
         <div class="room-access-panel" id="room-access-panel">
             <div class="room-tabs">
-                <button class="room-tab active" id="host-tab" onclick="switchRoomMode('host')">방 만들기</button>
-                <button class="room-tab" id="join-tab" onclick="switchRoomMode('join')">방 입장</button>
+                <button class="room-tab active" id="host-tab" onclick="switchRoomMode('host')">CREATE ROOM</button>
+                <button class="room-tab" id="join-tab" onclick="switchRoomMode('join')">JOIN ROOM</button>
             </div>
 
             <div class="room-pane" id="host-room-pane">
@@ -1052,10 +1010,10 @@ textarea,
                 <div class="join-room-row">
                     <input class="room-code-input" id="join-code-input" maxlength="4"
                            inputmode="numeric" autocomplete="off" spellcheck="false"
-                           placeholder="4자리"
+                           placeholder="ROOM CODE · 4 DIGITS"
                            oninput="formatJoinCode(this)"
                            onkeydown="if(event.key === 'Enter') joinRoom()">
-                    <button class="primary-btn" id="join-room-btn" onclick="joinRoom()">ENTER ROOM</button>
+                    <button class="primary-btn" id="join-room-btn" onclick="joinRoom()">JOIN ROOM</button>
                 </div>
                 <div class="room-help">방장이 알려준 4자리 방 번호를 입력하세요.</div>
             </div>
@@ -1118,18 +1076,9 @@ textarea,
             </div>
         </div>
 
-        <div class="share-panel" id="share-panel">
-            <div class="share-heading" id="share-heading">전체 주소로 초대할 수도 있습니다.</div>
-            <div class="share-row">
-                <input class="share-input" id="room-url" readonly value="방 주소 생성 중...">
-                <button class="small-btn" id="copy-btn" onclick="copyRoomUrl()">COPY</button>
-                <button class="small-btn" id="share-btn" onclick="shareRoomUrl()">SHARE</button>
-            </div>
-        </div>
-
         <div class="lobby-actions">
-            <button class="primary-btn" id="start-btn" onclick="startRound()" disabled>WAITING FOR PLAYER</button>
-            <button class="secondary-btn" onclick="openRules()">RULES</button>
+            <button class="primary-btn" id="start-btn" onclick="startRound()" disabled>WAITING FOR PLAYERS</button>
+            <button class="secondary-btn" onclick="openRules()">HOW TO PLAY</button>
         </div>
 
         <div class="foot-note" id="lobby-foot-note">
@@ -1283,29 +1232,10 @@ textarea,
         setMusicVolume(0.6, 3);
         const subtitle = document.querySelector(".subtitle");
         if (subtitle && savedPlayerName) {
-            subtitle.textContent = `${savedPlayerName} · ONLINE TWO-PLAYER STRATEGY`;
+            subtitle.textContent = `PLAYER · ${savedPlayerName} · ONLINE TWO-PLAYER STRATEGY`;
         }
-        const params = new URLSearchParams(location.search);
-        const roomCode = normalizeRoomCode(params.get("room") || "");
-
         syncLobbyUI();
-
-        if (roomCode) {
-            roomMode = "join";
-            myRole = "guest";
-            targetPeerId = roomCode;
-            currentRoomCode = roomCode;
-            $("join-code-input").value = roomCode;
-            showRoomPane("join");
-            $("share-panel").classList.add("hidden");
-            $("start-btn").textContent = "WAITING FOR HOST";
-            $("lobby-foot-note").textContent = `방 ${roomCode}에 연결하고 있습니다.`;
-            lockGuestSettings(true);
-            setLobbyStatus("connecting", `방 ${roomCode}에 연결하는 중...`);
-            openSocket("join", roomCode);
-        } else {
-            switchRoomMode("host");
-        }
+        switchRoomMode("host");
     }
 
     function switchRoomMode(mode) {
@@ -1322,25 +1252,22 @@ textarea,
             myRole = "guest";
             targetPeerId = null;
             currentRoomCode = null;
-            $("share-panel").classList.add("hidden");
             $("start-btn").disabled = true;
-            $("start-btn").textContent = "ENTER ROOM CODE";
+            $("start-btn").textContent = "JOIN ROOM";
             $("lobby-foot-note").textContent = "방장이 알려준 4자리 방 번호를 입력하세요.";
             lockGuestSettings(true);
-            setLobbyStatus("connecting", "방 번호를 입력한 뒤 ENTER ROOM을 누르세요.");
+            setLobbyStatus("connecting", "방 번호를 입력한 뒤 JOIN ROOM을 누르세요.");
             setTimeout(() => $("join-code-input").focus(), 0);
         } else {
             myRole = "host";
             targetPeerId = null;
-            $("share-panel").classList.remove("hidden");
             $("start-btn").disabled = true;
-            $("start-btn").textContent = "WAITING FOR PLAYER";
+            $("start-btn").textContent = "WAITING FOR PLAYERS";
             $("lobby-foot-note").textContent = "화면의 4자리 방 번호를 상대방에게 알려주세요.";
             lockGuestSettings(false);
             setLobbyStatus("connecting", "새 방 번호를 만드는 중...");
             currentRoomCode = generateRoomCode();
             $("room-code-display").textContent = currentRoomCode;
-            $("room-url").value = "방 주소 생성 중...";
             openSocket("host", currentRoomCode);
         }
     }
@@ -1430,7 +1357,6 @@ textarea,
             currentRoomCode = message.roomCode;
             hostCreateAttempts = 0;
             $("room-code-display").textContent = currentRoomCode;
-            $("room-url").value = `${location.origin}${location.pathname}?room=${encodeURIComponent(currentRoomCode)}`;
             setLobbyStatus("connecting", `방 ${currentRoomCode} — 상대방 접속 대기 중...`);
             return;
         }
@@ -1451,10 +1377,7 @@ textarea,
             connected = true;
             setLobbyStatus("connected", "상대방이 접속했습니다. 게임을 시작할 수 있습니다.");
             $("start-btn").disabled = false;
-            $("start-btn").textContent = "START MATCH";
-            $("share-heading").textContent = "상대방 접속 완료";
-            $("copy-btn").disabled = true;
-            $("share-btn").disabled = true;
+            $("start-btn").textContent = "START GAME";
             $("copy-code-btn").disabled = true;
             sendPacket({ type: "config", config: getConfigSnapshot() });
             return;
@@ -1672,42 +1595,6 @@ textarea,
                 showToast(`방 번호: ${code}`);
             }
         }
-    }
-
-    async function copyRoomUrl() {
-        const url = $("room-url").value.trim();
-        if (!url.startsWith("http")) return;
-
-        try {
-            await navigator.clipboard.writeText(url);
-            showToast("방 주소가 복사되었습니다.");
-        } catch (_) {
-            $("room-url").focus();
-            $("room-url").select();
-            try {
-                document.execCommand("copy");
-                showToast("방 주소가 복사되었습니다.");
-            } catch (_) {
-                showToast("주소를 선택했습니다. Ctrl+C를 눌러 주세요.");
-            }
-        }
-    }
-
-    async function shareRoomUrl() {
-        const url = $("room-url").value.trim();
-        if (!url.startsWith("http")) return;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: "NIM & COIN MATCH",
-                    text: "이 주소로 접속해 게임에 참여하세요.",
-                    url
-                });
-                return;
-            } catch (_) {}
-        }
-        await copyRoomUrl();
     }
 
     function showToast(message) {
@@ -2283,7 +2170,7 @@ textarea,
         if (myRole === "host") {
             showRoomPane("host");
             $("start-btn").disabled = !connected;
-            $("start-btn").textContent = connected ? "START MATCH" : "WAITING FOR PLAYER";
+            $("start-btn").textContent = connected ? "START GAME" : "WAITING FOR PLAYERS";
         } else {
             showRoomPane("join");
             $("start-btn").disabled = true;

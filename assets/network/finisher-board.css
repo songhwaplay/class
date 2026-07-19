@@ -1,0 +1,41 @@
+.finishers-panel {
+    width: min(560px, 100%);
+    margin: 18px auto 0;
+    padding: 13px 15px;
+    border: 1px solid rgba(198, 170, 85, 0.38);
+    background: rgba(3, 8, 13, 0.56);
+    color: #e8dfc9;
+}
+
+.finishers-title {
+    margin-bottom: 8px;
+    color: #efd98d;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+.finishers-list { min-height: 30px; }
+
+.finisher-row {
+    display: grid;
+    grid-template-columns: 58px minmax(80px, 1fr) minmax(120px, 1.5fr);
+    gap: 9px;
+    align-items: center;
+    padding: 7px 2px;
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+    font-size: 12px;
+}
+
+.finisher-row:first-child { border-top: 0; }
+.finisher-time { color: #91a0b3; font-family: Consolas, monospace; }
+.finisher-name { color: #fff0b1; font-weight: 900; }
+.finisher-difficulty { color: #d4dce5; text-align: right; }
+.finisher-empty { padding: 7px; color: #aeb9c6; text-align: center; font-size: 12px; }
+.result-finishers { margin-top: 16px; }
+
+@media (max-width: 520px) {
+    .finishers-panel { padding: 11px; }
+    .finisher-row { grid-template-columns: 48px minmax(70px, 1fr) minmax(90px, 1.3fr); gap: 6px; font-size: 11px; }
+}

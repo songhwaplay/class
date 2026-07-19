@@ -1055,6 +1055,7 @@ textarea,
 </style>
 <script src="../../assets/network/game-network.js"></script>
 <script src="../../assets/network/finisher-api.js"></script>
+<script src="../../assets/network/finisher-board.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
@@ -1100,7 +1101,10 @@ textarea,
     </div>
 
 
-    <button class="action-btn" id="start-game-button" onclick="startGame()" disabled>START GAME</button>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+        <button class="action-btn" id="start-game-button" onclick="startGame()" disabled>START GAME</button>
+        <button class="action-btn" type="button" onclick="openRules()">HOW TO PLAY</button>
+    </div>
 
     <div class="finishers-panel">
         <div class="finishers-title">🏆 TODAY’S FINISHERS</div>
@@ -1222,55 +1226,14 @@ textarea,
         if (isValidKoreanName(name)) localStorage.setItem("classPlayerName", name);
     }
 
-    function finishersHtml(records) {
-        if (!Array.isArray(records) || records.length === 0) {
-            return '<div class="finisher-empty">아직 오늘의 클리어 기록이 없습니다.</div>';
-        }
-        return records.map(record => `
-            <div class="finisher-row">
-                <span class="finisher-time">${escapeFinisherHtml(record.time || "--:--")}</span>
-                <span class="finisher-name">${escapeFinisherHtml(record.name)}</span>
-                <span class="finisher-difficulty">${escapeFinisherHtml(record.difficulty)}</span>
-            </div>
-        `).join("");
-    }
-
-    function renderFinishers(targetId, records) {
-        const target = document.getElementById(targetId);
-        if (target) target.innerHTML = finishersHtml(records);
-    }
-
-    async function loadTodayFinishers(targetId = "today-finishers-list") {
-        const target = document.getElementById(targetId);
-        if (target) target.innerHTML = '<div class="finisher-empty">명단을 불러오는 중...</div>';
-        try {
-            const data = await ClassroomFinishers.list(FINISHER_GAME_ID);
-            renderFinishers(targetId, data.records || []);
-            return data.records || [];
-        } catch (_) {
-            if (target) target.innerHTML = '<div class="finisher-empty">명단 서버에 연결하지 못했습니다.</div>';
-            return [];
-        }
-    }
-
-    async function registerFinisher(difficulty, rank, targetId = "result-finishers-list") {
-        if (!isValidKoreanName(playerName)) return loadTodayFinishers(targetId);
-        const target = document.getElementById(targetId);
-        if (target) target.innerHTML = '<div class="finisher-empty">기록을 등록하는 중...</div>';
-        try {
-            const data = await ClassroomFinishers.save({
-                gameId: FINISHER_GAME_ID,
-                name: playerName,
-                difficulty,
-                rank
-            });
-            renderFinishers(targetId, data.records || []);
-            renderFinishers("today-finishers-list", data.records || []);
-            return data.records || [];
-        } catch (_) {
-            if (target) target.innerHTML = '<div class="finisher-empty">기록 서버에 연결하지 못했지만 게임 클리어는 인정됩니다.</div>';
-            return [];
-        }
+    const finisherBoard = ClassroomFinisherBoard.create({
+        gameId: FINISHER_GAME_ID,
+        getPlayerName: () => playerName,
+        isValidPlayerName: isValidKoreanName
+    });
+    function loadTodayFinishers(targetId = "today-finishers-list") { return finisherBoard.load(targetId); }
+    function registerFinisher(difficulty, rank, targetId = "result-finishers-list") {
+        return finisherBoard.register({ difficulty, rank, targetId });
     }
 
     function handlePlayerNameInput(input, forceNormalize = false) {
@@ -1335,11 +1298,13 @@ textarea,
 
         if (playerName && entry) {
             entry.style.display = "none";
+            const subtitle = document.querySelector(".start-subtitle");
+            if (subtitle) subtitle.textContent = `PLAYER · ${playerName} · COIN WEIGHING GAME`;
         }
 
         if (playerName && startButton) {
             startButton.disabled = false;
-            startButton.textContent = `${playerName} START`;
+            startButton.textContent = "START GAME";
         }
 
         loadTodayFinishers();
