@@ -16,8 +16,16 @@
 <section id="lobby" class="card"><h3>특수 역할</h3><div class="checks"><label><input type="checkbox" data-role="percival" checked> 퍼시벌</label><label><input type="checkbox" data-role="morgana" checked> 모르가나</label><label><input type="checkbox" data-role="mordred"> 모드레드</label><label><input type="checkbox" data-role="oberon"> 오베론</label></div><button id="start" style="margin-top:14px;width:100%">게임 시작 (5~10명)</button></section>
 <section id="action" class="card hide"><h3 id="actionTitle"></h3><div id="actionBody"></div></section></section>
 </main><script>
-const SERVER="wss://classroom-game-hub.onrender.com",GAME="avalon";let ws,myId,state,roleInfo,selected=new Set(),isHost=false,rolesReveal=[];const $=id=>document.getElementById(id),send=o=>ws?.readyState===1&&ws.send(JSON.stringify(o));
-function connect(mode){const name=$("name").value.trim(),given=$("code").value.replace(/\D/g,"");if(!name)return status("닉네임을 입력하세요.");const roomCode=mode==="create"?String(Math.floor(100000+Math.random()*900000)):given;if(roomCode.length!==6)return status("초대 코드는 숫자 6자리입니다.");status("서버에 연결 중…");ws=new WebSocket(SERVER);ws.onopen=()=>send({type:mode==="create"?"CREATE_ROOM":"JOIN_ROOM",gameId:GAME,roomCode,name});ws.onmessage=e=>handle(JSON.parse(e.data));ws.onerror=()=>status("서버 연결에 실패했습니다.");ws.onclose=()=>state&&notice("서버 연결이 끊어졌습니다.");}
+const SERVER="wss://classroom-game-hub.onrender.com",GAME="avalon",NAME_KEY="classPlayerName";let ws,myId,state,roleInfo,selected=new Set(),isHost=false,rolesReveal=[];const $=id=>document.getElementById(id),send=o=>ws?.readyState===1&&ws.send(JSON.stringify(o));
+const savedName=String(localStorage.getItem(NAME_KEY)||"").trim();
+$("name").value=savedName;
+$("name").readOnly=true;
+$("name").placeholder="메인 화면에서 이름을 먼저 저장하세요";
+if(!/^[가-힣]{2,6}$/.test(savedName)){
+  $("create").disabled=true;$("join").disabled=true;
+  status("메인 화면에서 한글 이름을 먼저 저장해 주세요.");
+}
+function connect(mode){const name=String(localStorage.getItem(NAME_KEY)||"").trim(),given=$("code").value.replace(/\D/g,"");if(!/^[가-힣]{2,6}$/.test(name))return status("메인 화면에서 한글 이름을 먼저 저장해 주세요.");const roomCode=mode==="create"?String(Math.floor(100000+Math.random()*900000)):given;if(roomCode.length!==6)return status("초대 코드는 숫자 6자리입니다.");status("서버에 연결 중…");ws=new WebSocket(SERVER);ws.onopen=()=>send({type:mode==="create"?"CREATE_ROOM":"JOIN_ROOM",gameId:GAME,roomCode,name});ws.onmessage=e=>handle(JSON.parse(e.data));ws.onerror=()=>status("서버 연결에 실패했습니다.");ws.onclose=()=>state&&notice("서버 연결이 끊어졌습니다.");}
 function handle(m){if(m.type==="CONNECTED")myId=m.playerId;if(m.type==="ROOM_CREATED"||m.type==="ROOM_JOINED"){isHost=m.type==="ROOM_CREATED";$("entry").classList.add("hide");$("game").classList.remove("hide");$("roomCode").textContent=m.roomCode}if(m.type==="AVALON_STATE"){const nextKey=`${m.state.phase}:${m.state.quest}:${m.state.leaderId}`;if(window.turnKey!==nextKey){selected.clear();window.turnKey=nextKey}state=m.state;render()}if(m.type==="AVALON_ROLE"){roleInfo=m.info;renderSecret()}if(m.type==="AVALON_NOTICE")notice(m.message);if(m.type==="AVALON_REVEAL"){rolesReveal=m.roles}if(m.type==="ERROR"||m.type==="ROOM_NOT_FOUND"||m.type==="ROOM_FULL")status(m.message||"방을 찾을 수 없거나 가득 찼습니다.")}
 function status(t){$("entryStatus").textContent=t}function notice(t){$("notice").textContent=t;$("notice").classList.remove("hide")}
 const phaseNames={lobby:"대기실",team:"원정대 구성",proposalVote:"원정대 찬반 투표",questVote:"임무 수행",assassination:"멀린 암살",ended:"게임 종료"};
