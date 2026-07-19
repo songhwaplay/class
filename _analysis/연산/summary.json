@@ -1,0 +1,29 @@
+{
+  "source": "C:\\Users\\A\\Desktop\\연산.xlsm",
+  "size": 1267084,
+  "sha256": "5AF29735E31D385E29B3F6CF1629FC4FE4F7B0BCD1DA2A837EAC465595E76F9E",
+  "sheet_count": 81,
+  "sheet_states": {
+    "hidden": 17,
+    "visible": 64
+  },
+  "cell_count": 12798,
+  "formula_count": 7191,
+  "defined_name_count": 1,
+  "table_count": 0,
+  "validation_count": 0,
+  "control_count": 208,
+  "vml_shape_count": 208,
+  "drawing_object_count": 121,
+  "printer_part_count": 69,
+  "external_parts": [],
+  "vba_stream_count": 240,
+  "vba_module_count": 132,
+  "vba_module_types": {
+    "document": 82,
+    "standard": 49,
+    "userform": 1
+  },
+  "vba_procedure_count": 166,
+  "modules_without_code": []
+}

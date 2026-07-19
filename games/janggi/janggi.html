@@ -36,6 +36,7 @@ button,input,select{font:inherit}.hidden{display:none!important}
 <section id="lobby">
 <h1 class="title">장기</h1><div class="sub">온라인 1대1 대국</div>
 <div id="status" class="status">방을 만들거나 입장하세요.</div>
+<div id="missingName" class="panel hidden"><strong>이름이 없습니다.</strong><br>이름 변경은 메인 화면에서만 가능합니다.<div class="row"><button class="btn primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></div></div>
 <div class="tabs"><button id="hostTab" class="tab active" onclick="switchMode('host')">CREATE ROOM</button><button id="joinTab" class="tab" onclick="switchMode('join')">JOIN ROOM</button></div>
 <div id="hostPane" class="panel"><div class="roomcode" id="roomCode">----</div><div class="row"><button class="btn" onclick="copyCode()">COPY CODE</button></div><div class="setup"><label>내 초 차림</label><select id="choFormation">
 <option value="HEHE" selected>마상마상 (기본)</option>
@@ -68,20 +69,21 @@ button,input,select{font:inherit}.hidden{display:none!important}
 <script>
 "use strict";
 const $=id=>document.getElementById(id);let socket=null,myRole=null,connected=false,roomMode='host',roomCode='',selected=null,legalTargets=[],logs=[],chatMessages=[],musicStarted=false,volumeLevel=3,gameOver=false,rematchMine=false,rematchOther=false,guestFormationReady=false,turnTimerId=null,turnDeadline=0,hostCreateAttempts=0,opponentName='';
-const savedPlayerName=(localStorage.getItem('classPlayerName')||'').trim();
-function getPlayerName(){return savedPlayerName||((myRole==='host')?'초':'한')}
+const savedPlayerName=(()=>{const name=(localStorage.getItem('classPlayerName')||'').trim();return /^[가-힣]{2,6}$/.test(name)?name:''})();
+function getPlayerName(){return savedPlayerName}
 function displayPlayerLabel(side){if(side===mySide())return getPlayerName();if(opponentName)return opponentName;return sideLabel(side)}
 const state={pieces:[],turn:'cho',choFormation:'HEHE',hanFormation:'HEHE',timeLimit:30,started:false,winner:null,lastMove:null};
 const typeName={king:'왕',guard:'사',rook:'차',horse:'마',elephant:'상',cannon:'포',soldier:'졸'};
-window.addEventListener('load',()=>{drawBoardLines();setVolume(3);const sub=document.querySelector('.sub');if(sub&&savedPlayerName)sub.textContent=`PLAYER · ${savedPlayerName} · 온라인 1대1 대국`;switchMode('host')});document.addEventListener('pointerdown',startMusic,{once:true});
+window.addEventListener('load',()=>{drawBoardLines();setVolume(3);const sub=document.querySelector('.sub');if(!savedPlayerName){if(sub)sub.textContent='이름이 없습니다 · 메인 화면에서 이름을 먼저 저장해 주세요';$('status').textContent='게임 서버에 연결하지 않았습니다.';$('missingName').classList.remove('hidden');$('hostTab').disabled=true;$('joinTab').disabled=true;$('hostPane').classList.add('hidden');return}if(sub)sub.textContent=`PLAYER · ${savedPlayerName} · 온라인 1대1 대국`;switchMode('host')});document.addEventListener('pointerdown',startMusic,{once:true});
 function drawBoardLines(){const b=$('board');for(let x=0;x<9;x++){let l=document.createElement('div');l.className='gridline vline';l.style.left=`${5.55+x*11.11}%`;b.appendChild(l)}for(let y=0;y<10;y++){let l=document.createElement('div');l.className='gridline hline';l.style.top=`${5+y*10}%`;b.appendChild(l)}const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','palace-svg');svg.setAttribute('viewBox','0 0 8 9');svg.setAttribute('preserveAspectRatio','none');[[3,0,5,2],[5,0,3,2],[3,7,5,9],[5,7,3,9]].forEach(([x1,y1,x2,y2])=>{const line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',x1);line.setAttribute('y1',y1);line.setAttribute('x2',x2);line.setAttribute('y2',y2);svg.appendChild(line)});b.appendChild(svg)}
-function switchMode(m){if(connected)return;resetNet();guestFormationReady=false;roomMode=m;myRole=m==='host'?'host':'guest';$('hostTab').classList.toggle('active',m==='host');$('joinTab').classList.toggle('active',m==='join');$('hostPane').classList.toggle('hidden',m!=='host');$('joinPane').classList.toggle('hidden',m==='host');$('startBtn').disabled=true;$('startBtn').textContent=m==='host'?'WAITING FOR PLAYERS':'WAITING FOR HOST';if(m==='host')createHost();else setStatus('4자리 방 번호를 입력하세요.','')}
+function switchMode(m){if(!savedPlayerName||connected)return;resetNet();guestFormationReady=false;roomMode=m;myRole=m==='host'?'host':'guest';$('hostTab').classList.toggle('active',m==='host');$('joinTab').classList.toggle('active',m==='join');$('hostPane').classList.toggle('hidden',m!=='host');$('joinPane').classList.toggle('hidden',m==='host');$('startBtn').disabled=true;$('startBtn').textContent=m==='host'?'WAITING FOR PLAYERS':'WAITING FOR HOST';if(m==='host')createHost();else setStatus('4자리 방 번호를 입력하세요.','')}
 const GAME_ID='janggi';
 function resetNet(){connected=false;try{socket&&socket.close()}catch{}socket=null}
 function code(){return ClassroomNetwork.generateRoomCode(4)}
-function createHost(){roomCode=code();$('roomCode').textContent=roomCode;setStatus('방 번호 생성 중...','');openSocket('host',roomCode)}
-function joinRoom(){let c=$('joinCode').value.trim();if(c.length!==4)return alert('4자리 방 번호를 입력하세요.');resetNet();myRole='guest';roomCode=c;setStatus(`CONNECTING TO ROOM ${c}... · 서버에 연결 중입니다.`,'');openSocket('join',c)}
+function createHost(){if(!savedPlayerName)return;roomCode=code();$('roomCode').textContent=roomCode;setStatus('방 번호 생성 중...','');openSocket('host',roomCode)}
+function joinRoom(){if(!savedPlayerName)return;let c=$('joinCode').value.trim();if(c.length!==4)return alert('4자리 방 번호를 입력하세요.');resetNet();myRole='guest';roomCode=c;setStatus(`CONNECTING TO ROOM ${c}... · 서버에 연결 중입니다.`,'');openSocket('join',c)}
 function openSocket(mode,codeValue){
+ if(!savedPlayerName)return;
  resetNet();socket=ClassroomNetwork.createSocket();
  socket.addEventListener('open',()=>socket.send(JSON.stringify({type:mode==='host'?'CREATE_ROOM':'JOIN_ROOM',gameId:GAME_ID,roomCode:codeValue,name:getPlayerName()})));
  socket.addEventListener('message',e=>{let m;try{m=JSON.parse(e.data)}catch{return}handleServerMessage(m)});

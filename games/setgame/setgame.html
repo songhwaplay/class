@@ -987,9 +987,9 @@ textarea,
     <div class="lobby-subtitle">1~4명 · 혼자 연습 가능</div>
 
     <div class="input-group" id="nickname-input-group">
-        <label>PLAYER NAME · 한글 2~6자</label>
-        <input type="text" class="input-field" id="player-nickname" value="" maxlength="6" placeholder="한글 이름 입력" autocomplete="off" inputmode="text">
-        <div id="nickname-help" style="min-height:18px;color:var(--muted);font-size:12px;">한글 이름을 2~6자로 입력하세요.</div>
+        <label>PLAYER NAME</label>
+        <div id="nickname-help" style="min-height:18px;color:var(--muted);font-size:12px;">이름이 없습니다. 메인 화면에서 이름을 먼저 저장해 주세요.</div>
+        <button class="action-btn" id="open-main-page" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>
     </div>
 
     <div style="display: flex; gap: 10px; margin-top: 10px;">
@@ -1191,68 +1191,32 @@ textarea,
         return KOREAN_NAME_PATTERN.test(String(value || ""));
     }
 
-    function updateNicknameUI() {
-        const input = document.getElementById("player-nickname");
-        const help = document.getElementById("nickname-help");
-        if (!input) return false;
-
-        const normalized = normalizeNickname(input.value);
-        if (input.value !== normalized) input.value = normalized;
-
-        const valid = isValidNickname(normalized);
-        if (help) {
-            help.textContent = valid
-                ? "사용할 수 있는 이름입니다."
-                : "한글 이름을 3~6자로 입력하세요.";
-            help.style.color = valid ? "var(--green)" : "var(--muted)";
-        }
-        return valid;
-    }
-
     const SAVED_PLAYER_NAME_KEY = "classPlayerName";
 
     function getSavedPlayerName() {
-        return String(localStorage.getItem(SAVED_PLAYER_NAME_KEY) || "").trim().slice(0, 12);
+        const savedName = normalizeNickname(localStorage.getItem(SAVED_PLAYER_NAME_KEY) || "");
+        return isValidNickname(savedName) ? savedName : "";
     }
 
     function requireValidNickname() {
-        if (getSavedPlayerName()) return true;
-        const input = document.getElementById("player-nickname");
-        if (updateNicknameUI()) return true;
-        if (input) input.focus();
-        return false;
+        const valid = Boolean(getSavedPlayerName());
+        if (!valid) document.getElementById("open-main-page")?.focus();
+        return valid;
     }
 
     function getNickname() {
-        const savedName = getSavedPlayerName();
-        if (savedName) return savedName;
-        return normalizeNickname(document.getElementById("player-nickname")?.value);
+        return getSavedPlayerName();
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-        const input = document.getElementById("player-nickname");
         const inputGroup = document.getElementById("nickname-input-group");
         const savedName = getSavedPlayerName();
 
         if (savedName) {
-            if (input) input.value = savedName;
             if (inputGroup) inputGroup.style.display = "none";
             const subtitle = document.querySelector(".lobby-subtitle");
             if (subtitle) subtitle.textContent = `PLAYER · ${savedName} · 1~4명`;
-            return;
         }
-
-        if (!input) return;
-        let composing = false;
-        input.addEventListener("compositionstart", () => { composing = true; });
-        input.addEventListener("compositionend", () => {
-            composing = false;
-            updateNicknameUI();
-        });
-        input.addEventListener("input", () => {
-            if (!composing) updateNicknameUI();
-        });
-        updateNicknameUI();
     });
 
     function normalizeRoomCode(value) {
