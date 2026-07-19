@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>메인 게임 메뉴</title>
+    <script src="assets/sound/music-control.js" defer></script>
     <style>
         :root {
             --bg: #2b1d1d;
@@ -223,18 +224,6 @@
         </div>
     </div>
 
-    <div class="music-control" aria-label="배경음악 음량 조절">
-        <span class="music-label">MUSIC VOLUME:</span>
-        <div class="volume-box" role="group" aria-label="음량 단계">
-            <button class="volume-step" type="button" data-level="1" aria-label="음량 1단계"></button>
-            <button class="volume-step" type="button" data-level="2" aria-label="음량 2단계"></button>
-            <button class="volume-step" type="button" data-level="3" aria-label="음량 3단계"></button>
-            <button class="volume-step" type="button" data-level="4" aria-label="음량 4단계"></button>
-            <button class="volume-step" type="button" data-level="5" aria-label="음량 5단계"></button>
-        </div>
-    </div>
-    <div id="musicStatus" class="music-status" aria-live="polite"></div>
-
     <h1>게임 선택</h1>
     <div class="menu-container">
         <a href="games/fruitbell/fruitbell.html">할리갈리</a>
@@ -362,108 +351,6 @@
                 showNameEditor();
             }
 
-            const bgm = document.getElementById('bgm');
-            const musicStatus = document.getElementById('musicStatus');
-            const volumeSteps = [...document.querySelectorAll('.volume-step')];
-
-            const savedLevel = Number(localStorage.getItem('cds95VolumeLevel'));
-            let volumeLevel = Number.isInteger(savedLevel) && savedLevel >= 1 && savedLevel <= 5
-                ? savedLevel
-                : 4;
-
-            function renderVolume() {
-                volumeSteps.forEach((step, index) => {
-                    step.classList.toggle('active', index < volumeLevel);
-                });
-            }
-
-            async function startMusic() {
-                // 페이지 내부에서는 음소거와 0단계 음량을 허용하지 않습니다.
-                bgm.muted = false;
-                bgm.volume = Math.max(1, volumeLevel) / 5;
-
-                try {
-                    await bgm.play();
-                    musicStatus.textContent = '';
-                    removeStartListeners();
-                } catch (error) {
-                    musicStatus.textContent = '화면을 한 번 클릭하거나 키를 누르면 음악이 시작됩니다.';
-                    addStartListeners();
-                }
-            }
-
-            function forceMusicOn() {
-                if (volumeLevel < 1) {
-                    volumeLevel = 1;
-                    localStorage.setItem('cds95VolumeLevel', '1');
-                }
-
-                bgm.muted = false;
-                bgm.volume = volumeLevel / 5;
-
-                if (bgm.paused) {
-                    startMusic();
-                }
-            }
-
-            function handleFirstInteraction() {
-                startMusic();
-            }
-
-            function addStartListeners() {
-                document.addEventListener('pointerdown', handleFirstInteraction, { once: true });
-                document.addEventListener('keydown', handleFirstInteraction, { once: true });
-                document.addEventListener('touchstart', handleFirstInteraction, { once: true });
-            }
-
-            function removeStartListeners() {
-                document.removeEventListener('pointerdown', handleFirstInteraction);
-                document.removeEventListener('keydown', handleFirstInteraction);
-                document.removeEventListener('touchstart', handleFirstInteraction);
-            }
-
-            volumeSteps.forEach((step) => {
-                step.addEventListener('click', () => {
-                    volumeLevel = Math.max(1, Math.min(5, Number(step.dataset.level) || 1));
-                    bgm.muted = false;
-                    bgm.volume = volumeLevel / 5;
-                    localStorage.setItem('cds95VolumeLevel', String(volumeLevel));
-                    renderVolume();
-                    startMusic();
-                });
-            });
-
-            // 개발자 도구나 외부 스크립트가 음소거/정지를 시도해도 페이지 안에서는 다시 켭니다.
-            bgm.addEventListener('volumechange', () => {
-                if (bgm.muted || bgm.volume <= 0) {
-                    bgm.muted = false;
-                    bgm.volume = Math.max(1, volumeLevel) / 5;
-                }
-            });
-
-            bgm.addEventListener('pause', () => {
-                if (!document.hidden) {
-                    startMusic();
-                }
-            });
-
-            document.addEventListener('visibilitychange', () => {
-                if (!document.hidden) {
-                    forceMusicOn();
-                }
-            });
-
-            bgm.addEventListener('error', () => {
-                musicStatus.textContent = '음악 파일을 찾지 못했습니다: assets/sound/index.mp3';
-            });
-
-            // 예전 버전에서 저장한 음소거 기록은 제거합니다.
-            localStorage.removeItem('cds95Muted');
-
-            bgm.muted = false;
-            bgm.volume = volumeLevel / 5;
-            renderVolume();
-            startMusic();
         })();
     </script>
 </body>
