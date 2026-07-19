@@ -37,6 +37,8 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 @media(max-width:840px){.game-layout{grid-template-columns:1fr}.side-panel{display:grid;grid-template-columns:1fr 1fr}.log{height:100px}}
 @media(max-width:620px){.screen{padding:0}.panel,.game-shell{min-height:100vh;border-radius:0;border-left:0;border-right:0;padding:13px}.game-head{grid-template-columns:1fr}.game-title,.head-actions{text-align:center}.board-stage{padding:28px}.side-panel{grid-template-columns:1fr}.share-row{grid-template-columns:1fr}.shape.triangle{border-left-width:11px;border-right-width:11px;border-bottom-width:21px}.music-control{gap:5px}.music-segment{width:20px;height:18px}}
 </style>
+<script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
 <audio id="bgm" src="../../assets/sound/traverse.mp3" loop preload="auto"></audio>
@@ -60,18 +62,14 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 <div id="toast" class="toast"></div>
 <script>
 "use strict";
-const GAME_ID="traverse",SERVER="wss://classroom-game-hub.onrender.com",NAME_KEY="classPlayerName",BOARD_SIZE=10;
+const GAME_ID="traverse",NAME_KEY="classPlayerName",BOARD_SIZE=10;
 const SHAPES=["triangle","circle","diamond","square","square","diamond","circle","triangle"],SIDE_ORDER_4=["bottom","right","top","left"],PLAYER_COLORS=["#e4b94f","#62a8e5","#e76f67","#69bd84"];
 let socket=null,myId=null,myRole="host",roomCode="",players={},connected=false,started=false,state=null,selectedPieceId=null,legalOptions=[],pendingSocketAction=null,intentionalSocketClose=false,hostCreateAttempts=0;
 const clientToken=(()=>{try{return crypto.randomUUID()}catch(_){return `c-${Date.now()}-${Math.random().toString(36).slice(2)}`}})();
 const $=id=>document.getElementById(id);
 function savedName(){return String(localStorage.getItem(NAME_KEY)||"").trim()}
 function cleanName(v){const n=String(v||"").trim();return n||"플레이어"}
-function code4(){
- const cryptoObj=window.crypto||window.msCrypto;
- if(cryptoObj&&cryptoObj.getRandomValues){const a=new Uint32Array(1);cryptoObj.getRandomValues(a);return String(1000+(a[0]%9000))}
- return String(Math.floor(Math.random()*9000)+1000)
-}
+function code4(){return ClassroomNetwork.generateRoomCode(4)}
 function key(r,c){return `${r},${c}`}function inBounds(r,c){return r>=0&&r<10&&c>=0&&c<10}function isCorner(r,c){return (r===0||r===9)&&(c===0||c===9)}
 function sideCell(side,r,c){if(side==="top")return r===0;if(side==="bottom")return r===9;if(side==="left")return c===0;return c===9}
 function destinationSide(side){return {top:"bottom",bottom:"top",left:"right",right:"left"}[side]}
@@ -133,7 +131,7 @@ function setMode(mode){
 function connectSocket(action){
  closeSocketTransport();pendingSocketAction=action;intentionalSocketClose=false;
  let ws;
- try{ws=new WebSocket(SERVER);socket=ws}catch(_){setLobbyStatus("통신 서버에 연결할 수 없습니다.");return}
+ try{ws=ClassroomNetwork.createSocket();socket=ws}catch(_){setLobbyStatus("CONNECTION ERROR · 통신 서버에 연결할 수 없습니다.");return}
  ws.addEventListener("open",()=>{if(socket===ws)setLobbyStatus(myRole==="host"?"서버 연결 완료 · 방을 등록하는 중입니다.":"서버 연결 완료 · 방에 입장하는 중입니다.")});
  ws.addEventListener("message",e=>{if(socket!==ws)return;let m;try{m=JSON.parse(e.data)}catch(_){return}handleServer(m)});
  ws.addEventListener("error",()=>{if(socket===ws)setLobbyStatus("통신 서버 연결 중 오류가 발생했습니다.")});

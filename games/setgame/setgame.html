@@ -974,6 +974,8 @@ textarea,
 }
 
 </style>
+<script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
 
@@ -1159,8 +1161,6 @@ textarea,
 
     // --- 2. 다중 접속 (Render WebSocket) 네트워크 엔진 ---
     const GAME_ID = "setgame";
-    const GAME_SERVER_URL = "wss://classroom-game-hub.onrender.com";
-
     let socket = null;
     let myRole = null;    // "host" | "guest"
     let currentRoomCode = null;
@@ -1263,16 +1263,7 @@ textarea,
     }
 
     function generateRoomCode() {
-        const cryptoObj = window.crypto || window.msCrypto;
-        let value;
-        if (cryptoObj && cryptoObj.getRandomValues) {
-            const random = new Uint32Array(1);
-            cryptoObj.getRandomValues(random);
-            value = 1000 + (random[0] % 9000);
-        } else {
-            value = Math.floor(Math.random() * 9000) + 1000;
-        }
-        return String(value);
+        return ClassroomNetwork.generateRoomCode(4);
     }
 
     function getRoomInviteUrl() {
@@ -1348,7 +1339,7 @@ textarea,
         intentionalSocketClose = false;
 
         try {
-            socket = new WebSocket(GAME_SERVER_URL);
+            socket = ClassroomNetwork.createSocket();
         } catch (_) {
             handleSocketFailure("서버에 연결하지 못했습니다.");
             return;

@@ -127,6 +127,8 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 .rules-modal .rules-close{display:block;margin:18px auto 0;min-width:130px}
 
 </style>
+<script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
 <audio id="bgm" src="../../assets/sound/fruitbell.mp3" loop preload="auto"></audio>
@@ -213,9 +215,8 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 <script>
 "use strict";
 const GAME_ID="fruitbell";
-const SERVER="wss://classroom-game-hub.onrender.com";
 const FRUITS=["strawberry","banana","lime","plum"];
-let socket=null,myId=null,myRole="host",roomCode="",players={},connected=false,started=false;
+let socket=null,myId=null,myRole="host",roomCode="",players={},connected=false,started=false,hostCreateAttempts=0;
 let gameMode="individual";
 let state={turn:0,order:[],scores:{},decks:{},faceUp:{},wonCards:{},penaltyPot:[],locked:false,ended:false,turnDeadline:0,gameMode:"individual",teams:{}};
 let hostTurnTimer=null,clientTimerRaf=null;
@@ -262,7 +263,7 @@ function applySavedPlayerName(){
 function normalizeName(v){return String(v||"").replace(/[^가-힣]/g,"").slice(0,6)}
 function isValidName(v){return KOREAN_NAME_PATTERN.test(String(v||""))}
 function cleanName(v){const n=normalizeName(v);return isValidName(n)?n:"플레이어"}
-function code4(){return String(Math.floor(1000+Math.random()*9000))}
+function code4(){return ClassroomNetwork.generateRoomCode(4)}
 window.addEventListener("DOMContentLoaded",applySavedPlayerName);
 
 document.addEventListener("keydown",event=>{
@@ -398,13 +399,14 @@ function switchMode(mode){
 }
 function connect(first){
  try{if(socket)socket.close()}catch(e){}
- socket=new WebSocket(SERVER);
+ socket=ClassroomNetwork.createSocket();
  socket.onopen=()=>socket.send(JSON.stringify(first));
  socket.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}handleServer(m)};
- socket.onerror=()=>setStatus("서버 연결 오류");
+ socket.onerror=()=>setStatus("CONNECTION ERROR · 서버 연결 오류");
+ socket.onclose=()=>{if(started)alert("CONNECTION LOST · 게임 서버 연결이 끊어졌습니다.");else if(connected){connected=false;$("hostStatus").textContent="CONNECTION LOST · 다시 방을 만들어 주세요.";$("joinStatus").textContent="CONNECTION LOST · 방 번호를 확인하고 다시 입장해 주세요."}};
 }
 function createRoom(){
- players={};connected=false;started=false;roomCode=code4();$("roomCode").textContent="----";$("hostStatus").textContent="방을 만드는 중...";
+ players={};connected=false;started=false;hostCreateAttempts=0;roomCode=code4();$("roomCode").textContent="----";$("hostStatus").textContent="CREATING ROOM... · 방을 만드는 중입니다.";
  connect({type:"CREATE_ROOM",gameId:GAME_ID,roomCode});
 }
 function joinRoom(){
@@ -421,6 +423,10 @@ function joinRoom(){
 }
 function handleServer(m){
  if(m.type==="CONNECTED"){myId=m.playerId}
+ else if(m.type==="ROOM_EXISTS"){
+   if(myRole==="host"&&hostCreateAttempts<8){hostCreateAttempts+=1;roomCode=code4();$("hostStatus").textContent="CREATING ROOM... · 새 방 번호를 만드는 중입니다.";socket.send(JSON.stringify({type:"CREATE_ROOM",gameId:GAME_ID,roomCode}))}
+   else $("hostStatus").textContent="ROOM ERROR · 빈 방 번호를 만들지 못했습니다.";
+ }
  else if(m.type==="ROOM_CREATED"){
    connected=true;roomCode=m.roomCode;players={[myId]:{name:getSavedPlayerName()||normalizeName($("nameInput").value),score:0}};
    $("roomCode").textContent=roomCode;$("hostStatus").textContent="상대방 접속 대기 중";renderLobby();

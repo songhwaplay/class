@@ -1,0 +1,106 @@
+.class-music-ready .music-control,
+.class-music-ready .volume-control,
+.class-music-ready .volume-container,
+.class-music-ready .ingame-controls-wrapper,
+.class-music-ready .music,
+.class-music-ready .legacy-music-control {
+    display: none !important;
+}
+
+.unified-music-control {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 100000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: max-content;
+    max-width: calc(100vw - 20px);
+    min-height: 36px;
+    padding: 4px 7px;
+    border: 2px solid #5f3f18;
+    border-radius: 2px;
+    background: linear-gradient(180deg, #21160b 0%, #120c06 100%);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, .58), inset 0 1px rgba(255, 224, 156, .09);
+    color: #d7c08d;
+    font: 800 13px/1 Georgia, "Times New Roman", serif;
+    letter-spacing: .4px;
+}
+
+.unified-music-label {
+    white-space: nowrap;
+    color: #d7c08d;
+}
+
+.unified-music-control .unified-music-mute {
+    appearance: none;
+    width: auto;
+    min-width: 64px;
+    min-height: 24px;
+    height: 24px;
+    margin: 0;
+    padding: 0 9px;
+    border: 1px solid #704b1d;
+    border-radius: 0;
+    background: linear-gradient(180deg, #b18542 0%, #7c5523 100%);
+    box-shadow: inset 0 1px rgba(255, 231, 173, .24);
+    color: #1c1309;
+    font: 900 13px/22px Georgia, "Times New Roman", serif;
+    text-align: center;
+    cursor: pointer;
+}
+
+.unified-music-control .unified-music-mute.is-muted {
+    background: linear-gradient(180deg, #4a321a 0%, #27180c 100%);
+    color: #f0cf8d;
+}
+
+.unified-music-levels {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 29px;
+    margin: 0;
+    padding: 3px 5px;
+    border: 2px solid #624119;
+    background: #130d07;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, .82);
+}
+
+.unified-music-control .unified-music-segment {
+    appearance: none;
+    display: block;
+    width: 22px;
+    min-width: 22px;
+    height: 19px;
+    min-height: 19px;
+    margin: 0;
+    padding: 0;
+    border: 1px solid #79501d;
+    border-radius: 0;
+    background: #2b1d10;
+    box-shadow: none;
+    cursor: pointer;
+}
+
+.unified-music-control .unified-music-segment.is-on:nth-child(1) { background: #805321; }
+.unified-music-control .unified-music-segment.is-on:nth-child(2) { background: #a46b28; }
+.unified-music-control .unified-music-segment.is-on:nth-child(3) { background: #cb8734; }
+.unified-music-control .unified-music-segment.is-on:nth-child(4) { background: #e6a247; }
+.unified-music-control .unified-music-segment.is-on:nth-child(5) {
+    background: #ffc063;
+    border-color: #ffe1a0;
+    box-shadow: 0 0 7px rgba(255, 186, 77, .72);
+}
+
+.unified-music-control button:focus-visible {
+    outline: 2px solid #fff0b7;
+    outline-offset: 2px;
+}
+
+@media (max-width: 760px), (hover: none) and (pointer: coarse), (max-height: 520px) and (orientation: landscape) {
+    .unified-music-control {
+        display: none !important;
+    }
+}

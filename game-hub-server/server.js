@@ -14,7 +14,7 @@ const MAX_ROOM_PLAYERS = {
   setgame: 4,
   nimgame: 2,
   janggi: 2,
-  avalon: 10
+  avalon: 8
 };
 
 const FINISHER_GAMES = new Set(["coinweighing", "hanoitower", "sphinx"]);
@@ -50,9 +50,46 @@ function roomKey(gameId, roomCode) {
 
 const AVALON_TEAM_SIZES = {
   5: [2, 3, 2, 3, 3], 6: [2, 3, 4, 3, 4], 7: [2, 3, 3, 4, 4],
-  8: [3, 4, 4, 5, 5], 9: [3, 4, 4, 5, 5], 10: [3, 4, 4, 5, 5]
+  8: [3, 4, 4, 5, 5]
 };
-const AVALON_EVIL_COUNTS = { 5: 2, 6: 2, 7: 3, 8: 3, 9: 3, 10: 4 };
+const AVALON_EVIL_COUNTS = { 5: 2, 6: 2, 7: 3, 8: 3 };
+
+function recommendedAvalonSettings(count) {
+  if (count === 7) return { percival: true, morgana: true, mordred: false, oberon: true };
+  if (count === 8) return { percival: true, morgana: true, mordred: true, oberon: false };
+  return { percival: false, morgana: false, mordred: false, oberon: false };
+}
+
+function normalizeAvalonSettings(count, settings) {
+  const normalized = {
+    percival: !!settings?.percival,
+    morgana: !!settings?.morgana,
+    mordred: !!settings?.mordred,
+    oberon: !!settings?.oberon
+  };
+  const evilSpecialLimit = Math.max(0, (AVALON_EVIL_COUNTS[count] || 1) - 1);
+  const selectedEvil = ["morgana", "mordred", "oberon"].filter(role => normalized[role]);
+  selectedEvil.slice(evilSpecialLimit).forEach(role => { normalized[role] = false; });
+  return normalized;
+}
+
+function normalizeAvalonCharacterStyle(value) {
+  return value === "male" || value === "female" ? value : "random";
+}
+
+function avalonRoleComposition(count, settings) {
+  const evilCount = AVALON_EVIL_COUNTS[count];
+  if (!evilCount) return { good: [], evil: [] };
+  const good = ["Merlin"];
+  const evil = ["Assassin"];
+  if (settings.percival && good.length < count - evilCount) good.push("Percival");
+  if (settings.morgana && evil.length < evilCount) evil.push("Morgana");
+  if (settings.mordred && evil.length < evilCount) evil.push("Mordred");
+  if (settings.oberon && evil.length < evilCount) evil.push("Oberon");
+  while (good.length < count - evilCount) good.push("Loyal Servant");
+  while (evil.length < evilCount) evil.push("Minion of Mordred");
+  return { good, evil };
+}
 
 function shuffle(items) {
   const result = [...items];
@@ -65,6 +102,7 @@ function shuffle(items) {
 
 function avalonPublicState(room) {
   const game = room.avalon;
+  const roleSummary = avalonRoleComposition(game.players.length, game.settings);
   return {
     phase: game.phase,
     players: game.players.map(player => ({ id: player.id, name: player.name, connected: room.clients.has(player.id) })),
@@ -78,8 +116,10 @@ function avalonPublicState(room) {
     rejects: game.rejects,
     results: game.results,
     winner: game.winner,
-    assassinId: game.assassinId,
-    settings: game.settings
+    settings: game.settings,
+    settingsCustomized: game.settingsCustomized,
+    recommendedSettings: recommendedAvalonSettings(game.players.length),
+    roleSummary
   };
 }
 
@@ -92,16 +132,13 @@ function avalonNotice(room, message) {
   for (const client of room.clients.values()) safeSend(client, { type: "AVALON_NOTICE", message });
 }
 
+function avalonRevealRoles(room) {
+  const roles = room.avalon.players.map(player => ({ name: player.name, role: player.role }));
+  for (const client of room.clients.values()) safeSend(client, { type: "AVALON_REVEAL", roles });
+}
+
 function buildAvalonRoles(count, settings) {
-  const evilCount = AVALON_EVIL_COUNTS[count];
-  const good = ["Merlin"];
-  const evil = ["Assassin"];
-  if (settings.percival && good.length < count - evilCount) good.push("Percival");
-  if (settings.morgana && evil.length < evilCount) evil.push("Morgana");
-  if (settings.mordred && evil.length < evilCount) evil.push("Mordred");
-  if (settings.oberon && evil.length < evilCount) evil.push("Oberon");
-  while (good.length < count - evilCount) good.push("Loyal Servant");
-  while (evil.length < evilCount) evil.push("Minion of Mordred");
+  const { good, evil } = avalonRoleComposition(count, normalizeAvalonSettings(count, settings));
   return shuffle([...good, ...evil]);
 }
 
@@ -115,7 +152,13 @@ function avalonRoleInfo(game, player) {
   } else if (evilRoles.has(player.role) && player.role !== "Oberon") {
     game.players.filter(p => p.id !== player.id && evilRoles.has(p.role) && p.role !== "Oberon").forEach(p => visible.push(p.name));
   }
-  return { role: player.role, alignment: evilRoles.has(player.role) ? "evil" : "good", visible };
+  return {
+    role: player.role,
+    alignment: evilRoles.has(player.role) ? "evil" : "good",
+    visible,
+    characterStyle: player.resolvedCharacterStyle,
+    cardVariant: player.cardVariant || 1
+  };
 }
 
 function getKoreaDateParts(date = new Date()) {
@@ -247,11 +290,15 @@ app.post("/api/finishers", (req, res) => {
 });
 
 wss.on("connection", socket => {
-  const playerId = crypto.randomUUID();
+  let playerId = crypto.randomUUID();
+  socket.isAlive = true;
+  socket.on("pong", () => { socket.isAlive = true; });
   socket.meta = {
     playerId,
     roomKey: null,
-    role: null
+    role: null,
+    clientToken: null,
+    disconnectTimer: null
   };
 
   safeSend(socket, {
@@ -273,13 +320,33 @@ wss.on("connection", socket => {
     if (type === "CREATE_ROOM") {
       const gameId = cleanToken(message.gameId, 30);
       const roomCode = cleanToken(message.roomCode, 10);
+      const clientToken = cleanToken(message.clientToken, 80);
+      const resumeOnly = message.resumeOnly === true;
       if (!gameId || !roomCode) {
         safeSend(socket, { type: "ERROR", message: "방 정보가 올바르지 않습니다." });
         return;
       }
 
       const key = roomKey(gameId, roomCode);
-      if (rooms.has(key)) {
+      const existingRoom = rooms.get(key);
+      const previousHost = existingRoom?.clients.get(existingRoom.hostId);
+      if (existingRoom && clientToken && previousHost?.meta?.clientToken === clientToken && previousHost.readyState !== WebSocket.OPEN) {
+        clearTimeout(previousHost.meta.disconnectTimer);
+        playerId = existingRoom.hostId;
+        socket.meta.playerId = playerId;
+        socket.meta.roomKey = key;
+        socket.meta.role = "host";
+        socket.meta.clientToken = clientToken;
+        existingRoom.clients.set(playerId, socket);
+        safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
+        if (existingRoom.avalon) avalonBroadcast(existingRoom);
+        return;
+      }
+      if (resumeOnly) {
+        safeSend(socket, { type: "ROOM_NOT_FOUND", gameId, roomCode });
+        return;
+      }
+      if (existingRoom) {
         safeSend(socket, { type: "ROOM_EXISTS", gameId, roomCode });
         return;
       }
@@ -292,8 +359,8 @@ wss.on("connection", socket => {
       };
       if (gameId === "avalon") {
         room.avalon = {
-          phase: "lobby", players: [{ id: playerId, name: cleanToken(message.name, 12) || "방장" }],
-          settings: { percival: true, morgana: true, mordred: false, oberon: false },
+          phase: "lobby", players: [{ id: playerId, name: cleanToken(message.name, 12) || "방장", characterStyle: normalizeAvalonCharacterStyle(message.characterStyle) }],
+          settings: recommendedAvalonSettings(1), settingsCustomized: false,
           leaderIndex: 0, quest: 0, selectedTeam: [], proposalVotes: {}, questVotes: {},
           rejects: 0, results: [], winner: null, assassinId: null
         };
@@ -301,6 +368,7 @@ wss.on("connection", socket => {
       rooms.set(key, room);
       socket.meta.roomKey = key;
       socket.meta.role = "host";
+      socket.meta.clientToken = clientToken;
 
       safeSend(socket, {
         type: "ROOM_CREATED",
@@ -315,10 +383,33 @@ wss.on("connection", socket => {
     if (type === "JOIN_ROOM") {
       const gameId = cleanToken(message.gameId, 30);
       const roomCode = cleanToken(message.roomCode, 10);
+      const clientToken = cleanToken(message.clientToken, 80);
+      const resumeOnly = message.resumeOnly === true;
       const key = roomKey(gameId, roomCode);
       const room = rooms.get(key);
 
       if (!room) {
+        safeSend(socket, { type: "ROOM_NOT_FOUND", gameId, roomCode });
+        return;
+      }
+
+      const resumeEntry = clientToken
+        ? [...room.clients.entries()].find(([, client]) => client?.meta?.clientToken === clientToken && client.readyState !== WebSocket.OPEN)
+        : null;
+      if (resumeEntry) {
+        const [resumeId, previousSocket] = resumeEntry;
+        clearTimeout(previousSocket.meta.disconnectTimer);
+        playerId = resumeId;
+        socket.meta.playerId = playerId;
+        socket.meta.roomKey = key;
+        socket.meta.role = resumeId === room.hostId ? "host" : "guest";
+        socket.meta.clientToken = clientToken;
+        room.clients.set(playerId, socket);
+        safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
+        if (room.avalon) avalonBroadcast(room);
+        return;
+      }
+      if (resumeOnly) {
         safeSend(socket, { type: "ROOM_NOT_FOUND", gameId, roomCode });
         return;
       }
@@ -332,6 +423,7 @@ wss.on("connection", socket => {
       room.clients.set(playerId, socket);
       socket.meta.roomKey = key;
       socket.meta.role = "guest";
+      socket.meta.clientToken = clientToken;
 
       if (room.avalon) {
         if (room.avalon.phase !== "lobby") {
@@ -341,7 +433,10 @@ wss.on("connection", socket => {
           safeSend(socket, { type: "ERROR", message: "이미 시작한 게임입니다." });
           return;
         }
-        room.avalon.players.push({ id: playerId, name: cleanToken(message.name, 12) || `플레이어 ${room.avalon.players.length + 1}` });
+        room.avalon.players.push({ id: playerId, name: cleanToken(message.name, 12) || `플레이어 ${room.avalon.players.length + 1}`, characterStyle: normalizeAvalonCharacterStyle(message.characterStyle) });
+        if (!room.avalon.settingsCustomized) {
+          room.avalon.settings = recommendedAvalonSettings(room.avalon.players.length);
+        }
       }
 
       safeSend(socket, {
@@ -370,12 +465,27 @@ wss.on("connection", socket => {
       if (!player) return;
 
       if (action === "SETTINGS" && playerId === room.hostId && game.phase === "lobby") {
-        game.settings = { percival: !!message.settings?.percival, morgana: !!message.settings?.morgana, mordred: !!message.settings?.mordred, oberon: !!message.settings?.oberon };
+        game.settings = normalizeAvalonSettings(game.players.length, message.settings);
+        game.settingsCustomized = true;
+        avalonBroadcast(room);
+      } else if (action === "RESET_RECOMMENDED" && playerId === room.hostId && game.phase === "lobby") {
+        game.settings = recommendedAvalonSettings(game.players.length);
+        game.settingsCustomized = false;
         avalonBroadcast(room);
       } else if (action === "START" && playerId === room.hostId && game.phase === "lobby") {
         if (game.players.length < 5) return safeSend(socket, { type: "ERROR", message: "게임 시작에는 최소 5명이 필요합니다." });
+        if (game.players.length > 8) return safeSend(socket, { type: "ERROR", message: "수업용 아발론은 최대 8명까지 참여할 수 있습니다." });
         const roles = buildAvalonRoles(game.players.length, game.settings);
-        game.players.forEach((p, index) => { p.role = roles[index]; });
+        const roleVariantCounts = new Map();
+        game.players.forEach((p, index) => {
+          p.role = roles[index];
+          const variant = (roleVariantCounts.get(p.role) || 0) + 1;
+          roleVariantCounts.set(p.role, variant);
+          p.cardVariant = variant;
+          p.resolvedCharacterStyle = p.characterStyle === "random"
+            ? (crypto.randomInt(2) === 0 ? "male" : "female")
+            : p.characterStyle;
+        });
         game.leaderIndex = crypto.randomInt(game.players.length);
         game.phase = "team";
         game.assassinId = game.players.find(p => p.role === "Assassin")?.id || null;
@@ -392,7 +502,7 @@ wss.on("connection", socket => {
           const approvals = Object.values(game.proposalVotes).filter(Boolean).length;
           if (approvals > game.players.length / 2) { game.phase = "questVote"; game.questVotes = {}; avalonNotice(room, `원정대가 ${approvals}:${game.players.length - approvals}로 승인되었습니다.`); }
           else { game.rejects += 1; game.leaderIndex = (game.leaderIndex + 1) % game.players.length; game.phase = "team"; avalonNotice(room, `원정대가 ${approvals}:${game.players.length - approvals}로 부결되었습니다.`); }
-          if (game.rejects >= 5) { game.winner = "evil"; game.phase = "ended"; }
+          if (game.rejects >= 5) { game.winner = "evil"; game.phase = "ended"; avalonRevealRoles(room); }
         }
         avalonBroadcast(room);
       } else if (action === "QUEST_VOTE" && game.phase === "questVote" && game.selectedTeam.includes(playerId) && !(playerId in game.questVotes)) {
@@ -405,7 +515,7 @@ wss.on("connection", socket => {
           game.results.push({ success, fails }); game.quest += 1; game.rejects = 0;
           const goodWins = game.results.filter(r => r.success).length;
           const evilWins = game.results.filter(r => !r.success).length;
-          if (evilWins >= 3) { game.winner = "evil"; game.phase = "ended"; }
+          if (evilWins >= 3) { game.winner = "evil"; game.phase = "ended"; avalonRevealRoles(room); }
           else if (goodWins >= 3) { game.phase = "assassination"; }
           else { game.leaderIndex = (game.leaderIndex + 1) % game.players.length; game.phase = "team"; }
           avalonNotice(room, success ? `임무 성공! (실패 카드 ${fails}장)` : `임무 실패! (실패 카드 ${fails}장)`);
@@ -415,7 +525,7 @@ wss.on("connection", socket => {
         const target = game.players.find(p => p.id === cleanToken(message.targetId, 60));
         if (!target) return;
         game.winner = target.role === "Merlin" ? "evil" : "good"; game.phase = "ended";
-        for (const client of room.clients.values()) safeSend(client, { type: "AVALON_REVEAL", roles: game.players.map(p => ({ name: p.name, role: p.role })) });
+        avalonRevealRoles(room);
         avalonBroadcast(room);
       }
       return;
@@ -445,39 +555,65 @@ wss.on("connection", socket => {
     }
   });
 
-  socket.on("close", () => {
+  socket.on("close", code => {
     const key = socket.meta.roomKey;
     if (!key) return;
 
     const room = rooms.get(key);
     if (!room) return;
 
-    if (socket.meta.role === "host" || playerId === room.hostId) {
-      for (const [id, client] of room.clients) {
-        if (id !== playerId) {
-          safeSend(client, {
-            type: "ROOM_CLOSED",
-            playerId
-          });
-          try { client.close(); } catch (_) {}
+    const finishDisconnect = () => {
+      const currentRoom = rooms.get(key);
+      if (!currentRoom || currentRoom.clients.get(playerId) !== socket) return;
+
+      if (socket.meta.role === "host" || playerId === currentRoom.hostId) {
+        for (const [id, client] of currentRoom.clients) {
+          if (id !== playerId) {
+            safeSend(client, {
+              type: "ROOM_CLOSED",
+              playerId
+            });
+            try { client.close(4002, "HOST_LEFT"); } catch (_) {}
+          }
+        }
+        rooms.delete(key);
+        return;
+      }
+
+      currentRoom.clients.delete(playerId);
+      if (currentRoom.avalon) {
+        currentRoom.avalon.players = currentRoom.avalon.players.filter(player => player.id !== playerId);
+        if (currentRoom.avalon.phase === "lobby" && !currentRoom.avalon.settingsCustomized) {
+          currentRoom.avalon.settings = recommendedAvalonSettings(currentRoom.avalon.players.length);
         }
       }
-      rooms.delete(key);
-      return;
-    }
+      safeSend(currentRoom.clients.get(currentRoom.hostId), {
+        type: "PLAYER_LEFT",
+        playerId
+      });
 
-    room.clients.delete(playerId);
-    if (room.avalon) room.avalon.players = room.avalon.players.filter(player => player.id !== playerId);
-    safeSend(room.clients.get(room.hostId), {
-      type: "PLAYER_LEFT",
-      playerId
-    });
+      if (currentRoom.avalon) avalonBroadcast(currentRoom);
 
-    if (room.avalon) avalonBroadcast(room);
+      if (currentRoom.clients.size === 0) rooms.delete(key);
+    };
 
-    if (room.clients.size === 0) rooms.delete(key);
+    if (Number(code) === 4000) finishDisconnect();
+    else socket.meta.disconnectTimer = setTimeout(finishDisconnect, 12000);
   });
 });
+
+const heartbeatTimer = setInterval(() => {
+  for (const client of wss.clients) {
+    if (client.isAlive === false) {
+      try { client.terminate(); } catch (_) {}
+      continue;
+    }
+    client.isAlive = false;
+    try { client.ping(); } catch (_) {}
+  }
+}, 30000);
+heartbeatTimer.unref?.();
+wss.on("close", () => clearInterval(heartbeatTimer));
 
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Classroom Game Hub listening on port ${PORT}`);

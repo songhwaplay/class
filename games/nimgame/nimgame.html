@@ -1008,6 +1008,8 @@ textarea,
 }
 
 </style>
+<script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
 <div class="tablet-landscape-hint" aria-hidden="true">화면이 좁으면 기기를 가로로 돌리면 더 편하게 플레이할 수 있습니다.</div>
@@ -1036,7 +1038,7 @@ textarea,
                 <div class="room-code-line">
                     <div class="room-code-card">
                         <span class="room-code-caption">ROOM CODE</span>
-                        <strong class="room-code-value" id="room-code-display">---</strong>
+                        <strong class="room-code-value" id="room-code-display">----</strong>
                     </div>
                     <div class="room-code-actions">
                         <button class="small-btn" id="copy-code-btn" onclick="copyRoomCode()">COPY CODE</button>
@@ -1048,14 +1050,14 @@ textarea,
 
             <div class="room-pane hidden" id="join-room-pane">
                 <div class="join-room-row">
-                    <input class="room-code-input" id="join-code-input" maxlength="3"
+                    <input class="room-code-input" id="join-code-input" maxlength="4"
                            inputmode="numeric" autocomplete="off" spellcheck="false"
-                           placeholder="3자리"
+                           placeholder="4자리"
                            oninput="formatJoinCode(this)"
                            onkeydown="if(event.key === 'Enter') joinRoom()">
                     <button class="primary-btn" id="join-room-btn" onclick="joinRoom()">ENTER ROOM</button>
                 </div>
-                <div class="room-help">방장이 알려준 3자리 방 번호를 입력하세요.</div>
+                <div class="room-help">방장이 알려준 4자리 방 번호를 입력하세요.</div>
             </div>
         </div>
 
@@ -1277,8 +1279,6 @@ textarea,
     });
 
     const GAME_ID = "nimgame";
-    const GAME_SERVER_URL = "wss://classroom-game-hub.onrender.com";
-
     function initialize() {
         setMusicVolume(0.6, 3);
         const subtitle = document.querySelector(".subtitle");
@@ -1325,7 +1325,7 @@ textarea,
             $("share-panel").classList.add("hidden");
             $("start-btn").disabled = true;
             $("start-btn").textContent = "ENTER ROOM CODE";
-            $("lobby-foot-note").textContent = "방장이 알려준 3자리 방 번호를 입력하세요.";
+            $("lobby-foot-note").textContent = "방장이 알려준 4자리 방 번호를 입력하세요.";
             lockGuestSettings(true);
             setLobbyStatus("connecting", "방 번호를 입력한 뒤 ENTER ROOM을 누르세요.");
             setTimeout(() => $("join-code-input").focus(), 0);
@@ -1335,7 +1335,7 @@ textarea,
             $("share-panel").classList.remove("hidden");
             $("start-btn").disabled = true;
             $("start-btn").textContent = "WAITING FOR PLAYER";
-            $("lobby-foot-note").textContent = "화면의 3자리 방 번호를 상대방에게 알려주세요.";
+            $("lobby-foot-note").textContent = "화면의 4자리 방 번호를 상대방에게 알려주세요.";
             lockGuestSettings(false);
             setLobbyStatus("connecting", "새 방 번호를 만드는 중...");
             currentRoomCode = generateRoomCode();
@@ -1354,20 +1354,11 @@ textarea,
     }
 
     function generateRoomCode() {
-        const cryptoObj = window.crypto || window.msCrypto;
-        let number;
-        if (cryptoObj && cryptoObj.getRandomValues) {
-            const value = new Uint32Array(1);
-            cryptoObj.getRandomValues(value);
-            number = 100 + (value[0] % 900);
-        } else {
-            number = Math.floor(Math.random() * 900) + 100;
-        }
-        return String(number);
+        return ClassroomNetwork.generateRoomCode(4);
     }
 
     function normalizeRoomCode(value) {
-        return String(value || "").replace(/[^0-9]/g, "").slice(0, 3);
+        return String(value || "").replace(/[^0-9]/g, "").slice(0, 4);
     }
 
     function formatJoinCode(input) {
@@ -1379,8 +1370,8 @@ textarea,
         const code = normalizeRoomCode($("join-code-input").value);
         $("join-code-input").value = code;
 
-        if (code.length !== 3) {
-            showToast("3자리 방 번호를 입력하세요.");
+        if (code.length !== 4) {
+            showToast("4자리 방 번호를 입력하세요.");
             $("join-code-input").focus();
             return;
         }
@@ -1406,7 +1397,7 @@ textarea,
 
     function openSocket(mode, roomCode) {
         resetPeerTransport();
-        socket = new WebSocket(GAME_SERVER_URL);
+        socket = ClassroomNetwork.createSocket();
 
         socket.addEventListener("open", () => {
             socket.send(JSON.stringify({
@@ -1663,7 +1654,7 @@ textarea,
 
     async function copyRoomCode() {
         const code = normalizeRoomCode(currentRoomCode || $("room-code-display").textContent);
-        if (code.length !== 3) return;
+        if (code.length !== 4) return;
 
         try {
             await navigator.clipboard.writeText(code);

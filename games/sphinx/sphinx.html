@@ -600,8 +600,12 @@ textarea,
 }
 
 </style>
+<script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/network/finisher-api.js"></script>
+<script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
+<audio id="bgm" src="../../assets/sound/sphinx.mp3" loop preload="auto"></audio>
 
 <div class="game-frame">
     <aside class="sphinx-panel">
@@ -631,9 +635,8 @@ textarea,
 <script>
     let currentStage = 0, difficulty = 5, currentAnswer = "";
     const displayArea = document.getElementById('display-area');
-    const bgm = new Audio('../../assets/sound/sphinx.mp3');
+    const bgm = document.getElementById('bgm');
 
-    const FINISHER_API_URL = "https://classroom-game-hub.onrender.com/api/finishers";
     const FINISHER_GAME_ID = "sphinx";
     const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
     let playerName = "";
@@ -686,11 +689,7 @@ textarea,
         const target = document.getElementById(targetId);
         if (target) target.innerHTML = '<div class="finisher-empty">명단을 불러오는 중...</div>';
         try {
-            const response = await fetch(`${FINISHER_API_URL}?gameId=${encodeURIComponent(FINISHER_GAME_ID)}`, {
-                cache: "no-store"
-            });
-            if (!response.ok) throw new Error("load failed");
-            const data = await response.json();
+            const data = await ClassroomFinishers.list(FINISHER_GAME_ID);
             renderFinishers(targetId, data.records || []);
             return data.records || [];
         } catch (_) {
@@ -704,18 +703,12 @@ textarea,
         const target = document.getElementById(targetId);
         if (target) target.innerHTML = '<div class="finisher-empty">기록을 등록하는 중...</div>';
         try {
-            const response = await fetch(FINISHER_API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    gameId: FINISHER_GAME_ID,
-                    name: playerName,
-                    difficulty,
-                    rank
-                })
+            const data = await ClassroomFinishers.save({
+                gameId: FINISHER_GAME_ID,
+                name: playerName,
+                difficulty,
+                rank
             });
-            if (!response.ok) throw new Error("save failed");
-            const data = await response.json();
             renderFinishers(targetId, data.records || []);
             renderFinishers("today-finishers-list", data.records || []);
             return data.records || [];
