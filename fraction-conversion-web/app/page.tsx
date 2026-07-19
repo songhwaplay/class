@@ -176,7 +176,7 @@ function Fraction({
   label?: string;
 }) {
   return (
-    <span className="fraction" aria-label={label ?? `${numerator}분의 ${denominator}`}>
+    <span className="fraction" aria-label={label ?? `${denominator}분의 ${numerator}`}>
       <span className="fraction-number">{numerator}</span>
       <span className="fraction-line" aria-hidden="true" />
       <span className="fraction-number">{denominator}</span>

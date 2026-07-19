@@ -32,7 +32,7 @@ test("renders the fraction conversion practice product", async () => {
   assert.match(html, /대분수를 가분수로/);
   assert.match(html, /가분수를 대분수로/);
   assert.match(html, /전체 채점/);
-  assert.match(html, /문제지 번호 20260720/);
+  assert.match(html, /문제지 번호\s*(?:<!-- -->)?20260720/);
   assert.equal((html.match(/data-testid="question-card"/g) ?? []).length, 16);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
 });
