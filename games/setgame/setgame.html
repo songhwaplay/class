@@ -973,8 +973,41 @@ textarea,
     .music-control { display: none !important; }
 }
 
+.hidden { display: none !important; }
+
+.lobby-mode-tabs {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.lobby-mode-tabs .action-btn { flex: 1; }
+
+.lobby-mode-tabs .action-btn.active {
+    border-color: var(--gold-bright);
+    color: #000;
+    box-shadow: 0 0 12px rgba(198, 170, 85, .45);
+}
+
+.lobby-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+#lobby-player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+#lobby-guide { margin-top: 10px; }
+
 </style>
+<link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/network/multiplayer-lobby.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
@@ -982,58 +1015,62 @@ textarea,
 <audio id="bgm" src="../../assets/sound/setgame.mp3" loop preload="auto"></audio>
 
 
-<div class="lobby-card" id="lobby-card">
+<div class="lobby-card hidden" id="missingScreen">
     <div class="lobby-title">SET MATCH</div>
-    <div class="lobby-subtitle">1~4명 · 혼자 연습 가능</div>
+    <div class="lobby-subtitle">이름이 없습니다. 이름 변경은 메인 화면에서만 가능합니다.</div>
+    <button class="action-btn" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>
+</div>
 
-    <div class="input-group" id="nickname-input-group">
-        <label>PLAYER NAME</label>
-        <div id="nickname-help" style="min-height:18px;color:var(--muted);font-size:12px;">이름이 없습니다. 메인 화면에서 이름을 먼저 저장해 주세요.</div>
-        <button class="action-btn" id="open-main-page" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>
+<div class="lobby-card hidden" id="lobby-card" data-multiplayer-lobby>
+    <div class="lobby-title">SET MATCH</div>
+    <div class="lobby-subtitle">PLAYER · <strong id="savedName">-</strong> · 1~4명 · 혼자 연습 가능</div>
+
+    <div class="lobby-mode-tabs">
+        <button class="action-btn" id="host-mode-btn" type="button">CREATE ROOM</button>
+        <button class="action-btn" id="join-mode-btn" type="button">JOIN ROOM</button>
     </div>
 
-    <div style="display: flex; gap: 10px; margin-top: 10px;">
-        <button class="action-btn" style="flex: 1;" onclick="initAsHost()">CREATE ROOM</button>
-        <button class="action-btn" style="flex: 1;" onclick="showJoinPanel()">JOIN ROOM</button>
-    </div>
-    <button class="action-btn" type="button" onclick="showRules()">HOW TO PLAY</button>
-
-    <div id="host-wait-panel" style="display: none; flex-direction: column; gap: 12px; margin-top: 15px;">
+    <div class="lobby-pane hidden" id="host-wait-panel">
         <div class="room-code-block">
             <div class="player-list-title">방 번호 · 최대 4명까지 참여할 수 있습니다.</div>
             <div class="room-code-display" id="lobby-room-code">----</div>
             <div class="room-code-actions">
-                <button class="action-btn" type="button" onclick="copyRoomCode()">COPY CODE</button>
+                <button class="action-btn" id="copy-room-btn" type="button">COPY CODE</button>
+                <button class="action-btn" id="new-room-btn" type="button">NEW CODE</button>
             </div>
             <div class="room-share-status" id="room-share-status">방 번호를 상대방에게 알려주세요.</div>
         </div>
-
-        <div class="host-game-settings">
-            <label for="winning-score-input">WINNING SCORE
-                <small>먼저 이 점수에 도달하면 게임이 종료됩니다.</small>
-            </label>
-            <input class="input-field target-score-input" id="winning-score-input"
-                   type="number" min="1" max="30" step="1" value="3">
-        </div>
-
-        <div class="player-list-container">
-            <div class="player-list-title">CONNECTED PLAYERS (<span id="player-count">1</span>/4)</div>
-            <div id="lobby-player-list"></div>
-        </div>
-        <button class="action-btn" style="margin-top: 10px;" id="start-game-btn" onclick="hostStartGame()" disabled>START GAME</button>
     </div>
 
-    <div id="guest-join-panel" style="display: none; flex-direction: column; gap: 12px; margin-top: 15px;">
+    <div class="lobby-pane hidden" id="guest-join-panel">
         <div class="input-group">
-            <label>ENTER 4-DIGIT ROOM CODE</label>
+            <label for="join-room-code">ENTER 4-DIGIT ROOM CODE</label>
             <input type="text" class="input-field room-code-input" id="join-room-code"
                    maxlength="4" inputmode="numeric" autocomplete="off"
-                   placeholder="ROOM CODE · 4 DIGITS" oninput="formatRoomCodeInput(this)"
-                   onkeydown="if(event.key === 'Enter') connectToHost()">
+                   placeholder="ROOM CODE · 4 DIGITS">
         </div>
-        <button class="action-btn" onclick="connectToHost()">JOIN ROOM</button>
+        <button class="action-btn" id="join-room-btn" type="button">JOIN ROOM</button>
         <div class="room-share-status">혼자 연습하거나 최대 4명까지 함께 플레이할 수 있습니다.</div>
         <div class="player-list-title" id="connect-status" style="color: var(--muted); margin-top: 5px;"></div>
+    </div>
+
+    <div class="host-game-settings">
+        <label for="winning-score-input">WINNING SCORE
+            <small>먼저 이 점수에 도달하면 게임이 종료됩니다.</small>
+        </label>
+        <input class="input-field target-score-input" id="winning-score-input"
+               type="number" min="1" max="30" step="1" value="3">
+    </div>
+
+    <div class="player-list-container">
+        <div class="player-list-title">CONNECTED PLAYERS (<span id="player-count">0</span>/4)</div>
+        <div id="lobby-player-list"></div>
+        <div class="room-share-status" id="lobby-guide"></div>
+    </div>
+    <button class="action-btn" style="margin-top: 10px;" id="start-game-btn" type="button" disabled>START GAME</button>
+    <div style="display:flex; gap:10px; margin-top:10px;">
+        <button class="action-btn" style="flex:1;" id="rules-btn-lobby" type="button">HOW TO PLAY</button>
+        <button class="action-btn" style="flex:1;" id="leave-btn" type="button">메인 화면으로</button>
     </div>
 
     <div class="music-control">
@@ -1073,6 +1110,7 @@ textarea,
 
         <div class="side-panel">
             <button class="call-set-btn" id="call-set-btn" onclick="declareSet()">SET!</button>
+            <button class="action-btn" id="rules-btn-game" type="button">RULES</button>
             
             <div class="log-monitor" id="log-monitor">
                 <div>* System: Game started.</div>
@@ -1160,15 +1198,11 @@ textarea,
 
     // --- 2. 다중 접속 (Render WebSocket) 네트워크 엔진 ---
     const GAME_ID = "setgame";
-    let socket = null;
-    let myRole = null;    // "host" | "guest"
-    let currentRoomCode = null;
-    let hostCreateAttempts = 0;
+    let lobby = null;
+    let myRole = "host";
     let myId = null;
     let players = {};
     let selectedCards = [];
-    let pendingSocketAction = null;
-    let intentionalSocketClose = false;
 
     let activeSetter = null;
     let setCountdownTimer = null;
@@ -1198,265 +1232,149 @@ textarea,
         return isValidNickname(savedName) ? savedName : "";
     }
 
-    function requireValidNickname() {
-        const valid = Boolean(getSavedPlayerName());
-        if (!valid) document.getElementById("open-main-page")?.focus();
-        return valid;
-    }
-
     function getNickname() {
         return getSavedPlayerName();
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const inputGroup = document.getElementById("nickname-input-group");
-        const savedName = getSavedPlayerName();
+    function normalizeWinningScore(value) {
+        return Math.min(30, Math.max(1, Math.floor(Number(value) || 3)));
+    }
 
-        if (savedName) {
-            if (inputGroup) inputGroup.style.display = "none";
-            const subtitle = document.querySelector(".lobby-subtitle");
-            if (subtitle) subtitle.textContent = `PLAYER · ${savedName} · 1~4명`;
+    function readWinningScore() {
+        const input = document.getElementById("winning-score-input");
+        const score = normalizeWinningScore(input?.value);
+        if (input) input.value = score;
+        return score;
+    }
+
+    function syncLobbyData(data) {
+        if (!data) return;
+        winningScore = normalizeWinningScore(data.winningScore);
+        const input = document.getElementById("winning-score-input");
+        if (input) input.value = winningScore;
+    }
+
+    function syncCommonLobbyState(snapshot) {
+        myRole = snapshot.role;
+        myId = snapshot.myId;
+
+        if (!gameStarted) {
+            players = Object.fromEntries(Object.entries(snapshot.players).map(([id, player]) => [
+                id,
+                { name: player.name, score: 0 }
+            ]));
         }
-    });
 
-    function normalizeRoomCode(value) {
-        return String(value || "").replace(/\D/g, "").slice(0, 4);
+        const count = Object.keys(snapshot.players).length;
+        const countElement = document.getElementById("player-count");
+        if (countElement) countElement.textContent = String(count);
+
+        const scoreInput = document.getElementById("winning-score-input");
+        if (scoreInput) scoreInput.disabled = snapshot.role !== "host";
     }
 
-    function formatRoomCodeInput(input) {
-        input.value = normalizeRoomCode(input.value);
-    }
-
-    function generateRoomCode() {
-        return ClassroomNetwork.generateRoomCode(4);
-    }
-
-    function setRoomShareStatus(message) {
-        const element = document.getElementById("room-share-status");
-        if (element) element.innerText = message;
-    }
-
-    async function copyText(value) {
-        try {
-            await navigator.clipboard.writeText(value);
-            return true;
-        } catch (_) {
-            const input = document.createElement("textarea");
-            input.value = value;
-            input.style.position = "fixed";
-            input.style.opacity = "0";
-            document.body.appendChild(input);
-            input.select();
-            let copied = false;
-            try { copied = document.execCommand("copy"); } catch (_) {}
-            input.remove();
-            return copied;
+    function getLobbyPresentation({ count, role }) {
+        if (role !== "host") {
+            return {
+                canStart: false,
+                startText: "WAITING FOR HOST",
+                guideText: `현재 ${count}명 접속 · 방장이 게임을 시작합니다.`
+            };
         }
+        return {
+            canStart: count >= 1 && count <= 4,
+            startText: `START GAME · ${count} PLAYER${count === 1 ? "" : "S"}`,
+            guideText: count === 1
+                ? "혼자 연습을 시작하거나 참가자를 기다릴 수 있습니다."
+                : `${count}명이 연결되었습니다. 목표 점수를 확인하고 시작하세요.`
+        };
     }
 
-    async function copyRoomCode() {
-        if (!currentRoomCode) return;
-        const copied = await copyText(currentRoomCode);
-        setRoomShareStatus(copied
-            ? `방 번호 ${currentRoomCode}가 복사되었습니다.`
-            : `방 번호는 ${currentRoomCode}입니다.`);
+    function createSetStartData(snapshot) {
+        winningScore = readWinningScore();
+        players = Object.fromEntries(Object.entries(snapshot.players).map(([id, player]) => [
+            id,
+            { name: player.name, score: 0 }
+        ]));
+        blockedPlayersThisBoard.clear();
+        deck = buildDeck();
+        boardCards = [];
+        for (let i = 0; i < 12; i++) boardCards.push(deck.pop());
+        ensureSetsOnBoard();
+        return { players, boardCards, deck, winningScore };
     }
 
-    function socketSend(data) {
-        if (socket && socket.readyState === WebSocket.OPEN) {
-            socket.send(JSON.stringify(data));
-            return true;
-        }
-        return false;
+    function applySetStartData(data) {
+        if (!data || !Array.isArray(data.boardCards) || !Array.isArray(data.deck)) return;
+        gameStarted = true;
+        activeSetter = null;
+        submissionSent = false;
+        blockedPlayersThisBoard.clear();
+        winningScore = normalizeWinningScore(data.winningScore);
+        players = data.players || players;
+        boardCards = data.boardCards;
+        deck = data.deck;
+        document.getElementById("call-set-btn").disabled = false;
+        document.getElementById("log-monitor").innerHTML = "<div>* System: Game started.</div>";
+        launchGameUI();
     }
+
+    function showLobbyNotice(message) {
+        const target = document.getElementById(myRole === "host" ? "room-share-status" : "connect-status");
+        if (target) target.textContent = message;
+    }
+
+    function initializeMultiplayerLobby() {
+        lobby = ClassroomMultiplayerLobby.create({
+            gameId: GAME_ID,
+            ids: {
+                lobbyScreen: "lobby-card",
+                hostTab: "host-mode-btn",
+                joinTab: "join-mode-btn",
+                hostPane: "host-wait-panel",
+                joinPane: "guest-join-panel",
+                roomCode: "lobby-room-code",
+                hostStatus: "room-share-status",
+                joinCode: "join-room-code",
+                joinButton: "join-room-btn",
+                joinStatus: "connect-status",
+                copyButton: "copy-room-btn",
+                playerList: "lobby-player-list",
+                guide: "lobby-guide",
+                startButton: "start-game-btn"
+            },
+            getPlayerName: getNickname,
+            allowedPlayerCounts: [1, 2, 3, 4],
+            maxPlayers: 4,
+            rulesButtonIds: ["rules-btn-lobby", "rules-btn-game"],
+            leaveButtonIds: ["leave-btn"],
+            onRules: showRules,
+            onLeave: () => location.href = "../../index.html",
+            onNotice: showLobbyNotice,
+            onStateChange: syncCommonLobbyState,
+            getLobbyData: () => ({ winningScore: readWinningScore() }),
+            onLobbyData: syncLobbyData,
+            getLobbyPresentation,
+            createStartData: createSetStartData,
+            onStarted: ({ data }) => applySetStartData(data),
+            onGameMessage: handleIncomingData,
+            onPlayerLeftDuringGame: ({ playerId }) => handleDisconnect(playerId),
+            onAbort: ({ title, message }) => showModal(title, `<p>${escapeHtml(message)}</p>`)
+        }).mount();
+
+        if (!getNickname()) return;
+
+        document.getElementById("new-room-btn")?.addEventListener("click", () => lobby.setMode("host"));
+        document.getElementById("winning-score-input")?.addEventListener("input", () => {
+            winningScore = readWinningScore();
+            lobby.publishLobbyState();
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", initializeMultiplayerLobby);
 
     function sendGameMessage(payload) {
-        return socketSend({ type: "GAME_MESSAGE", payload });
-    }
-
-    function closeSocketTransport() {
-        pendingSocketAction = null;
-        intentionalSocketClose = true;
-        if (socket) {
-            try { socket.close(); } catch (_) {}
-        }
-        socket = null;
-        setTimeout(() => { intentionalSocketClose = false; }, 0);
-    }
-
-    function connectSocket(action) {
-        closeSocketTransport();
-        pendingSocketAction = action;
-        intentionalSocketClose = false;
-
-        try {
-            socket = ClassroomNetwork.createSocket();
-        } catch (_) {
-            handleSocketFailure("서버에 연결하지 못했습니다.");
-            return;
-        }
-
-        socket.addEventListener("open", () => {
-            if (myRole === "host") {
-                setRoomShareStatus("서버에 연결되었습니다. 방을 등록하는 중입니다.");
-            }
-        });
-
-        socket.addEventListener("message", (event) => {
-            let message;
-            try {
-                message = JSON.parse(event.data);
-            } catch (_) {
-                return;
-            }
-            handleSocketMessage(message);
-        });
-
-        socket.addEventListener("close", () => {
-            if (intentionalSocketClose) return;
-            if (gameStarted || myRole === "guest") {
-                alert("게임 서버와의 연결이 종료되었습니다. 페이지를 새로고침합니다.");
-                location.reload();
-            } else {
-                handleSocketFailure("게임 서버 연결이 끊어졌습니다. 잠시 후 다시 시도하세요.");
-            }
-        });
-
-        socket.addEventListener("error", () => {
-            handleSocketFailure("게임 서버 연결 중 오류가 발생했습니다.");
-        });
-    }
-
-    function handleSocketFailure(message) {
-        if (myRole === "host") {
-            document.getElementById("lobby-room-code").innerText = "ERROR";
-            setRoomShareStatus(message);
-        } else {
-            const status = document.getElementById("connect-status");
-            if (status) status.innerText = message;
-        }
-    }
-
-    function handleSocketMessage(message) {
-        if (!message || typeof message.type !== "string") return;
-
-        if (message.type === "CONNECTED") {
-            myId = message.playerId;
-            if (pendingSocketAction) {
-                const action = pendingSocketAction;
-                pendingSocketAction = null;
-                socketSend(action);
-            }
-        }
-        else if (message.type === "ROOM_CREATED") {
-            currentRoomCode = message.roomCode;
-            players = {};
-            players[myId] = { name: getNickname(), score: 0 };
-            document.getElementById("lobby-room-code").innerText = currentRoomCode;
-            setRoomShareStatus("방 번호를 상대방에게 알려주세요.");
-            updateLobbyList();
-        }
-        else if (message.type === "ROOM_EXISTS") {
-            if (myRole === "host" && hostCreateAttempts < 8) {
-                hostCreateAttempts += 1;
-                currentRoomCode = generateRoomCode();
-                socketSend({ type: "CREATE_ROOM", gameId: GAME_ID, roomCode: currentRoomCode });
-            } else {
-                handleSocketFailure("빈 방 번호를 만들지 못했습니다. 다시 시도하세요.");
-            }
-        }
-        else if (message.type === "ROOM_JOINED") {
-            document.getElementById("connect-status").innerText =
-                "연결되었습니다. 방장이 게임을 시작하기를 기다리는 중입니다.";
-            players = {};
-            players[myId] = { name: getNickname(), score: 0 };
-            sendGameMessage({ type: "JOIN_REQ", name: getNickname() });
-        }
-        else if (message.type === "ROOM_NOT_FOUND") {
-            document.getElementById("connect-status").innerText =
-                "방을 찾지 못했습니다. 방 번호를 다시 확인하세요.";
-        }
-        else if (message.type === "ROOM_FULL") {
-            alert("방이 가득 찼습니다. 최대 4명까지 입장할 수 있습니다.");
-            location.reload();
-        }
-        else if (message.type === "ROOM_CLOSED") {
-            alert("방장이 나가서 방이 종료되었습니다.");
-            location.reload();
-        }
-        else if (message.type === "GAME_MESSAGE") {
-            handleIncomingData(message.senderId, message.payload);
-        }
-        else if (message.type === "PLAYER_LEFT") {
-            if (myRole === "host") {
-                handleDisconnect(message.playerId);
-            } else {
-                handleIncomingData(null, { type: "PLAYER_DISCONNECTED", peerId: message.playerId });
-            }
-        }
-        else if (message.type === "ERROR") {
-            handleSocketFailure(message.message || "서버 오류가 발생했습니다.");
-        }
-    }
-
-    // [호스트] 4자리 숫자 방 생성
-    function initAsHost() {
-        if (!requireValidNickname()) return;
-        myRole = "host";
-        players = {};
-        gameStarted = false;
-        activeSetter = null;
-        submissionSent = false;
-        currentRoomCode = generateRoomCode();
-        hostCreateAttempts = 0;
-
-        document.getElementById("host-wait-panel").style.display = "flex";
-        document.getElementById("guest-join-panel").style.display = "none";
-        document.getElementById("lobby-room-code").innerText = "----";
-        document.getElementById("start-game-btn").disabled = true;
-        setRoomShareStatus("공용 게임 서버에 연결하는 중입니다.");
-
-        connectSocket({
-            type: "CREATE_ROOM",
-            gameId: GAME_ID,
-            roomCode: currentRoomCode
-        });
-    }
-
-    function showJoinPanel() {
-        if (!requireValidNickname()) return;
-        document.getElementById("guest-join-panel").style.display = "flex";
-        document.getElementById("host-wait-panel").style.display = "none";
-        setTimeout(() => document.getElementById("join-room-code").focus(), 0);
-    }
-
-    // [게스트] 4자리 숫자 방에 접속
-    function connectToHost() {
-        if (!requireValidNickname()) return;
-        const codeInput = document.getElementById("join-room-code");
-        const roomCode = normalizeRoomCode(codeInput.value);
-        codeInput.value = roomCode;
-
-        if (roomCode.length !== 4) {
-            document.getElementById("connect-status").innerText = "4자리 방 번호를 입력하세요.";
-            codeInput.focus();
-            return;
-        }
-
-        myRole = "guest";
-        gameStarted = false;
-        activeSetter = null;
-        submissionSent = false;
-        currentRoomCode = roomCode;
-
-        document.getElementById("connect-status").innerText = `방 ${roomCode}에 연결하는 중...`;
-
-        connectSocket({
-            type: "JOIN_ROOM",
-            gameId: GAME_ID,
-            roomCode,
-            name: getNickname()
-        });
+        return lobby?.send(payload) || false;
     }
 
     // 게스트 연결 소실 예외 처리
@@ -1465,7 +1383,6 @@ textarea,
 
         const playerName = players[peerId].name;
         delete players[peerId];
-        updateLobbyList();
 
         if (activeSetter === peerId) {
             releaseSetLockdown();
@@ -1477,79 +1394,16 @@ textarea,
         logToMonitor(`* Player disconnected: ${playerName}`);
     }
 
-    // 게스트 접속 및 로비 업데이트
-    function updateLobbyList() {
-        const listEl = document.getElementById("lobby-player-list");
-        const countEl = document.getElementById("player-count");
-        listEl.innerHTML = "";
-
-        const allPlayers = Object.keys(players);
-        countEl.innerText = allPlayers.length;
-
-        allPlayers.forEach(pId => {
-            const badge = document.createElement("div");
-            badge.className = `player-badge ${pId === myId ? 'me' : ''}`;
-            badge.innerText = `${players[pId].name} ${pId === myId ? '(나)' : ''}`;
-            listEl.appendChild(badge);
-        });
-
-        if (myRole === "host" && allPlayers.length >= 1) {
-            document.getElementById("start-game-btn").disabled = false;
-        } else {
-            document.getElementById("start-game-btn").disabled = true;
-        }
-    }
-
     // 호스트가 공용 WebSocket 서버를 통해 방 전체에 전송
     function broadcastState(payload) {
-        if (myRole === "host") sendGameMessage(payload);
+        return lobby?.broadcast(payload) || false;
     }
 
     // --- 3. 데이터 송수신 핸들러 및 핵심 게임 루프 ---
     function handleIncomingData(senderPeerId, data) {
         if (!data || typeof data.type !== "string") return;
 
-        if (data.type === "JOIN_REQ") {
-            if (myRole !== "host" || gameStarted) return;
-            const incomingName = String(data.name || "").trim().slice(0, 12);
-            if (!incomingName) {
-                broadcastState({ type: "REJECT_PLAYER", targetId: senderPeerId, reason: "INVALID_NAME" });
-                return;
-            }
-            if (!players[senderPeerId]) {
-                players[senderPeerId] = { name: incomingName, score: 0 };
-            }
-            updateLobbyList();
-            // 최신 대기자 상태를 모든 참가자에게 전달
-            broadcastState({ type: "LOBBY_UPDATE", players: players });
-        }
-        else if (data.type === "LOBBY_UPDATE") {
-            players = data.players;
-            updateLobbyList();
-        }
-        else if (data.type === "REJECT_PLAYER") {
-            if (!data.targetId || data.targetId === myId) {
-                alert("이름은 한글 2~6자로 입력해야 합니다.");
-                location.reload();
-            }
-        }
-        else if (data.type === "REJECT") {
-            const message = data.reason === "GAME_STARTED"
-                ? "이미 게임이 시작된 방입니다. 새 게임이 시작될 때 다시 입장하세요."
-                : "방이 가득 찼습니다. 최대 4명까지 입장할 수 있습니다.";
-            alert(message);
-            location.reload();
-        }
-        else if (data.type === "GAME_START") {
-            gameStarted = true;
-            blockedPlayersThisBoard.clear();
-            winningScore = Math.min(30, Math.max(1, Number(data.winningScore) || 3));
-            players = data.players;
-            boardCards = data.boardCards;
-            deck = data.deck;
-            launchGameUI();
-        }
-        else if (data.type === "DECLARE_SET") {
+        if (data.type === "DECLARE_SET") {
             // [호스트] 먼저 도착한 유효 선언만 승인
             if (
                 myRole === "host" &&
@@ -1597,8 +1451,10 @@ textarea,
         }
         else if (data.type === "PLAYER_DISCONNECTED") {
             if (players[data.peerId]) delete players[data.peerId];
-            updateLobbyList();
             renderScoreboard();
+        }
+        else if (data.type === "RETURN_LOBBY") {
+            returnToLobby(false);
         }
         else if (data.type === "GAME_OVER") {
             if (data.players) players = data.players;
@@ -1613,44 +1469,37 @@ textarea,
         }
     }
 
-    // [호스트] 게임 시작 트리거
-    function hostStartGame() {
-        if (myRole !== "host" || gameStarted || Object.keys(players).length < 1) return;
-
-        const scoreInput = document.getElementById("winning-score-input");
-        winningScore = Math.min(30, Math.max(1, Math.floor(Number(scoreInput.value) || 3)));
-        scoreInput.value = winningScore;
-
-        gameStarted = true;
-        blockedPlayersThisBoard.clear();
-        deck = buildDeck();
-        boardCards = [];
-        // 기본 12장을 바닥에 배치
-        for (let i = 0; i < 12; i++) {
-            boardCards.push(deck.pop());
-        }
-
-        // 혹시 시작 12장에 세트가 없으면 존재할 때까지 추가 (3장씩)
-        ensureSetsOnBoard();
-
-        broadcastState({
-            type: "GAME_START",
-            players: players,
-            boardCards: boardCards,
-            deck: deck,
-            winningScore: winningScore
-        });
-        launchGameUI();
-    }
-
     // 호스트 및 게스트 게임 씬 전환
     function launchGameUI() {
-        document.getElementById("lobby-card").style.display = "none";
+        document.getElementById("lobby-card").classList.add("hidden");
         document.getElementById("game-container").style.display = "flex";
         document.getElementById("target-score-label").textContent = `FIRST TO ${winningScore} POINTS`;
         renderScoreboard();
         renderBoard();
         initAudio();
+    }
+
+    function returnToLobby(broadcast = true) {
+        if (broadcast) sendGameMessage({ type: "RETURN_LOBBY" });
+
+        gameStarted = false;
+        if (setCountdownTimer) clearInterval(setCountdownTimer);
+        if (resultRevealTimer) clearTimeout(resultRevealTimer);
+        setCountdownTimer = null;
+        resultRevealTimer = null;
+        activeSetter = null;
+        submissionSent = false;
+        selectedCards = [];
+        blockedPlayersThisBoard.clear();
+
+        lobby?.returnToLobby();
+        closeModal();
+        document.getElementById("timer-overlay").style.display = "none";
+        document.getElementById("game-container").style.display = "none";
+        document.getElementById("lobby-card").classList.remove("hidden");
+        document.getElementById("scoreboard").replaceChildren();
+        document.getElementById("card-grid").replaceChildren();
+        document.getElementById("log-monitor").innerHTML = "<div>* System: Ready for a new game.</div>";
     }
 
     // 바닥 카드 동적 렌더링 (속성별 SVG 아이콘 그리기)
@@ -1664,6 +1513,9 @@ textarea,
             cardEl.className = "set-card";
             cardEl.dataset.index = index;
             cardEl.dataset.cardId = card.id;
+            cardEl.setAttribute("role", "button");
+            cardEl.setAttribute("aria-label", `카드 ${index + 1}`);
+            cardEl.tabIndex = 0;
 
             // 속성에 부합하는 카드 아이콘 SVG 무한 드로잉
             for (let n = 0; n <= card.number; n++) {
@@ -1703,6 +1555,12 @@ textarea,
 
             // 클릭 터치 동시 대응
             cardEl.onclick = () => selectCard(cardEl);
+            cardEl.onkeydown = event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    selectCard(cardEl);
+                }
+            };
             grid.appendChild(cardEl);
         });
     }
@@ -2279,16 +2137,15 @@ textarea,
         wrapper.innerHTML = `
             <h3>🏁 GAME COMPLETE</h3>
             ${bodyHTML}
-            <button class="action-btn" onclick="location.reload()">NEW GAME</button>
+            <button class="action-btn" id="return-lobby-btn" type="button">RETURN TO LOBBY</button>
         `;
+        document.getElementById("return-lobby-btn").addEventListener("click", () => returnToLobby(true));
         document.getElementById("modal-overlay").classList.add("show");
     }
 
     document.addEventListener("pointerdown", startBackgroundMusic, { once: true });
 
     window.addEventListener("load", () => setMusicVolume(0.6, 3));
-
-    window.addEventListener("beforeunload", closeSocketTransport);
 
     // 키보드 스페이스 바 단축키 연동
     document.addEventListener("keydown", (e) => {

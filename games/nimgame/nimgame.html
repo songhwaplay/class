@@ -966,7 +966,9 @@ textarea,
 }
 
 </style>
+<link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/network/multiplayer-lobby.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
@@ -975,10 +977,14 @@ textarea,
 <audio id="bgm" src="../../assets/sound/nimgame.mp3" loop></audio>
 
 <div class="app-shell">
-    <section class="screen" id="lobby-screen">
+    <section class="screen hidden" id="missingScreen">
+        <div class="title-wrap"><h1 class="main-title">NIM &amp; COIN MATCH</h1></div>
+        <div class="room-access-panel"><div class="room-help">이름이 없습니다. 이름 변경은 메인 화면에서만 가능합니다.</div><button class="secondary-btn" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></div>
+    </section>
+    <section class="screen hidden" id="lobby-screen" data-multiplayer-lobby>
         <div class="title-wrap">
             <h1 class="main-title">NIM &amp; COIN MATCH</h1>
-            <div class="subtitle">ONLINE TWO-PLAYER STRATEGY</div>
+            <div class="subtitle">PLAYER · <strong id="savedName">-</strong> · ONLINE TWO-PLAYER STRATEGY</div>
         </div>
 
         <div class="status-strip">
@@ -987,9 +993,9 @@ textarea,
         </div>
 
         <div class="room-access-panel" id="room-access-panel">
-            <div class="room-tabs">
-                <button class="room-tab active" id="host-tab" onclick="switchRoomMode('host')">CREATE ROOM</button>
-                <button class="room-tab" id="join-tab" onclick="switchRoomMode('join')">JOIN ROOM</button>
+            <div class="room-tabs mp-lobby-tabs">
+                <button class="room-tab active" id="host-tab" type="button">CREATE ROOM</button>
+                <button class="room-tab" id="join-tab" type="button">JOIN ROOM</button>
             </div>
 
             <div class="room-pane" id="host-room-pane">
@@ -999,8 +1005,8 @@ textarea,
                         <strong class="room-code-value" id="room-code-display">----</strong>
                     </div>
                     <div class="room-code-actions">
-                        <button class="small-btn" id="copy-code-btn" onclick="copyRoomCode()">COPY CODE</button>
-                        <button class="small-btn" onclick="switchRoomMode('host')">NEW CODE</button>
+                        <button class="small-btn" id="copy-code-btn" type="button">COPY CODE</button>
+                        <button class="small-btn" id="new-code-btn" type="button">NEW CODE</button>
                     </div>
                 </div>
                 <div class="room-help"><strong style="color:var(--gold-bright)">방을 만든 사람이 PLAYER 1로 첫 라운드를 선공합니다.</strong><br>실력 차이가 있다면 님게임을 덜 해본 사람이 방을 만드세요.</div>
@@ -1010,14 +1016,15 @@ textarea,
                 <div class="join-room-row">
                     <input class="room-code-input" id="join-code-input" maxlength="4"
                            inputmode="numeric" autocomplete="off" spellcheck="false"
-                           placeholder="ROOM CODE · 4 DIGITS"
-                           oninput="formatJoinCode(this)"
-                           onkeydown="if(event.key === 'Enter') joinRoom()">
-                    <button class="primary-btn" id="join-room-btn" onclick="joinRoom()">JOIN ROOM</button>
+                           placeholder="ROOM CODE · 4 DIGITS">
+                    <button class="primary-btn" id="join-room-btn" type="button">JOIN ROOM</button>
                 </div>
                 <div class="room-help">방장이 알려준 4자리 방 번호를 입력하세요.</div>
             </div>
         </div>
+
+        <div class="mp-lobby-player-list" id="lobby-players"></div>
+        <div class="foot-note" id="lobby-guide">상대방을 기다리는 중입니다.</div>
 
         <div class="setup-panel" id="setup-panel">
             <div class="setup-row">
@@ -1077,8 +1084,9 @@ textarea,
         </div>
 
         <div class="lobby-actions">
-            <button class="primary-btn" id="start-btn" onclick="startRound()" disabled>WAITING FOR PLAYERS</button>
-            <button class="secondary-btn" onclick="openRules()">HOW TO PLAY</button>
+            <button class="primary-btn" id="start-btn" type="button" disabled>WAITING FOR PLAYERS</button>
+            <button class="secondary-btn" id="rules-btn-lobby" type="button">HOW TO PLAY</button>
+            <button class="secondary-btn" id="leave-btn" type="button">메인 화면으로</button>
         </div>
 
         <div class="foot-note" id="lobby-foot-note">
@@ -1122,7 +1130,7 @@ textarea,
         <div class="game-controls">
             <button class="primary-btn" id="take-btn" onclick="commitMove()" disabled>TAKE</button>
             <button class="secondary-btn" id="cancel-btn" onclick="clearSelection()" disabled>CANCEL</button>
-            <button class="secondary-btn" onclick="openRules()">RULES</button>
+            <button class="secondary-btn" id="rules-btn-game" type="button">RULES</button>
             <button class="danger-btn" id="new-round-btn" onclick="requestNewRound()">NEW ROUND</button>
         </div>
 
@@ -1185,13 +1193,12 @@ textarea,
         winner: null
     };
 
-    let myRole = null;               // "host" | "guest"
-    let socket = null;
+    let lobby = null;
+    let myId = null;
+    let myRole = "host";
+    let players = {};
     let connected = false;
-    let targetPeerId = null;
     let currentRoomCode = null;
-    let roomMode = "host";
-    let hostCreateAttempts = 0;
     let selection = { row: null, count: 0 };
     let logs = [];
     let toastTimer = null;
@@ -1204,11 +1211,8 @@ textarea,
     const $ = (id) => document.getElementById(id);
     const clone = (value) => JSON.parse(JSON.stringify(value));
 
-    window.addEventListener("load", initialize);
+    window.addEventListener("DOMContentLoaded", initialize);
     document.addEventListener("pointerdown", startBackgroundMusic, { once: true });
-    window.addEventListener("beforeunload", () => {
-        try { if (socket) socket.close(); } catch (_) {}
-    });
 
     document.addEventListener("keydown", (event) => {
         const modalOpen = $("modal-overlay").classList.contains("show");
@@ -1230,203 +1234,70 @@ textarea,
     const GAME_ID = "nimgame";
     function initialize() {
         setMusicVolume(0.6, 3);
-        const subtitle = document.querySelector(".subtitle");
-        if (!playerName) {
-            if (subtitle) subtitle.textContent = "이름이 없습니다 · 메인 화면에서 이름을 먼저 저장해 주세요";
-            $("lobby-status-dot").className = "status-dot";
-            $("lobby-status-text").textContent = "게임 서버에 연결하지 않았습니다.";
-            $("room-access-panel").innerHTML = `
-                <div class="room-help">이름 변경은 메인 화면에서만 가능합니다.</div>
-                <button class="secondary-btn" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>`;
-            $("start-btn").disabled = true;
-            return;
-        }
-        if (subtitle) {
-            subtitle.textContent = `PLAYER · ${playerName} · ONLINE TWO-PLAYER STRATEGY`;
-        }
         syncLobbyUI();
-        switchRoomMode("host");
+        $("new-code-btn").addEventListener("click", () => lobby?.setMode("host"));
+        lobby = ClassroomMultiplayerLobby.create({
+            gameId: GAME_ID,
+            ids: {
+                lobbyScreen: "lobby-screen",
+                hostTab: "host-tab",
+                joinTab: "join-tab",
+                hostPane: "host-room-pane",
+                joinPane: "join-room-pane",
+                roomCode: "room-code-display",
+                hostStatus: "lobby-status-text",
+                joinCode: "join-code-input",
+                joinButton: "join-room-btn",
+                joinStatus: "lobby-status-text",
+                copyButton: "copy-code-btn",
+                playerList: "lobby-players",
+                guide: "lobby-guide",
+                startButton: "start-btn"
+            },
+            getPlayerName: () => playerName,
+            allowedPlayerCounts: [2],
+            maxPlayers: 2,
+            rulesButtonIds: ["rules-btn-lobby", "rules-btn-game"],
+            leaveButtonIds: ["leave-btn"],
+            onRules: openRules,
+            onLeave: () => location.href = "../../index.html",
+            onNotice: showToast,
+            onStateChange: syncCommonLobbyState,
+            getLobbyData: getConfigSnapshot,
+            onLobbyData: applyConfig,
+            canStart: ({ count }) => count === 2,
+            getLobbyPresentation: nimLobbyPresentation,
+            createStartData: createInitialRoundData,
+            onStarted: ({ data }) => applyRoundState(data?.state, data?.log || "새 게임이 시작되었습니다."),
+            onGameMessage: (_sender, packet) => handlePacket(packet),
+            onAbort: handleDisconnect
+        }).mount();
     }
 
-    function switchRoomMode(mode) {
-        if (!playerName) return;
-        if (connected) {
-            showToast("현재 상대방과 연결되어 있어 모드를 바꿀 수 없습니다.");
-            return;
-        }
+    function syncCommonLobbyState(snapshot) {
+        myId = snapshot.myId;
+        myRole = snapshot.role;
+        players = snapshot.players;
+        currentRoomCode = snapshot.roomCode;
+        connected = Boolean(snapshot.started || (snapshot.connected && Object.keys(players).length === 2));
+        lockGuestSettings(myRole !== "host");
 
-        resetPeerTransport();
-        roomMode = mode === "join" ? "join" : "host";
-        showRoomPane(roomMode);
-
-        if (roomMode === "join") {
-            myRole = "guest";
-            targetPeerId = null;
-            currentRoomCode = null;
-            $("start-btn").disabled = true;
-            $("start-btn").textContent = "JOIN ROOM";
-            $("lobby-foot-note").textContent = "방장이 알려준 4자리 방 번호를 입력하세요.";
-            lockGuestSettings(true);
-            setLobbyStatus("connecting", "방 번호를 입력한 뒤 JOIN ROOM을 누르세요.");
-            setTimeout(() => $("join-code-input").focus(), 0);
-        } else {
-            myRole = "host";
-            targetPeerId = null;
-            $("start-btn").disabled = true;
-            $("start-btn").textContent = "WAITING FOR PLAYERS";
-            $("lobby-foot-note").textContent = "화면의 4자리 방 번호를 상대방에게 알려주세요.";
-            lockGuestSettings(false);
-            setLobbyStatus("connecting", "새 방 번호를 만드는 중...");
-            currentRoomCode = generateRoomCode();
-            $("room-code-display").textContent = currentRoomCode;
-            openSocket("host", currentRoomCode);
-        }
+        if (connected) setLobbyStatus("connected", myRole === "host" ? "상대방이 접속했습니다." : "방장과 연결되었습니다.");
+        else if (myRole === "host") setLobbyStatus("connecting", currentRoomCode ? `방 ${currentRoomCode} — 상대방 접속 대기 중...` : "새 방 번호를 만드는 중...");
+        else setLobbyStatus("connecting", "방장이 알려준 4자리 방 번호를 입력하세요.");
     }
 
-    function showRoomPane(mode) {
-        const isHost = mode === "host";
-        $("host-tab").classList.toggle("active", isHost);
-        $("join-tab").classList.toggle("active", !isHost);
-        $("host-room-pane").classList.toggle("hidden", !isHost);
-        $("join-room-pane").classList.toggle("hidden", isHost);
+    function nimLobbyPresentation({ count, role, canStart }) {
+        if (role !== "host") return { canStart: false, startText: "WAITING FOR HOST", guideText: count === 2 ? "설정 동기화 완료 · 방장이 게임을 시작합니다." : "방 정보를 동기화하는 중입니다." };
+        if (!canStart) return { canStart: false, startText: `WAITING FOR PLAYERS · ${count}/2`, guideText: "상대방이 입장하면 게임을 시작할 수 있습니다." };
+        return { canStart: true, startText: "START GAME", guideText: "두 명이 연결되었습니다. 게임 설정을 확인하고 시작하세요." };
     }
 
-    function generateRoomCode() {
-        return ClassroomNetwork.generateRoomCode(4);
-    }
-
-    function normalizeRoomCode(value) {
-        return String(value || "").replace(/[^0-9]/g, "").slice(0, 4);
-    }
-
-    function formatJoinCode(input) {
-        input.value = normalizeRoomCode(input.value);
-    }
-
-    function joinRoom() {
-        if (connected) return;
-        const code = normalizeRoomCode($("join-code-input").value);
-        $("join-code-input").value = code;
-
-        if (code.length !== 4) {
-            showToast("4자리 방 번호를 입력하세요.");
-            $("join-code-input").focus();
-            return;
-        }
-
-        resetPeerTransport();
-        roomMode = "join";
-        myRole = "guest";
-        targetPeerId = code;
-        currentRoomCode = code;
-        lockGuestSettings(true);
-        $("start-btn").disabled = true;
-        $("start-btn").textContent = "CONNECTING...";
-        $("lobby-foot-note").textContent = `방 ${code}에 연결하고 있습니다.`;
-        setLobbyStatus("connecting", `방 ${code}에 연결하는 중...`);
-        openSocket("join", code);
-    }
-
-    function resetPeerTransport() {
+    function handleDisconnect(details) {
+        const message = typeof details === "string"
+            ? details
+            : details?.message || "상대방 또는 통신 서버와의 연결이 끊어졌습니다.";
         connected = false;
-        try { if (socket) socket.close(); } catch (_) {}
-        socket = null;
-    }
-
-    function openSocket(mode, roomCode) {
-        resetPeerTransport();
-        socket = ClassroomNetwork.createSocket();
-
-        socket.addEventListener("open", () => {
-            socket.send(JSON.stringify({
-                type: mode === "host" ? "CREATE_ROOM" : "JOIN_ROOM",
-                gameId: GAME_ID,
-                roomCode,
-                name: playerName
-            }));
-        });
-
-        socket.addEventListener("message", event => {
-            let message;
-            try { message = JSON.parse(event.data); } catch (_) { return; }
-            handleServerMessage(message);
-        });
-
-        socket.addEventListener("close", () => {
-            if (connected) handleDisconnect("상대방 또는 통신 서버와의 연결이 끊어졌습니다.");
-        });
-
-        socket.addEventListener("error", () => {
-            setLobbyStatus("error", "게임 서버에 연결할 수 없습니다.");
-        });
-    }
-
-    function handleServerMessage(message) {
-        if (!message || !message.type) return;
-
-        if (message.type === "ROOM_CREATED") {
-            currentRoomCode = message.roomCode;
-            hostCreateAttempts = 0;
-            $("room-code-display").textContent = currentRoomCode;
-            setLobbyStatus("connecting", `방 ${currentRoomCode} — 상대방 접속 대기 중...`);
-            return;
-        }
-
-        if (message.type === "ROOM_EXISTS") {
-            if (myRole === "host" && hostCreateAttempts < 10) {
-                hostCreateAttempts += 1;
-                currentRoomCode = generateRoomCode();
-                $("room-code-display").textContent = currentRoomCode;
-                openSocket("host", currentRoomCode);
-            } else {
-                setLobbyStatus("error", "빈 방 번호를 만들지 못했습니다. 다시 시도하세요.");
-            }
-            return;
-        }
-
-        if (message.type === "PLAYER_JOINED" && myRole === "host") {
-            connected = true;
-            setLobbyStatus("connected", "상대방이 접속했습니다. 게임을 시작할 수 있습니다.");
-            $("start-btn").disabled = false;
-            $("start-btn").textContent = "START GAME";
-            $("copy-code-btn").disabled = true;
-            sendPacket({ type: "config", config: getConfigSnapshot() });
-            return;
-        }
-
-        if (message.type === "ROOM_JOINED" && myRole === "guest") {
-            connected = true;
-            setLobbyStatus("connected", "방장과 연결되었습니다. 시작을 기다리는 중입니다.");
-            $("start-btn").disabled = true;
-            $("start-btn").textContent = "WAITING FOR HOST";
-            $("lobby-foot-note").textContent = `방 ${currentRoomCode || targetPeerId}에 입장했습니다.`;
-            sendPacket({ type: "guest_ready" });
-            return;
-        }
-
-        if (message.type === "ROOM_NOT_FOUND") {
-            $("start-btn").textContent = "ROOM NOT FOUND";
-            setLobbyStatus("error", "방을 찾지 못했습니다. 방 번호를 확인하세요.");
-            return;
-        }
-
-        if (message.type === "ROOM_FULL") {
-            setLobbyStatus("error", "방이 가득 찼습니다.");
-            return;
-        }
-
-        if (message.type === "GAME_MESSAGE") {
-            handlePacket(message.payload);
-            return;
-        }
-
-        if (message.type === "PLAYER_LEFT" || message.type === "ROOM_CLOSED") {
-            connected = false;
-            handleDisconnect("상대방이 방에서 나갔습니다.");
-        }
-    }
-
-    function handleDisconnect(message) {
         $("take-btn").disabled = true;
         $("cancel-btn").disabled = true;
         $("connection-chip").textContent = "● DISCONNECTED";
@@ -1437,25 +1308,13 @@ textarea,
     }
 
     function sendPacket(packet) {
-        try {
-            if (!socket || socket.readyState !== WebSocket.OPEN) return false;
-            socket.send(JSON.stringify({ type: "GAME_MESSAGE", payload: packet }));
-            return true;
-        } catch (_) {
-            return false;
-        }
+        return lobby?.send(packet) || false;
     }
 
     function handlePacket(packet) {
         if (!packet || typeof packet.type !== "string") return;
 
         switch (packet.type) {
-            case "guest_ready":
-                if (myRole === "host") {
-                    sendPacket({ type: "config", config: getConfigSnapshot() });
-                }
-                break;
-
             case "config":
                 if (myRole === "guest" && packet.config) {
                     applyConfig(packet.config);
@@ -1510,8 +1369,10 @@ textarea,
 
     function broadcastConfig() {
         syncLobbyUI();
-        if (myRole === "host" && connected) {
-            sendPacket({ type: "config", config: getConfigSnapshot() });
+        if (myRole === "host" && lobby) {
+            if (!lobby.publishLobbyState() && connected) {
+                sendPacket({ type: "config", config: getConfigSnapshot() });
+            }
         }
     }
 
@@ -1584,28 +1445,6 @@ textarea,
         const dot = $("lobby-status-dot");
         dot.className = `status-dot ${kind}`;
         $("lobby-status-text").textContent = text;
-    }
-
-    async function copyRoomCode() {
-        const code = normalizeRoomCode(currentRoomCode || $("room-code-display").textContent);
-        if (code.length !== 4) return;
-
-        try {
-            await navigator.clipboard.writeText(code);
-            showToast(`방 번호 ${code}가 복사되었습니다.`);
-        } catch (_) {
-            const selection = window.getSelection();
-            const range = document.createRange();
-            range.selectNodeContents($("room-code-display"));
-            selection.removeAllRanges();
-            selection.addRange(range);
-            try {
-                document.execCommand("copy");
-                showToast(`방 번호 ${code}가 복사되었습니다.`);
-            } catch (_) {
-                showToast(`방 번호: ${code}`);
-            }
-        }
     }
 
     function showToast(message) {
@@ -1727,9 +1566,7 @@ textarea,
         }
     }
 
-    function startRound() {
-        if (myRole !== "host" || !connected) return;
-
+    function createInitialRoundData() {
         const nextState = clone(state);
         nextState.round += 1;
         nextState.startingPlayer = nextState.round % 2 === 1 ? 1 : 2;
@@ -1749,6 +1586,12 @@ textarea,
         }
 
         const log = `ROUND ${nextState.round} 시작 — PLAYER ${nextState.startingPlayer} 선공`;
+        return { state: nextState, log };
+    }
+
+    function startRound() {
+        if (myRole !== "host" || !connected) return;
+        const { state: nextState, log } = createInitialRoundData();
         const sent = sendPacket({ type: "start", state: nextState, log });
 
         if (!sent) {
@@ -2167,6 +2010,7 @@ textarea,
 
     function returnToLobby(broadcast) {
         if (broadcast) sendPacket({ type: "return_lobby" });
+        lobby?.returnToLobby();
 
         state.started = false;
         state.over = false;
@@ -2177,16 +2021,6 @@ textarea,
         $("game-screen").classList.add("hidden");
         $("lobby-screen").classList.remove("hidden");
         closeModal();
-
-        if (myRole === "host") {
-            showRoomPane("host");
-            $("start-btn").disabled = !connected;
-            $("start-btn").textContent = connected ? "START GAME" : "WAITING FOR PLAYERS";
-        } else {
-            showRoomPane("join");
-            $("start-btn").disabled = true;
-            $("start-btn").textContent = "WAITING FOR HOST";
-        }
     }
 
     function openRules() {

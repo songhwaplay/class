@@ -14,6 +14,7 @@ const MAX_ROOM_PLAYERS = {
   setgame: 4,
   nimgame: 2,
   janggi: 2,
+  omok: 2,
   avalon: 8
 };
 
@@ -130,6 +131,26 @@ function avalonBroadcast(room) {
 
 function avalonNotice(room, message) {
   for (const client of room.clients.values()) safeSend(client, { type: "AVALON_NOTICE", message });
+}
+
+function resetAvalonToLobby(game) {
+  game.phase = "lobby";
+  game.settings = recommendedAvalonSettings(game.players.length);
+  game.settingsCustomized = false;
+  game.leaderIndex = 0;
+  game.quest = 0;
+  game.selectedTeam = [];
+  game.proposalVotes = {};
+  game.questVotes = {};
+  game.rejects = 0;
+  game.results = [];
+  game.winner = null;
+  game.assassinId = null;
+  game.players.forEach(player => {
+    delete player.role;
+    delete player.resolvedCharacterStyle;
+    delete player.cardVariant;
+  });
 }
 
 function avalonRevealRoles(room) {
@@ -582,8 +603,12 @@ wss.on("connection", socket => {
 
       currentRoom.clients.delete(playerId);
       if (currentRoom.avalon) {
+        const gameWasActive = currentRoom.avalon.phase !== "lobby";
         currentRoom.avalon.players = currentRoom.avalon.players.filter(player => player.id !== playerId);
-        if (currentRoom.avalon.phase === "lobby" && !currentRoom.avalon.settingsCustomized) {
+        if (gameWasActive) {
+          resetAvalonToLobby(currentRoom.avalon);
+          avalonNotice(currentRoom, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
+        } else if (!currentRoom.avalon.settingsCustomized) {
           currentRoom.avalon.settings = recommendedAvalonSettings(currentRoom.avalon.players.length);
         }
       }

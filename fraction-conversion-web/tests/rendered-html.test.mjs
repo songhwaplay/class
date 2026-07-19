@@ -33,8 +33,12 @@ test("renders the fraction conversion practice product", async () => {
   assert.match(html, /대분수를 가분수로/);
   assert.match(html, /가분수를 대분수로/);
   assert.match(html, /전체 채점/);
+  assert.match(html, /문제지·답지 인쇄/);
   assert.match(html, /문제지 번호\s*(?:<!-- -->)?20260720/);
+  assert.match(html, /aria-label="A4 분수 변환 문제지"/);
+  assert.match(html, /aria-label="A4 분수 변환 전체 답지"/);
   assert.equal((html.match(/data-testid="question-card"/g) ?? []).length, 16);
+  assert.equal((html.match(/data-testid="answer-card"/g) ?? []).length, 16);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
 });
 
@@ -43,10 +47,14 @@ test("keeps the printable worksheet on one compact A4 page", async () => {
   const printBlock = css.slice(css.indexOf("@media print"));
 
   assert.match(printBlock, /size:\s*A4 portrait/);
-  assert.match(printBlock, /margin:\s*7mm/);
+  assert.match(printBlock, /margin:\s*0/);
+  assert.match(printBlock, /width:\s*210mm/);
+  assert.match(printBlock, /height:\s*297mm/);
+  assert.match(printBlock, /transform:\s*none !important/);
   assert.match(printBlock, /grid-template-columns:\s*1fr 1fr/);
   assert.match(printBlock, /min-height:\s*10\.5mm/);
   assert.match(printBlock, /page-break-inside:\s*avoid/);
+  assert.match(printBlock, /\.answer-stage\s*\{[\s\S]*?display:\s*block !important;[\s\S]*?page-break-before:\s*always;/);
   assert.doesNotMatch(printBlock, /margin:\s*12mm/);
 });
 
@@ -65,4 +73,16 @@ test("keeps the desktop worksheet in one two-column viewport", async () => {
   assert.match(desktopBlock, /border-left:\s*2px solid/);
   assert.match(css, /width:\s*fit-content/);
   assert.match(css, /justify-self:\s*start/);
+  assert.match(css, /\.a4-sheet\s*\{[\s\S]*?width:\s*794px;[\s\S]*?height:\s*1123px;/);
+  assert.match(css, /\.a4-stage\s*\{[\s\S]*?margin:\s*0 auto;/);
+  assert.match(css, /\.answer-stage\s*\{\s*display:\s*none;/);
+  assert.match(css, /\.site-footer\s*\{\s*display:\s*none;/);
+  assert.match(css, /\.a4-sheet \.question-row > \.fraction\s*\{\s*font-size:\s*27px;/);
+});
+
+test("shows only right or wrong after grading", async () => {
+  const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(pageSource, /result\.correct \? "맞음" : "틀림"/);
+  assert.doesNotMatch(pageSource, /function Explanation|풀이 보기|풀이 닫기|result\.message|explain-button/);
 });

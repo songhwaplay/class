@@ -155,6 +155,15 @@ assert.deepStrictEqual(guestLobbyData, { mode: "team" });
 assert.strictEqual(guest.snapshot().started, true);
 assert.deepStrictEqual(guestStart.data, { seed: 7 });
 
+guest.returnToLobby();
+assert.strictEqual(guest.snapshot().started, false);
+host.returnToLobby();
+const returnedLobbyPayload = gameMessages(hostSocket).at(-1);
+assert.strictEqual(returnedLobbyPayload.type, window.ClassroomMultiplayerLobby.MESSAGE.STATE);
+guestSocket.receive({ type: "GAME_MESSAGE", senderId: "host-1", payload: returnedLobbyPayload });
+assert.strictEqual(host.snapshot().started, false);
+assert.strictEqual(guest.snapshot().started, false);
+
 const unnamedIds = makeElements("unnamed");
 const socketCountBeforeUnnamed = sockets.length;
 const unnamed = window.ClassroomMultiplayerLobby.create({
@@ -165,7 +174,56 @@ const unnamed = window.ClassroomMultiplayerLobby.create({
 assert.strictEqual(sockets.length, socketCountBeforeUnnamed);
 assert.strictEqual(unnamed.snapshot().connected, false);
 
+const continuingIds = makeElements("continuing");
+let playerLeftEvent = null;
+const continuing = window.ClassroomMultiplayerLobby.create({
+    gameId: "continuing-game",
+    ids: continuingIds,
+    getPlayerName: () => "방장",
+    allowedPlayerCounts: [1, 2, 3, 4],
+    onPlayerLeftDuringGame: event => { playerLeftEvent = event; }
+}).mount();
+const continuingSocket = sockets.at(-1);
+continuingSocket.receive({ type: "CONNECTED", playerId: "host-2" });
+continuingSocket.receive({ type: "ROOM_CREATED", playerId: "host-2", roomCode: "2468" });
+continuingSocket.receive({ type: "PLAYER_JOINED", playerId: "guest-2", name: "손님" });
+continuing.startGame();
+continuingSocket.receive({ type: "PLAYER_LEFT", playerId: "guest-2" });
+assert.strictEqual(continuing.snapshot().started, true);
+assert.strictEqual(Object.keys(continuing.snapshot().players).length, 1);
+assert.strictEqual(playerLeftEvent.playerId, "guest-2");
+assert.strictEqual(playerLeftEvent.player.name, "손님");
+
+const serverOwnedIds = makeElements("server-owned");
+let serverMessage = null;
+const socketCountBeforeServerOwned = sockets.length;
+const serverOwned = window.ClassroomMultiplayerLobby.create({
+    gameId: "server-owned-game",
+    ids: serverOwnedIds,
+    getPlayerName: () => "서버방장",
+    autoCreate: false,
+    getRoomRequestData: () => ({ characterStyle: "female", gameId: "ignored" }),
+    onServerMessage: message => { serverMessage = message; }
+}).mount();
+assert.strictEqual(sockets.length, socketCountBeforeServerOwned);
+serverOwned.createRoom();
+const serverOwnedSocket = sockets.at(-1);
+serverOwnedSocket.receive({ type: "CONNECTED", playerId: "host-3" });
+assert.deepStrictEqual(serverOwnedSocket.sent.at(-1), {
+    characterStyle: "female",
+    gameId: "server-owned-game",
+    type: "CREATE_ROOM",
+    roomCode: "2468",
+    name: "서버방장"
+});
+assert.strictEqual(serverOwned.sendServer({ type: "SERVER_ACTION", action: "START" }), true);
+assert.deepStrictEqual(serverOwnedSocket.sent.at(-1), { type: "SERVER_ACTION", action: "START" });
+serverOwnedSocket.receive({ type: "SERVER_STATE", phase: "ready" });
+assert.deepStrictEqual(serverMessage, { type: "SERVER_STATE", phase: "ready" });
+
 host.destroy();
 guest.destroy();
 unnamed.destroy();
+continuing.destroy();
+serverOwned.destroy();
 console.log("multiplayer-lobby-unit: ok");

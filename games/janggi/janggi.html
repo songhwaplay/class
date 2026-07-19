@@ -27,18 +27,20 @@ button,input,select{font:inherit}.hidden{display:none!important}
 }
 
 </style>
+<link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/network/multiplayer-lobby.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
 <audio id="bgm" src="../../assets/sound/janggi.mp3" loop></audio>
 <div class="shell">
-<section id="lobby">
+<section id="missingScreen" class="hidden"><h1 class="title">장기</h1><div class="panel"><strong>이름이 없습니다.</strong><br>이름 변경은 메인 화면에서만 가능합니다.<div class="row"><button class="btn primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></div></div></section>
+<section id="lobby" class="hidden" data-multiplayer-lobby>
 <h1 class="title">장기</h1><div class="sub">온라인 1대1 대국</div>
-<div id="status" class="status">방을 만들거나 입장하세요.</div>
-<div id="missingName" class="panel hidden"><strong>이름이 없습니다.</strong><br>이름 변경은 메인 화면에서만 가능합니다.<div class="row"><button class="btn primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></div></div>
-<div class="tabs"><button id="hostTab" class="tab active" onclick="switchMode('host')">CREATE ROOM</button><button id="joinTab" class="tab" onclick="switchMode('join')">JOIN ROOM</button></div>
-<div id="hostPane" class="panel"><div class="roomcode" id="roomCode">----</div><div class="row"><button class="btn" onclick="copyCode()">COPY CODE</button></div><div class="setup"><label>내 초 차림</label><select id="choFormation">
+<div class="mp-lobby-player-name">PLAYER · <strong id="savedName">-</strong></div>
+<div class="tabs mp-lobby-tabs"><button id="hostTab" class="tab active" type="button">CREATE ROOM</button><button id="joinTab" class="tab" type="button">JOIN ROOM</button></div>
+<div id="hostPane" class="panel mp-lobby-card"><div class="roomcode mp-lobby-room-code" id="roomCode">----</div><div class="row mp-lobby-row"><button id="copyBtn" class="btn" type="button">COPY CODE</button></div><div id="hostStatus" class="status mp-lobby-status">방을 만드는 중입니다.</div><div class="setup"><label>내 초 차림</label><select id="choFormation">
 <option value="HEHE" selected>마상마상 (기본)</option>
 <option value="EHEH">상마상마</option>
 <option value="HEEH">마상상마</option>
@@ -50,67 +52,68 @@ button,input,select{font:inherit}.hidden{display:none!important}
 <option value="60">60초</option>
 <option value="90">90초</option>
 </select></div></div>
-<div id="joinPane" class="panel hidden"><div class="row"><input id="joinCode" class="codeinput" maxlength="4" inputmode="numeric" placeholder="ROOM CODE · 4 DIGITS" oninput="this.value=this.value.replace(/\D/g,'').slice(0,4)" onkeydown="if(event.key==='Enter')joinRoom()"><button class="btn primary" onclick="joinRoom()">JOIN ROOM</button></div><div class="setup"><label>내 한 차림</label><select id="hanFormation" onchange="sendFormation()">
+<div id="joinPane" class="panel mp-lobby-card hidden"><div class="row mp-lobby-row"><input id="joinCode" class="codeinput" maxlength="4" inputmode="numeric" placeholder="ROOM CODE · 4 DIGITS"><button id="joinBtn" class="btn primary" type="button">JOIN ROOM</button></div><div id="joinStatus" class="status mp-lobby-status">방장이 알려준 번호를 입력하세요.</div><div class="setup"><label>내 한 차림</label><select id="hanFormation">
 <option value="HEHE" selected>마상마상 (기본)</option>
 <option value="EHEH">상마상마</option>
 <option value="HEEH">마상상마</option>
 <option value="EHHE">상마마상</option>
 </select></div></div>
+<div id="lobbyPlayers" class="mp-lobby-player-list"></div>
+<div id="lobbyGuide" class="lobby-guide">상대방을 기다리는 중입니다.</div>
 <div class="lobby-guide"><strong>방장은 초로 선공하고, 손님은 한으로 후공합니다.</strong><br>실력 차이가 있다면 장기를 덜 두는 사람이 방장을 맡아 초의 선공권을 가지세요. 차림은 각자 자기 진영만 직접 선택합니다.</div>
-<div class="row"><button id="startBtn" class="btn primary" disabled onclick="startGame()">WAITING FOR PLAYERS</button><button class="btn" onclick="showRules()">HOW TO PLAY</button></div>
+<div class="row mp-lobby-actions"><button id="startBtn" class="btn primary" type="button" disabled>WAITING FOR PLAYERS</button><button id="rulesBtnLobby" class="btn" type="button">HOW TO PLAY</button><button id="leaveBtn" class="btn" type="button">메인 화면으로</button></div>
 <div class="music"><b>음악</b><button id="mute1" class="btn" onclick="toggleMute()">음소거</button><div class="segments"><button class="seg" onclick="setVolume(1)"></button><button class="seg" onclick="setVolume(2)"></button><button class="seg" onclick="setVolume(3)"></button><button class="seg" onclick="setVolume(4)"></button><button class="seg" onclick="setVolume(5)"></button></div></div>
 </section>
 <section id="game" class="hidden">
 <div class="gamehead"><div><span id="roleChip" class="chip"></span></div><div class="turnwrap"><div id="turnText" class="turn">대기 중</div><div id="turnClock" class="clock">00:30</div></div><div class="right"><span id="connectionChip" class="chip">● 연결됨</span></div></div>
-<div class="gamebody"><div class="boardwrap"><div id="board" class="board"></div></div><aside class="side"><h3>대국 상태</h3><div id="notice" class="notice">말을 선택하세요.</div><div id="log" class="log"></div><div class="chat-title">채팅</div><div id="chatLog" class="chat-log"><div class="chat-msg">상대방과 간단한 메시지를 주고받을 수 있습니다.</div></div><div class="chat-row"><input id="chatInput" class="chat-input" maxlength="100" autocomplete="off" placeholder="메시지 입력" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat()}"><button class="btn chat-send" onclick="sendChat()">보내기</button></div><button class="btn danger" onclick="resign()">기권</button><button id="rematchBtn" class="btn" onclick="requestRematch()">재대국 요청</button><button class="btn" onclick="showRules()">규칙</button><div class="music"><button id="mute2" class="btn" onclick="toggleMute()">음소거</button><div class="segments"><button class="seg" onclick="setVolume(1)"></button><button class="seg" onclick="setVolume(2)"></button><button class="seg" onclick="setVolume(3)"></button><button class="seg" onclick="setVolume(4)"></button><button class="seg" onclick="setVolume(5)"></button></div></div></aside></div>
+<div class="gamebody"><div class="boardwrap"><div id="board" class="board"></div></div><aside class="side"><h3>대국 상태</h3><div id="notice" class="notice">말을 선택하세요.</div><div id="log" class="log"></div><div class="chat-title">채팅</div><div id="chatLog" class="chat-log"><div class="chat-msg">상대방과 간단한 메시지를 주고받을 수 있습니다.</div></div><div class="chat-row"><input id="chatInput" class="chat-input" maxlength="100" autocomplete="off" placeholder="메시지 입력" onkeydown="if(event.key==='Enter'){event.preventDefault();sendChat()}"><button class="btn chat-send" onclick="sendChat()">보내기</button></div><button class="btn danger" onclick="resign()">기권</button><button id="rematchBtn" class="btn" onclick="requestRematch()">재대국 요청</button><button id="rulesBtnGame" class="btn" type="button">규칙</button><div class="music"><button id="mute2" class="btn" onclick="toggleMute()">음소거</button><div class="segments"><button class="seg" onclick="setVolume(1)"></button><button class="seg" onclick="setVolume(2)"></button><button class="seg" onclick="setVolume(3)"></button><button class="seg" onclick="setVolume(4)"></button><button class="seg" onclick="setVolume(5)"></button></div></div></aside></div>
 </section>
 </div>
 <div id="modal" class="modal" onclick="if(event.target===this)closeModal()"><div class="box"><h2 id="modalTitle"></h2><div id="modalBody"></div><div class="actions"><button class="btn primary" onclick="closeModal()">확인</button></div></div></div>
 <script>
 "use strict";
-const $=id=>document.getElementById(id);let socket=null,myRole=null,connected=false,roomMode='host',roomCode='',selected=null,legalTargets=[],logs=[],chatMessages=[],musicStarted=false,volumeLevel=3,gameOver=false,rematchMine=false,rematchOther=false,guestFormationReady=false,turnTimerId=null,turnDeadline=0,hostCreateAttempts=0,opponentName='';
+const $=id=>document.getElementById(id);const GAME_ID='janggi';let lobby=null,myId=null,myRole='host',players={},connected=false,roomCode='',selected=null,legalTargets=[],logs=[],chatMessages=[],musicStarted=false,volumeLevel=3,gameOver=false,rematchMine=false,rematchOther=false,turnTimerId=null,turnDeadline=0,opponentName='',formationSyncPending=false;
 const savedPlayerName=(()=>{const name=(localStorage.getItem('classPlayerName')||'').trim();return /^[가-힣]{2,6}$/.test(name)?name:''})();
 function getPlayerName(){return savedPlayerName}
 function displayPlayerLabel(side){if(side===mySide())return getPlayerName();if(opponentName)return opponentName;return sideLabel(side)}
 const state={pieces:[],turn:'cho',choFormation:'HEHE',hanFormation:'HEHE',timeLimit:30,started:false,winner:null,lastMove:null};
 const typeName={king:'왕',guard:'사',rook:'차',horse:'마',elephant:'상',cannon:'포',soldier:'졸'};
-window.addEventListener('load',()=>{drawBoardLines();setVolume(3);const sub=document.querySelector('.sub');if(!savedPlayerName){if(sub)sub.textContent='이름이 없습니다 · 메인 화면에서 이름을 먼저 저장해 주세요';$('status').textContent='게임 서버에 연결하지 않았습니다.';$('missingName').classList.remove('hidden');$('hostTab').disabled=true;$('joinTab').disabled=true;$('hostPane').classList.add('hidden');return}if(sub)sub.textContent=`PLAYER · ${savedPlayerName} · 온라인 1대1 대국`;switchMode('host')});document.addEventListener('pointerdown',startMusic,{once:true});
+window.addEventListener('DOMContentLoaded',initJanggiLobby);document.addEventListener('pointerdown',startMusic,{once:true});
 function drawBoardLines(){const b=$('board');for(let x=0;x<9;x++){let l=document.createElement('div');l.className='gridline vline';l.style.left=`${5.55+x*11.11}%`;b.appendChild(l)}for(let y=0;y<10;y++){let l=document.createElement('div');l.className='gridline hline';l.style.top=`${5+y*10}%`;b.appendChild(l)}const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('class','palace-svg');svg.setAttribute('viewBox','0 0 8 9');svg.setAttribute('preserveAspectRatio','none');[[3,0,5,2],[5,0,3,2],[3,7,5,9],[5,7,3,9]].forEach(([x1,y1,x2,y2])=>{const line=document.createElementNS('http://www.w3.org/2000/svg','line');line.setAttribute('x1',x1);line.setAttribute('y1',y1);line.setAttribute('x2',x2);line.setAttribute('y2',y2);svg.appendChild(line)});b.appendChild(svg)}
-function switchMode(m){if(!savedPlayerName||connected)return;resetNet();guestFormationReady=false;roomMode=m;myRole=m==='host'?'host':'guest';$('hostTab').classList.toggle('active',m==='host');$('joinTab').classList.toggle('active',m==='join');$('hostPane').classList.toggle('hidden',m!=='host');$('joinPane').classList.toggle('hidden',m==='host');$('startBtn').disabled=true;$('startBtn').textContent=m==='host'?'WAITING FOR PLAYERS':'WAITING FOR HOST';if(m==='host')createHost();else setStatus('4자리 방 번호를 입력하세요.','')}
-const GAME_ID='janggi';
-function resetNet(){connected=false;try{socket&&socket.close()}catch{}socket=null}
-function code(){return ClassroomNetwork.generateRoomCode(4)}
-function createHost(){if(!savedPlayerName)return;roomCode=code();$('roomCode').textContent=roomCode;setStatus('방 번호 생성 중...','');openSocket('host',roomCode)}
-function joinRoom(){if(!savedPlayerName)return;let c=$('joinCode').value.trim();if(c.length!==4)return alert('4자리 방 번호를 입력하세요.');resetNet();myRole='guest';roomCode=c;setStatus(`CONNECTING TO ROOM ${c}... · 서버에 연결 중입니다.`,'');openSocket('join',c)}
-function openSocket(mode,codeValue){
- if(!savedPlayerName)return;
- resetNet();socket=ClassroomNetwork.createSocket();
- socket.addEventListener('open',()=>socket.send(JSON.stringify({type:mode==='host'?'CREATE_ROOM':'JOIN_ROOM',gameId:GAME_ID,roomCode:codeValue,name:getPlayerName()})));
- socket.addEventListener('message',e=>{let m;try{m=JSON.parse(e.data)}catch{return}handleServerMessage(m)});
- socket.addEventListener('close',()=>{if(connected)disconnect()});
- socket.addEventListener('error',()=>setStatus('게임 서버에 연결할 수 없습니다.','err'));
+function initJanggiLobby(){
+ drawBoardLines();setVolume(3);const sub=document.querySelector('.sub');if(sub&&savedPlayerName)sub.textContent=`PLAYER · ${savedPlayerName} · 온라인 1대1 대국`;
+ $('choFormation').addEventListener('change',syncFormationChoice);$('hanFormation').addEventListener('change',syncFormationChoice);
+ lobby=ClassroomMultiplayerLobby.create({
+  gameId:GAME_ID,ids:{lobbyScreen:'lobby'},getPlayerName,maxPlayers:2,allowedPlayerCounts:[2],
+  rulesButtonIds:['rulesBtnLobby','rulesBtnGame'],leaveButtonIds:['leaveBtn'],onRules:showRules,onLeave:()=>location.href='../../index.html',
+  onNotice:text=>{const target=$('hostStatus');if(target)target.textContent=text},onStateChange:syncLobbyState,
+  canStart:canStartJanggi,getLobbyPresentation:janggiLobbyPresentation,createStartData:createJanggiStartData,
+  onStarted:startJanggiGame,onGameMessage:(_sender,payload)=>handlePacket(payload),onAbort:disconnect
+ }).mount()
 }
-function handleServerMessage(m){
- if(!m||!m.type)return;
- if(m.type==='ROOM_CREATED'){roomCode=m.roomCode;hostCreateAttempts=0;$('roomCode').textContent=roomCode;setStatus(`방 ${roomCode} — 상대방 접속 대기 중...`,'');return}
- if(m.type==='ROOM_EXISTS'){if(myRole==='host'&&hostCreateAttempts<10){hostCreateAttempts++;createHost()}else setStatus('빈 방 번호를 만들지 못했습니다.','err');return}
- if(m.type==='PLAYER_JOINED'&&myRole==='host'){connected=true;setStatus('상대방과 연결되었습니다.','ok');$('startBtn').disabled=true;$('startBtn').textContent='WAITING FOR PLAYER SETUP';send({type:'hello',formation:$('choFormation').value,name:getPlayerName()});return}
- if(m.type==='ROOM_JOINED'&&myRole==='guest'){connected=true;setStatus('상대방과 연결되었습니다.','ok');$('startBtn').disabled=true;$('startBtn').textContent='WAITING FOR HOST';send({type:'hello',formation:$('hanFormation').value,name:getPlayerName()});return}
- if(m.type==='ROOM_NOT_FOUND'){setStatus('방을 찾지 못했습니다.','err');return}
- if(m.type==='ROOM_FULL'){setStatus('방이 가득 찼습니다.','err');return}
- if(m.type==='GAME_MESSAGE'){handlePacket(m.payload);return}
- if(m.type==='PLAYER_LEFT'||m.type==='ROOM_CLOSED'){disconnect()}
+function desiredFormation(role=myRole){return validFormation($(role==='host'?'choFormation':'hanFormation').value)}
+function syncLobbyState(snapshot){
+ myId=snapshot.myId;myRole=snapshot.role;players=snapshot.players;roomCode=snapshot.roomCode;connected=!!snapshot.started||(snapshot.connected&&Object.keys(players).length===2);
+ const otherId=Object.keys(players).find(id=>String(id)!==String(myId));if(otherId)opponentName=String(players[otherId]?.name||'').trim().slice(0,12);
+ const mine=myId&&players[myId];if(snapshot.started||!mine)return;const formation=desiredFormation(snapshot.role);if(mine.formation===formation||formationSyncPending)return;
+ formationSyncPending=true;setTimeout(()=>{formationSyncPending=false;const current=lobby?.snapshot();if(current&&!current.started&&current.role===snapshot.role&&String(current.myId)===String(snapshot.myId))lobby.updateLocalPlayer({formation})},0)
 }
-function disconnect(){connected=false;stopTurnTimer();$('connectionChip').textContent='● 연결 끊김';showModal('연결 종료','상대방과의 연결이 끊어졌습니다. 페이지를 새로고침해 주세요.')}
-function send(p){try{if(!socket||socket.readyState!==WebSocket.OPEN)return false;socket.send(JSON.stringify({type:'GAME_MESSAGE',payload:p}));return true}catch{return false}}
+function syncFormationChoice(){if(!lobby||lobby.snapshot().started)return;lobby.updateLocalPlayer({formation:desiredFormation(lobby.snapshot().role)})}
+function canStartJanggi({count,players:roomPlayers}){return count===2&&Object.values(roomPlayers).every(player=>validFormation(player?.formation)===player?.formation)}
+function janggiLobbyPresentation({count,role,canStart}){if(role!=='host')return{canStart:false,startText:'WAITING FOR HOST',guideText:count===2?'차림 선택 완료 · 방장이 대국을 시작합니다.':'방 정보를 동기화하는 중입니다.'};if(count<2)return{canStart:false,startText:'WAITING FOR PLAYERS · 1/2',guideText:'상대방이 입장하면 각자 차림을 선택할 수 있습니다.'};if(!canStart)return{canStart:false,startText:'WAITING FOR PLAYER SETUP',guideText:'상대방의 차림 정보를 동기화하는 중입니다.'};return{canStart:true,startText:'START GAME',guideText:'두 명의 차림이 준비되었습니다. 대국을 시작할 수 있습니다.'}}
+function makeInitialState(choFormation,hanFormation,timeLimit){const cho=validFormation(choFormation),han=validFormation(hanFormation),time=validTimeLimit(timeLimit);return{pieces:initialPieces(cho,han),turn:'cho',choFormation:cho,hanFormation:han,timeLimit:time,started:true,winner:null,lastMove:null}}
+function createJanggiStartData(snapshot){const ids=Object.keys(snapshot.players),guestId=ids.find(id=>String(id)!==String(snapshot.myId));return{state:makeInitialState(snapshot.players[snapshot.myId]?.formation,snapshot.players[guestId]?.formation,$('turnTimeLimit').value)}}
+function applyStartState(nextState){if(!nextState)return;Object.assign(state,clone(nextState));selected=null;legalTargets=[];gameOver=false;rematchMine=false;rematchOther=false;logs=['대국 시작 — 초 선수의 차례입니다.'];connected=true;launch();resetTurnTimer()}
+function startJanggiGame(session){syncLobbyState(session);applyStartState(session.data?.state)}
+function disconnect({title='연결 종료',message='상대방과의 연결이 끊어졌습니다. 페이지를 새로고침해 주세요.'}={}){connected=false;stopTurnTimer();$('connectionChip').textContent='● 연결 끊김';showModal(title,message)}
+function send(p){return lobby?.send(p)||false}
 function normalizeChatText(value){return String(value||'').replace(/[\r\n\t]+/g,' ').replace(/\s{2,}/g,' ').trim().slice(0,100)}
 function sendChat(){if(!connected)return;const input=$('chatInput'),text=normalizeChatText(input.value);if(!text)return;if(!send({type:'chat',text}))return;chatMessages.push({mine:true,label:displayPlayerLabel(mySide()),text});input.value='';renderChat()}
 function receiveChat(value){const text=normalizeChatText(value);if(!text)return;chatMessages.push({mine:false,label:displayPlayerLabel(otherSide()),text});renderChat()}
 function renderChat(){const box=$('chatLog');if(!box)return;box.innerHTML=chatMessages.length?chatMessages.slice(-50).map(m=>`<div class="chat-msg ${m.mine?'me':'other'}"><b>${escapeHtml(m.label)}:</b> ${escapeHtml(m.text)}</div>`).join(''):'<div class="chat-msg">아직 메시지가 없습니다.</div>';box.scrollTop=box.scrollHeight}
 function validFormation(value){return /^(HEHE|EHEH|HEEH|EHHE)$/.test(value)?value:'HEHE'}
-function sendFormation(){if(myRole!=='guest'||!connected)return;send({type:'formation',formation:validFormation($('hanFormation').value)})}
-function handlePacket(p){if(!p||!p.type)return;if(p.type==='hello'){opponentName=String(p.name||'').trim().slice(0,12);if(myRole==='host'){state.hanFormation=validFormation(p.formation);guestFormationReady=true;$('startBtn').disabled=false;$('startBtn').textContent='START GAME';setStatus('상대방과 연결되었습니다. 각자 차림을 선택한 뒤 시작하세요.','ok')}}else if(p.type==='formation'){if(myRole==='host'){state.hanFormation=validFormation(p.formation);guestFormationReady=true;$('startBtn').disabled=false;$('startBtn').textContent='START GAME'}}else if(p.type==='start'){Object.assign(state,p.state);gameOver=false;launch();resetTurnTimer()}else if(p.type==='move'){Object.assign(state,p.state);selected=null;legalTargets=[];logs=p.logs||logs;gameOver=!!state.winner;if(gameOver)stopTurnTimer();else resetTurnTimer();render()}else if(p.type==='timeout'){state.winner=p.winner;gameOver=true;logs.unshift(`${sideLabel(p.loser)}의 제한시간이 끝났습니다.`);stopTurnTimer();render();showEnd(`${sideLabel(state.winner)} 시간승`)}else if(p.type==='chat'){receiveChat(p.text)}else if(p.type==='resign'){state.winner=mySide();gameOver=true;stopTurnTimer();logs.unshift(`${sideLabel(otherSide())}이 기권했습니다.`);render();showEnd(`${sideLabel(state.winner)} 승리`)}else if(p.type==='rematch'){rematchOther=true;if(rematchMine)startRematch();else showModal('재대국 요청','상대방이 재대국을 요청했습니다. 재대국 버튼을 누르면 시작됩니다.')}}
-function startGame(){if(myRole!=='host'||!connected||!guestFormationReady)return;state.choFormation=validFormation($('choFormation').value);state.hanFormation=validFormation(state.hanFormation);state.timeLimit=validTimeLimit($('turnTimeLimit').value);state.pieces=initialPieces(state.choFormation,state.hanFormation);state.turn='cho';state.started=true;state.winner=null;state.lastMove=null;logs=['대국 시작 — 초 선수의 차례입니다.'];send({type:'start',state:clone(state)});launch();resetTurnTimer()}
+function handlePacket(p){if(!p||!p.type)return;if(p.type==='start'){applyStartState(p.state)}else if(p.type==='move'){Object.assign(state,p.state);selected=null;legalTargets=[];logs=p.logs||logs;gameOver=!!state.winner;if(gameOver)stopTurnTimer();else resetTurnTimer();render()}else if(p.type==='timeout'){state.winner=p.winner;gameOver=true;logs.unshift(`${sideLabel(p.loser)}의 제한시간이 끝났습니다.`);stopTurnTimer();render();showEnd(`${sideLabel(state.winner)} 시간승`)}else if(p.type==='chat'){receiveChat(p.text)}else if(p.type==='resign'){state.winner=mySide();gameOver=true;stopTurnTimer();logs.unshift(`${sideLabel(otherSide())}이 기권했습니다.`);render();showEnd(`${sideLabel(state.winner)} 승리`)}else if(p.type==='rematch'){rematchOther=true;if(rematchMine)startRematch();else showModal('재대국 요청','상대방이 재대국을 요청했습니다. 재대국 버튼을 누르면 시작됩니다.')}}
+function startGame(){if(myRole!=='host'||!connected)return;const nextState=makeInitialState(state.choFormation,state.hanFormation,state.timeLimit);send({type:'start',state:clone(nextState)});applyStartState(nextState)}
 function initialPieces(choForm,hanForm){let p=[],id=0,add=(side,type,x,y)=>p.push({id:id++,side,type,x,y});const formationTypes=(form)=>{const map={H:'horse',E:'elephant'},f=/^(HEHE|EHEH|HEEH|EHHE)$/.test(form)?form:'HEHE';return [...f].map(v=>map[v])};const makeBack=(form)=>{const f=formationTypes(form);return ['rook',f[0],f[1],'guard',null,'guard',f[2],f[3],'rook']};const hanBack=makeBack(hanForm),choBack=makeBack(choForm);hanBack.forEach((t,x)=>{if(t)add('han',t,x,0)});add('han','king',4,1);add('han','cannon',1,2);add('han','cannon',7,2);[0,2,4,6,8].forEach(x=>add('han','soldier',x,3));choBack.forEach((t,x)=>{if(t)add('cho',t,x,9)});add('cho','king',4,8);add('cho','cannon',1,7);add('cho','cannon',7,7);[0,2,4,6,8].forEach(x=>add('cho','soldier',x,6));return p}
 function clone(v){return JSON.parse(JSON.stringify(v))}function mySide(){return myRole==='host'?'cho':'han'}function otherSide(s=mySide()){return s==='cho'?'han':'cho'}function sideLabel(s){return s==='cho'?'초':'한'}function pieceName(p){if(p.type==='soldier')return p.side==='cho'?'졸':'병';return typeName[p.type]}function hasBatchim(word){const ch=String(word).trim().slice(-1);const code=ch.charCodeAt(0);return code>=0xAC00&&code<=0xD7A3&&(code-0xAC00)%28!==0}function subjectParticle(word){return hasBatchim(word)?'이':'가'}function objectParticle(word){return hasBatchim(word)?'을':'를'}
 function validTimeLimit(v){const n=Number(v);return [15,30,45,60,90].includes(n)?n:30}
@@ -145,7 +148,6 @@ function startRematch(){rematchMine=rematchOther=false;closeModal();if(myRole===
 function showEnd(t){showModal('대국 종료',`<p style="font-size:22px;text-align:center"><b>${t}</b></p><p>재대국 버튼을 누르면 상대방에게 요청을 보냅니다.</p>`)}
 function showRules(){showModal('장기 규칙','<ul><li>방장은 초를 맡아 먼저 시작하고, 손님은 한을 맡아 후공합니다.</li><li>차림은 초와 한이 각자 자기 진영의 차림을 직접 선택합니다.</li><li>자기 말은 이동 가능한 자리로만 움직일 수 있고, 상대 말이 있는 자리로 이동하면 그 말을 잡습니다.</li><li>마와 상은 이동 경로의 길목이 다른 말에 막히면 움직일 수 없습니다.</li><li>포는 반드시 다른 말 하나를 넘어야 움직이거나 잡을 수 있으며, 포를 넘거나 포를 잡을 수 없습니다.</li><li>왕과 사는 궁성 안에서 움직이며 궁성의 대각선 길도 이용할 수 있습니다.</li><li>방장이 정한 한 수 제한시간 안에 착수해야 하며, 시간이 끝나면 시간패합니다.</li><li>자기 왕이 장군에 놓이게 되는 수는 둘 수 없습니다.</li><li>상대 왕이 장군을 피할 수 없으면 외통수로 승리합니다.</li></ul>')}
 function showModal(t,b){$('modalTitle').textContent=t;$('modalBody').innerHTML=b;$('modal').classList.add('show')}function closeModal(){$('modal').classList.remove('show')}
-function setStatus(t,c){$('status').textContent=t;$('status').className='status '+c}async function copyCode(){try{await navigator.clipboard.writeText(roomCode);setStatus(`방 번호 ${roomCode} 복사됨`,'ok')}catch{alert(roomCode)}}
 function startMusic(){let a=$('bgm');if(!a||musicStarted)return;a.volume=volumeLevel/5*.8;a.play().then(()=>musicStarted=true).catch(()=>{})}function setVolume(n){volumeLevel=n;let a=$('bgm');a.muted=false;a.volume=n/5*.8;document.querySelectorAll('.seg').forEach((e,i)=>e.classList.toggle('on',i%5<n));['mute1','mute2'].forEach(id=>{let b=$(id);if(b)b.textContent='음소거'});startMusic()}function toggleMute(){let a=$('bgm');startMusic();a.muted=!a.muted;['mute1','mute2'].forEach(id=>{let b=$(id);if(b)b.textContent=a.muted?'음소거 해제':'음소거'})}
 let ac=null;function audio(){if(!ac){let C=window.AudioContext||window.webkitAudioContext;if(C)ac=new C()}if(ac&&ac.state==='suspended')ac.resume();return ac}function tone(f,d,v=.04,delay=0){let c=audio();if(!c)return;let o=c.createOscillator(),g=c.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(.0001,c.currentTime+delay);g.gain.exponentialRampToValueAtTime(v,c.currentTime+delay+.01);g.gain.exponentialRampToValueAtTime(.0001,c.currentTime+delay+d);o.connect(g);g.connect(c.destination);o.start(c.currentTime+delay);o.stop(c.currentTime+delay+d+.02)}function playSelect(){tone(760,.13,.035);tone(1140,.1,.018,.02)}function playMove(c){tone(c?240:420,.12,c?.07:.04);if(c)tone(160,.18,.05,.04)}
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}

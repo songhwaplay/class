@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   createQuestionSet,
   type FractionQuestion,
@@ -288,36 +288,41 @@ function ProblemPrompt({ question }: { question: FractionQuestion }) {
   );
 }
 
-function Explanation({ question }: { question: FractionQuestion }) {
+function CorrectAnswer({ question }: { question: FractionQuestion }) {
   if (question.type === "mixed-to-improper") {
     return (
-      <div className="explanation">
-        <span className="explanation-label">풀이</span>
-        <span>
-          {question.prompt.whole} × {question.prompt.denominator} + {question.prompt.numerator} = {question.expected.numerator}
-        </span>
-        <Fraction
-          numerator={question.expected.numerator}
-          denominator={question.expected.denominator}
-        />
-      </div>
+      <Fraction
+        numerator={question.expected.numerator}
+        denominator={question.expected.denominator}
+        label={`${question.number}번 정답, ${question.expected.denominator}분의 ${question.expected.numerator}`}
+      />
     );
   }
 
   return (
-    <div className="explanation">
-      <span className="explanation-label">풀이</span>
-      <span>
-        {question.prompt.numerator} ÷ {question.prompt.denominator} = {question.expected.whole} … {question.expected.numerator}
-      </span>
-      <span className="mixed-number compact">
-        <strong>{question.expected.whole}</strong>
-        <Fraction
-          numerator={question.expected.numerator}
-          denominator={question.expected.denominator}
-        />
-      </span>
-    </div>
+    <span
+      className="mixed-answer"
+      aria-label={`${question.number}번 정답, ${question.expected.whole}와 ${question.expected.denominator}분의 ${question.expected.numerator}`}
+    >
+      <strong>{question.expected.whole}</strong>
+      <Fraction
+        numerator={question.expected.numerator}
+        denominator={question.expected.denominator}
+      />
+    </span>
+  );
+}
+
+function AnswerCard({ question }: { question: FractionQuestion }) {
+  return (
+    <article className="question-card answer-card" data-testid="answer-card">
+      <div className="question-row">
+        <span className="question-number">{question.number}</span>
+        <ProblemPrompt question={question} />
+        <span className="equals" aria-hidden="true">=</span>
+        <CorrectAnswer question={question} />
+      </div>
+    </article>
   );
 }
 
@@ -325,18 +330,14 @@ function QuestionCard({
   question,
   answer,
   result,
-  showExplanation,
   onAnswer,
   onCheck,
-  onToggleExplanation,
 }: {
   question: FractionQuestion;
   answer: Answer;
   result?: GradeResult;
-  showExplanation: boolean;
   onAnswer: (next: Answer) => void;
   onCheck: () => void;
-  onToggleExplanation: () => void;
 }) {
   return (
     <article
@@ -355,15 +356,10 @@ function QuestionCard({
 
       {result && (
         <div className={`feedback ${result.correct ? "correct" : "wrong"}`} role="status">
-          <span className="feedback-icon" aria-hidden="true">{result.correct ? "✓" : "!"}</span>
-          <span>{result.message}</span>
-          <button className="explain-button" type="button" onClick={onToggleExplanation}>
-            {showExplanation ? "풀이 닫기" : "풀이 보기"}
-          </button>
+          <span className="feedback-icon" aria-hidden="true">{result.correct ? "✓" : "×"}</span>
+          <span>{result.correct ? "맞음" : "틀림"}</span>
         </div>
       )}
-
-      {showExplanation && <Explanation question={question} />}
     </article>
   );
 }
@@ -372,7 +368,19 @@ export default function Home() {
   const [questionSet, setQuestionSet] = useState(() => createQuestionSet(INITIAL_SEED));
   const [answers, setAnswers] = useState<Record<string, Answer>>(() => emptyAnswers(questionSet));
   const [results, setResults] = useState<Record<string, GradeResult>>({});
-  const [explanations, setExplanations] = useState<Record<string, boolean>>({});
+  const [sheetScale, setSheetScale] = useState(0.6);
+
+  useEffect(() => {
+    function fitA4Sheet() {
+      const availableWidth = window.innerWidth - 16;
+      const availableHeight = window.innerHeight - 68;
+      setSheetScale(Math.min(availableWidth / 794, availableHeight / 1123, 1));
+    }
+
+    fitA4Sheet();
+    window.addEventListener("resize", fitA4Sheet);
+    return () => window.removeEventListener("resize", fitA4Sheet);
+  }, []);
 
   const leftQuestions = useMemo(
     () => questionSet.questions.filter((question) => question.type === "mixed-to-improper"),
@@ -397,7 +405,6 @@ export default function Home() {
         delete nextResults[id];
         return nextResults;
       });
-      setExplanations((current) => ({ ...current, [id]: false }));
     }
   }
 
@@ -423,7 +430,6 @@ export default function Home() {
   function resetAnswers() {
     setAnswers(emptyAnswers(questionSet));
     setResults({});
-    setExplanations({});
   }
 
   function newSet() {
@@ -434,7 +440,6 @@ export default function Home() {
     setQuestionSet(nextSet);
     setAnswers(emptyAnswers(nextSet));
     setResults({});
-    setExplanations({});
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -460,16 +465,32 @@ export default function Home() {
               question={question}
               answer={answers[question.id]}
               result={results[question.id]}
-              showExplanation={Boolean(explanations[question.id])}
               onAnswer={(next) => updateAnswer(question.id, next)}
               onCheck={() => checkQuestion(question)}
-              onToggleExplanation={() =>
-                setExplanations((current) => ({
-                  ...current,
-                  [question.id]: !current[question.id],
-                }))
-              }
             />
+          ))}
+        </div>
+      </section>
+    );
+  }
+
+  function renderAnswerSection(
+    title: string,
+    questions: FractionQuestion[],
+    tone: "coral" | "teal",
+  ) {
+    return (
+      <section className={`problem-section ${tone}`} aria-labelledby={`${tone}-answer-title`}>
+        <header className="section-header">
+          <div>
+            <span className="section-eyebrow">전체 답지</span>
+            <h2 id={`${tone}-answer-title`}>{title}</h2>
+          </div>
+          <span className="section-count">8문제</span>
+        </header>
+        <div className="question-list">
+          {questions.map((question) => (
+            <AnswerCard key={`answer-${question.id}`} question={question} />
           ))}
         </div>
       </section>
@@ -478,6 +499,7 @@ export default function Home() {
 
   return (
     <main>
+      <div className="screen-toolbar">
       <header className="site-header">
         <a className="brand" href="#top" aria-label="분수 변환 훈련실 처음으로">
           <span className="brand-mark" aria-hidden="true">½</span>
@@ -513,7 +535,14 @@ export default function Home() {
         <div className="toolbar">
           <button className="button secondary" type="button" onClick={newSet}>새 문제</button>
           <button className="button ghost" type="button" onClick={resetAnswers}>다시 풀기</button>
-          <button className="button ghost print-button" type="button" onClick={() => window.print()}>인쇄</button>
+          <button
+            className="button ghost print-button"
+            type="button"
+            title="앞면 문제지, 뒷면 전체 답지로 양면 인쇄"
+            onClick={() => window.print()}
+          >
+            문제지·답지 인쇄
+          </button>
           <button className="button primary" type="button" onClick={checkAll}>전체 채점</button>
         </div>
         <div className="set-meta">
@@ -522,9 +551,54 @@ export default function Home() {
         </div>
       </section>
 
-      <div className="worksheet-grid">
-        {renderSection("대분수를 가분수로", "곱하고 더하기", leftQuestions, "coral")}
-        {renderSection("가분수를 대분수로", "나누고 남기기", rightQuestions, "teal")}
+      </div>
+
+      <div
+        className="a4-stage"
+        style={{ width: 794 * sheetScale, height: 1123 * sheetScale }}
+      >
+        <section
+          className="a4-sheet"
+          style={{ transform: `scale(${sheetScale})` }}
+          aria-label="A4 분수 변환 문제지"
+        >
+          <header className="sheet-header">
+            <div className="sheet-title">
+              <span>3학년 분수</span>
+              <strong>대분수와 가분수 변환</strong>
+            </div>
+            <div className="sheet-info">
+              <span>이름 <i aria-hidden="true" /></span>
+              <span>날짜 <i aria-hidden="true" /></span>
+              <small>문제지 {questionSet.seed}</small>
+            </div>
+          </header>
+
+          <div className="worksheet-grid">
+            {renderSection("대분수를 가분수로", "곱하고 더하기", leftQuestions, "coral")}
+            {renderSection("가분수를 대분수로", "나누고 남기기", rightQuestions, "teal")}
+          </div>
+        </section>
+      </div>
+
+      <div className="a4-stage answer-stage" aria-hidden="true">
+        <section className="a4-sheet answer-sheet" aria-label="A4 분수 변환 전체 답지">
+          <header className="sheet-header">
+            <div className="sheet-title">
+              <span>3학년 분수</span>
+              <strong>대분수와 가분수 변환 · 전체 답지</strong>
+            </div>
+            <div className="sheet-info">
+              <span>문제지 <b>{questionSet.seed}</b></span>
+              <small>앞면을 모두 푼 뒤 뒤집어서 채점하세요</small>
+            </div>
+          </header>
+
+          <div className="worksheet-grid">
+            {renderAnswerSection("대분수 → 가분수 정답", leftQuestions, "coral")}
+            {renderAnswerSection("가분수 → 대분수 정답", rightQuestions, "teal")}
+          </div>
+        </section>
       </div>
 
       <footer className="site-footer">

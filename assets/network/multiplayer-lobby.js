@@ -142,11 +142,24 @@
             if (this.elements.startButton) this.elements.startButton.disabled = true;
             this.render();
 
-            if (isHost) this.createRoom();
-            else {
+            if (isHost) {
+                if (this.options.autoCreate !== false) this.createRoom();
+                else this._setStatus("방을 만들려면 CREATE ROOM을 누르세요.");
+            } else {
                 this._setStatus("방장이 알려준 번호를 입력하세요.");
                 setTimeout(() => this.elements.joinCode?.focus(), 50);
             }
+        }
+
+        _roomRequest(type, roomCode) {
+            const extra = this.options.getRoomRequestData?.(this.snapshot());
+            return {
+                ...(extra && typeof extra === "object" ? extra : {}),
+                type,
+                gameId: this.gameId,
+                roomCode,
+                name: this.playerName
+            };
         }
 
         createRoom() {
@@ -157,7 +170,7 @@
             this.roomCode = window.ClassroomNetwork.generateRoomCode(4);
             if (this.elements.roomCode) this.elements.roomCode.textContent = "----";
             if (this.elements.hostStatus) this.elements.hostStatus.textContent = "방을 만드는 중입니다.";
-            this._connect({ type: "CREATE_ROOM", gameId: this.gameId, roomCode: this.roomCode, name: this.playerName });
+            this._connect(this._roomRequest("CREATE_ROOM", this.roomCode));
         }
 
         joinRoom() {
@@ -175,7 +188,7 @@
             this.role = "guest";
             this.roomCode = code;
             this._setStatus(`방 ${code}에 연결하는 중입니다.`);
-            this._connect({ type: "JOIN_ROOM", gameId: this.gameId, roomCode: code, name: this.playerName });
+            this._connect(this._roomRequest("JOIN_ROOM", code));
         }
 
         _connect(action) {
@@ -236,6 +249,10 @@
             return this._sendRaw({ type: "GAME_MESSAGE", payload });
         }
 
+        sendServer(message) {
+            return message && typeof message === "object" && this._sendRaw(message);
+        }
+
         broadcast(payload) {
             return this.role === "host" && this.send(payload);
         }
@@ -266,7 +283,7 @@
                 if (this.role === "host" && this.hostCreateAttempts < 8) {
                     this.hostCreateAttempts += 1;
                     this.roomCode = window.ClassroomNetwork.generateRoomCode(4);
-                    this._sendRaw({ type: "CREATE_ROOM", gameId: this.gameId, roomCode: this.roomCode, name: this.playerName });
+                    this._sendRaw(this._roomRequest("CREATE_ROOM", this.roomCode));
                 } else this._setStatus("빈 방 번호를 만들지 못했습니다. 다시 시도하세요.");
                 return;
             }
@@ -288,11 +305,21 @@
             }
             if (message.type === "PLAYER_LEFT" && this.role === "host") {
                 const id = String(message.playerId);
-                const leftName = this.players[id]?.name || "참가자";
+                const leftPlayer = this.players[id] || null;
+                const leftName = leftPlayer?.name || "참가자";
                 delete this.players[id];
                 if (this.started) {
-                    this.broadcast({ type: MESSAGE.ABORT, message: `${leftName}님이 게임에서 나갔습니다.` });
-                    this._abort("게임 중단", `${leftName}님이 게임에서 나갔습니다.`);
+                    if (typeof this.options.onPlayerLeftDuringGame === "function") {
+                        this.render();
+                        this.options.onPlayerLeftDuringGame({
+                            playerId: id,
+                            player: leftPlayer,
+                            ...this.snapshot()
+                        });
+                    } else {
+                        this.broadcast({ type: MESSAGE.ABORT, message: `${leftName}님이 게임에서 나갔습니다.` });
+                        this._abort("게임 중단", `${leftName}님이 게임에서 나갔습니다.`);
+                    }
                 } else {
                     this._broadcastLobbyState();
                     this.render();
@@ -306,7 +333,12 @@
             if (message.type === "ROOM_NOT_FOUND") this._setStatus("방을 찾지 못했습니다. 방 번호를 확인하세요.");
             else if (message.type === "ROOM_FULL") this._setStatus(`방이 가득 찼습니다. 최대 ${this.maxPlayers}명까지 입장할 수 있습니다.`);
             else if (message.type === "ROOM_CLOSED") this._abort("방 종료", "방장이 방을 나갔습니다.");
-            else if (message.type === "ERROR") this._setStatus(message.message || "방 처리 중 오류가 발생했습니다.");
+            else if (message.type === "ERROR") {
+                this._setStatus(message.message || "방 처리 중 오류가 발생했습니다.");
+                this.options.onServerMessage?.(message, this.snapshot());
+            } else {
+                this.options.onServerMessage?.(message, this.snapshot());
+            }
         }
 
         _handleGameMessage(senderId, payload) {
@@ -447,6 +479,13 @@
         publishLobbyState() {
             if (this.role !== "host" || this.started) return false;
             this._broadcastLobbyState();
+            this.render();
+            return true;
+        }
+
+        returnToLobby() {
+            this.started = false;
+            if (this.role === "host" && this.connected) this._broadcastLobbyState();
             this.render();
             return true;
         }
