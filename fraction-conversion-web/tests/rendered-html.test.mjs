@@ -49,3 +49,20 @@ test("keeps the printable worksheet on one compact A4 page", async () => {
   assert.match(printBlock, /page-break-inside:\s*avoid/);
   assert.doesNotMatch(printBlock, /margin:\s*12mm/);
 });
+
+test("keeps the desktop worksheet in one two-column viewport", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const desktopBlock = css.slice(
+    css.indexOf("@media (min-width: 761px)"),
+    css.indexOf("@media (prefers-reduced-motion"),
+  );
+
+  assert.match(desktopBlock, /height:\s*100dvh/);
+  assert.match(desktopBlock, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(desktopBlock, /grid-template-rows:\s*repeat\(8,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(desktopBlock, /\.hero\s*\{\s*display:\s*none/);
+  assert.match(desktopBlock, /gap:\s*0/);
+  assert.match(desktopBlock, /border-left:\s*2px solid/);
+  assert.match(css, /width:\s*fit-content/);
+  assert.match(css, /justify-self:\s*start/);
+});

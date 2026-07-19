@@ -261,6 +261,7 @@ function AnswerInput({
             label={`${question.number}번 답의 분모`}
           />
         }
+        label={`${question.number}번 답의 분수 부분`}
       />
     </span>
   );
