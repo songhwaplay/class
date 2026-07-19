@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function render() {
@@ -35,4 +36,16 @@ test("renders the fraction conversion practice product", async () => {
   assert.match(html, /문제지 번호\s*(?:<!-- -->)?20260720/);
   assert.equal((html.match(/data-testid="question-card"/g) ?? []).length, 16);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
+});
+
+test("keeps the printable worksheet on one compact A4 page", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const printBlock = css.slice(css.indexOf("@media print"));
+
+  assert.match(printBlock, /size:\s*A4 portrait/);
+  assert.match(printBlock, /margin:\s*7mm/);
+  assert.match(printBlock, /grid-template-columns:\s*1fr 1fr/);
+  assert.match(printBlock, /min-height:\s*10\.5mm/);
+  assert.match(printBlock, /page-break-inside:\s*avoid/);
+  assert.doesNotMatch(printBlock, /margin:\s*12mm/);
 });
