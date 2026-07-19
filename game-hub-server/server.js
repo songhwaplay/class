@@ -13,7 +13,8 @@ const PORT = Number(process.env.PORT) || 10000;
 const MAX_ROOM_PLAYERS = {
   setgame: 4,
   nimgame: 2,
-  janggi: 2
+  janggi: 2,
+  avalon: 10
 };
 
 const FINISHER_GAMES = new Set(["coinweighing", "hanoitower", "sphinx"]);
@@ -45,6 +46,76 @@ function cleanToken(value, maxLength = 40) {
 
 function roomKey(gameId, roomCode) {
   return `${gameId}:${roomCode}`;
+}
+
+const AVALON_TEAM_SIZES = {
+  5: [2, 3, 2, 3, 3], 6: [2, 3, 4, 3, 4], 7: [2, 3, 3, 4, 4],
+  8: [3, 4, 4, 5, 5], 9: [3, 4, 4, 5, 5], 10: [3, 4, 4, 5, 5]
+};
+const AVALON_EVIL_COUNTS = { 5: 2, 6: 2, 7: 3, 8: 3, 9: 3, 10: 4 };
+
+function shuffle(items) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = crypto.randomInt(i + 1);
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function avalonPublicState(room) {
+  const game = room.avalon;
+  return {
+    phase: game.phase,
+    players: game.players.map(player => ({ id: player.id, name: player.name, connected: room.clients.has(player.id) })),
+    hostId: room.hostId,
+    leaderId: game.players[game.leaderIndex]?.id || null,
+    quest: game.quest,
+    teamSize: AVALON_TEAM_SIZES[game.players.length]?.[game.quest] || 0,
+    selectedTeam: game.selectedTeam,
+    proposalVotes: Object.keys(game.proposalVotes).length,
+    questVotes: Object.keys(game.questVotes).length,
+    rejects: game.rejects,
+    results: game.results,
+    winner: game.winner,
+    assassinId: game.assassinId,
+    settings: game.settings
+  };
+}
+
+function avalonBroadcast(room) {
+  const payload = { type: "AVALON_STATE", state: avalonPublicState(room) };
+  for (const client of room.clients.values()) safeSend(client, payload);
+}
+
+function avalonNotice(room, message) {
+  for (const client of room.clients.values()) safeSend(client, { type: "AVALON_NOTICE", message });
+}
+
+function buildAvalonRoles(count, settings) {
+  const evilCount = AVALON_EVIL_COUNTS[count];
+  const good = ["Merlin"];
+  const evil = ["Assassin"];
+  if (settings.percival && good.length < count - evilCount) good.push("Percival");
+  if (settings.morgana && evil.length < evilCount) evil.push("Morgana");
+  if (settings.mordred && evil.length < evilCount) evil.push("Mordred");
+  if (settings.oberon && evil.length < evilCount) evil.push("Oberon");
+  while (good.length < count - evilCount) good.push("Loyal Servant");
+  while (evil.length < evilCount) evil.push("Minion of Mordred");
+  return shuffle([...good, ...evil]);
+}
+
+function avalonRoleInfo(game, player) {
+  const evilRoles = new Set(["Assassin", "Morgana", "Mordred", "Oberon", "Minion of Mordred"]);
+  const visible = [];
+  if (player.role === "Merlin") {
+    game.players.filter(p => evilRoles.has(p.role) && p.role !== "Mordred").forEach(p => visible.push(p.name));
+  } else if (player.role === "Percival") {
+    game.players.filter(p => p.role === "Merlin" || p.role === "Morgana").forEach(p => visible.push(p.name));
+  } else if (evilRoles.has(player.role) && player.role !== "Oberon") {
+    game.players.filter(p => p.id !== player.id && evilRoles.has(p.role) && p.role !== "Oberon").forEach(p => visible.push(p.name));
+  }
+  return { role: player.role, alignment: evilRoles.has(player.role) ? "evil" : "good", visible };
 }
 
 function getKoreaDateParts(date = new Date()) {
@@ -219,6 +290,14 @@ wss.on("connection", socket => {
         hostId: playerId,
         clients: new Map([[playerId, socket]])
       };
+      if (gameId === "avalon") {
+        room.avalon = {
+          phase: "lobby", players: [{ id: playerId, name: cleanToken(message.name, 12) || "방장" }],
+          settings: { percival: true, morgana: true, mordred: false, oberon: false },
+          leaderIndex: 0, quest: 0, selectedTeam: [], proposalVotes: {}, questVotes: {},
+          rejects: 0, results: [], winner: null, assassinId: null
+        };
+      }
       rooms.set(key, room);
       socket.meta.roomKey = key;
       socket.meta.role = "host";
@@ -229,6 +308,7 @@ wss.on("connection", socket => {
         roomCode,
         playerId
       });
+      if (room.avalon) avalonBroadcast(room);
       return;
     }
 
@@ -253,6 +333,17 @@ wss.on("connection", socket => {
       socket.meta.roomKey = key;
       socket.meta.role = "guest";
 
+      if (room.avalon) {
+        if (room.avalon.phase !== "lobby") {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "이미 시작한 게임입니다." });
+          return;
+        }
+        room.avalon.players.push({ id: playerId, name: cleanToken(message.name, 12) || `플레이어 ${room.avalon.players.length + 1}` });
+      }
+
       safeSend(socket, {
         type: "ROOM_JOINED",
         gameId,
@@ -266,6 +357,67 @@ wss.on("connection", socket => {
         playerId,
         name: cleanToken(message.name, 20)
       });
+      if (room.avalon) avalonBroadcast(room);
+      return;
+    }
+
+    if (type === "AVALON_ACTION") {
+      const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
+      const game = room?.avalon;
+      const action = cleanToken(message.action, 30);
+      if (!room || !game) return safeSend(socket, { type: "ERROR", message: "아발론 방에 참가하지 않았습니다." });
+      const player = game.players.find(p => p.id === playerId);
+      if (!player) return;
+
+      if (action === "SETTINGS" && playerId === room.hostId && game.phase === "lobby") {
+        game.settings = { percival: !!message.settings?.percival, morgana: !!message.settings?.morgana, mordred: !!message.settings?.mordred, oberon: !!message.settings?.oberon };
+        avalonBroadcast(room);
+      } else if (action === "START" && playerId === room.hostId && game.phase === "lobby") {
+        if (game.players.length < 5) return safeSend(socket, { type: "ERROR", message: "게임 시작에는 최소 5명이 필요합니다." });
+        const roles = buildAvalonRoles(game.players.length, game.settings);
+        game.players.forEach((p, index) => { p.role = roles[index]; });
+        game.leaderIndex = crypto.randomInt(game.players.length);
+        game.phase = "team";
+        game.assassinId = game.players.find(p => p.role === "Assassin")?.id || null;
+        game.players.forEach(p => safeSend(room.clients.get(p.id), { type: "AVALON_ROLE", info: avalonRoleInfo(game, p) }));
+        avalonBroadcast(room);
+      } else if (action === "PROPOSE" && game.phase === "team" && game.players[game.leaderIndex]?.id === playerId) {
+        const team = Array.isArray(message.team) ? [...new Set(message.team.map(id => cleanToken(id, 60)))] : [];
+        const required = AVALON_TEAM_SIZES[game.players.length][game.quest];
+        if (team.length !== required || team.some(id => !game.players.some(p => p.id === id))) return safeSend(socket, { type: "ERROR", message: `원정대 ${required}명을 선택하세요.` });
+        game.selectedTeam = team; game.proposalVotes = {}; game.phase = "proposalVote"; avalonBroadcast(room);
+      } else if (action === "PROPOSAL_VOTE" && game.phase === "proposalVote" && !(playerId in game.proposalVotes)) {
+        game.proposalVotes[playerId] = !!message.approve;
+        if (Object.keys(game.proposalVotes).length === game.players.length) {
+          const approvals = Object.values(game.proposalVotes).filter(Boolean).length;
+          if (approvals > game.players.length / 2) { game.phase = "questVote"; game.questVotes = {}; avalonNotice(room, `원정대가 ${approvals}:${game.players.length - approvals}로 승인되었습니다.`); }
+          else { game.rejects += 1; game.leaderIndex = (game.leaderIndex + 1) % game.players.length; game.phase = "team"; avalonNotice(room, `원정대가 ${approvals}:${game.players.length - approvals}로 부결되었습니다.`); }
+          if (game.rejects >= 5) { game.winner = "evil"; game.phase = "ended"; }
+        }
+        avalonBroadcast(room);
+      } else if (action === "QUEST_VOTE" && game.phase === "questVote" && game.selectedTeam.includes(playerId) && !(playerId in game.questVotes)) {
+        const evil = ["Assassin", "Morgana", "Mordred", "Oberon", "Minion of Mordred"].includes(player.role);
+        game.questVotes[playerId] = evil ? !!message.success : true;
+        if (Object.keys(game.questVotes).length === game.selectedTeam.length) {
+          const fails = Object.values(game.questVotes).filter(v => !v).length;
+          const needed = game.players.length >= 7 && game.quest === 3 ? 2 : 1;
+          const success = fails < needed;
+          game.results.push({ success, fails }); game.quest += 1; game.rejects = 0;
+          const goodWins = game.results.filter(r => r.success).length;
+          const evilWins = game.results.filter(r => !r.success).length;
+          if (evilWins >= 3) { game.winner = "evil"; game.phase = "ended"; }
+          else if (goodWins >= 3) { game.phase = "assassination"; }
+          else { game.leaderIndex = (game.leaderIndex + 1) % game.players.length; game.phase = "team"; }
+          avalonNotice(room, success ? `임무 성공! (실패 카드 ${fails}장)` : `임무 실패! (실패 카드 ${fails}장)`);
+        }
+        avalonBroadcast(room);
+      } else if (action === "ASSASSINATE" && game.phase === "assassination" && playerId === game.assassinId) {
+        const target = game.players.find(p => p.id === cleanToken(message.targetId, 60));
+        if (!target) return;
+        game.winner = target.role === "Merlin" ? "evil" : "good"; game.phase = "ended";
+        for (const client of room.clients.values()) safeSend(client, { type: "AVALON_REVEAL", roles: game.players.map(p => ({ name: p.name, role: p.role })) });
+        avalonBroadcast(room);
+      }
       return;
     }
 
@@ -315,10 +467,13 @@ wss.on("connection", socket => {
     }
 
     room.clients.delete(playerId);
+    if (room.avalon) room.avalon.players = room.avalon.players.filter(player => player.id !== playerId);
     safeSend(room.clients.get(room.hostId), {
       type: "PLAYER_LEFT",
       playerId
     });
+
+    if (room.avalon) avalonBroadcast(room);
 
     if (room.clients.size === 0) rooms.delete(key);
   });
