@@ -247,7 +247,7 @@
         <a href="games/sphinx/sphinx.html">스핑크스</a>
         <a href="games/traverse/traverse.html">트래버스</a>
         <a href="games/avalon/avalon.html">레지스탕스 아발론</a>
-        <a href="https://world-voyage-classroom.onrender.com/">대항해시대</a>
+        <a id="cds95GameLink" href="https://world-voyage-classroom.onrender.com/">대항해시대</a>
     </div>
 
     <script>
@@ -275,6 +275,12 @@
                 savedPlayerName.textContent = name;
                 nameEditArea.style.display = 'none';
                 savedPlayerArea.style.display = 'flex';
+                const cds95GameLink = document.getElementById('cds95GameLink');
+                if (cds95GameLink) {
+                    const gameUrl = new URL(cds95GameLink.href);
+                    gameUrl.searchParams.set('name', name);
+                    cds95GameLink.href = gameUrl.toString();
+                }
             }
 
             function showNameEditor(name = '') {
