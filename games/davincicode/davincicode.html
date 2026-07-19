@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>DAVINCI CODE ONLINE</title>
+<link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <style>
 :root{
   --bg:#070a10;--panel:#111722;--panel2:#0b1019;--gold:#c6aa55;--gold2:#f0d77c;
@@ -21,18 +22,14 @@ button,input{font:inherit}.hidden{display:none!important}button{cursor:pointer;t
 .screen{min-height:inherit;padding:28px 32px 30px;position:relative;z-index:1}
 h1{margin:0;text-align:center;color:var(--gold);font:900 clamp(32px,5vw,48px)/1 Georgia,"Times New Roman",serif;letter-spacing:5px;text-shadow:0 3px 12px #000}
 .subtitle{text-align:center;margin:8px 0 20px;color:#9c8240;letter-spacing:2px;font:700 13px Georgia,"Times New Roman",serif}
-.tabs,.row,.players,.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
 .tab,.small,.primary,.danger{border:1px solid var(--gold3);background:linear-gradient(180deg,#151d2a,#0b1018);color:var(--gold);min-height:40px;padding:8px 14px;font-weight:900;letter-spacing:.4px}
 .tab.active,.primary{color:#171207;border-color:#f0db86;background:linear-gradient(180deg,#ecd579,#a68835)}
 .danger{color:#f2c4bf;border-color:#71372f;background:linear-gradient(180deg,#3a1b19,#1d0e0d)}
 button:disabled{opacity:.42;cursor:not-allowed;filter:grayscale(.55)}
-.box{width:min(720px,100%);margin:14px auto;padding:15px 16px;border:1px solid var(--line);background:rgba(2,5,9,.5)}
-.code{font:900 48px/1 Consolas,monospace;color:var(--gold2);text-align:center;letter-spacing:12px;margin:14px 0;padding-left:10px;user-select:text}
-.status{text-align:center;color:#c9d3dd;margin:9px;min-height:20px}.status.error{color:#ff9a90}.status.ok{color:var(--green)}
 input{width:100%;min-height:46px;border:1px solid var(--gold3);background:#05070b;color:#fff6d2;padding:8px 12px;text-align:center;font-weight:900;font-size:16px;outline:none}
 input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)}
-.player-chip{padding:8px 12px;border:1px solid var(--line);background:#111923;border-radius:16px;color:#d9e3ec}.player-chip.me{border-color:var(--gold2);color:var(--gold2)}
-.name-wrap{margin-bottom:10px}.name-help{min-height:18px;margin-top:6px;text-align:center;color:var(--muted);font-size:12px}.saved-name-hidden{display:none!important}
+.name-missing{text-align:center}.name-missing h2{color:var(--gold2)}
 .game-header{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;padding-bottom:12px;border-bottom:1px solid var(--line)}
 .header-left,.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.header-right{justify-content:flex-end}
 .meta{padding:6px 9px;border:1px solid var(--line);background:rgba(0,0,0,.26);font-size:12px;color:#b9c4cf}
@@ -48,35 +45,33 @@ input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)
 @media(max-width:800px){body{padding:0;align-items:flex-start}.shell{min-height:100vh;border-left:0;border-right:0}.screen{padding:20px 14px}.game-header{grid-template-columns:1fr}.header-left,.header-right{justify-content:center}.turn-badge{width:100%;min-width:0}.number-grid{grid-template-columns:repeat(6,1fr)}.tile{width:43px;height:63px}.music-control{display:none!important}}
 </style>
 <script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/network/multiplayer-lobby.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
 <audio id="bgm" src="../../assets/sound/davincicode.mp3" loop preload="auto"></audio>
 <div class="shell">
-<section id="lobby" class="screen">
+<section id="missingScreen" class="screen hidden name-missing"><h2>이름이 없습니다</h2><p>메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</p><button class="primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></section>
+<section id="lobby" class="screen hidden" data-multiplayer-lobby>
   <h1>DAVINCI CODE</h1>
   <div class="subtitle">ONLINE 2–4 PLAYER · NO JOKERS</div>
-  <div class="tabs">
-    <button id="hostTab" class="tab active" type="button" onclick="switchMode('host')">CREATE ROOM</button>
-    <button id="joinTab" class="tab" type="button" onclick="switchMode('join')">JOIN ROOM</button>
+  <div class="mp-lobby-tabs">
+    <button id="hostTab" class="tab active" type="button">CREATE ROOM</button>
+    <button id="joinTab" class="tab" type="button">JOIN ROOM</button>
   </div>
-  <div class="box">
-    <div id="nameWrap" class="name-wrap">
-      <input id="nameInput" maxlength="12" autocomplete="off" placeholder="이름 입력">
-      <div id="nameHelp" class="name-help">메인 화면에서 입력한 이름을 사용합니다.</div>
-    </div>
+  <div class="mp-lobby-card">
     <div id="hostPane">
-      <div id="roomCode" class="code">----</div>
-      <div id="hostStatus" class="status">방을 만드는 중...</div>
-      <div class="actions"><button class="small" type="button" onclick="copyRoomCode()">COPY CODE</button></div>
+      <div id="roomCode" class="mp-lobby-room-code">----</div>
+      <div id="hostStatus" class="mp-lobby-status">방을 만드는 중...</div>
+      <div class="mp-lobby-row"><button id="copyBtn" class="small" type="button">COPY CODE</button></div>
     </div>
     <div id="joinPane" class="hidden">
-      <div class="row"><input id="joinCode" maxlength="4" inputmode="numeric" placeholder="ROOM CODE · 4 DIGITS"><button class="primary" type="button" onclick="joinRoom()">JOIN ROOM</button></div>
-      <div id="joinStatus" class="status">방장이 알려준 4자리 번호를 입력하세요.</div>
+      <div class="mp-lobby-row"><input id="joinCode" class="mp-lobby-code-input" maxlength="4" inputmode="numeric" placeholder="ROOM CODE · 4 DIGITS"><button id="joinBtn" class="primary" type="button">JOIN ROOM</button></div>
+      <div id="joinStatus" class="mp-lobby-status">방장이 알려준 4자리 번호를 입력하세요.</div>
     </div>
   </div>
-  <div class="box"><div class="status">참가 가능 인원: 2~4명</div><div id="lobbyPlayers" class="players"></div></div>
-  <div class="actions"><button id="startBtn" class="primary" type="button" onclick="startMatch()" disabled>WAITING FOR PLAYERS</button><button class="small" type="button" onclick="openRules()">HOW TO PLAY</button></div>
+  <div class="mp-lobby-card"><div id="lobbyGuide" class="mp-lobby-status">참가 가능 인원: 2~4명</div><div id="lobbyPlayers" class="mp-lobby-player-list"></div></div>
+  <div class="mp-lobby-actions"><button id="startBtn" class="primary" type="button" disabled>WAITING FOR PLAYERS</button><button id="rulesBtnLobby" class="small" type="button">HOW TO PLAY</button></div>
   <div class="music-control">
     <span class="music-label">MUSIC VOLUME</span><button class="music-mute" type="button" data-music-mute>MUTE</button>
     <div class="music-bars"><button class="music-segment" type="button" data-music-level="1"></button><button class="music-segment" type="button" data-music-level="2"></button><button class="music-segment" type="button" data-music-level="3"></button><button class="music-segment" type="button" data-music-level="4"></button><button class="music-segment" type="button" data-music-level="5"></button></div>
@@ -84,7 +79,7 @@ input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)
 </section>
 
 <section id="gameScreen" class="screen hidden">
-  <div class="game-header"><div class="header-left"><span id="roleChip" class="meta">ROLE</span><span id="roomChip" class="meta">ROOM ----</span></div><div id="turnBadge" class="turn-badge">WAITING...</div><div class="header-right"><button class="small" type="button" onclick="openRules()">RULES</button><button class="danger" type="button" onclick="location.reload()">나가기</button></div></div>
+  <div class="game-header"><div class="header-left"><span id="roleChip" class="meta">ROLE</span><span id="roomChip" class="meta">ROOM ----</span></div><div id="turnBadge" class="turn-badge">WAITING...</div><div class="header-right"><button id="rulesBtnGame" class="small" type="button">RULES</button><button id="leaveBtn" class="danger" type="button">나가기</button></div></div>
   <div id="message" class="message">게임 준비 중...</div>
   <div id="opponents" class="board"></div>
   <div class="player-row current"><div class="row-title"><span>내 타일</span><span id="myTileStatus"></span></div><div id="myTiles" class="tiles"></div></div>
@@ -107,16 +102,13 @@ const COLOR_ORDER={black:0,white:1};
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 
-let socket=null,myId=null,myRole="host",roomCode="",players={},connected=false,started=false;
-let pendingSocketAction=null,intentionalSocketClose=false,hostCreateAttempts=0;
+let lobby=null,myId=null,myRole="host",roomCode="",players={},started=false;
 let hostState=null,publicState=null,myHand=[],selectedTarget=null;
 let lastTurnOwner=null;
 
 function getSavedName(){try{return String(localStorage.getItem(NAME_KEY)||"").trim().slice(0,12)}catch(_){return ""}}
-function currentName(){return getSavedName()||String($("nameInput")?.value||"").trim().slice(0,12)||"Player"}
-function applySavedName(){const saved=getSavedName();if(saved){$("nameInput").value=saved;$("nameWrap").classList.add("saved-name-hidden");const subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent=`PLAYER · ${saved} · ONLINE 2–4 PLAYER`}}
-function code4(){return ClassroomNetwork.generateRoomCode(4)}
-function normalizeCode(v){return String(v||"").replace(/\D/g,"").slice(0,4)}
+function currentName(){return getSavedName()}
+function applySavedName(){const saved=getSavedName();if(saved){const subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent=`PLAYER · ${saved} · ONLINE 2–4 PLAYER`}}
 function openRules(){$("rulesOverlay").classList.add("show")}
 function closeRules(){$("rulesOverlay").classList.remove("show")}
 function closeRulesOnBackdrop(e){if(e.target===e.currentTarget)closeRules()}
@@ -135,21 +127,9 @@ function toggleMusic(){if(!bgm)return;if(musicMuted||bgm.paused)startMusic();els
 document.addEventListener("click",e=>{const l=e.target.closest("[data-music-level]");if(l)setMusicLevel(l.dataset.musicLevel);const m=e.target.closest("[data-music-mute]");if(m)toggleMusic()});
 document.addEventListener("pointerdown",()=>{if(!musicMuted&&!musicStarted)startMusic()},{once:true});
 
-function setStatus(text,type=""){$("hostStatus").textContent=text;$("hostStatus").className="status "+type}
-function switchMode(mode){if(started)return;closeSocket();players={};connected=false;roomCode="";myRole=mode;$("hostTab").classList.toggle("active",mode==="host");$("joinTab").classList.toggle("active",mode==="join");$("hostPane").classList.toggle("hidden",mode!=="host");$("joinPane").classList.toggle("hidden",mode!=="join");$("lobbyPlayers").innerHTML="";$("startBtn").disabled=true;$("startBtn").textContent="WAITING FOR PLAYERS";if(mode==="host"){createRoom()}else{$("joinStatus").textContent="방장이 알려준 4자리 번호를 입력하세요.";setTimeout(()=>$("joinCode").focus(),40)}}
-function closeSocket(){pendingSocketAction=null;intentionalSocketClose=true;if(socket){try{socket.close()}catch(_){}}socket=null;setTimeout(()=>intentionalSocketClose=false,0)}
-function socketSend(data){if(socket&&socket.readyState===WebSocket.OPEN){socket.send(JSON.stringify(data));return true}return false}
-function send(payload){return socketSend({type:"GAME_MESSAGE",payload})}
-function broadcast(payload){if(myRole==="host")send(payload)}
-function connectSocket(action){closeSocket();pendingSocketAction=action;intentionalSocketClose=false;try{socket=ClassroomNetwork.createSocket()}catch(_){handleSocketFailure("CONNECTION ERROR · 서버에 연결하지 못했습니다.");return}socket.addEventListener("message",e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}handleServer(m)});socket.addEventListener("error",()=>handleSocketFailure("CONNECTION ERROR · 게임 서버 연결 오류"));socket.addEventListener("close",()=>{if(intentionalSocketClose)return;if(started)showEnd("CONNECTION LOST","게임 서버와 연결이 끊어졌습니다.");else handleSocketFailure("CONNECTION LOST · 서버 연결이 끊어졌습니다.")})}
-function handleSocketFailure(text){if(myRole==="host"){setStatus(text,"error")}else{$("joinStatus").textContent=text;$("joinStatus").className="status error"}}
-function createRoom(){players={};connected=false;started=false;roomCode=code4();$("roomCode").textContent="----";setStatus("방을 만드는 중...");connectSocket({type:"CREATE_ROOM",gameId:GAME_ID,roomCode,name:currentName()})}
-function joinRoom(){roomCode=normalizeCode($("joinCode").value);$("joinCode").value=roomCode;if(roomCode.length!==4){$("joinStatus").textContent="4자리 방 번호를 입력하세요.";return}myRole="guest";$("joinStatus").textContent=`방 ${roomCode}에 연결하는 중...`;connectSocket({type:"JOIN_ROOM",gameId:GAME_ID,roomCode,name:currentName()})}
-function handleServer(m){if(!m||!m.type)return;if(m.type==="CONNECTED"){myId=String(m.playerId);if(pendingSocketAction){const action=pendingSocketAction;pendingSocketAction=null;socketSend(action)}return}if(m.type==="ROOM_CREATED"){connected=true;roomCode=String(m.roomCode);players={[myId]:{name:currentName()}};$("roomCode").textContent=roomCode;setStatus("상대방 접속 대기 중","ok");renderLobby();return}if(m.type==="ROOM_EXISTS"){if(myRole==="host"&&hostCreateAttempts<8){hostCreateAttempts++;roomCode=code4();socketSend({type:"CREATE_ROOM",gameId:GAME_ID,roomCode,name:currentName()})}else handleSocketFailure("빈 방 번호를 만들지 못했습니다.");return}if(m.type==="ROOM_JOINED"){connected=true;players={[myId]:{name:currentName()}};$("joinStatus").textContent=`방 ${roomCode} 입장 완료`;send({type:"JOIN_REQ",name:currentName()});return}if(m.type==="PLAYER_JOINED"&&myRole==="host"){players[String(m.playerId)]={name:String(m.name||"Player").slice(0,12)};syncLobby();return}if(m.type==="PLAYER_LEFT"&&myRole==="host"){delete players[String(m.playerId)];syncLobby();return}if(m.type==="GAME_MESSAGE"){handleGame(String(m.senderId),m.payload);return}if(m.type==="ROOM_NOT_FOUND"){$("joinStatus").textContent="방을 찾지 못했습니다.";return}if(m.type==="ROOM_FULL"){$("joinStatus").textContent="방이 가득 찼습니다.";return}if(m.type==="ROOM_CLOSED"){showEnd("방 종료","방장이 나가서 방이 종료되었습니다.");return}if(m.type==="ERROR")handleSocketFailure(m.message||"서버 오류")}
-function renderLobby(){const box=$("lobbyPlayers");box.innerHTML="";Object.entries(players).forEach(([id,p])=>{const d=document.createElement("div");d.className="player-chip"+(String(id)===String(myId)?" me":"");d.textContent=p.name+(String(id)===String(myId)?" (나)":"");box.appendChild(d)});if(myRole==="host"){const n=Object.keys(players).length;$("startBtn").disabled=n<2||n>4;$("startBtn").textContent=n<2?"WAITING FOR PLAYERS":`START GAME · ${n} PLAYERS`}}
-function syncLobby(){renderLobby();broadcast({type:"LOBBY",players})}
-async function copyText(v){try{await navigator.clipboard.writeText(v);return true}catch(_){const t=document.createElement("textarea");t.value=v;document.body.appendChild(t);t.select();let ok=false;try{ok=document.execCommand("copy")}catch(_){}t.remove();return ok}}
-async function copyRoomCode(){if(roomCode)await copyText(roomCode)}
+function syncLobbyState(snapshot){myId=snapshot.myId;myRole=snapshot.role;roomCode=snapshot.roomCode;players=snapshot.players;started=snapshot.started}
+function send(payload){return lobby?.send(payload)||false}
+function broadcast(payload){return lobby?.broadcast(payload)||false}
 
 function makeDeck(){const a=[];COLORS.forEach(color=>{for(let number=0;number<=11;number++)a.push({id:`${color}-${number}`,color,number,revealed:false})});for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function sortHand(hand){hand.sort((a,b)=>a.number-b.number||(COLOR_ORDER[a.color]-COLOR_ORDER[b.color]))}
@@ -158,9 +138,11 @@ function activeIds(){return hostState.order.filter(id=>(hostState.hands[id]||[])
 function currentId(){return hostState?.order?.[hostState.turnIndex]||null}
 function drawForCurrent(){hostState.drawnTileId=null;const id=currentId();if(!id||!hostState.drawPile.length)return;const tile=hostState.drawPile.pop();hostState.hands[id].push(tile);sortHand(hostState.hands[id]);hostState.drawnTileId=tile.id}
 function advanceTurn(){const active=activeIds();if(active.length<=1){hostState.winner=active[0]||null;return}let idx=hostState.turnIndex;for(let i=0;i<hostState.order.length;i++){idx=(idx+1)%hostState.order.length;if(active.includes(hostState.order[idx])){hostState.turnIndex=idx;break}}hostState.canStop=false;drawForCurrent()}
-function startMatch(){if(myRole!=="host")return;const order=Object.keys(players).slice(0,4);if(order.length<2)return;const deck=makeDeck(),hands={};order.forEach(id=>hands[id]=[]);for(let r=0;r<4;r++)order.forEach(id=>hands[id].push(deck.pop()));order.forEach(id=>sortHand(hands[id]));hostState={order,turnIndex:0,hands,drawPile:deck,drawnTileId:null,canStop:false,winner:null,logs:["게임이 시작되었습니다."]};started=true;drawForCurrent();syncAll(true)}
-function syncAll(first=false){publicState=publicFromHost();myHand=(hostState.hands[myId]||[]).map(t=>({...t}));if(first){broadcast({type:"START",players,state:publicState})}else{broadcast({type:"STATE",players,state:publicState})}for(const [id,hand] of Object.entries(hostState.hands))broadcast({type:"PRIVATE_HAND",targetId:id,hand:hand.map(t=>({...t}))});showGame();renderGame()}
-function handleGame(sender,data){if(!data||typeof data.type!=="string")return;if(data.type==="JOIN_REQ"&&myRole==="host"&&!started){players[sender]={name:String(data.name||"Player").slice(0,12)};syncLobby();return}if(data.type==="LOBBY"){players=data.players||{};renderLobby();return}if(data.type==="START"){players=data.players||{};publicState=data.state;started=true;showGame();renderGame();return}if(data.type==="STATE"){players=data.players||players;publicState=data.state;renderGame();return}if(data.type==="PRIVATE_HAND"&&String(data.targetId)===String(myId)){myHand=(data.hand||[]).map(t=>({...t}));renderGame();return}if(data.type==="GUESS_REQ"&&myRole==="host"){hostGuess(sender,data.targetPlayerId,data.tileId,Number(data.guess));return}if(data.type==="STOP_REQ"&&myRole==="host"){hostStop(sender);return}}
+function createDavinciStartData(){const order=Object.keys(players).slice(0,4),deck=makeDeck(),hands={};order.forEach(id=>hands[id]=[]);for(let r=0;r<4;r++)order.forEach(id=>hands[id].push(deck.pop()));order.forEach(id=>sortHand(hands[id]));hostState={order,turnIndex:0,hands,drawPile:deck,drawnTileId:null,canStop:false,winner:null,logs:["게임이 시작되었습니다."]};drawForCurrent();publicState=publicFromHost();return{state:publicState}}
+function sendPrivateHands(){if(myRole!=="host"||!hostState)return;myHand=(hostState.hands[myId]||[]).map(t=>({...t}));for(const [id,hand] of Object.entries(hostState.hands))broadcast({type:"PRIVATE_HAND",targetId:id,hand:hand.map(t=>({...t}))})}
+function startDavinciGame(data){publicState=data?.state;if(!publicState)return;if(myRole==="host")sendPrivateHands();showGame();renderGame()}
+function syncAll(){publicState=publicFromHost();myHand=(hostState.hands[myId]||[]).map(t=>({...t}));broadcast({type:"STATE",players,state:publicState});sendPrivateHands();showGame();renderGame()}
+function handleGame(sender,data){if(!data||typeof data.type!=="string")return;if(data.type==="STATE"){players=data.players||players;publicState=data.state;renderGame();return}if(data.type==="PRIVATE_HAND"&&String(data.targetId)===String(myId)){myHand=(data.hand||[]).map(t=>({...t}));renderGame();return}if(data.type==="GUESS_REQ"&&myRole==="host"){hostGuess(sender,data.targetPlayerId,data.tileId,Number(data.guess));return}if(data.type==="STOP_REQ"&&myRole==="host"){hostStop(sender);return}}
 function hostGuess(sender,targetPlayerId,tileId,guess){if(!hostState||hostState.winner||String(sender)!==String(currentId()))return;targetPlayerId=String(targetPlayerId);if(targetPlayerId===String(sender))return;const targetHand=hostState.hands[targetPlayerId];if(!targetHand)return;const tile=targetHand.find(t=>t.id===tileId);if(!tile||tile.revealed||guess<0||guess>11)return;const actor=players[sender]?.name||"플레이어";const target=players[targetPlayerId]?.name||"상대";if(tile.number===guess){tile.revealed=true;hostState.canStop=true;hostState.logs.unshift(`${actor}님이 ${target}님의 ${guess}을(를) 맞혔습니다.`);const active=activeIds();if(active.length<=1)hostState.winner=active[0]||sender}else{const own=hostState.hands[sender]||[];let penalty=own.find(t=>t.id===hostState.drawnTileId&&!t.revealed);if(!penalty)penalty=own.find(t=>!t.revealed);if(penalty)penalty.revealed=true;hostState.logs.unshift(`${actor}님이 ${target}님의 타일을 틀렸습니다.`);const active=activeIds();if(active.length<=1)hostState.winner=active[0]||null;else advanceTurn()}syncAll(false)}
 function hostStop(sender){if(!hostState||hostState.winner||String(sender)!==String(currentId())||!hostState.canStop)return;hostState.logs.unshift(`${players[sender]?.name||"플레이어"}님이 추측을 멈췄습니다.`);advanceTurn();syncAll(false)}
 function requestGuess(n){if(!selectedTarget||!isMyTurn()||publicState?.winner)return;if(myRole==="host")hostGuess(String(myId),selectedTarget.playerId,selectedTarget.tileId,n);else send({type:"GUESS_REQ",targetPlayerId:selectedTarget.playerId,tileId:selectedTarget.tileId,guess:n});selectedTarget=null}
@@ -170,9 +152,27 @@ function showGame(){$("lobby").classList.add("hidden");$("gameScreen").classList
 function tileButton(t,ownerId,isMine){const b=document.createElement("button");b.type="button";b.className=`tile ${t.color}`;if(t.revealed)b.classList.add("revealed");if(!isMine&&!t.revealed)b.classList.add("hidden-number");if(isMine&&t.id===publicState?.drawnTileId&&String(ownerId)===String(publicState?.order?.[publicState?.turnIndex]))b.classList.add("drawn");b.textContent=isMine||t.revealed?String(t.number):"";const selectable=!isMine&&isMyTurn()&&!t.revealed&&!publicState?.winner;if(selectable){b.classList.add("selectable");if(selectedTarget&&selectedTarget.playerId===String(ownerId)&&selectedTarget.tileId===t.id)b.classList.add("selected");b.addEventListener("click",()=>{selectedTarget={playerId:String(ownerId),tileId:t.id};renderGame()})}else b.disabled=!isMine;return b}
 function renderGame(){if(!publicState)return;const turnId=publicState.order[publicState.turnIndex];const mine=isMyTurn();$("turnBadge").textContent=publicState.winner?"GAME OVER":mine?"내 차례":`${players[turnId]?.name||"플레이어"} 차례`;$("turnBadge").classList.toggle("mine",mine&&!publicState.winner);if(lastTurnOwner!==turnId){selectedTarget=null;lastTurnOwner=turnId}$("message").textContent=publicState.winner?`${players[publicState.winner]?.name||"플레이어"} 승리!`:mine?(publicState.canStop?"계속 추측하거나 여기서 멈추세요.":"상대 타일을 선택하고 숫자를 추측하세요."):"상대방의 차례입니다.";const opponents=$("opponents");opponents.innerHTML="";publicState.order.filter(id=>String(id)!==String(myId)).forEach(id=>{const hand=publicState.hands[id]||[];const eliminated=hand.length>0&&hand.every(t=>t.revealed);const row=document.createElement("div");row.className="player-row"+(String(id)===String(turnId)?" current":"")+(eliminated?" eliminated":"");const title=document.createElement("div");title.className="row-title";title.innerHTML=`<span>${esc(players[id]?.name||"플레이어")}</span><span class="${eliminated?"eliminated-label":""}">${eliminated?"탈락":`${hand.filter(t=>t.revealed).length}/${hand.length} 공개`}</span>`;const tiles=document.createElement("div");tiles.className="tiles";hand.forEach(t=>tiles.appendChild(tileButton(t,id,false)));row.append(title,tiles);opponents.appendChild(row)});const myTiles=$("myTiles");myTiles.innerHTML="";myHand.forEach(t=>myTiles.appendChild(tileButton(t,myId,true)));const myElim=myHand.length>0&&myHand.every(t=>t.revealed);$("myTileStatus").textContent=myElim?"탈락":`${myHand.filter(t=>t.revealed).length}/${myHand.length} 공개`;$("guessTitle").textContent=selectedTarget?`${players[selectedTarget.playerId]?.name||"상대"}의 선택한 타일 숫자를 고르세요.`:"상대 타일을 먼저 선택하세요.";const grid=$("numberGrid");grid.innerHTML="";for(let n=0;n<=11;n++){const b=document.createElement("button");b.type="button";b.className="number-btn";b.textContent=n;b.disabled=!selectedTarget||!mine||!!publicState.winner;b.addEventListener("click",()=>requestGuess(n));grid.appendChild(b)}$("stopBtn").disabled=!mine||!publicState.canStop||!!publicState.winner;$("log").innerHTML=(publicState.logs||[]).slice(0,5).map(x=>`<div>${esc(x)}</div>`).join("")||"<div>게임 기록이 없습니다.</div>";if(publicState.winner)showEnd("GAME COMPLETE",`${esc(players[publicState.winner]?.name||"플레이어")} 승리!`)}
 function showEnd(title,body){$("modalTitle").textContent=title;$("modalBody").innerHTML=`<p>${body}</p>`;$("overlay").classList.add("show")}
+function showLobbyEnd({title,message}){$("lobby").classList.add("hidden");$("gameScreen").classList.remove("hidden");showEnd(title,message)}
 
-window.addEventListener("DOMContentLoaded",()=>{applySavedName();renderMusicControls();if(bgm)bgm.volume=musicLevel/5;createRoom()});
-window.addEventListener("beforeunload",()=>{try{socket?.close()}catch(_){}});
+window.addEventListener("DOMContentLoaded",()=>{
+ applySavedName();renderMusicControls();if(bgm)bgm.volume=musicLevel/5;
+ lobby=ClassroomMultiplayerLobby.create({
+   gameId:GAME_ID,
+   ids:{lobbyScreen:"lobby"},
+   getPlayerName:currentName,
+   allowedPlayerCounts:[2,3,4],
+   maxPlayers:4,
+   rulesButtonIds:["rulesBtnLobby","rulesBtnGame"],
+   leaveButtonIds:["leaveBtn"],
+   onRules:openRules,
+   onNotice:text=>{$("hostStatus").textContent=text},
+   onStateChange:syncLobbyState,
+   createStartData:createDavinciStartData,
+   onStarted:({data})=>startDavinciGame(data),
+   onGameMessage:handleGame,
+   onAbort:showLobbyEnd
+ }).mount()
+});
 document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRules()});
 </script>
 </body>

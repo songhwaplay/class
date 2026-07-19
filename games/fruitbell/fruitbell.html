@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
 <title>과일 종 대결 온라인</title>
+<link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:"Malgun Gothic",sans-serif;color:#fff}
 body{
@@ -24,12 +25,9 @@ button,input{font:inherit}.hidden{display:none!important}
   padding:22px
 }
 h1{margin:0;text-align:center;color:#f3d77d;font:900 clamp(34px,7vw,58px)/1 Georgia,serif;letter-spacing:4px}
-.sub{text-align:center;color:#bad0c8;margin:8px 0 20px}.tabs,.row,.players,.actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.sub{text-align:center;color:#bad0c8;margin:8px 0 20px}
 button{cursor:pointer;touch-action:manipulation}.tab,.small,.primary{border:1px solid #a88b4a;border-radius:9px;background:#102c2a;color:#f6e8b4;font-weight:900;padding:10px 14px}.tab.active,.primary{background:#f0cf73;color:#1c302d}
-.box{width:min(620px,100%);margin:14px auto;padding:14px;border:1px solid rgba(240,207,115,.35);border-radius:12px;background:rgba(0,0,0,.16)}
 input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;background:#061514;color:#fff6d2;text-align:center;font-weight:900;font-size:16px}
-.code{font:900 46px/1 Georgia;color:#ffe394;text-align:center;letter-spacing:8px;margin:12px}
-.status{text-align:center;color:#d9e7df;margin:10px}.player-chip{padding:8px 12px;border-radius:18px;background:#284d49;border:1px solid #6c9b91}
 .game{position:relative;min-height:620px}.top{display:flex;justify-content:space-between;align-items:center;gap:8px}
 .scoreboard{display:flex;gap:7px;flex-wrap:wrap}.score{padding:8px 10px;border-radius:9px;background:#15302f;border:1px solid #7d6a3c;font-weight:900}.score.me{outline:3px solid #ffe376}
 .message{text-align:center;margin:12px auto;padding:8px 12px;width:min(620px,94%);border-radius:18px;background:rgba(0,0,0,.38);color:#fff0b7;font-weight:900}
@@ -41,10 +39,7 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 @media(max-width:760px) and (orientation:portrait){.screen{padding:0}.game{min-height:100vh;border-radius:0}.board{grid-template-columns:1fr;min-height:470px}.bell{width:110px}.cardwrap{width:130px}}
 @media(orientation:landscape) and (max-height:540px){.screen{padding:0}.game{width:100vw;min-height:100vh;border:0;border-radius:0;padding:8px}.board{min-height:290px}.cardwrap{width:110px}.bell{width:105px}.message{margin:5px auto}.flip{margin-top:4px;padding:8px}}
 
-.name-help{
-  min-height:18px;margin-top:6px;text-align:center;font-size:12px;color:#a8bcb5
-}
-.name-help.error{color:#ff8c84}
+.name-missing{text-align:center}.name-missing h2{color:#f3d77d}
 .turn-timer{
   width:min(360px,82%);height:9px;margin:7px auto 0;border-radius:999px;
   overflow:hidden;background:rgba(0,0,0,.42);border:1px solid rgba(240,207,115,.28)
@@ -128,19 +123,20 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 
 </style>
 <script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/network/multiplayer-lobby.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
 </head>
 <body>
 <audio id="bgm" src="../../assets/sound/fruitbell.mp3" loop preload="auto"></audio>
-<section id="lobby" class="screen">
+<section id="missingScreen" class="screen hidden"><div class="panel name-missing"><h2>이름이 없습니다</h2><p>메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</p><button class="primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></div></section>
+<section id="lobby" class="screen hidden" data-multiplayer-lobby>
   <div class="panel">
     <h1>FRUIT BELL</h1><div class="sub">과일 종 대결 · 2~4인 · 카드 56장</div>
-    <div class="tabs"><button id="hostTab" class="tab active" onclick="switchMode('host')">CREATE ROOM</button><button id="joinTab" class="tab" onclick="switchMode('join')">JOIN ROOM</button></div>
-    <div class="box">
-      <input id="nameInput" maxlength="6" placeholder="한글 이름 2~6자" autocomplete="off" inputmode="text"><div id="nameHelp" class="name-help">한글 이름을 2~6자로 입력하세요.</div>
+    <div class="mp-lobby-tabs"><button id="hostTab" class="tab active" type="button">CREATE ROOM</button><button id="joinTab" class="tab" type="button">JOIN ROOM</button></div>
+    <div class="mp-lobby-card">
       <div id="hostPane">
-        <div class="code" id="roomCode">----</div><button class="small" type="button" onclick="copyFruitBellRoomCode()">COPY CODE</button>
-        <div class="status" id="hostStatus">방을 만드는 중...</div>
+        <div class="mp-lobby-room-code" id="roomCode">----</div><div class="mp-lobby-row"><button id="copyBtn" class="small" type="button">COPY CODE</button></div>
+        <div class="mp-lobby-status" id="hostStatus">방을 만드는 중...</div>
         <div class="mode-box">
           <div class="mode-title">게임 방식</div>
           <div class="mode-buttons">
@@ -151,12 +147,12 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
         </div>
       </div>
       <div id="joinPane" class="hidden">
-        <div class="row"><input id="joinCode" inputmode="numeric" maxlength="4" placeholder="ROOM CODE · 4 DIGITS"><button class="primary" onclick="joinRoom()">JOIN ROOM</button></div>
-        <div class="status" id="joinStatus">방장이 알려준 번호를 입력하세요.</div>
+        <div class="mp-lobby-row"><input id="joinCode" class="mp-lobby-code-input" inputmode="numeric" maxlength="4" placeholder="ROOM CODE · 4 DIGITS"><button id="joinBtn" class="primary" type="button">JOIN ROOM</button></div>
+        <div class="mp-lobby-status" id="joinStatus">방장이 알려준 번호를 입력하세요.</div>
       </div>
     </div>
-    <div class="box"><div class="status">참가 가능 인원: 2~4명</div><div class="players" id="lobbyPlayers"></div></div>
-    <div class="actions"><button id="startBtn" class="primary" onclick="startMatch()" disabled>WAITING FOR PLAYERS</button><button class="small" type="button" onclick="openRules()">HOW TO PLAY</button></div>
+    <div class="mp-lobby-card"><div class="mp-lobby-status" id="lobbyGuide">참가 가능 인원: 2~4명</div><div class="mp-lobby-player-list" id="lobbyPlayers"></div></div>
+    <div class="mp-lobby-actions"><button id="startBtn" class="primary" type="button" disabled>WAITING FOR PLAYERS</button><button id="rulesBtnLobby" class="small" type="button">HOW TO PLAY</button></div>
 
     <div class="music-control">
       <span class="music-label">MUSIC VOLUME</span>
@@ -175,7 +171,7 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 <section id="gameScreen" class="screen hidden">
   <div class="game" id="game">
     <div id="teamScoreboard" class="team-scoreboard hidden"></div>
-    <div class="top"><div class="scoreboard" id="scoreboard"></div><div class="small">공개 카드 <span id="potCount">0</span>장</div><button class="small" type="button" onclick="openRules()">RULES</button><button class="small" onclick="location.reload()">나가기</button></div>
+    <div class="top"><div class="scoreboard" id="scoreboard"></div><div class="small">공개 카드 <span id="potCount">0</span>장</div><button id="rulesBtnGame" class="small" type="button">RULES</button><button id="leaveBtn" class="small" type="button">나가기</button></div>
     <div class="message" id="message">게임 준비 중...</div><div class="turn-timer"><div id="turnTimerBar" class="turn-timer-bar"></div></div>
     <div class="board" id="board"></div>
     <button class="bell" onclick="pressBell()"><span class="knob"></span><span class="dome"></span><span class="base"></span></button>
@@ -216,7 +212,7 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
 "use strict";
 const GAME_ID="fruitbell";
 const FRUITS=["strawberry","banana","lime","plum"];
-let socket=null,myId=null,myRole="host",roomCode="",players={},connected=false,started=false,hostCreateAttempts=0;
+let lobby=null,myId=null,myRole="host",players={},started=false;
 let gameMode="individual";
 let state={turn:0,order:[],scores:{},decks:{},faceUp:{},wonCards:{},penaltyPot:[],locked:false,ended:false,turnDeadline:0,gameMode:"individual",teams:{}};
 let hostTurnTimer=null,clientTimerRaf=null;
@@ -247,27 +243,14 @@ function getSavedPlayerName(){
 
 function applySavedPlayerName(){
  const saved=getSavedPlayerName();
- const input=$("nameInput");
- const help=$("nameHelp");
- if(!input||!help)return;
-
  if(saved){
-   input.value=saved;
-   input.classList.add("saved-name-hidden");
-   help.classList.add("saved-name-hidden");
    const subtitle=document.querySelector(".sub");
    if(subtitle)subtitle.textContent=`PLAYER · ${saved} · 과일 종 대결 · 2~4인`;
- }else{
-   input.classList.remove("saved-name-hidden");
-   help.classList.remove("saved-name-hidden");
  }
 }
 function normalizeName(v){return String(v||"").replace(/[^가-힣]/g,"").slice(0,6)}
 function isValidName(v){return KOREAN_NAME_PATTERN.test(String(v||""))}
 function cleanName(v){const n=normalizeName(v);return isValidName(n)?n:"플레이어"}
-function code4(){return ClassroomNetwork.generateRoomCode(4)}
-async function copyFruitBellRoomCode(){const code=$("roomCode").textContent.trim();if(!/^\d{4}$/.test(code))return;try{await navigator.clipboard.writeText(code);$("hostStatus").textContent=`방 번호 ${code}가 복사되었습니다.`}catch(_){$("hostStatus").textContent=`방 번호는 ${code}입니다.`}}
-window.addEventListener("DOMContentLoaded",applySavedPlayerName);
 
 document.addEventListener("keydown",event=>{
  if(event.key==="Escape")closeRules();
@@ -344,14 +327,16 @@ document.addEventListener("pointerdown",()=>{
 
 function setGameMode(mode){
  if(myRole!=="host"||started)return;
+ applyGameMode(mode);
+ lobby?.publishLobbyState()
+}
+function applyGameMode(mode){
  gameMode=mode==="team"?"team":"individual";
  $("soloModeBtn").classList.toggle("active",gameMode==="individual");
  $("teamModeBtn").classList.toggle("active",gameMode==="team");
  $("modeHelp").textContent=gameMode==="team"
-   ?"4명 전용입니다. 입장 순서대로 1·3번은 파랑팀, 2·4번은 빨강팀이 됩니다."
-   :"2~4명이 각자 획득한 카드 수로 대결합니다.";
- renderLobby();
- if(connected)broadcast({type:"LOBBY",players,gameMode});
+    ?"4명 전용입니다. 입장 순서대로 1·3번은 파랑팀, 2·4번은 빨강팀이 됩니다."
+    :"2~4명이 각자 획득한 카드 수로 대결합니다.";
 }
 function buildTeams(order){
  const teams={};
@@ -364,125 +349,26 @@ function teamTotal(team){
    .reduce((sum,id)=>sum+(state.wonCards?.[id]?.length||0),0);
 }
 
-function switchMode(mode){
- if(started)return;
-
- if(socket){
-   try{
-     socket.onopen=null;
-     socket.onmessage=null;
-     socket.onerror=null;
-     socket.onclose=null;
-     socket.close();
-   }catch(e){}
-   socket=null;
- }
-
- connected=false;
- players={};
- roomCode="";
- myRole=mode;
-
- $("hostTab").classList.toggle("active",mode==="host");
- $("joinTab").classList.toggle("active",mode==="join");
- $("hostPane").classList.toggle("hidden",mode!=="host");
- $("joinPane").classList.toggle("hidden",mode!=="join");
- $("lobbyPlayers").innerHTML="";
- $("startBtn").disabled=true;
- $("startBtn").textContent="WAITING FOR PLAYERS";
-
- if(mode==="host"){
-   $("roomCode").textContent="----";
-   $("hostStatus").textContent="방을 만드는 중...";
-   createRoom();
- }else{
-   $("joinStatus").textContent="방장이 알려준 4자리 번호를 입력하세요.";
-   setTimeout(()=>$("joinCode").focus(),50);
- }
-}
-function connect(first){
- try{if(socket)socket.close()}catch(e){}
- socket=ClassroomNetwork.createSocket();
- socket.onopen=()=>socket.send(JSON.stringify(first));
- socket.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}handleServer(m)};
- socket.onerror=()=>setStatus("CONNECTION ERROR · 서버 연결 오류");
- socket.onclose=()=>{if(started)alert("CONNECTION LOST · 게임 서버 연결이 끊어졌습니다.");else if(connected){connected=false;$("hostStatus").textContent="CONNECTION LOST · 다시 방을 만들어 주세요.";$("joinStatus").textContent="CONNECTION LOST · 방 번호를 확인하고 다시 입장해 주세요."}};
-}
-function createRoom(){
- players={};connected=false;started=false;hostCreateAttempts=0;roomCode=code4();$("roomCode").textContent="----";$("hostStatus").textContent="CREATING ROOM... · 방을 만드는 중입니다.";
- connect({type:"CREATE_ROOM",gameId:GAME_ID,roomCode});
-}
-function joinRoom(){
- const enteredName=getSavedPlayerName()||normalizeName($("nameInput").value);
- if(!isValidName(enteredName)){
-   $("nameHelp").textContent="한글 이름을 2~6자로 입력해야 합니다.";
-   $("nameHelp").classList.add("error");
-   $("nameInput").focus();
-   return;
- }
- roomCode=String($("joinCode").value||"").replace(/\D/g,"").slice(0,4);
- if(roomCode.length!==4){$("joinStatus").textContent="4자리 번호를 입력하세요.";return}
- myRole="guest";connect({type:"JOIN_ROOM",gameId:GAME_ID,roomCode,name:enteredName});
-}
-function handleServer(m){
- if(m.type==="CONNECTED"){myId=m.playerId}
- else if(m.type==="ROOM_EXISTS"){
-   if(myRole==="host"&&hostCreateAttempts<8){hostCreateAttempts+=1;roomCode=code4();$("hostStatus").textContent="CREATING ROOM... · 새 방 번호를 만드는 중입니다.";socket.send(JSON.stringify({type:"CREATE_ROOM",gameId:GAME_ID,roomCode}))}
-   else $("hostStatus").textContent="ROOM ERROR · 빈 방 번호를 만들지 못했습니다.";
- }
- else if(m.type==="ROOM_CREATED"){
-   connected=true;roomCode=m.roomCode;players={[myId]:{name:getSavedPlayerName()||normalizeName($("nameInput").value),score:0}};
-   $("roomCode").textContent=roomCode;$("hostStatus").textContent="상대방 접속 대기 중";renderLobby();
- }
- else if(m.type==="ROOM_JOINED"){
-   connected=true;players={[myId]:{name:getSavedPlayerName()||normalizeName($("nameInput").value),score:0}};
-   $("joinStatus").textContent=`방 ${roomCode} 입장 완료`;send({type:"JOIN_REQ",name:players[myId].name});
- }
- else if(m.type==="PLAYER_JOINED"&&myRole==="host"){
-   players[m.playerId]={name:cleanName(m.name),score:0};broadcast({type:"LOBBY",players,gameMode});renderLobby();
- }
- else if(m.type==="PLAYER_LEFT"&&myRole==="host"){
-   delete players[m.playerId];broadcast({type:"LOBBY",players,gameMode});renderLobby();
- }
- else if(m.type==="GAME_MESSAGE"){handleGame(m.senderId,m.payload)}
- else if(m.type==="ROOM_NOT_FOUND"){$("joinStatus").textContent="방을 찾지 못했습니다."}
- else if(m.type==="ROOM_FULL"){$("joinStatus").textContent="방이 가득 찼습니다."}
- else if(m.type==="ROOM_CLOSED"){alert("방장이 나갔습니다.");location.reload()}
-}
-function send(payload){if(socket&&socket.readyState===1)socket.send(JSON.stringify({type:"GAME_MESSAGE",payload}))}
-function broadcast(payload){if(myRole==="host")send(payload)}
+function currentPlayerName(){return getSavedPlayerName()}
+function syncLobbyState(snapshot){myId=snapshot.myId;myRole=snapshot.role;players=snapshot.players;started=snapshot.started}
+function send(payload){return lobby?.send(payload)||false}
+function broadcast(payload){return lobby?.broadcast(payload)||false}
 function handleGame(sender,data){
  if(!data)return;
- if(data.type==="JOIN_REQ"&&myRole==="host"&&!started){
-   players[sender]={name:cleanName(data.name),score:0};broadcast({type:"LOBBY",players,gameMode});renderLobby();
- }else if(data.type==="LOBBY"){
-   players=data.players||{};
-   if(data.gameMode){
-     gameMode=data.gameMode;
-     if($("soloModeBtn"))$("soloModeBtn").classList.toggle("active",gameMode==="individual");
-     if($("teamModeBtn"))$("teamModeBtn").classList.toggle("active",gameMode==="team");
-   }
-   renderLobby();
- }
- else if(data.type==="START"){state=data.state;players=data.players;started=true;showGame();renderGame();startClientTimer()}
- else if(data.type==="FLIP_REQ"&&myRole==="host")hostFlip(sender)
+ if(data.type==="FLIP_REQ"&&myRole==="host")hostFlip(sender)
  else if(data.type==="BELL_REQ"&&myRole==="host")hostBell(sender)
  else if(data.type==="STATE"){state=data.state;players=data.players;renderGame();startClientTimer()}
  else if(data.type==="END"){state=data.state;players=data.players;renderGame();showEnd(data.winners,data.winningTeam)}
 }
-function renderLobby(){
- const box=$("lobbyPlayers");box.innerHTML="";
- Object.entries(players).forEach(([id,p])=>{const d=document.createElement("div");d.className="player-chip";d.textContent=(isValidName(p.name)?p.name:"이름 입력 중")+(id===myId?" (나)":"");box.appendChild(d)});
- if(myRole==="host"){
-   const n=Object.keys(players).length;
-   const hostValid=isValidName(getSavedPlayerName()||normalizeName($("nameInput").value));
-   const allNamesValid=Object.values(players).every(p=>isValidName(p.name));
-   const enoughPlayers=gameMode==="team"?n===4:n>=2;
-   $("startBtn").disabled=!enoughPlayers||!hostValid||!allNamesValid;
-   $("startBtn").textContent=!hostValid
-     ?"한글 이름 입력"
-     :(gameMode==="team"&&n<4?`WAITING FOR PLAYERS · ${n}/4`:(!enoughPlayers?"WAITING FOR PLAYERS":`START GAME · ${n} PLAYERS`));
- }
+function canStartFruitBell({count,players:roomPlayers}){const namesValid=Object.values(roomPlayers).every(p=>isValidName(p.name));return namesValid&&(gameMode==="team"?count===4:count>=2&&count<=4)}
+function fruitBellLobbyPresentation({count,role,canStart,players:roomPlayers}){
+ if(role!=="host")return{canStart:false,startText:"WAITING FOR HOST",guideText:`현재 ${count}명 접속 · ${gameMode==="team"?"2 대 2 팀전":"개인전"}`};
+ const hostValid=isValidName(currentPlayerName()),allNamesValid=Object.values(roomPlayers).every(p=>isValidName(p.name));
+ if(!hostValid)return{canStart:false,startText:"한글 이름 입력",guideText:"한글 이름을 2~6자로 입력하세요.",warning:true};
+ if(!allNamesValid)return{canStart:false,startText:"이름 입력 대기",guideText:"모든 참가자가 이름을 입력해야 합니다.",warning:true};
+ if(gameMode==="team"&&count<4)return{canStart:false,startText:`WAITING FOR PLAYERS · ${count}/4`,guideText:"2 대 2 팀전은 4명이 필요합니다."};
+ if(gameMode!=="team"&&count<2)return{canStart:false,startText:"WAITING FOR PLAYERS",guideText:"한 명이 더 들어오면 개인전을 시작할 수 있습니다."};
+ return{canStart,startText:`START GAME · ${count} PLAYERS`,guideText:gameMode==="team"?"2 대 2 팀전 준비가 완료되었습니다.":"개인전 준비가 완료되었습니다."}
 }
 function makeDeck(){
  const a=[];
@@ -496,26 +382,16 @@ function makeDeck(){
  }
  return a;
 }
-function startMatch(){
- if(myRole!=="host"||Object.keys(players).length<2)return;
- if(gameMode==="team"&&Object.keys(players).length!==4)return;
- const hostName=getSavedPlayerName()||normalizeName($("nameInput").value);
- if(!isValidName(hostName)){
-   $("nameHelp").textContent="한글 이름을 2~6자로 입력해야 합니다.";
-   $("nameHelp").classList.add("error");
-   $("nameInput").focus();
-   return;
- }
- if(myId && players[myId]){
-   players[myId].name=hostName;
-   broadcast({type:"LOBBY",players});
- }
+function createFruitBellStartData(){
+ const hostName=currentPlayerName();
+ if(myId&&players[myId])players[myId].name=hostName;
  const order=Object.keys(players).slice(0,4),deck=makeDeck(),decks={},faceUp={},scores={},wonCards={};
  order.forEach(id=>{decks[id]=[];faceUp[id]=null;scores[id]=0;wonCards[id]=[]});
  deck.forEach((c,i)=>decks[order[i%order.length]].push(c));
  state={turn:0,order,scores,decks,faceUp,wonCards,penaltyPot:[],locked:false,ended:false,turnDeadline:Date.now()+4000,gameMode,teams:buildTeams(order)};
- started=true;broadcast({type:"START",state,players});showGame();renderGame();scheduleHostTurnTimer();
+ return{state,gameMode}
 }
+function startFruitBellGame(data){state=data?.state;if(!state)return;applyGameMode(data.gameMode||state.gameMode);showGame();renderGame();startClientTimer();if(myRole==="host")scheduleHostTurnTimer()}
 function showGame(){$("lobby").classList.add("hidden");$("gameScreen").classList.remove("hidden")}
 function myTurn(){return state.order[state.turn]===myId}
 function requestFlip(){if(!started||state.ended||!myTurn())return;if(myRole==="host")hostFlip(myId);else send({type:"FLIP_REQ"})}
@@ -799,42 +675,37 @@ function showEnd(w,winningTeam=null){
  }
  $("overlay").classList.add("show");
 }
-function setStatus(t){if(myRole==="host")$("hostStatus").textContent=t;else $("joinStatus").textContent=t}
-
-$("joinCode").addEventListener("input",e=>{
-  e.target.value=e.target.value.replace(/\D/g,"").slice(0,4);
-});
-$("joinCode").addEventListener("keydown",e=>{
-  if(e.key==="Enter") joinRoom();
-});
-$("nameInput").addEventListener("keydown",e=>{
-  if(e.key==="Enter" && myRole==="join") joinRoom();
-});
-$("nameInput").addEventListener("compositionstart",e=>e.target.dataset.composing="true");
-$("nameInput").addEventListener("compositionend",e=>{
-  e.target.dataset.composing="false";
-  e.target.value=normalizeName(e.target.value);
-  validateAndSyncName();
-});
-$("nameInput").addEventListener("input",e=>{
-  if(e.target.dataset.composing==="true")return;
-  e.target.value=normalizeName(e.target.value);
-  validateAndSyncName();
-});
-function validateAndSyncName(){
-  const input=$("nameInput"),nextName=normalizeName(input.value),valid=isValidName(nextName);
-  $("nameHelp").textContent=valid?`${nextName} 이름으로 참가합니다.`:"한글 이름을 2~6자로 입력하세요.";
-  $("nameHelp").classList.toggle("error",!valid&&nextName.length>0);
-  if(myRole==="host"&&connected&&myId&&players[myId]){
-    players[myId].name=valid?nextName:"";
-    renderLobby();
-    broadcast({type:"LOBBY",players});
-  }
-  if(myRole==="host")renderLobby();
+function showLobbyAbort({title,message}){
+  $("lobby").classList.add("hidden");
+  $("gameScreen").classList.remove("hidden");
+  $("modalTitle").textContent=title;
+  $("modalBody").textContent=message;
+  $("overlay").classList.add("show")
 }
-
-window.addEventListener("beforeunload",()=>{try{socket?.close()}catch(e){}});
-createRoom();
+function initFruitBellLobby(){
+  applySavedPlayerName();
+  lobby=ClassroomMultiplayerLobby.create({
+    gameId:GAME_ID,
+    ids:{lobbyScreen:"lobby"},
+    getPlayerName:currentPlayerName,
+    maxPlayers:4,
+    canStart:canStartFruitBell,
+    getLobbyData:()=>({gameMode}),
+    onLobbyData:data=>{if(data?.gameMode)applyGameMode(data.gameMode)},
+    getLobbyPresentation:fruitBellLobbyPresentation,
+    formatPlayerName:player=>isValidName(player?.name)?player.name:"이름 입력 중",
+    rulesButtonIds:["rulesBtnLobby","rulesBtnGame"],
+    leaveButtonIds:["leaveBtn"],
+    onRules:openRules,
+    onNotice:text=>{$("hostStatus").textContent=text},
+    onStateChange:syncLobbyState,
+    createStartData:createFruitBellStartData,
+    onStarted:({data})=>startFruitBellGame(data),
+    onGameMessage:handleGame,
+    onAbort:showLobbyAbort
+  }).mount()
+}
+window.addEventListener("DOMContentLoaded",initFruitBellLobby)
 </script>
 </body>
 </html>
