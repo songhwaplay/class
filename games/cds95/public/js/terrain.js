@@ -53,6 +53,18 @@
   // path 좌표는 [위도, 경도], widthDeg는 항로 중심선에서 허용할 반폭이다.
   const NAVIGABLE_SEA_CORRIDORS = Object.freeze([
     Object.freeze({
+      id: 'messina',
+      widthDeg: 0.26,
+      path: Object.freeze([
+        Object.freeze([37.88, 15.62]),
+        Object.freeze([38.00, 15.60]),
+        Object.freeze([38.10, 15.58]),
+        Object.freeze([38.20, 15.61]),
+        Object.freeze([38.30, 15.65]),
+        Object.freeze([38.40, 15.68])
+      ])
+    }),
+    Object.freeze({
       id: 'dardanelles',
       widthDeg: 0.22,
       path: Object.freeze([
