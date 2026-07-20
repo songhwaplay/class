@@ -570,7 +570,6 @@ kbd {
 
 .source-block strong { font-family: "Batang", serif; font-size: 16px; }
 .source-block p { margin-top: 8px; color: var(--muted); font-size: 12px; }
-.source-block a { display: inline-block; margin-top: 12px; color: var(--green); font-size: 12px; font-weight: 900; }
 
 .card-navigation,
 .memory-actions > div,
@@ -639,7 +638,7 @@ kbd {
 
 .quiz-mode-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 12px;
 }
 
@@ -710,6 +709,28 @@ kbd {
 }
 
 .question-type { background: var(--red-soft); color: var(--red); }
+
+.question-illustration {
+    overflow: hidden;
+    margin: 22px 0 0;
+    border: 1px solid #d5c8ae;
+    border-radius: 16px 16px 5px 16px;
+    background: var(--paper-deep);
+}
+
+.question-illustration img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+}
+
+.question-illustration:not([hidden]) + #questionPrompt {
+    min-height: auto;
+    margin: 18px 0 24px;
+    text-align: center;
+}
 
 #questionPrompt {
     min-height: 108px;
@@ -897,6 +918,7 @@ body > footer p { margin: 2px 0; }
     .brand { justify-self: center; }
     .hero { grid-template-columns: 1fr; align-items: start; }
     .progress-card { max-width: 520px; }
+    .quiz-mode-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .library-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 

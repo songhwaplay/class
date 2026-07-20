@@ -64,7 +64,9 @@
         return {
             id: idiom.id,
             type: promptType,
-            prompt: promptType === "story" ? idiom.story : idiom.meaning,
+            prompt: promptType === "image"
+                ? "이 삽화에 해당하는 고사성어는?"
+                : (promptType === "story" ? idiom.story : idiom.meaning),
             answerId: idiom.id,
             answerLabel: `${idiom.word} · ${idiom.hanja}`,
             source: idiom.source,
@@ -73,7 +75,7 @@
     }
 
     function buildQuiz(data, count = 10, type = "mixed", random = Math.random) {
-        const normalizedType = ["meaning", "story", "mixed"].includes(type) ? type : "mixed";
+        const normalizedType = ["meaning", "story", "image", "mixed"].includes(type) ? type : "mixed";
         return shuffle(data, random)
             .slice(0, Math.min(Math.max(1, count), data.length))
             .map((idiom) => createQuestion(idiom, data, normalizedType, random));

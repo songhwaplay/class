@@ -127,7 +127,6 @@
                         <div class="source-block">
                             <div><span class="detail-label">출전</span><strong id="idiomSource"></strong></div>
                             <p id="sourceNote"></p>
-                            <a id="sourceLink" href="#" target="_blank" rel="noopener noreferrer">근거 자료 확인 <span aria-hidden="true">↗</span></a>
                         </div>
                     </div>
                 </article>
@@ -154,7 +153,7 @@
                     <div>
                         <p class="section-kicker">퀴즈</p>
                         <h2 id="gameHeading">고사성어 퀴즈</h2>
-                        <p>뜻 또는 유래에 맞는 고사성어를 선택하세요.</p>
+                        <p>뜻·유래·삽화에 맞는 고사성어를 선택하세요.</p>
                     </div>
                 </div>
                 <div class="quiz-settings">
@@ -170,6 +169,7 @@
                     <button class="quiz-mode selected" type="button" data-quiz-mode="mixed" aria-pressed="true"><b>혼합</b><span>뜻 · 유래</span></button>
                     <button class="quiz-mode" type="button" data-quiz-mode="meaning" aria-pressed="false"><b>뜻</b><span>뜻을 보고 선택</span></button>
                     <button class="quiz-mode" type="button" data-quiz-mode="story" aria-pressed="false"><b>유래</b><span>유래를 보고 선택</span></button>
+                    <button class="quiz-mode" type="button" data-quiz-mode="image" aria-pressed="false"><b>삽화</b><span>그림을 보고 선택</span></button>
                 </div>
                 <div class="best-score">최고 점수 <strong id="bestScore">0 / 10</strong></div>
                 <button id="startQuiz" class="primary-button" type="button">퀴즈 시작</button>
@@ -184,6 +184,9 @@
                 <div class="quiz-track" aria-hidden="true"><span id="quizBar"></span></div>
                 <article class="question-card">
                     <span id="questionType" class="question-type">뜻 문제</span>
+                    <figure id="questionIllustration" class="question-illustration" hidden>
+                        <img id="questionIllustrationImage" alt="" width="1200" height="800" decoding="async">
+                    </figure>
                     <p id="questionPrompt"></p>
                     <div id="answerOptions" class="answer-options"></div>
                     <div id="answerFeedback" class="answer-feedback" role="status" hidden>
@@ -233,7 +236,7 @@
     </main>
 
     <footer>
-        <p>유래는 학습용으로 요약했으며 출전 링크를 함께 제공합니다.</p>
+        <p>유래는 학습용으로 요약했습니다.</p>
     </footer>
 
     <div id="toast" class="toast" role="status" aria-live="polite"></div>

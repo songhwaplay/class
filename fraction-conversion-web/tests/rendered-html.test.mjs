@@ -58,7 +58,7 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
 
   const catalogResponse = await render("/arithmetic/personal");
   const catalogHtml = await catalogResponse.text();
-  assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 64);
+  assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 63);
   assert.ok(catalogHtml.indexOf("1수세기①") < catalogHtml.indexOf("1덧셈뺄셈①"));
   assert.ok(catalogHtml.indexOf("3분수①") < catalogHtml.indexOf("3분수②"));
   assert.ok(catalogHtml.indexOf("3분수②") < catalogHtml.indexOf("3무게,들이"));
@@ -83,6 +83,11 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-3"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-4"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-5"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/clock-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-add-subtract"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-add-subtract-blanks"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-complement-subtraction-100"[^>]*data-testid="worksheet-choice"/);
+  assert.doesNotMatch(catalogHtml, /2시계①|2시계②/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
 
@@ -107,6 +112,81 @@ test("renders student and teacher ranking mode entry screens", async () => {
   assert.match(modeSource, /params\.get\("name"\)/);
   assert.match(modeSource, /localStorage\.setItem\(PLAYER_NAME_KEY, resolvedName\)/);
   assert.match(raceSource, /setName\(resolvedName\)/);
+});
+
+test("keeps every race-ready worksheet connected to grading and score reading", async () => {
+  const worksheetSource = await readFile(new URL("../lib/arithmetic-worksheets.ts", import.meta.url), "utf8");
+  const controllerSource = await readFile(new URL("../app/components/arithmetic-race-controller.tsx", import.meta.url), "utf8");
+  const readyRoutesBlock = worksheetSource.match(/const readyRoutes:[\s\S]*?= \{([\s\S]*?)\n\};/)?.[1] ?? "";
+  const routes = [...new Set([...readyRoutesBlock.matchAll(/"(\/arithmetic\/[^"?]+)"/g)].map((match) => match[1]))];
+  const selectorsBlock = controllerSource.match(/const questionSelectors = \[([\s\S]*?)\n\];/)?.[1] ?? "";
+  const selectors = [...selectorsBlock.matchAll(/"(\.[^"]+)"/g)].map((match) => match[1]);
+
+  assert.equal(routes.length, 23);
+  assert.ok(selectors.includes(".multiplication-five-question"));
+  assert.ok(selectors.includes(".clock-question"));
+
+  for (const route of routes) {
+    const response = await render(route);
+    assert.equal(response.status, 200, `${route} 렌더링 실패`);
+    const html = await response.text();
+    const worksheetStart = html.indexOf("worksheet-stage");
+    const answerStart = html.indexOf("answer-stage", worksheetStart + 1);
+    const worksheetHtml = html.slice(worksheetStart, answerStart > worksheetStart ? answerStart : undefined);
+    const connectedSelectors = selectors.filter((selector) => {
+      const className = selector.slice(1).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      return new RegExp(`class="[^"]*\\b${className}\\b`).test(worksheetHtml);
+    });
+
+    assert.ok(worksheetStart >= 0, `${route} 문제지 영역 누락`);
+    assert.match(html, />전체 채점<\/button>/, `${route} 전체 채점 버튼 누락`);
+    assert.ok(connectedSelectors.length > 0, `${route} 순위 점수 판독 대상 누락`);
+  }
+});
+
+test("renders the grade-three three-digit addition and subtraction worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-add-subtract");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-add-subtract/page.tsx", import.meta.url), "utf8");
+  assert.match(html, /<span>3학년<\/span><strong>덧셈뺄셈/);
+  assert.match(html, /aria-label="A4 3학년 덧셈뺄셈 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 덧셈뺄셈 전체 답지"/);
+  assert.equal((html.match(/data-testid="grade-three-equation"/g) ?? []).length, 32);
+  assert.equal((html.match(/class="vertical-input"/g) ?? []).length, 16);
+  assert.equal((html.match(/class="vertical-static-answer"/g) ?? []).length, 16);
+  assert.equal((html.match(/maxLength="4"/g) ?? []).length, 16);
+  assert.equal((html.match(/<i>\+<\/i>/g) ?? []).length, 16);
+  assert.equal((html.match(/<i>−<\/i>/g) ?? []).length, 16);
+  assert.match(source, /const OPERATOR_PATTERN = \["\+", "−", "\+", "−", "−", "−", "\+", "−", "\+", "\+", "−", "\+", "−", "\+", "−", "\+"\]/);
+  assert.match(source, /integer\(next, 4, 9\) \* 10 \+ integer\(next, 3, 9\)/);
+  assert.match(source, /integer\(next, 0, 4\) \* 10 \+ integer\(next, 0, 4\)/);
+});
+
+test("renders the first clock worksheet with paired writing and reading answers", async () => {
+  const response = await render("/arithmetic/clock-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const source = await readFile(new URL("../app/arithmetic/clock-1/page.tsx", import.meta.url), "utf8");
+  assert.match(html, />시계(?: 정답)?<\/strong>/);
+  assert.match(html, />새 문제<\/button>/);
+  assert.match(html, /aria-label="A4 시계 문제지"/);
+  assert.match(html, /aria-label="A4 시계 전체 답지"/);
+  assert.equal((html.match(/data-testid="clock-question"/g) ?? []).length, 18);
+  assert.equal((html.match(/class="clock-input clock-number-input"/g) ?? []).length, 18);
+  assert.equal((html.match(/class="clock-input clock-reading-input"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="clock-static-number"/g) ?? []).length, 18);
+  assert.equal((html.match(/class="clock-static-reading"/g) ?? []).length, 9);
+  assert.doesNotMatch(html, /정답은/);
+  assert.match(source, /const MINUTE_STEPS = Array\.from\(\{ length: 60 \}, \(_, index\) => index\)/);
+  assert.match(source, /shuffle\(candidates, random\(seed\)\)\.slice\(0, 9\)/);
+  assert.match(source, /reading: clockReading\(time\.hour, time\.minute\)/);
+  assert.match(css, /\.clock-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,/);
+  assert.match(css, /\.clock-question\.is-correct/);
+  assert.match(css, /\.clock-question\.is-wrong/);
 });
 
 test("renders the first counting worksheet with interactive and printable answers", async () => {
@@ -294,6 +374,56 @@ test("renders the second grade-two worksheet with two missing digits per problem
     "digit-3-1-topOnes", "digit-3-1-resultTens",
     "digit-3-2-topTens", "digit-3-2-bottomOnes",
   ]);
+});
+
+test("renders the grade-three missing-digit worksheet from the workbook pattern", async () => {
+  const response = await render("/arithmetic/grade-3-add-subtract-blanks");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-add-subtract-blanks/page.tsx", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /덧셈뺄셈빈칸/);
+  assert.match(html, /aria-label="A4 3학년 덧셈뺄셈빈칸 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 덧셈뺄셈빈칸 전체 답지"/);
+  assert.equal((html.match(/data-testid="grade-three-blank-equation"/g) ?? []).length, 24);
+  assert.equal((html.match(/class="digit-input"/g) ?? []).length, 36);
+  assert.equal((html.match(/class="digit-static-answer"/g) ?? []).length, 36);
+  assert.equal((html.match(/maxLength="1"/g) ?? []).length, 36);
+  assert.equal((html.match(/<i>\+<\/i>/g) ?? []).length, 12);
+  assert.equal((html.match(/<i>−<\/i>/g) ?? []).length, 12);
+  assert.match(source, /\["topOnes", "bottomTens", "resultHundreds"\]/);
+  assert.match(source, /\["topHundreds", "bottomOnes", "resultTens"\]/);
+  assert.match(source, /\["topTens", "bottomHundreds", "resultOnes"\]/);
+  assert.match(source, /\["topOnes", "bottomHundreds", "resultTens"\]/);
+  assert.match(source, /\["topTens", "bottomOnes", "resultHundreds"\]/);
+  assert.match(source, /\["topHundreds", "bottomTens", "resultOnes"\]/);
+  assert.match(source, /additionGroup\(0\);[\s\S]*subtractionGroup\(1, false\);[\s\S]*additionGroup\(2\);[\s\S]*subtractionGroup\(3, true\);/);
+  assert.match(source, /<small>\/12 정답<\/small>/);
+});
+
+test("renders the grade-three complement subtraction to 100 worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-complement-subtraction-100");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-complement-subtraction-100/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /보수뺄셈100/);
+  assert.match(html, /aria-label="A4 3학년 보수뺄셈100 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 보수뺄셈100 전체 답지"/);
+  assert.equal((html.match(/data-testid="hundred-complement-row"/g) ?? []).length, 44);
+  assert.equal((html.match(/class="complement-input wide"/g) ?? []).length, 22);
+  assert.equal((html.match(/class="complement-static-answer wide"/g) ?? []).length, 22);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 22);
+  assert.equal((html.match(/<span>−<\/span>/g) ?? []).length, 44);
+  assert.match(source, /const left = 100;/);
+  assert.match(source, /const left = 100 \+ integer\(next, 1, 3\);/);
+  assert.match(source, /integer\(next, 2, 7\) \* 10 \+ integer\(next, 1, 9\)/);
+  assert.match(source, /<small>\/22 정답<\/small>/);
+  assert.match(css, /\.hundred-complement-columns\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
+  assert.match(css, /\.hundred-complement-column\s*\{[\s\S]*?grid-template-rows:\s*repeat\(11,/);
 });
 
 test("renders the third grade-two worksheet with mixed missing terms", async () => {
@@ -585,17 +715,31 @@ test("opens the browser print dialog without creating a download", async () => {
   assert.doesNotMatch(pageSource, />3학년 분수</);
 });
 
-test("uses server-backed score-first ranking and a single final submission", async () => {
+test("uses arrived-only mistake-first ranking with correction attempts", async () => {
   const routeSource = await readFile(new URL("../app/api/arithmetic-race/route.ts", import.meta.url), "utf8");
   const controllerSource = await readFile(new URL("../app/components/arithmetic-race-controller.tsx", import.meta.url), "utf8");
+  const rankingSource = await readFile(new URL("../lib/arithmetic-race-ranking.ts", import.meta.url), "utf8");
+  const teacherSource = await readFile(new URL("../app/arithmetic/race/teacher/page.tsx", import.meta.url), "utf8");
+  const schemaSource = await readFile(new URL("../db/schema.ts", import.meta.url), "utf8");
+  const migrationSource = await readFile(new URL("../drizzle/0001_youthful_king_cobra.sql", import.meta.url), "utf8");
   const hosting = JSON.parse(await readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"));
 
   assert.equal(hosting.d1, "DB");
-  assert.match(routeSource, /correct_count\) \|\| 0\) - \(Number\(a\.correct_count\)/);
-  assert.match(routeSource, /submitted_at\) \|\| Infinity\) - \(Number\(b\.submitted_at\)/);
-  assert.match(routeSource, /submitted_at IS NULL/);
+  assert.match(rankingSource, /row\.submitted_at !== null && row\.total_count !== null && row\.correct_count === row\.total_count/);
+  assert.match(rankingSource, /Number\(a\.mistake_count\)[\s\S]*?- \(Number\(b\.mistake_count\)/);
+  assert.match(rankingSource, /Number\(a\.submitted_at\)[\s\S]*?- \(Number\(b\.submitted_at\)/);
+  assert.match(routeSource, /const completed = wrongCount === 0/);
+  assert.match(routeSource, /mistake_count = CASE WHEN total_count IS NULL THEN \? ELSE mistake_count END/);
+  assert.match(routeSource, /rank: completed \? ranking\.find/);
   assert.match(routeSource, /ARITHMETIC_TEACHER_PIN/);
   assert.doesNotMatch(routeSource, /2468/);
-  assert.match(controllerSource, /최종 제출 후에는 답을 고칠 수 없습니다/);
+  assert.doesNotMatch(controllerSource, /최종 제출 후에는 답을 고칠 수 없습니다/);
+  assert.match(controllerSource, /if \(!result\.completed\) setAttemptMessage/);
+  assert.match(controllerSource, /채점·도착/);
   assert.match(controllerSource, /\.worksheet-stage/);
+  assert.match(teacherSource, /전부 맞힌 학생만 · 오답이 적은 순 · 같으면 도착 시간/);
+  assert.match(teacherSource, /오답 \{participant\.mistakeCount\}개/);
+  assert.match(teacherSource, /<h3>미도착<\/h3>/);
+  assert.match(schemaSource, /mistakeCount: integer\("mistake_count"\)\.notNull\(\)\.default\(0\)/);
+  assert.match(migrationSource, /ADD `mistake_count` integer DEFAULT 0 NOT NULL/);
 });

@@ -20,6 +20,7 @@ export const arithmeticRaceParticipants = sqliteTable("arithmetic_race_participa
   submittedAt: integer("submitted_at"),
   correctCount: integer("correct_count"),
   totalCount: integer("total_count"),
+  mistakeCount: integer("mistake_count").notNull().default(0),
 }, (table) => [
   uniqueIndex("arithmetic_race_room_name_unique").on(table.roomCode, table.name),
 ]);

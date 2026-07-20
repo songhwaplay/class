@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 
 type Session = {
   race: { roomCode: string; worksheetName: string; worksheetRoute: string; status: string; startedAt: number | null };
-  participant: { id: string; name: string; submittedAt: number | null; correctCount: number | null; totalCount: number | null; rank: number | null };
+  participant: { id: string; name: string; submittedAt: number | null; correctCount: number | null; totalCount: number | null; mistakeCount: number; rank: number | null };
 };
 
 const questionSelectors = [
-  ".counting-question", ".drawing-question", ".addsub-equation-row", ".reading-row", ".give-question", ".complement-row", ".skip-row", ".vertical-equation", ".digit-equation", ".group-question", ".length-question", ".multiplication-question",
+  ".counting-question", ".drawing-question", ".addsub-equation-row", ".reading-row", ".give-question", ".complement-row", ".skip-row", ".vertical-equation", ".digit-equation", ".group-question", ".length-question", ".multiplication-question", ".multiplication-five-question", ".clock-question",
 ];
 
 function formatElapsed(milliseconds: number) {
@@ -26,6 +26,7 @@ export default function ArithmeticRaceController() {
   const [now, setNow] = useState(Date.now());
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [attemptMessage, setAttemptMessage] = useState("");
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -70,9 +71,9 @@ export default function ArithmeticRaceController() {
 
   async function submit() {
     if (!session || session.participant.submittedAt || submitting) return;
-    if (!window.confirm("최종 제출 후에는 답을 고칠 수 없습니다. 제출할까요?")) return;
     setSubmitting(true);
     setError("");
+    setAttemptMessage("");
     try {
       const gradingButton = [...document.querySelectorAll<HTMLButtonElement>(".counting-toolbar button")].find((button) => button.textContent?.trim() === "전체 채점");
       if (!gradingButton) throw new Error("이 학습지의 채점 버튼을 찾지 못했습니다.");
@@ -91,9 +92,10 @@ export default function ArithmeticRaceController() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ action: "submit", roomCode: credentials.room, participantId: credentials.participant, participantToken: credentials.participantToken, correctCount, totalCount }),
       });
-      const result = await response.json() as { error?: string; submittedAt?: number; rank?: number; correctCount?: number; totalCount?: number };
+      const result = await response.json() as { error?: string; completed?: boolean; submittedAt?: number | null; rank?: number | null; correctCount?: number; totalCount?: number; wrongCount?: number; mistakeCount?: number };
       if (!response.ok) throw new Error(result.error || "제출하지 못했습니다.");
-      setSession((current) => current ? { ...current, participant: { ...current.participant, submittedAt: result.submittedAt ?? Date.now(), rank: result.rank ?? null, correctCount: result.correctCount ?? correctCount, totalCount: result.totalCount ?? totalCount } } : current);
+      setSession((current) => current ? { ...current, participant: { ...current.participant, submittedAt: result.submittedAt ?? null, rank: result.rank ?? null, correctCount: result.correctCount ?? correctCount, totalCount: result.totalCount ?? totalCount, mistakeCount: result.mistakeCount ?? current.participant.mistakeCount } } : current);
+      if (!result.completed) setAttemptMessage(`${result.wrongCount ?? wrongCount}개 오답 · 고쳐서 다시 도착`);
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "제출하지 못했습니다.");
     } finally {
@@ -102,13 +104,18 @@ export default function ArithmeticRaceController() {
   }
 
   const submitted = Boolean(session?.participant.submittedAt);
+  const mistakeCount = session?.participant.mistakeCount ?? 0;
   const elapsed = session?.race.startedAt ? formatElapsed((session.participant.submittedAt ?? now) - session.race.startedAt) : "00:00";
   return (
     <aside className="race-submit-bar" aria-label="순위 모드">
       <span className="race-room">방 {credentials.room}</span>
       <strong>{session?.participant.name ?? "입장 확인 중"}</strong>
       <time>{elapsed}</time>
-      {submitted ? <span className="race-submitted"><b>{session?.participant.correctCount}/{session?.participant.totalCount}</b>{session?.participant.rank ? ` · ${session.participant.rank}위` : " · 제출 완료"}</span> : <button type="button" onClick={submit} disabled={!session || submitting}>{submitting ? "제출 중" : "최종 제출"}</button>}
+      {submitted ? (
+        <span className="race-submitted"><b>전부 정답</b>{mistakeCount ? ` · 오답 ${mistakeCount}개` : " · 한 번에 통과"}{session?.participant.rank ? ` · ${session.participant.rank}위` : " · 도착"}</span>
+      ) : (
+        <>{attemptMessage && <span className="race-attempt" role="status">{attemptMessage}</span>}<button type="button" onClick={submit} disabled={!session || submitting}>{submitting ? "채점 중" : "채점·도착"}</button></>
+      )}
       {error && <span className="race-error" role="alert">{error}</span>}
     </aside>
   );

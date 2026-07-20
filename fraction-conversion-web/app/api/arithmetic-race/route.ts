@@ -1,4 +1,5 @@
 import { raceWorksheetByRoute } from "../../../lib/arithmetic-worksheets";
+import { rankArrivedParticipants } from "../../../lib/arithmetic-race-ranking";
 
 type RaceRow = {
   room_code: string;
@@ -20,6 +21,7 @@ type ParticipantRow = {
   submitted_at: number | null;
   correct_count: number | null;
   total_count: number | null;
+  mistake_count: number;
 };
 
 function error(message: string, status = 400) {
@@ -45,18 +47,13 @@ function publicRace(race: RaceRow) {
 }
 
 function rankedParticipants(rows: ParticipantRow[]) {
-  const submitted = rows
-    .filter((row) => row.submitted_at !== null)
-    .sort((a, b) =>
-      (Number(b.correct_count) || 0) - (Number(a.correct_count) || 0)
-      || (Number(a.submitted_at) || Infinity) - (Number(b.submitted_at) || Infinity)
-      || a.name.localeCompare(b.name, "ko"),
-    );
-  return submitted.map((row, index) => ({
+  const arrived = rankArrivedParticipants(rows);
+  return arrived.map((row, index) => ({
     id: row.id,
     name: row.name,
     correctCount: Number(row.correct_count) || 0,
     totalCount: Number(row.total_count) || 0,
+    mistakeCount: Number(row.mistake_count) || 0,
     submittedAt: row.submitted_at,
     rank: index + 1,
   }));
@@ -109,6 +106,7 @@ export async function GET(request: Request) {
           submittedAt: row.submitted_at,
           correctCount: row.correct_count,
           totalCount: row.total_count,
+          mistakeCount: row.mistake_count,
           rank: rankingById.get(row.id)?.rank ?? null,
         })),
         ranking,
@@ -125,6 +123,7 @@ export async function GET(request: Request) {
         submittedAt: participant.submitted_at,
         correctCount: participant.correct_count,
         totalCount: participant.total_count,
+        mistakeCount: participant.mistake_count,
         rank: ranking.find((entry) => entry.id === participant.id)?.rank ?? null,
       },
       ranking: participant.submitted_at ? ranking : [],
@@ -205,13 +204,34 @@ export async function POST(request: Request) {
       if (!Number.isInteger(totalCount) || totalCount < 1 || totalCount > 500 || !Number.isInteger(correctCount) || correctCount < 0 || correctCount > totalCount) return error("채점 결과를 확인하세요.");
       const race = await loadRace(db, code);
       if (!race || race.status !== "running" || !race.started_at) return error("진행 중인 방이 아닙니다.");
-      const submittedAt = Date.now();
-      const result = await db.prepare("UPDATE arithmetic_race_participants SET submitted_at = ?, correct_count = ?, total_count = ? WHERE id = ? AND room_code = ? AND participant_token = ? AND submitted_at IS NULL")
-        .bind(submittedAt, correctCount, totalCount, participantId, code, participantToken)
-        .run();
-      if (!result.meta.changes) return error("이미 제출했거나 입장 정보가 올바르지 않습니다.", 409);
-      const ranking = rankedParticipants(await loadParticipants(db, code));
-      return Response.json({ submittedAt, rank: ranking.find((entry) => entry.id === participantId)?.rank ?? null, correctCount, totalCount });
+      const participant = (await loadParticipants(db, code)).find((row) => row.id === participantId && row.participant_token === participantToken);
+      if (!participant) return error("학생 입장 정보를 확인하세요.", 403);
+      if (participant.submitted_at !== null) return error("이미 도착했습니다.", 409);
+
+      const wrongCount = totalCount - correctCount;
+      const completed = wrongCount === 0;
+      const submittedAt = completed ? Date.now() : null;
+      const result = completed
+        ? await db.prepare("UPDATE arithmetic_race_participants SET submitted_at = ?, correct_count = ?, total_count = ? WHERE id = ? AND room_code = ? AND participant_token = ? AND submitted_at IS NULL")
+          .bind(submittedAt, correctCount, totalCount, participantId, code, participantToken)
+          .run()
+        : await db.prepare("UPDATE arithmetic_race_participants SET mistake_count = CASE WHEN total_count IS NULL THEN ? ELSE mistake_count END, correct_count = ?, total_count = ? WHERE id = ? AND room_code = ? AND participant_token = ? AND submitted_at IS NULL")
+          .bind(wrongCount, correctCount, totalCount, participantId, code, participantToken)
+          .run();
+      if (!result.meta.changes) return error("도착 상태 또는 입장 정보를 확인하세요.", 409);
+
+      const participants = await loadParticipants(db, code);
+      const updated = participants.find((row) => row.id === participantId);
+      const ranking = rankedParticipants(participants);
+      return Response.json({
+        completed,
+        submittedAt,
+        rank: completed ? ranking.find((entry) => entry.id === participantId)?.rank ?? null : null,
+        correctCount,
+        totalCount,
+        wrongCount,
+        mistakeCount: Number(updated?.mistake_count) || 0,
+      });
     }
 
     if (action === "delete") {

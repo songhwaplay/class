@@ -10,6 +10,7 @@ const payload = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 assert.strictEqual(payload.version, "v2");
 assert.strictEqual(payload.totalWords, 3000);
 assert.strictEqual(payload.words.length, 3000);
+assert.strictEqual(payload.meaningOverrides.count, 24);
 
 const levelCounts = new Map();
 const stageCounts = new Map();
@@ -98,5 +99,49 @@ imageEntries.forEach(([id, image]) => {
     assert.ok(fs.existsSync(imagePath), `${image.word}: image file is missing`);
     assert.ok(fs.statSync(imagePath).size < 100_000, `${image.word}: image file is too large`);
 });
+
+const imageCandidatesPath = path.join(__dirname, "..", "assets", "data", "vocabulary-image-candidates-v1.json");
+const imageCandidates = JSON.parse(fs.readFileSync(imageCandidatesPath, "utf8"));
+assert.strictEqual(imageCandidates.elementaryWords, 800);
+assert.strictEqual(imageCandidates.targetImages, 214);
+assert.strictEqual(imageCandidates.existingImages, 20);
+assert.strictEqual(imageCandidates.pendingImages, 194);
+assert.strictEqual(imageCandidates.meaningReviewCount, 0);
+assert.strictEqual(imageCandidates.potentialImagesAfterMeaningReview, 214);
+assert.strictEqual(imageCandidates.candidates.length, imageCandidates.targetImages);
+assert.strictEqual(imageCandidates.meaningReview.length, imageCandidates.meaningReviewCount);
+
+const candidateIds = new Set(imageCandidates.candidates.map((candidate) => String(candidate.id)));
+assert.strictEqual(candidateIds.size, imageCandidates.candidates.length);
+imageEntries.forEach(([id]) => assert.ok(candidateIds.has(id), `existing image ${id} must remain selected`));
+imageCandidates.candidates.forEach((candidate) => {
+    const word = payload.words.find((entry) => entry.id === candidate.id);
+    assert.ok(word);
+    assert.strictEqual(word.word, candidate.word);
+    assert.strictEqual(word.stageCode, "elementary");
+    assert.ok(candidate.category);
+    assert.ok(candidate.categoryLabel);
+    assert.ok(candidate.meaning);
+});
+
+const reviewIds = new Set(imageCandidates.meaningReview.map((candidate) => String(candidate.id)));
+assert.strictEqual(reviewIds.size, imageCandidates.meaningReview.length);
+reviewIds.forEach((id) => assert.ok(!candidateIds.has(id), `review item ${id} must not be image-ready`));
+assert.ok(!imageCandidates.candidates.some((candidate) => ["chance", "death", "luck", "power"].includes(candidate.word)));
+
+const meaningOverridesPath = path.join(__dirname, "..", "assets", "data", "vocabulary-meaning-overrides.json");
+const meaningOverrides = JSON.parse(fs.readFileSync(meaningOverridesPath, "utf8"));
+assert.strictEqual(Object.keys(meaningOverrides).length, 24);
+Object.entries(meaningOverrides).forEach(([wordText, override]) => {
+    const word = payload.words.find((entry) => entry.word === wordText);
+    assert.ok(word, `${wordText}: overridden word must exist`);
+    assert.deepStrictEqual(word.pos, override.pos);
+    assert.deepStrictEqual(word.meanings, override.meanings);
+    assert.strictEqual(word.example.source, "curated_override");
+    assert.strictEqual(word.example.translationType, "translation");
+    assert.ok(candidateIds.has(String(word.id)), `${wordText}: corrected word must be image-ready`);
+});
+assert.deepStrictEqual(payload.words.find((word) => word.word === "tree").meanings, ["나무."]);
+assert.strictEqual(payload.words.find((word) => word.word === "bag").example.en, "My books are in my bag.");
 
 console.log("vocabulary data unit tests: ok");

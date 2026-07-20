@@ -12,15 +12,23 @@
     const BEST_SCORE_KEY = `${LEGACY_BEST_SCORE_KEY}${playerKeySuffix}`;
     const ILLUSTRATIONS = {
         josammosa: "assets/idioms/josammosa.webp",
+        dadaikseon: "assets/idioms/dadaikseon.webp",
         saeongjima: "assets/idioms/saeongjima.webp",
         eobujiri: "assets/idioms/eobujiri.webp",
         samyeonchoga: "assets/idioms/samyeonchoga.webp",
         samgochoryeo: "assets/idioms/samgochoryeo.webp",
+        cheongchureoram: "assets/idioms/cheongchureoram.webp",
         hwaryongjeomjeong: "assets/idioms/hwaryongjeomjeong.webp",
+        gungyeilhak: "assets/idioms/gungyeilhak.webp",
         wasinsangdam: "assets/idioms/wasinsangdam.webp",
+        giu: "assets/idioms/giu.webp",
+        baekbalbaekjung: "assets/idioms/baekbalbaekjung.webp",
         deungyongmun: "assets/idioms/deungyongmun.webp",
         mosun: "assets/idioms/mosun.webp",
-        sajok: "assets/idioms/sajok.webp"
+        sajok: "assets/idioms/sajok.webp",
+        baekmi: "assets/idioms/baekmi.webp",
+        toego: "assets/idioms/toego.webp",
+        osipbobaekbo: "assets/idioms/osipbobaekbo.webp"
     };
 
     function migrateLegacyStorage() {
@@ -59,13 +67,14 @@
         idiomHanja: byId("idiomHanja"), idiomWord: byId("idiomWord"), cardDetails: byId("cardDetails"),
         idiomMeaning: byId("idiomMeaning"), idiomStory: byId("idiomStory"),
         idiomIllustration: byId("idiomIllustration"), idiomIllustrationImage: byId("idiomIllustrationImage"),
-        idiomSource: byId("idiomSource"), sourceNote: byId("sourceNote"), sourceLink: byId("sourceLink"),
+        idiomSource: byId("idiomSource"), sourceNote: byId("sourceNote"),
         previousCard: byId("previousCard"), nextCard: byId("nextCard"), revealCard: byId("revealCard"),
         memoryActions: byId("memoryActions"), markReview: byId("markReview"), markKnown: byId("markKnown"),
         gameIntro: byId("gameIntro"), quizStage: byId("quizStage"), quizResult: byId("quizResult"),
         bestScore: byId("bestScore"), quizLevelSelect: byId("quizLevelSelect"), startQuiz: byId("startQuiz"), quizPosition: byId("quizPosition"),
         quizStreak: byId("quizStreak"), quizScore: byId("quizScore"), quizBar: byId("quizBar"),
         questionType: byId("questionType"), questionPrompt: byId("questionPrompt"), answerOptions: byId("answerOptions"),
+        questionIllustration: byId("questionIllustration"), questionIllustrationImage: byId("questionIllustrationImage"),
         answerFeedback: byId("answerFeedback"), feedbackTitle: byId("feedbackTitle"), feedbackCopy: byId("feedbackCopy"),
         nextQuestion: byId("nextQuestion"), resultTitle: byId("resultTitle"), resultScore: byId("resultScore"),
         resultMessage: byId("resultMessage"), retryQuiz: byId("retryQuiz"), reviewMistakes: byId("reviewMistakes"),
@@ -196,7 +205,6 @@
         }
         elements.idiomSource.textContent = idiom.source;
         elements.sourceNote.textContent = idiom.sourceNote;
-        elements.sourceLink.href = idiom.reference;
         elements.previousCard.disabled = deck.length < 2;
         elements.nextCard.disabled = deck.length < 2;
         renderMemoryStatus(idiom);
@@ -244,7 +252,14 @@
     }
 
     function startQuiz() {
-        const quizPool = data.filter((idiom) => selectedQuizLevel === "전체" || idiom.level === selectedQuizLevel);
+        const levelPool = data.filter((idiom) => selectedQuizLevel === "전체" || idiom.level === selectedQuizLevel);
+        const quizPool = selectedQuizMode === "image"
+            ? levelPool.filter((idiom) => Boolean(ILLUSTRATIONS[idiom.id]))
+            : levelPool;
+        if (quizPool.length < 4) {
+            showToast("이 단계에는 삽화 문제가 없습니다.");
+            return;
+        }
         quiz = core.buildQuiz(quizPool, 10, selectedQuizMode);
         quizIndex = 0;
         quizScore = 0;
@@ -265,8 +280,18 @@
         elements.quizStreak.textContent = quizStreak;
         elements.quizScore.textContent = quizScore;
         elements.quizBar.style.width = `${(quizIndex / quiz.length) * 100}%`;
-        elements.questionType.textContent = question.type === "story" ? "유래 문제" : "뜻 문제";
+        const typeLabels = { story: "유래 문제", meaning: "뜻 문제", image: "삽화 문제" };
+        elements.questionType.textContent = typeLabels[question.type] || "뜻 문제";
         elements.questionPrompt.textContent = question.prompt;
+        const illustration = question.type === "image" ? ILLUSTRATIONS[question.id] : "";
+        elements.questionIllustration.hidden = !illustration;
+        if (illustration) {
+            elements.questionIllustrationImage.src = illustration;
+            elements.questionIllustrationImage.alt = "고사성어 유래를 나타낸 문제 삽화";
+        } else {
+            elements.questionIllustrationImage.removeAttribute("src");
+            elements.questionIllustrationImage.alt = "";
+        }
         elements.answerFeedback.hidden = true;
         elements.answerFeedback.classList.remove("wrong");
         elements.answerOptions.replaceChildren();

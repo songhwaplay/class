@@ -1,0 +1,2166 @@
+{
+  "version": 1,
+  "source": "english-vocabulary-3000-v2.json + Open English WordNet",
+  "elementaryWords": 800,
+  "targetImages": 214,
+  "existingImages": 20,
+  "pendingImages": 194,
+  "meaningReviewCount": 0,
+  "potentialImagesAfterMeaningReview": 214,
+  "categoryCounts": {
+    "동물": 22,
+    "사물·탈것": 71,
+    "신체": 15,
+    "음식": 36,
+    "장소": 24,
+    "자연물·사물": 10,
+    "사람": 26,
+    "자연현상": 4,
+    "식물": 3,
+    "모양": 1,
+    "물질": 2
+  },
+  "candidates": [
+    {
+      "id": 404,
+      "word": "car",
+      "level": 1,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(운송) 차, 자동차.",
+      "existingImage": true,
+      "score": 1145
+    },
+    {
+      "id": 849,
+      "word": "door",
+      "level": 1,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "문, 문짝.",
+      "existingImage": true,
+      "score": 1144
+    },
+    {
+      "id": 1348,
+      "word": "house",
+      "level": 1,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "1. 집, 건물, 주택.",
+      "existingImage": true,
+      "score": 1139
+    },
+    {
+      "id": 208,
+      "word": "back",
+      "level": 1,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "뒤; 등",
+      "existingImage": false,
+      "score": 144
+    },
+    {
+      "id": 1294,
+      "word": "head",
+      "level": 1,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체 부분) 머리.",
+      "existingImage": false,
+      "score": 144
+    },
+    {
+      "id": 1332,
+      "word": "home",
+      "level": 1,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "집; 가정; 고향",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 1971,
+      "word": "place",
+      "level": 1,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "곳, 장소, 광장.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 2264,
+      "word": "room",
+      "level": 1,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "(건물의) 방, 실.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 207,
+      "word": "baby",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "아기, 어린아이, 유아.",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 331,
+      "word": "boy",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "(15세기 부터) 젊은 남자.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 353,
+      "word": "brother",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "형. 또는 오빠. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 1046,
+      "word": "father",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "아버지. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 1150,
+      "word": "friend",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "친구, 동무.",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 1206,
+      "word": "girl",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "여자 어린이, 어린 여성",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 1622,
+      "word": "man",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "남자, 남성.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 1726,
+      "word": "mother",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "어머니. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 2464,
+      "word": "son",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "결혼한 남녀 사이에서 태어난 남자. 아들. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 2953,
+      "word": "wife",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "결혼한 남자의 배우자: 아내. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 2972,
+      "word": "woman",
+      "level": 1,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "여자, 여성, 여인.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 842,
+      "word": "dog",
+      "level": 2,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "개.",
+      "existingImage": true,
+      "score": 1144
+    },
+    {
+      "id": 213,
+      "word": "bag",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "가방; 자루.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 250,
+      "word": "bed",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "침대.",
+      "existingImage": false,
+      "score": 140
+    },
+    {
+      "id": 314,
+      "word": "book",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "책.",
+      "existingImage": true,
+      "score": 1123
+    },
+    {
+      "id": 506,
+      "word": "clothes",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "옷, 의복. 세탁물.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 1829,
+      "word": "office",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "사무실.",
+      "existingImage": false,
+      "score": 137
+    },
+    {
+      "id": 2381,
+      "word": "ship",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(해상 교통 수단) 배, 선박.(A water-borne vessel generally larger than a boat.)",
+      "existingImage": false,
+      "score": 135
+    },
+    {
+      "id": 2634,
+      "word": "table",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(물건을 얹기 위한) 탁자, 상, 책상 (테이블).",
+      "existingImage": true,
+      "score": 1132
+    },
+    {
+      "id": 2769,
+      "word": "train",
+      "level": 2,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "교통 수단 기차, 열차.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 308,
+      "word": "body",
+      "level": 2,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "몸, 신체, 육체.",
+      "existingImage": false,
+      "score": 139
+    },
+    {
+      "id": 1014,
+      "word": "eye",
+      "level": 2,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체기관) 눈.",
+      "existingImage": false,
+      "score": 144
+    },
+    {
+      "id": 1269,
+      "word": "hair",
+      "level": 2,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "머리카락, 머리털. 동물의 경우 털.",
+      "existingImage": false,
+      "score": 143
+    },
+    {
+      "id": 1275,
+      "word": "hand",
+      "level": 2,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체 부분) 손.",
+      "existingImage": false,
+      "score": 139
+    },
+    {
+      "id": 1733,
+      "word": "mouth",
+      "level": 2,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체기관) 입",
+      "existingImage": false,
+      "score": 142
+    },
+    {
+      "id": 516,
+      "word": "coffee",
+      "level": 2,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "커피",
+      "existingImage": false,
+      "score": 143
+    },
+    {
+      "id": 808,
+      "word": "dinner",
+      "level": 2,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "저녁밥, 한식",
+      "existingImage": false,
+      "score": 143
+    },
+    {
+      "id": 866,
+      "word": "drink",
+      "level": 2,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "음료, 마시는 것.",
+      "existingImage": false,
+      "score": 140
+    },
+    {
+      "id": 484,
+      "word": "city",
+      "level": 2,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "도시, 시.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 888,
+      "word": "earth",
+      "level": 2,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "땅, 대지. (비유) 세속, 이 세상.",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 1342,
+      "word": "hospital",
+      "level": 2,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "병원.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 2252,
+      "word": "road",
+      "level": 2,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "길, 거리, 도로.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 2313,
+      "word": "school",
+      "level": 2,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "<가산> (장소로서의) 학교.",
+      "existingImage": true,
+      "score": 1123
+    },
+    {
+      "id": 2557,
+      "word": "street",
+      "level": 2,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "길, 거리, 도로.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 2759,
+      "word": "town",
+      "level": 2,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "city보다 작은 행정 구역.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 465,
+      "word": "child",
+      "level": 2,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "어린이, 아이.",
+      "existingImage": false,
+      "score": 126
+    },
+    {
+      "id": 720,
+      "word": "daughter",
+      "level": 2,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "결혼한 남녀 사이에서 태어난 여자. 딸. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 123
+    },
+    {
+      "id": 1361,
+      "word": "husband",
+      "level": 2,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "결혼한 여자의 배우자: 남편. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 124
+    },
+    {
+      "id": 1502,
+      "word": "king",
+      "level": 2,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "왕, 임금.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 1518,
+      "word": "lady",
+      "level": 2,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "부인, 숙녀.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 2413,
+      "word": "sister",
+      "level": 2,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "누나, 누이. 또는 언니. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 125
+    },
+    {
+      "id": 2819,
+      "word": "uncle",
+      "level": 2,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "삼촌, 아저씨. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 126
+    },
+    {
+      "id": 2910,
+      "word": "water",
+      "level": 2,
+      "category": "substance",
+      "categoryLabel": "물질",
+      "meaning": "(마시거나, 흐르거나 또는 괴어 있는) 물.",
+      "existingImage": true,
+      "score": 1114
+    },
+    {
+      "id": 121,
+      "word": "animal",
+      "level": 3,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "동물.",
+      "existingImage": false,
+      "score": 124
+    },
+    {
+      "id": 243,
+      "word": "bear",
+      "level": 3,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "곰.",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 284,
+      "word": "bird",
+      "level": 3,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(동물) 새.",
+      "existingImage": true,
+      "score": 1142
+    },
+    {
+      "id": 417,
+      "word": "cat",
+      "level": 3,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "고양이.",
+      "existingImage": true,
+      "score": 1137
+    },
+    {
+      "id": 463,
+      "word": "chicken",
+      "level": 3,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "닭.",
+      "existingImage": false,
+      "score": 139
+    },
+    {
+      "id": 1084,
+      "word": "fish",
+      "level": 3,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "물고기. 또는 생선.",
+      "existingImage": true,
+      "score": 1138
+    },
+    {
+      "id": 1341,
+      "word": "horse",
+      "level": 3,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "말",
+      "existingImage": false,
+      "score": 137
+    },
+    {
+      "id": 216,
+      "word": "ball",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(운동 기구) 공.",
+      "existingImage": true,
+      "score": 1134
+    },
+    {
+      "id": 262,
+      "word": "bell",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "울리는 종.",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 306,
+      "word": "board",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "판자, 널빤지",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 307,
+      "word": "boat",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(해상 교통 수단) 배.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 324,
+      "word": "bottle",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "병.",
+      "existingImage": false,
+      "score": 128
+    },
+    {
+      "id": 330,
+      "word": "box",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "상자.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 371,
+      "word": "bus",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(교통 수단) 버스.",
+      "existingImage": true,
+      "score": 1135
+    },
+    {
+      "id": 389,
+      "word": "camera",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "사진기, 카메라.",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 405,
+      "word": "card",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(연하장, 엽서 따위) 카드.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 437,
+      "word": "chair",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "의자, 걸상.",
+      "existingImage": true,
+      "score": 1133
+    },
+    {
+      "id": 690,
+      "word": "cup",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "컵",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 777,
+      "word": "desk",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "책상.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 864,
+      "word": "dress",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "드레스; 원피스.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 1070,
+      "word": "file",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "서류, 문서.",
+      "existingImage": false,
+      "score": 118
+    },
+    {
+      "id": 1102,
+      "word": "floor",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "마루, 복도.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 1211,
+      "word": "glass",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "유리.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 1288,
+      "word": "hat",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(대개 남성용) 모자.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 1497,
+      "word": "key",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "열쇠. (비유) 무엇을 푸는 데 중요한 것; 실마리, 요점, 비결.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 1507,
+      "word": "knife",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(일반적 의미) 칼.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 1891,
+      "word": "pants",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "바지.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 1892,
+      "word": "paper",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "종이",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 2127,
+      "word": "radio",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "라디오.",
+      "existingImage": false,
+      "score": 123
+    },
+    {
+      "id": 2246,
+      "word": "ring",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "반지.",
+      "existingImage": false,
+      "score": 124
+    },
+    {
+      "id": 2382,
+      "word": "shirt",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "셔츠, 와이셔츠, 남방",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 2899,
+      "word": "wall",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "벽.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 2958,
+      "word": "window",
+      "level": 3,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "창문, 창.",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 1116,
+      "word": "foot",
+      "level": 3,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체 부분) 발.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 1762,
+      "word": "neck",
+      "level": 3,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체 부분) 목.",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 1797,
+      "word": "nose",
+      "level": 3,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체 기관) 코.",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 339,
+      "word": "breakfast",
+      "level": 3,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "아침밥.",
+      "existingImage": false,
+      "score": 135
+    },
+    {
+      "id": 384,
+      "word": "cake",
+      "level": 3,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "케이크",
+      "existingImage": false,
+      "score": 140
+    },
+    {
+      "id": 667,
+      "word": "cream",
+      "level": 3,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "크림.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 1653,
+      "word": "meat",
+      "level": 3,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "고기, 육류.",
+      "existingImage": false,
+      "score": 140
+    },
+    {
+      "id": 1686,
+      "word": "milk",
+      "level": 3,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "우유.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 134,
+      "word": "apartment",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "아파트.",
+      "existingImage": false,
+      "score": 121
+    },
+    {
+      "id": 222,
+      "word": "bank",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "은행.",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 346,
+      "word": "bridge",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "다리, 교량",
+      "existingImage": false,
+      "score": 124
+    },
+    {
+      "id": 476,
+      "word": "church",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "교회.",
+      "existingImage": false,
+      "score": 118
+    },
+    {
+      "id": 525,
+      "word": "college",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "일반적으로 한국에서 말하는 단과 대학교.",
+      "existingImage": false,
+      "score": 111
+    },
+    {
+      "id": 1505,
+      "word": "kitchen",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "부엌.",
+      "existingImage": false,
+      "score": 123
+    },
+    {
+      "id": 1898,
+      "word": "park",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "공원.",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 2219,
+      "word": "restaurant",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "식당, 음식점.",
+      "existingImage": false,
+      "score": 120
+    },
+    {
+      "id": 2386,
+      "word": "shop",
+      "level": 3,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "(작은) 가게, 상점.",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 240,
+      "word": "beach",
+      "level": 3,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "바닷가, 해안, 모래사장.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 1250,
+      "word": "ground",
+      "level": 3,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "바닥; 해저, 강바닥, 개울 바닥 (The bottom of a body of water.)",
+      "existingImage": false,
+      "score": 126
+    },
+    {
+      "id": 1731,
+      "word": "mountain",
+      "level": 3,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "(지리) 산.",
+      "existingImage": false,
+      "score": 128
+    },
+    {
+      "id": 2251,
+      "word": "river",
+      "level": 3,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "(지리) 강.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 2324,
+      "word": "sea",
+      "level": 3,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "바다, 해양.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 2425,
+      "word": "sky",
+      "level": 3,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "하늘.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 2519,
+      "word": "star",
+      "level": 3,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "별, 성좌.",
+      "existingImage": false,
+      "score": 128
+    },
+    {
+      "id": 192,
+      "word": "aunt",
+      "level": 3,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "숙모, 이모. 또는 아주머니. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 658,
+      "word": "cousin",
+      "level": 3,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "남자 사촌. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 120
+    },
+    {
+      "id": 1810,
+      "word": "nurse",
+      "level": 3,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "간호사.",
+      "existingImage": false,
+      "score": 117
+    },
+    {
+      "id": 2051,
+      "word": "prince",
+      "level": 3,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "왕자. 드물게는 군주.",
+      "existingImage": false,
+      "score": 120
+    },
+    {
+      "id": 2116,
+      "word": "queen",
+      "level": 3,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "여왕.",
+      "existingImage": false,
+      "score": 121
+    },
+    {
+      "id": 1721,
+      "word": "moon",
+      "level": 3,
+      "category": "phenomenon",
+      "categoryLabel": "자연현상",
+      "meaning": "(지구의 위성) 달.",
+      "existingImage": false,
+      "score": 118
+    },
+    {
+      "id": 2597,
+      "word": "sun",
+      "level": 3,
+      "category": "phenomenon",
+      "categoryLabel": "자연현상",
+      "meaning": "태양, 해.",
+      "existingImage": true,
+      "score": 1113
+    },
+    {
+      "id": 2267,
+      "word": "rose",
+      "level": 3,
+      "category": "plant",
+      "categoryLabel": "식물",
+      "meaning": "(식물) 장미.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 2783,
+      "word": "tree",
+      "level": 3,
+      "category": "plant",
+      "categoryLabel": "식물",
+      "meaning": "나무.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 234,
+      "word": "bat",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(동물) 박쥐.",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 251,
+      "word": "bee",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(곤충) 벌. 특히 호박벌, 꿀벌, 가위벌 종류. (학명 Apiformes)",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 660,
+      "word": "cow",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "암소.",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 874,
+      "word": "duck",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "오리",
+      "existingImage": false,
+      "score": 137
+    },
+    {
+      "id": 908,
+      "word": "elephant",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(동물) 코끼리.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 1141,
+      "word": "fox",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(동물) 여우.",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 1579,
+      "word": "lion",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(동물) 사자.",
+      "existingImage": false,
+      "score": 137
+    },
+    {
+      "id": 1716,
+      "word": "monkey",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "원숭이.",
+      "existingImage": false,
+      "score": 135
+    },
+    {
+      "id": 1732,
+      "word": "mouse",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(동물) 생쥐.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 1958,
+      "word": "pig",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "돼지.",
+      "existingImage": false,
+      "score": 138
+    },
+    {
+      "id": 2104,
+      "word": "puppy",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "(동물) 강아지.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 2125,
+      "word": "rabbit",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "토끼.",
+      "existingImage": false,
+      "score": 135
+    },
+    {
+      "id": 2637,
+      "word": "tail",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "꼬리.",
+      "existingImage": false,
+      "score": 137
+    },
+    {
+      "id": 2723,
+      "word": "tiger",
+      "level": 4,
+      "category": "animal",
+      "categoryLabel": "동물",
+      "meaning": "호랑이.",
+      "existingImage": false,
+      "score": 136
+    },
+    {
+      "id": 80,
+      "word": "airplane",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(주로 미국에서) 비행기.",
+      "existingImage": false,
+      "score": 125
+    },
+    {
+      "id": 83,
+      "word": "album",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "사진첩, 앨범.",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 232,
+      "word": "basket",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "바구니, 광주리.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 265,
+      "word": "belt",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "허리띠, 혁대, 벨트.",
+      "existingImage": false,
+      "score": 125
+    },
+    {
+      "id": 277,
+      "word": "bike",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "자전거.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 355,
+      "word": "brush",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "솔.",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 398,
+      "word": "cap",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "모자.",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 504,
+      "word": "clock",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "시계. 탁상 시계",
+      "existingImage": true,
+      "score": 1124
+    },
+    {
+      "id": 514,
+      "word": "coat",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "코트, 외투.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 665,
+      "word": "crayon",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "크레용.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 699,
+      "word": "curtain",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "가리는 막, 커튼, 칸막이",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 843,
+      "word": "doll",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "인형. (비유) 인형처럼 예쁜 여자.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 1128,
+      "word": "fork",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "포크.",
+      "existingImage": false,
+      "score": 125
+    },
+    {
+      "id": 1261,
+      "word": "guitar",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "서양의 현악기 기타.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 1309,
+      "word": "helmet",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "헬멧, 투구.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 1474,
+      "word": "jacket",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(의복) 앞이 트인 남자 또는 여자의 웃옷.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 1629,
+      "word": "map",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "지도.",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 1780,
+      "word": "newspaper",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(인쇄 매체) 신문.",
+      "existingImage": false,
+      "score": 112
+    },
+    {
+      "id": 1800,
+      "word": "notebook",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "공책, 필기장, 연습장.",
+      "existingImage": false,
+      "score": 119
+    },
+    {
+      "id": 1927,
+      "word": "pen",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "펜.",
+      "existingImage": false,
+      "score": 126
+    },
+    {
+      "id": 1929,
+      "word": "pencil",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "연필.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 1952,
+      "word": "piano",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(악기) 피아노.",
+      "existingImage": false,
+      "score": 124
+    },
+    {
+      "id": 2239,
+      "word": "ribbon",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "리본; 띠 모양의 것",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 2256,
+      "word": "robot",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "로봇.",
+      "existingImage": false,
+      "score": 128
+    },
+    {
+      "id": 2315,
+      "word": "scissors",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "(언제나 복수) 가위.",
+      "existingImage": false,
+      "score": 125
+    },
+    {
+      "id": 2384,
+      "word": "shoe",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "신, 신발.",
+      "existingImage": true,
+      "score": 1125
+    },
+    {
+      "id": 2424,
+      "word": "skirt",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "스커트, 치마.",
+      "existingImage": false,
+      "score": 128
+    },
+    {
+      "id": 2454,
+      "word": "sock",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "양말.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 2500,
+      "word": "spoon",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "숟가락.",
+      "existingImage": false,
+      "score": 128
+    },
+    {
+      "id": 2581,
+      "word": "subway",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "지하철.(미국식 영어)",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 2660,
+      "word": "telephone",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "전화기.",
+      "existingImage": false,
+      "score": 120
+    },
+    {
+      "id": 2661,
+      "word": "television",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "텔레비전.",
+      "existingImage": false,
+      "score": 117
+    },
+    {
+      "id": 2818,
+      "word": "umbrella",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "우산.",
+      "existingImage": false,
+      "score": 125
+    },
+    {
+      "id": 2879,
+      "word": "violin",
+      "level": 4,
+      "category": "artifact",
+      "categoryLabel": "사물·탈것",
+      "meaning": "바이올린.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 313,
+      "word": "bone",
+      "level": 4,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "동물의 뼈.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 885,
+      "word": "ear",
+      "level": 4,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "(신체 부분) 귀.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 1078,
+      "word": "finger",
+      "level": 4,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "손가락.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 1580,
+      "word": "lip",
+      "level": 4,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "입술.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 2747,
+      "word": "tooth",
+      "level": 4,
+      "category": "body",
+      "categoryLabel": "신체",
+      "meaning": "이, 치아, 이빨.",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 139,
+      "word": "apple",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(식물) 사과나무 (apple tree)에서 자라는 열매 사과",
+      "existingImage": true,
+      "score": 1134
+    },
+    {
+      "id": 219,
+      "word": "banana",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(과일) 바나나. 또는 식물 이름.",
+      "existingImage": true,
+      "score": 1133
+    },
+    {
+      "id": 252,
+      "word": "beef",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "소고기(쇠고기), 고기",
+      "existingImage": false,
+      "score": 135
+    },
+    {
+      "id": 286,
+      "word": "biscuit",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "비스킷; 작은 과자",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 337,
+      "word": "bread",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(음식) 빵. (비유) 생계.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 396,
+      "word": "candy",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "사탕.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 409,
+      "word": "carrot",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "홍당무, 당근.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 458,
+      "word": "cheese",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "치즈.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 469,
+      "word": "chocolate",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "초콜릿.",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 623,
+      "word": "cookie",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "밀가루 반죽을 구워 바삭바삭하게 만든 과자, 쿠키.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 854,
+      "word": "doughnut",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(음식) 도넛.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 899,
+      "word": "egg",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "알, 달걀.",
+      "existingImage": false,
+      "score": 132
+    },
+    {
+      "id": 1157,
+      "word": "fruit",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "과일.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 1235,
+      "word": "grape",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(식물) 포도. 또는 포도의 열매.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 1273,
+      "word": "hamburger",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(음식) 햄버거",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 1489,
+      "word": "juice",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(음료) 주스.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 1849,
+      "word": "orange",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "오렌지.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 1970,
+      "word": "pizza",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(음식) 피자.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 2014,
+      "word": "potato",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(식물) 감자.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 2289,
+      "word": "salad",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "샐러드.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 2292,
+      "word": "salt",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "소금.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 2296,
+      "word": "sandwich",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "샌드위치.",
+      "existingImage": false,
+      "score": 131
+    },
+    {
+      "id": 2473,
+      "word": "soup",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "국, 수프.",
+      "existingImage": false,
+      "score": 135
+    },
+    {
+      "id": 2478,
+      "word": "spaghetti",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(음식) 이탈리아의 국수, 스파게티.",
+      "existingImage": false,
+      "score": 130
+    },
+    {
+      "id": 2530,
+      "word": "steak",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(음식) 스테이크.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 2589,
+      "word": "sugar",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "설탕.",
+      "existingImage": false,
+      "score": 134
+    },
+    {
+      "id": 2740,
+      "word": "tomato",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "토마토.",
+      "existingImage": false,
+      "score": 133
+    },
+    {
+      "id": 2911,
+      "word": "watermelon",
+      "level": 4,
+      "category": "food",
+      "categoryLabel": "음식",
+      "meaning": "(식물) 수박. 또는 그 열매.",
+      "existingImage": false,
+      "score": 129
+    },
+    {
+      "id": 1039,
+      "word": "farm",
+      "level": 4,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "농장.",
+      "existingImage": false,
+      "score": 117
+    },
+    {
+      "id": 1182,
+      "word": "garden",
+      "level": 4,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "정원, 공원.",
+      "existingImage": false,
+      "score": 119
+    },
+    {
+      "id": 1566,
+      "word": "library",
+      "level": 4,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "도서관, 도서실, 책방.",
+      "existingImage": false,
+      "score": 118
+    },
+    {
+      "id": 2223,
+      "word": "restroom",
+      "level": 4,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "화장실",
+      "existingImage": false,
+      "score": 117
+    },
+    {
+      "id": 3000,
+      "word": "zoo",
+      "level": 4,
+      "category": "location",
+      "categoryLabel": "장소",
+      "meaning": "동물원.",
+      "existingImage": false,
+      "score": 122
+    },
+    {
+      "id": 1124,
+      "word": "forest",
+      "level": 4,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "숲, 삼림.",
+      "existingImage": false,
+      "score": 119
+    },
+    {
+      "id": 1322,
+      "word": "hill",
+      "level": 4,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "언덕, 구릉.",
+      "existingImage": false,
+      "score": 123
+    },
+    {
+      "id": 1519,
+      "word": "lake",
+      "level": 4,
+      "category": "object",
+      "categoryLabel": "자연물·사물",
+      "meaning": "호수, 저수지.",
+      "existingImage": false,
+      "score": 127
+    },
+    {
+      "id": 49,
+      "word": "adult",
+      "level": 4,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "성인.",
+      "existingImage": false,
+      "score": 116
+    },
+    {
+      "id": 1233,
+      "word": "grandfather",
+      "level": 4,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "할아버지. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 111
+    },
+    {
+      "id": 1897,
+      "word": "parent",
+      "level": 4,
+      "category": "person",
+      "categoryLabel": "사람",
+      "meaning": "(군집명사로 쓸 때에는) 어버이, 부모. (부록: 영어 가족과 친척)",
+      "existingImage": false,
+      "score": 115
+    },
+    {
+      "id": 507,
+      "word": "cloud",
+      "level": 4,
+      "category": "phenomenon",
+      "categoryLabel": "자연현상",
+      "meaning": "구름.",
+      "existingImage": false,
+      "score": 112
+    },
+    {
+      "id": 2446,
+      "word": "snow",
+      "level": 4,
+      "category": "phenomenon",
+      "categoryLabel": "자연현상",
+      "meaning": "(하늘에서 내리는) 눈.",
+      "existingImage": false,
+      "score": 113
+    },
+    {
+      "id": 1105,
+      "word": "flower",
+      "level": 4,
+      "category": "plant",
+      "categoryLabel": "식물",
+      "meaning": "(식물) 꽃, 화초.",
+      "existingImage": true,
+      "score": 1125
+    },
+    {
+      "id": 479,
+      "word": "circle",
+      "level": 4,
+      "category": "shape",
+      "categoryLabel": "모양",
+      "meaning": "동그라미, 원, 원주.",
+      "existingImage": false,
+      "score": 99
+    },
+    {
+      "id": 2974,
+      "word": "wood",
+      "level": 4,
+      "category": "substance",
+      "categoryLabel": "물질",
+      "meaning": "(재련한) 나무, 목재.",
+      "existingImage": false,
+      "score": 109
+    }
+  ],
+  "meaningReview": []
+}

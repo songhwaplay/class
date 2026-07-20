@@ -20,13 +20,145 @@
     width: 100%;
     max-width: 760px;
     min-height: 0;
+    margin-bottom: 10px;
     margin-inline: auto;
+    padding: 14px 16px;
+}
+
+[data-multiplayer-lobby].mp-lobby-compact > .panel .title,
+[data-multiplayer-lobby].mp-lobby-compact > .panel > h1 {
+    font-size: clamp(36px, 6vw, 56px);
+}
+
+[data-multiplayer-lobby].mp-lobby-compact > h1 {
+    font-size: clamp(30px, 5vw, 44px);
+}
+
+[data-multiplayer-lobby].mp-lobby-compact .mp-lobby-card {
+    margin-block: 9px;
+    padding: 12px 14px;
+}
+
+[data-multiplayer-lobby].mp-lobby-compact .mp-lobby-room-code {
+    margin-block: 8px;
+    font-size: 40px;
+}
+
+[data-multiplayer-lobby].mp-lobby-compact .mp-lobby-status {
+    margin-block: 6px;
+}
+
+[data-multiplayer-lobby].mp-lobby-compact .lobbyHero::after {
+    display: none;
+}
+
+[data-multiplayer-lobby].mp-lobby-compact .lobbyCopy {
+    max-width: none;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > header.panel {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "eyebrow player"
+        "title tabs"
+        "subtitle tabs";
+    align-items: center;
+    gap: 2px 18px;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > header.panel > .eyebrow {
+    grid-area: eyebrow;
+    margin: 0;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > header.panel > .title {
+    grid-area: title;
+    margin: 2px 0;
+    font-size: clamp(34px, 5.2vw, 50px);
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > header.panel > .subtitle {
+    grid-area: subtitle;
+    margin: 0;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > header.panel > p:not(.subtitle) {
+    grid-area: player;
+    margin: 0;
+    text-align: right;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > header.panel > .mp-lobby-tabs {
+    grid-area: tabs;
+    justify-content: flex-end;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+        "heading start"
+        "players start"
+        "guide links";
+    align-items: center;
+    gap: 7px 18px;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child > h2 {
+    grid-area: heading;
+    margin: 0;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child > .mp-lobby-players {
+    grid-area: players;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child > .mp-lobby-guide {
+    grid-area: guide;
+    margin: 0;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child > #startBtn {
+    grid-area: start;
+}
+
+[data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child > .row {
+    grid-area: links;
+    justify-content: flex-end;
+    margin-top: 0 !important;
 }
 
 .shell:has(> [data-multiplayer-lobby].mp-lobby-compact:not(.hidden)),
 .app-shell:has(> [data-multiplayer-lobby].mp-lobby-compact:not(.hidden)) {
     width: min(800px, 100%);
     min-height: 0;
+}
+
+@media (max-width: 640px) {
+    [data-multiplayer-lobby].mp-lobby-standard > header.panel,
+    [data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child {
+        display: block;
+    }
+
+    [data-multiplayer-lobby].mp-lobby-standard > header.panel > p:not(.subtitle) {
+        margin-top: 8px;
+        text-align: left;
+    }
+
+    [data-multiplayer-lobby].mp-lobby-standard > header.panel > .mp-lobby-tabs {
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+
+    [data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child > * + * {
+        margin-top: 8px;
+    }
+
+    [data-multiplayer-lobby].mp-lobby-standard > section.panel:last-child > .row {
+        justify-content: flex-start;
+        margin-top: 8px !important;
+    }
 }
 
 [data-multiplayer-lobby] .mp-lobby-card {
@@ -131,6 +263,7 @@
 @media (max-width: 520px) {
     [data-multiplayer-lobby].mp-lobby-compact > .panel {
         margin-bottom: 9px;
+        padding: 12px;
     }
 
     [data-multiplayer-lobby] .mp-lobby-row > input,

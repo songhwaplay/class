@@ -134,7 +134,8 @@
 .digit-equation.is-correct,
 .group-question.is-correct,
 .length-question.is-correct,
-.multiplication-question.is-correct {
+.multiplication-question.is-correct,
+.clock-question.is-correct {
   background: var(--green-soft);
   box-shadow: inset 3px 0 #bfe2ce;
 }
@@ -150,7 +151,8 @@
 .digit-equation.is-wrong,
 .group-question.is-wrong,
 .length-question.is-wrong,
-.multiplication-question.is-wrong {
+.multiplication-question.is-wrong,
+.clock-question.is-wrong {
   background: var(--red-soft);
   box-shadow: inset 3px 0 #f0c6bf;
 }
@@ -192,9 +194,223 @@
   .length-question.is-correct,
   .length-question.is-wrong,
   .multiplication-question.is-correct,
-  .multiplication-question.is-wrong {
+  .multiplication-question.is-wrong,
+  .clock-question.is-correct,
+  .clock-question.is-wrong {
     background: white;
     box-shadow: none;
+  }
+}
+
+/* 2시계 */
+.clock-sheet {
+  padding-bottom: 25px;
+}
+
+.clock-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d7cec1;
+  border-radius: 10px;
+  background: white;
+}
+
+.clock-question {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 10px 12px 21px;
+}
+
+.clock-question:nth-child(3n) {
+  border-right: 0;
+}
+
+.clock-question:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.clock-question-number {
+  position: absolute;
+  top: 11px;
+  left: 11px;
+  color: #657084;
+  font-size: 11px;
+}
+
+.analog-clock {
+  position: relative;
+  width: 166px;
+  height: 166px;
+  flex: 0 0 166px;
+  border: 2px solid #27334b;
+  border-radius: 50%;
+  background: #fffefa;
+  box-shadow: inset 0 0 0 3px white, inset 0 0 0 4px #c9c1b4;
+}
+
+.analog-clock::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from -0.5deg, #727c8c 0 1deg, transparent 1deg 6deg);
+  -webkit-mask: radial-gradient(circle, transparent 0 44%, #000 45% 100%);
+  mask: radial-gradient(circle, transparent 0 44%, #000 45% 100%);
+}
+
+.clock-number {
+  position: absolute;
+  z-index: 2;
+  transform: translate(-50%, -50%);
+  color: #17233c;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.clock-hand {
+  position: absolute;
+  z-index: 3;
+  left: 50%;
+  bottom: 50%;
+  display: block;
+  border-radius: 999px 999px 3px 3px;
+  background: #17233c;
+  transform-origin: 50% 100%;
+}
+
+.hour-hand {
+  width: 7px;
+  height: 43px;
+}
+
+.minute-hand {
+  width: 4px;
+  height: 61px;
+}
+
+.clock-center {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 50%;
+  width: 12px;
+  height: 12px;
+  border: 2px solid white;
+  border-radius: 50%;
+  background: #17233c;
+  transform: translate(-50%, -50%);
+}
+
+.clock-answer-lines {
+  width: 100%;
+  display: grid;
+  gap: 7px;
+  margin-top: 9px;
+  color: #17233c;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.clock-write-row,
+.clock-read-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.clock-write-row > strong,
+.clock-read-row > strong {
+  width: 35px;
+  margin-right: 2px;
+  color: #596477;
+  font-size: 11px;
+}
+
+.clock-input,
+.clock-static-number,
+.clock-static-reading {
+  height: 30px;
+  border: 1.4px solid #928979;
+  border-radius: 6px;
+  background: white;
+  color: #17233c;
+  font: inherit;
+  text-align: center;
+}
+
+.clock-input {
+  outline: none;
+}
+
+.clock-input:focus {
+  border-color: #4763ad;
+  box-shadow: 0 0 0 2px rgba(71, 99, 173, 0.14);
+}
+
+.clock-number-input,
+.clock-static-number {
+  width: 36px;
+}
+
+.clock-static-number,
+.clock-static-reading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clock-reading-input,
+.clock-static-reading {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.clock-static-reading {
+  padding: 0 3px;
+  font-size: 12px;
+  letter-spacing: -0.04em;
+}
+
+.clock-question .counting-result {
+  right: 7px;
+  bottom: 5px;
+}
+
+@media print {
+  .clock-sheet {
+    padding-bottom: 7mm;
+  }
+
+  .clock-grid {
+    margin-top: 3.7mm;
+  }
+
+  .clock-input,
+  .clock-static-number,
+  .clock-static-reading,
+  .analog-clock {
+    background-color: white;
+    color: black;
+  }
+
+  .worksheet-stage .clock-input {
+    color: transparent;
+    text-shadow: none;
   }
 }
 
@@ -395,6 +611,7 @@
 .race-submit-bar time { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; }
 .race-room { color: var(--muted); font-size: 12px; }
 .race-submitted { color: var(--green); font-weight: 800; }
+.race-attempt { color: var(--red); font-size: 13px; font-weight: 900; }
 .race-error { position: absolute; left: 0; right: 0; bottom: calc(100% + 5px); color: var(--red); text-align: center; font-weight: 800; }
 
 html[data-race-mode="true"] .counting-toolbar .toolbar,
@@ -910,6 +1127,14 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
   bottom: 5px;
 }
 
+.grade-three-blank-sheet .digit-operation {
+  width: 212px;
+}
+
+.grade-three-blank-sheet .digit-number {
+  grid-auto-columns: 46px;
+}
+
 @media print {
   .digit-sheet {
     padding-bottom: 7mm;
@@ -1369,6 +1594,27 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 .complement-row .counting-result {
   right: 1px;
   bottom: 3px;
+}
+
+.hundred-complement-columns {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hundred-complement-column {
+  grid-template-rows: repeat(11, minmax(0, 1fr));
+  padding: 8px 18px;
+}
+
+.hundred-complement-row.simple {
+  grid-template-columns: 62px 24px 62px 24px 58px;
+  gap: 7px;
+  font-size: 27px;
+}
+
+.hundred-complement-row .complement-input,
+.hundred-complement-row .complement-static-answer {
+  width: 58px;
+  height: 46px;
 }
 
 @media print {

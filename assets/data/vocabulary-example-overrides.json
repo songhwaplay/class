@@ -135,5 +135,197 @@
   "tonight": {
     "en": "We are having dinner together tonight.",
     "ko": "우리는 오늘 밤 함께 저녁을 먹는다."
+  },
+  "bag": {
+    "en": "My books are in my bag.",
+    "ko": "내 책들은 가방 안에 있다.",
+    "relatedWords": [
+      { "word": "backpack", "type": "관련어" },
+      { "word": "suitcase", "type": "관련어" }
+    ]
+  },
+  "bed": {
+    "en": "The child is sleeping in bed.",
+    "ko": "그 아이는 침대에서 자고 있다.",
+    "relatedWords": [
+      { "word": "bedroom", "type": "관련어" },
+      { "word": "sleep", "type": "관련어" }
+    ]
+  },
+  "bear": {
+    "en": "A brown bear walked through the forest.",
+    "ko": "갈색 곰 한 마리가 숲을 걸어갔다.",
+    "relatedWords": [
+      { "word": "cub", "type": "관련어" },
+      { "word": "animal", "type": "관련어" }
+    ]
+  },
+  "bottle": {
+    "en": "She filled the bottle with water.",
+    "ko": "그녀는 병에 물을 채웠다.",
+    "relatedWords": [
+      { "word": "cap", "type": "관련어" },
+      { "word": "glass", "type": "관련어" }
+    ]
+  },
+  "box": {
+    "en": "The toys are in the box.",
+    "ko": "장난감들은 상자 안에 있다.",
+    "relatedWords": [
+      { "word": "container", "type": "관련어" },
+      { "word": "package", "type": "관련어" }
+    ]
+  },
+  "dress": {
+    "en": "She wore a blue dress.",
+    "ko": "그녀는 파란색 원피스를 입었다.",
+    "relatedWords": [
+      { "word": "clothes", "type": "관련어" },
+      { "word": "skirt", "type": "관련어" }
+    ]
+  },
+  "glass": {
+    "en": "He poured water into the glass.",
+    "ko": "그는 유리잔에 물을 부었다.",
+    "relatedWords": [
+      { "word": "cup", "type": "관련어" },
+      { "word": "bottle", "type": "관련어" }
+    ]
+  },
+  "milk": {
+    "en": "I drink milk every morning.",
+    "ko": "나는 매일 아침 우유를 마신다.",
+    "relatedWords": [
+      { "word": "dairy", "type": "관련어" },
+      { "word": "drink", "type": "관련어" }
+    ]
+  },
+  "nurse": {
+    "en": "The nurse checked my temperature.",
+    "ko": "간호사가 내 체온을 쟀다.",
+    "relatedWords": [
+      { "word": "doctor", "type": "관련어" },
+      { "word": "hospital", "type": "관련어" }
+    ]
+  },
+  "pants": {
+    "en": "These pants are too long for me.",
+    "ko": "이 바지는 나에게 너무 길다.",
+    "relatedWords": [
+      { "word": "trousers", "type": "유의어" },
+      { "word": "jeans", "type": "관련어" }
+    ]
+  },
+  "park": {
+    "en": "The children played in the park.",
+    "ko": "아이들은 공원에서 놀았다.",
+    "relatedWords": [
+      { "word": "garden", "type": "관련어" },
+      { "word": "playground", "type": "관련어" }
+    ]
+  },
+  "radio": {
+    "en": "My grandfather listens to the radio every morning.",
+    "ko": "우리 할아버지는 매일 아침 라디오를 듣는다.",
+    "relatedWords": [
+      { "word": "broadcast", "type": "관련어" },
+      { "word": "program", "type": "관련어" }
+    ]
+  },
+  "tree": {
+    "en": "A bird is sitting in the tree.",
+    "ko": "새 한 마리가 나무에 앉아 있다.",
+    "relatedWords": [
+      { "word": "forest", "type": "관련어" },
+      { "word": "branch", "type": "관련어" }
+    ]
+  },
+  "wall": {
+    "en": "The clock hangs on the wall.",
+    "ko": "시계가 벽에 걸려 있다.",
+    "relatedWords": [
+      { "word": "room", "type": "관련어" },
+      { "word": "brick", "type": "관련어" }
+    ]
+  },
+  "cap": {
+    "en": "He wore a red cap.",
+    "ko": "그는 빨간 모자를 썼다.",
+    "relatedWords": [
+      { "word": "hat", "type": "유의어" },
+      { "word": "helmet", "type": "관련어" }
+    ]
+  },
+  "chocolate": {
+    "en": "She gave me a piece of chocolate.",
+    "ko": "그녀는 나에게 초콜릿 한 조각을 주었다.",
+    "relatedWords": [
+      { "word": "cocoa", "type": "관련어" },
+      { "word": "candy", "type": "관련어" }
+    ]
+  },
+  "farm": {
+    "en": "Cows and chickens live on the farm.",
+    "ko": "소와 닭은 농장에서 산다.",
+    "relatedWords": [
+      { "word": "farmer", "type": "관련어" },
+      { "word": "field", "type": "관련어" }
+    ]
+  },
+  "fork": {
+    "en": "I eat salad with a fork.",
+    "ko": "나는 포크로 샐러드를 먹는다.",
+    "relatedWords": [
+      { "word": "spoon", "type": "관련어" },
+      { "word": "knife", "type": "관련어" }
+    ]
+  },
+  "orange": {
+    "en": "He peeled an orange after lunch.",
+    "ko": "그는 점심 식사 후에 오렌지 껍질을 벗겼다.",
+    "relatedWords": [
+      { "word": "fruit", "type": "관련어" },
+      { "word": "tangerine", "type": "관련어" }
+    ]
+  },
+  "pen": {
+    "en": "Please write your name with this pen.",
+    "ko": "이 펜으로 이름을 써 주세요.",
+    "relatedWords": [
+      { "word": "pencil", "type": "관련어" },
+      { "word": "ink", "type": "관련어" }
+    ]
+  },
+  "pig": {
+    "en": "The pig rolled in the mud.",
+    "ko": "돼지가 진흙탕에서 뒹굴었다.",
+    "relatedWords": [
+      { "word": "piglet", "type": "관련어" },
+      { "word": "animal", "type": "관련어" }
+    ]
+  },
+  "sock": {
+    "en": "I found one sock under the bed.",
+    "ko": "나는 침대 밑에서 양말 한 짝을 찾았다.",
+    "relatedWords": [
+      { "word": "shoe", "type": "관련어" },
+      { "word": "stocking", "type": "관련어" }
+    ]
+  },
+  "spoon": {
+    "en": "She stirred the soup with a spoon.",
+    "ko": "그녀는 숟가락으로 수프를 저었다.",
+    "relatedWords": [
+      { "word": "fork", "type": "관련어" },
+      { "word": "knife", "type": "관련어" }
+    ]
+  },
+  "telephone": {
+    "en": "The telephone rang during dinner.",
+    "ko": "저녁 식사 중에 전화기가 울렸다.",
+    "relatedWords": [
+      { "word": "phone", "type": "유의어" },
+      { "word": "call", "type": "관련어" }
+    ]
   }
 }

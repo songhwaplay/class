@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { raceReadyWorksheets } from "../../../../lib/arithmetic-worksheets";
 
 type Race = { roomCode: string; worksheetName: string; worksheetRoute: string; status: string; startedAt: number | null };
-type Participant = { id: string; name: string; submittedAt: number | null; correctCount: number | null; totalCount: number | null; rank: number | null };
+type Participant = { id: string; name: string; submittedAt: number | null; correctCount: number | null; totalCount: number | null; mistakeCount: number; rank: number | null };
 type Board = { race: Race; participants: Participant[]; ranking: Participant[] };
 
 function formatElapsed(milliseconds: number) {
@@ -116,12 +116,12 @@ export default function ArithmeticRaceTeacherPage() {
             <button className="race-close" type="button" onClick={closeRoom} disabled={loading}>방 닫기</button>
           </section>
           <section className="race-ranking-panel">
-            <header><h2>실시간 순위</h2><span>정답 수 우선 · 동점이면 제출 시간</span></header>
+            <header><h2>실시간 순위</h2><span>전부 맞힌 학생만 · 오답이 적은 순 · 같으면 도착 시간</span></header>
             <div className="race-ranking-list">
-              {board?.ranking.length ? board.ranking.map((participant) => <div className={`race-ranking-row rank-${participant.rank}`} key={participant.id}><strong>{participant.rank}위</strong><b>{participant.name}</b><span>{participant.correctCount}/{participant.totalCount} 정답</span><time>{board.race.startedAt && participant.submittedAt ? formatElapsed(participant.submittedAt - board.race.startedAt) : "--:--"}</time></div>) : <p className="race-empty">제출한 학생이 없습니다.</p>}
+              {board?.ranking.length ? board.ranking.map((participant) => <div className={`race-ranking-row rank-${participant.rank}`} key={participant.id}><strong>{participant.rank}위</strong><b>{participant.name}</b><span>오답 {participant.mistakeCount}개</span><time>{board.race.startedAt && participant.submittedAt ? formatElapsed(participant.submittedAt - board.race.startedAt) : "--:--"}</time></div>) : <p className="race-empty">도착한 학생이 없습니다.</p>}
             </div>
-            <h3>진행 중</h3>
-            <div className="race-waiting-list">{waiting.length ? waiting.map((participant) => <span key={participant.id}>{participant.name}</span>) : <p className="race-empty">모든 학생이 제출했습니다.</p>}</div>
+            <h3>미도착</h3>
+            <div className="race-waiting-list">{waiting.length ? waiting.map((participant) => <span key={participant.id}>{participant.name}</span>) : <p className="race-empty">모두 도착했습니다.</p>}</div>
           </section>
         </div>
       )}
