@@ -133,7 +133,8 @@
 .vertical-equation.is-correct,
 .digit-equation.is-correct,
 .group-question.is-correct,
-.length-question.is-correct {
+.length-question.is-correct,
+.multiplication-question.is-correct {
   background: var(--green-soft);
   box-shadow: inset 3px 0 #bfe2ce;
 }
@@ -148,7 +149,8 @@
 .vertical-equation.is-wrong,
 .digit-equation.is-wrong,
 .group-question.is-wrong,
-.length-question.is-wrong {
+.length-question.is-wrong,
+.multiplication-question.is-wrong {
   background: var(--red-soft);
   box-shadow: inset 3px 0 #f0c6bf;
 }
@@ -188,9 +190,105 @@
   .group-question.is-correct,
   .group-question.is-wrong,
   .length-question.is-correct,
-  .length-question.is-wrong {
+  .length-question.is-wrong,
+  .multiplication-question.is-correct,
+  .multiplication-question.is-wrong {
     background: white;
     box-shadow: none;
+  }
+}
+
+/* 2구구단① */
+.multiplication-sheet {
+  padding-bottom: 25px;
+}
+
+.multiplication-columns {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d7cec1;
+  border-radius: 10px;
+  background: white;
+}
+
+.multiplication-column {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+  border-right: 1px solid #d7cec1;
+}
+
+.multiplication-column:last-child {
+  border-right: 0;
+}
+
+.multiplication-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 30px 24px 52px 24px 52px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 7px 6px 17px;
+  color: #17233c;
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.multiplication-question:last-child {
+  border-bottom: 0;
+}
+
+.multiplication-input,
+.multiplication-static-answer {
+  width: 50px;
+  height: 43px;
+  border: 1.5px solid #8e96a3;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.multiplication-input:focus {
+  outline: 3px solid rgba(49, 168, 157, 0.2);
+  border-color: #258f86;
+}
+
+.multiplication-static-answer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.multiplication-question .counting-result {
+  right: 5px;
+  bottom: 2px;
+}
+
+@media print {
+  .multiplication-sheet {
+    padding-bottom: 7mm;
+  }
+
+  .multiplication-columns {
+    margin-top: 3.7mm;
+  }
+
+  .multiplication-input,
+  .multiplication-static-answer {
+    background: white;
+    color: black;
   }
 }
 

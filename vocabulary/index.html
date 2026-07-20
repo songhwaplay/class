@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="2022 개정 교육과정 영어 기본어휘 3,000단어를 15레벨로 학습하는 단어 카드">
+    <meta name="description" content="2022 개정 교육과정 영어 기본어휘 3,000단어를 예문과 연관 단어로 익히는 15레벨 단어 카드">
     <title>영어 단어 3,000 · 15레벨 학습</title>
     <link rel="stylesheet" href="styles.css">
     <script src="vocabulary-core.js" defer></script>
@@ -67,13 +67,22 @@
                 <span id="posText" class="pos-text">명사</span>
                 <span class="card-divider" aria-hidden="true"></span>
                 <span id="meaningText" class="meaning-text">카드를 눌러 뜻을 확인하세요.</span>
-                <span id="relatedText" class="related-text"></span>
+                <span id="exampleBlock" class="example-block" aria-hidden="true">
+                    <span id="exampleLabel" class="detail-label">Example</span>
+                    <span id="exampleText" class="example-text"></span>
+                    <span id="exampleKo" class="example-ko"></span>
+                </span>
+                <span id="relatedBlock" class="related-block" aria-hidden="true">
+                    <span class="detail-label">연관 단어</span>
+                    <span id="relatedWords" class="related-words"></span>
+                </span>
                 <span class="reveal-hint">카드 누르기 · Space</span>
             </button>
 
             <div class="utility-actions" aria-label="카드 이동과 발음">
                 <button id="previousButton" type="button">← 이전</button>
-                <button id="speakButton" class="speak-button" type="button">발음 듣기</button>
+                <button id="speakButton" class="speak-button" type="button">단어 듣기</button>
+                <button id="exampleSpeakButton" class="speak-button" type="button">예문 듣기</button>
                 <button id="nextButton" type="button">다음 →</button>
             </div>
 
@@ -86,6 +95,10 @@
             <p id="studyMessage" class="study-message" role="status"></p>
         </section>
     </main>
+
+    <footer class="data-credit">
+        예문·어휘 관계 자료: 한국어 위키낱말사전(Kaikki 추출, CC BY-SA) · Open English WordNet
+    </footer>
 
     <div id="loadingState" class="loading-state" role="status">
         <span class="loading-mark">W</span>

@@ -316,6 +316,17 @@ main {
     gap: 8px;
 }
 
+.quiz-settings {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 18px 0;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
 .select-label {
     color: var(--muted);
     font-size: 12px;
@@ -402,7 +413,8 @@ select { padding: 0 34px 0 12px; color: var(--ink); }
 .theme-badge,
 .verification-badge,
 .question-type,
-.library-theme {
+.library-theme,
+.library-level {
     display: inline-flex;
     align-items: center;
     min-height: 27px;
@@ -414,6 +426,7 @@ select { padding: 0 34px 0 12px; color: var(--ink); }
 
 .theme-badge,
 .library-theme { background: var(--gold-soft); color: #76551f; }
+.library-level { background: var(--green-soft); color: var(--green); }
 .verification-badge { background: var(--green-soft); color: var(--green); }
 .verification-badge.compare { background: var(--red-soft); color: var(--red); }
 
@@ -763,6 +776,14 @@ kbd {
 .search-box input { width: min(280px, 70vw); padding: 0 14px; outline: none; }
 .search-box input:focus { border-color: var(--green); box-shadow: 0 0 0 3px rgba(21, 79, 66, 0.1); }
 
+.library-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
 .theme-filters {
     display: flex;
     flex-wrap: wrap;
@@ -802,6 +823,7 @@ kbd {
 
 .library-card:hover { border-color: #9eb7ad; transform: translateY(-3px); box-shadow: 0 14px 26px rgba(45, 49, 43, 0.08); }
 .library-card .library-theme { position: absolute; top: 18px; right: 18px; }
+.library-card .library-level { position: absolute; top: 18px; left: 18px; }
 .library-card .library-hanja { margin: 32px 0 5px; color: var(--green); font-family: "Batang", serif; font-size: 30px; letter-spacing: 0.06em; }
 .library-card h3 { margin: 0; font-family: "Batang", serif; font-size: 22px; letter-spacing: 0.1em; }
 .library-card p { margin: 17px 0 0; color: var(--muted); font-size: 13px; line-height: 1.65; }

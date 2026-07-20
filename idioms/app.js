@@ -40,7 +40,7 @@
         headerKnown: byId("headerKnown"), headerTotal: byId("headerTotal"),
         masteryPercent: byId("masteryPercent"), masteryBar: byId("masteryBar"),
         knownCount: byId("knownCount"), reviewCount: byId("reviewCount"), unseenCount: byId("unseenCount"),
-        themeSelect: byId("themeSelect"), reviewOnlyButton: byId("reviewOnlyButton"), shuffleDeckButton: byId("shuffleDeckButton"),
+        levelSelect: byId("levelSelect"), themeSelect: byId("themeSelect"), reviewOnlyButton: byId("reviewOnlyButton"), shuffleDeckButton: byId("shuffleDeckButton"),
         emptyDeck: byId("emptyDeck"), showAllButton: byId("showAllButton"), studyArea: byId("studyArea"),
         cardPosition: byId("cardPosition"), cardProgress: byId("cardProgress"), idiomCard: byId("idiomCard"),
         themeBadge: byId("themeBadge"), verificationBadge: byId("verificationBadge"),
@@ -50,13 +50,13 @@
         previousCard: byId("previousCard"), nextCard: byId("nextCard"), revealCard: byId("revealCard"),
         memoryActions: byId("memoryActions"), markReview: byId("markReview"), markKnown: byId("markKnown"),
         gameIntro: byId("gameIntro"), quizStage: byId("quizStage"), quizResult: byId("quizResult"),
-        bestScore: byId("bestScore"), startQuiz: byId("startQuiz"), quizPosition: byId("quizPosition"),
+        bestScore: byId("bestScore"), quizLevelSelect: byId("quizLevelSelect"), startQuiz: byId("startQuiz"), quizPosition: byId("quizPosition"),
         quizStreak: byId("quizStreak"), quizScore: byId("quizScore"), quizBar: byId("quizBar"),
         questionType: byId("questionType"), questionPrompt: byId("questionPrompt"), answerOptions: byId("answerOptions"),
         answerFeedback: byId("answerFeedback"), feedbackTitle: byId("feedbackTitle"), feedbackCopy: byId("feedbackCopy"),
         nextQuestion: byId("nextQuestion"), resultTitle: byId("resultTitle"), resultScore: byId("resultScore"),
         resultMessage: byId("resultMessage"), retryQuiz: byId("retryQuiz"), reviewMistakes: byId("reviewMistakes"),
-        libraryTotal: byId("libraryTotal"), librarySearch: byId("librarySearch"), themeFilters: byId("themeFilters"),
+        libraryTotal: byId("libraryTotal"), libraryLevelSelect: byId("libraryLevelSelect"), librarySearch: byId("librarySearch"), themeFilters: byId("themeFilters"),
         libraryGrid: byId("libraryGrid"), libraryEmpty: byId("libraryEmpty"), toast: byId("toast"),
         playerGreeting: byId("playerGreeting")
     };
@@ -66,8 +66,10 @@
     let currentIndex = 0;
     let revealed = false;
     let reviewOnly = false;
+    let selectedLevel = "초급";
     let selectedTheme = "전체";
     let selectedQuizMode = "mixed";
+    let selectedQuizLevel = "초급";
     let quiz = [];
     let quizIndex = 0;
     let quizScore = 0;
@@ -75,6 +77,7 @@
     let quizAnswered = false;
     let quizMistakes = [];
     let selectedLibraryTheme = "전체";
+    let selectedLibraryLevel = "초급";
     let toastTimer = 0;
 
     function readJson(key, fallback) {
@@ -126,7 +129,7 @@
         deck = core.filterDeck(data, {
             status: reviewOnly ? "review" : "all",
             progress
-        }, selectedTheme);
+        }, selectedTheme, selectedLevel);
 
         if (options.shuffle) deck = core.shuffle(deck);
         const preservedIndex = previousId ? deck.findIndex((item) => item.id === previousId) : -1;
@@ -162,7 +165,7 @@
 
         elements.cardPosition.textContent = `${currentIndex + 1} / ${deck.length}`;
         elements.cardProgress.style.width = `${((currentIndex + 1) / deck.length) * 100}%`;
-        elements.themeBadge.textContent = idiom.theme;
+        elements.themeBadge.textContent = `${idiom.level} · ${idiom.theme}`;
         elements.verificationBadge.textContent = idiom.verification;
         elements.verificationBadge.classList.toggle("compare", idiom.verification !== "원전 확인");
         elements.idiomHanja.textContent = idiom.hanja;
@@ -220,7 +223,8 @@
     }
 
     function startQuiz() {
-        quiz = core.buildQuiz(data, 10, selectedQuizMode);
+        const quizPool = data.filter((idiom) => selectedQuizLevel === "전체" || idiom.level === selectedQuizLevel);
+        quiz = core.buildQuiz(quizPool, 10, selectedQuizMode);
         quizIndex = 0;
         quizScore = 0;
         quizStreak = 0;
@@ -327,7 +331,9 @@
     function reviewQuizMistakes() {
         if (!quizMistakes.length) return;
         reviewOnly = true;
+        selectedLevel = "전체";
         selectedTheme = "전체";
+        elements.levelSelect.value = "전체";
         elements.themeSelect.value = "전체";
         elements.reviewOnlyButton.setAttribute("aria-pressed", "true");
         buildDeck({ keepId: quizMistakes[0] });
@@ -364,9 +370,12 @@
     }
 
     function openIdiomFromLibrary(id) {
+        const selectedIdiom = data.find((idiom) => idiom.id === id);
         reviewOnly = false;
+        selectedLevel = selectedIdiom?.level || "전체";
         selectedTheme = "전체";
         elements.reviewOnlyButton.setAttribute("aria-pressed", "false");
+        elements.levelSelect.value = selectedLevel;
         elements.themeSelect.value = "전체";
         buildDeck({ keepId: id });
         currentIndex = deck.findIndex((item) => item.id === id);
@@ -379,9 +388,10 @@
     function renderLibrary() {
         const query = elements.librarySearch.value.trim().toLocaleLowerCase("ko");
         const filtered = data.filter((idiom) => {
+            const levelMatches = selectedLibraryLevel === "전체" || idiom.level === selectedLibraryLevel;
             const themeMatches = selectedLibraryTheme === "전체" || idiom.theme === selectedLibraryTheme;
             const haystack = `${idiom.word} ${idiom.hanja} ${idiom.meaning} ${idiom.story}`.toLocaleLowerCase("ko");
-            return themeMatches && (!query || haystack.includes(query));
+            return levelMatches && themeMatches && (!query || haystack.includes(query));
         });
 
         elements.themeFilters.querySelectorAll("button").forEach((button) => {
@@ -395,6 +405,7 @@
             card.setAttribute("role", "button");
             card.setAttribute("aria-label", `${idiom.word} 자세히 학습하기`);
             card.innerHTML = `
+                <span class="library-level">${idiom.level}</span>
                 <span class="library-theme">${idiom.theme}</span>
                 <p class="library-hanja">${idiom.hanja}</p>
                 <h3>${idiom.word}</h3>
@@ -416,6 +427,11 @@
         button.addEventListener("click", () => switchView(button.dataset.view));
     });
 
+    elements.levelSelect.addEventListener("change", () => {
+        selectedLevel = elements.levelSelect.value;
+        buildDeck();
+    });
+
     elements.themeSelect.addEventListener("change", () => {
         selectedTheme = elements.themeSelect.value;
         buildDeck();
@@ -431,8 +447,10 @@
     });
     elements.showAllButton.addEventListener("click", () => {
         reviewOnly = false;
+        selectedLevel = "전체";
         selectedTheme = "전체";
         elements.reviewOnlyButton.setAttribute("aria-pressed", "false");
+        elements.levelSelect.value = "전체";
         elements.themeSelect.value = "전체";
         buildDeck();
     });
@@ -456,11 +474,18 @@
             });
         });
     });
+    elements.quizLevelSelect.addEventListener("change", () => {
+        selectedQuizLevel = elements.quizLevelSelect.value;
+    });
     elements.startQuiz.addEventListener("click", startQuiz);
     elements.nextQuestion.addEventListener("click", goToNextQuestion);
     elements.retryQuiz.addEventListener("click", startQuiz);
     elements.reviewMistakes.addEventListener("click", reviewQuizMistakes);
     elements.librarySearch.addEventListener("input", renderLibrary);
+    elements.libraryLevelSelect.addEventListener("change", () => {
+        selectedLibraryLevel = elements.libraryLevelSelect.value;
+        renderLibrary();
+    });
 
     document.addEventListener("keydown", (event) => {
         if (event.target.matches("input, select, textarea")) return;

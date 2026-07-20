@@ -5,7 +5,7 @@
 })(typeof globalThis !== "undefined" ? globalThis : this, function () {
     "use strict";
 
-    return [
+    const entries = [
         {
             id: "sujudaeto", word: "수주대토", hanja: "守株待兔", theme: "지혜",
             meaning: "낡은 경험에만 매달리거나 노력 없이 우연한 행운을 기다림.",
@@ -253,6 +253,244 @@
             lesson: "성장이 늦다고 조급해하지 말고 자기 속도로 실력을 쌓아 가세요.",
             source: "《노자(老子)》 제41장", sourceNote: "사건을 담은 고사가 아니라 철학적 문장에서 유래했습니다.",
             reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-156&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "ongojisin", word: "온고지신", hanja: "溫故知新", theme: "배움",
+            meaning: "배운 것을 되풀이해 익히면서 새로운 깨달음을 얻음.",
+            story: "공자는 옛날에 배운 내용을 다시 익히고 그 안에서 새로운 뜻을 깨달을 수 있다면 남을 가르칠 만하다고 말했습니다. 단순히 외운 것을 반복하는 데 그치지 않고, 다시 생각하며 새롭게 이해하는 공부를 강조한 말입니다.",
+            lesson: "복습은 뒤로 돌아가는 일이 아니라 더 깊이 이해하기 위한 출발점입니다.",
+            source: "《논어(論語)》 〈위정(爲政)〉", sourceNote: "‘옛것을 익혀 새것을 안다’는 공자의 말에서 나온 표현입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=1010&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "bulchihamun", word: "불치하문", hanja: "不恥下問", theme: "배움",
+            meaning: "자기보다 나이나 지위가 낮은 사람에게 묻는 것을 부끄러워하지 않음.",
+            story: "자공이 공자에게 위나라의 공어가 왜 ‘문’이라는 시호를 받았는지 물었습니다. 공자는 그가 영리하면서도 배우기를 좋아했고, 자기보다 아랫사람에게 묻는 일을 부끄러워하지 않았기 때문이라고 답했습니다.",
+            lesson: "모르는 것을 솔직히 묻는 태도가 진짜 배움의 시작입니다.",
+            source: "《논어(論語)》 〈공야장(公冶長)〉", sourceNote: "공어의 배움 자세를 평가한 공자의 답에서 유래했습니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=167&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "yubimuhwan", word: "유비무환", hanja: "有備無患", theme: "지혜",
+            meaning: "미리 준비해 두면 걱정할 일이 생기지 않음.",
+            story: "은나라의 재상 부열은 임금에게 일을 시작할 때 좋은 방법과 알맞은 때를 살피고, 모든 일에 미리 대비해야 걱정을 피할 수 있다고 조언했습니다. 이 말은 뒤에 《좌전》에도 인용되어 널리 알려졌습니다.",
+            lesson: "작은 준비 하나가 큰 어려움을 막아 줄 수 있습니다.",
+            source: "《서경(書經)》 〈열명중(說命中)〉·《좌전》 양공 11년", sourceNote: "《서경》의 문장을 《좌전》이 다시 인용한 표현입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=140&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "jeolchatakma", word: "절차탁마", hanja: "切磋琢磨", theme: "배움",
+            meaning: "서로 배우고 연구하며 학문이나 인격을 더욱 갈고닦음.",
+            story: "《시경》은 훌륭한 군자를 뼈와 상아를 자르고 다듬으며, 옥과 돌을 쪼고 가는 모습에 비유했습니다. 좋은 재료도 여러 번 손질해야 빛나는 물건이 되듯 사람도 배우고 고치며 성장한다는 뜻입니다.",
+            lesson: "친구와 생각을 나누고 서로 고쳐 주면 혼자 공부할 때보다 더 크게 자랍니다.",
+            source: "《시경(詩經)》 〈위풍·기오(衛風·淇奧)〉", sourceNote: "네 가지 재료를 다듬는 공정을 사람의 수양에 빗댄 시구입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=858&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "giu", word: "기우", hanja: "杞憂", theme: "지혜",
+            meaning: "아무 근거 없이 앞일을 지나치게 걱정함.",
+            story: "기나라의 한 사람은 하늘이 무너지고 땅이 꺼지면 몸 둘 곳이 없다며 밥도 잠도 잊었습니다. 다른 사람이 하늘과 땅의 이치를 차근차근 설명해 주자 그제야 걱정을 내려놓았습니다.",
+            lesson: "걱정이 생기면 상상만 키우지 말고 사실과 근거부터 확인해 보세요.",
+            source: "《열자(列子)》 〈천서(天瑞)〉", sourceNote: "‘기인우천(杞人憂天)’의 고사에서 나온 두 글자 말입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=37&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "yeonmokgueo", word: "연목구어", hanja: "緣木求魚", theme: "지혜",
+            meaning: "방법이 잘못되어 아무리 애써도 목적을 이룰 수 없음.",
+            story: "맹자는 힘으로 다른 나라를 굴복시켜 천하를 얻으려는 제나라 선왕에게, 백성을 돌보지 않은 채 그런 목표를 이루려는 것은 나무에 올라가 물고기를 찾는 일과 같다고 말했습니다.",
+            lesson: "노력하기 전에 지금 쓰는 방법이 목표에 맞는지 먼저 살펴야 합니다.",
+            source: "《맹자(孟子)》 〈양혜왕 상(梁惠王上)〉", sourceNote: "맹자가 잘못된 정치 방법을 나무 위의 물고기 찾기에 비유했습니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=86&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "mangyangboro", word: "망양보뢰", hanja: "亡羊補牢", theme: "지혜",
+            meaning: "실수한 뒤라도 바로 고치면 더 큰 피해를 막을 수 있음.",
+            story: "초나라 신하 장신은 잘못된 신하들과 어울리는 왕에게 위험을 경고했지만 받아들여지지 않았습니다. 나라가 크게 어려워진 뒤 왕이 후회하자, 장신은 토끼를 본 뒤 사냥개를 돌아보고 양을 잃은 뒤 우리를 고쳐도 아직 늦지 않다고 말했습니다.",
+            lesson: "이미 생긴 실수만 탓하지 말고 지금 할 수 있는 보완부터 시작하세요.",
+            source: "《전국책(戰國策)》 〈초책 사(楚策四)〉", sourceNote: "장신이 초 양왕에게 다시 시작할 수 있다고 권한 비유입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-484&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "nomajiji", word: "노마지지", hanja: "老馬之智", theme: "지혜",
+            meaning: "경험이 많은 사람에게서 얻을 수 있는 지혜.",
+            story: "관중이 제 환공을 따라 전쟁터에서 돌아오다가 길을 잃었습니다. 관중은 늙은 말이 길을 기억할 것이라 생각해 앞세웠고, 군대는 그 말을 따라 무사히 돌아가는 길을 찾았습니다.",
+            lesson: "새로운 지식뿐 아니라 오래 쌓인 경험에도 귀 기울여야 합니다.",
+            source: "《한비자(韓非子)》 〈설림 상(說林上)〉", sourceNote: "원전의 ‘늙은 말의 지혜를 쓸 수 있다’는 문장에서 나온 말입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=36&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "gyemyeonggudo", word: "계명구도", hanja: "鷄鳴狗盜", theme: "역사",
+            meaning: "보잘것없어 보이는 재주도 때에 따라 도움이 될 수 있음.",
+            story: "진나라에 갇힌 맹상군을 구하려고 한 식객은 개 흉내를 내어 궁궐 창고에서 여우 가죽옷을 가져왔습니다. 맹상군이 도망치다 함곡관에 막히자 다른 식객이 닭 울음소리를 내어 성문을 일찍 열게 했고, 일행은 무사히 빠져나왔습니다.",
+            lesson: "사람의 재주를 겉모습이나 이름만 보고 하찮게 여기지 마세요.",
+            source: "《사기(史記)》 〈맹상군열전(孟嘗君列傳)〉", sourceNote: "개 흉내와 닭 울음 흉내로 맹상군을 구한 두 식객의 일화입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=474&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "mosujacheon", word: "모수자천", hanja: "毛遂自薦", theme: "인물",
+            meaning: "스스로 나서서 자신을 적임자라고 추천함.",
+            story: "평원군이 초나라에 함께 갈 사람 스무 명을 뽑았지만 한 명이 부족했습니다. 문객 모수는 스스로 따라가겠다고 나섰고, 초나라 왕 앞에서 당당히 연합의 필요성을 설명해 약속을 받아 냈습니다.",
+            lesson: "준비된 사람이라면 필요한 순간에 용기를 내어 기회를 요청할 수 있습니다.",
+            source: "《사기(史記)》 〈평원군우경열전(平原君虞卿列傳)〉", sourceNote: "모수가 스스로 일행에 들기를 청하고 실제로 임무를 완수한 이야기입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=291&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "nangjungjichu", word: "낭중지추", hanja: "囊中之錐", theme: "인물",
+            meaning: "재능이 뛰어난 사람은 숨어 있어도 실력이 드러남.",
+            story: "평원군은 자신을 추천한 모수에게, 뛰어난 사람은 자루 속에 넣은 송곳처럼 끝이 곧 드러나는 법인데 왜 지금까지 알려지지 않았느냐고 물었습니다. 모수는 이제야 자루 속에 넣어 달라고 청한 것이라 답했고, 뒤에 큰 공을 세웠습니다.",
+            lesson: "재능은 기회를 만날 때 드러나며, 그 기회를 잡을 준비도 필요합니다.",
+            source: "《사기(史記)》 〈평원군우경열전(平原君虞卿列傳)〉", sourceNote: "모수자천 이야기 속 ‘자루 안의 송곳’ 비유에서 나온 표현입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=291&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "owoldongju", word: "오월동주", hanja: "吳越同舟", theme: "관계",
+            meaning: "서로 사이가 나쁜 사람도 어려움 앞에서는 힘을 합침.",
+            story: "손자는 원수 사이인 오나라 사람과 월나라 사람이 같은 배를 탔을 때 거센 바람을 만나면 서로 왼손과 오른손처럼 돕게 된다고 설명했습니다. 공동의 위험 앞에서는 오랜 다툼보다 협력이 먼저라는 뜻입니다.",
+            lesson: "생각이 다른 사람과도 함께 풀어야 할 문제 앞에서는 협력할 수 있습니다.",
+            source: "《손자(孫子)》 〈구지(九地)〉", sourceNote: "오나라와 월나라 사람을 같은 배에 태운 비유에서 유래했습니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=7245&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "sunmangchihan", word: "순망치한", hanja: "脣亡齒寒", theme: "관계", level: "중급",
+            meaning: "서로 밀접한 관계라서 한쪽이 망하면 다른 쪽도 위험해짐.",
+            story: "진나라가 괵나라를 치기 위해 우나라에 길을 빌려 달라고 했습니다. 궁지기는 우나라 임금에게 입술이 없어지면 이가 시리듯 괵나라가 망하면 우나라도 안전하지 못하다고 경고했지만, 임금은 듣지 않았고 결국 두 나라 모두 멸망했습니다.",
+            lesson: "가까이 연결된 사람이나 공동체의 어려움을 남의 일로만 보면 안 됩니다.",
+            source: "《좌전(左傳)》 희공 5년", sourceNote: "우나라와 괵나라의 관계를 입술과 이에 빗댄 충고입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5375&la=0&webMd=2", verification: "원전 확인"
+        },
+        {
+            id: "dongbyeongsangryeon", word: "동병상련", hanja: "同病相憐", theme: "관계",
+            meaning: "비슷한 어려움을 겪는 사람끼리 서로 이해하고 가엾게 여김.",
+            story: "초나라에서 억울한 일을 겪고 오나라로 온 백비를 오자서가 믿고 받아들였습니다. 까닭을 묻자 오자서는 자신과 백비가 같은 원한과 아픔을 지녔다며 ‘같은 병을 앓는 사람끼리 서로 가엾게 여긴다’는 노래를 들려주었습니다.",
+            lesson: "비슷한 아픔을 겪은 경험은 다른 사람을 이해하고 돕는 힘이 됩니다.",
+            source: "한 조엽(趙曄) 《오월춘추(吳越春秋)》 〈합려내전〉", sourceNote: "오자서가 백비를 믿은 까닭을 설명하며 인용한 노래에서 나왔습니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-847&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "gwontojungrae", word: "권토중래", hanja: "捲土重來", theme: "노력",
+            meaning: "실패한 뒤 힘을 다시 모아 새롭게 도전함.",
+            story: "당나라 시인 두목은 항우가 패해 죽은 오강의 정자를 지나며 시를 지었습니다. 항우가 강동으로 돌아가 다시 힘을 모았다면 먼지를 일으키며 돌아올 수 있었을지도 모른다고 생각한 것입니다.",
+            lesson: "한 번의 실패로 모든 가능성이 끝나는 것은 아닙니다.",
+            source: "당 두목(杜牧) 〈제오강정(題烏江亭)〉", sourceNote: "항우의 마지막 선택을 돌아본 시구 ‘권토중래미가지’에서 유래했습니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=636&la=0&webMd=1", verification: "문헌 확인"
+        },
+        {
+            id: "jeonhwawibok", word: "전화위복", hanja: "轉禍爲福", theme: "지혜",
+            meaning: "어려운 일을 잘 처리하여 오히려 좋은 결과로 바꿈.",
+            story: "《사기》는 옛날에 일을 잘 처리한 사람은 재앙을 복으로 돌리고 실패를 공으로 만들었다고 말합니다. 하나의 인물 이야기라기보다 위기 속에서도 방법을 찾아 결과를 바꾸는 지혜를 강조한 문장입니다.",
+            lesson: "어려움 자체보다 그 뒤에 어떻게 대응하느냐가 다음 결과를 바꿉니다.",
+            source: "《사기(史記)》 〈소진열전(蘇秦列傳)〉", sourceNote: "‘화를 복으로 돌리고 실패를 공으로 삼는다’는 문장에서 나온 표현입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=9794&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "baejungsayeong", word: "배중사영", hanja: "杯中蛇影", theme: "지혜", level: "중급",
+            meaning: "쓸데없는 의심과 두려움으로 스스로 괴로워함.",
+            story: "두선은 잔 속에 뱀이 있는 듯한 모습을 보고도 술을 마신 뒤 병이 났습니다. 나중에 벽에 걸린 활의 그림자가 술잔에 비쳐 뱀처럼 보였다는 사실을 알자 두려움이 풀리고 병도 나았습니다.",
+            lesson: "두려운 마음이 들 때는 내가 본 것이 사실인지 차분히 확인해 보세요.",
+            source: "한 응소(應劭) 《풍속통의(風俗通義)》·후대 전승", sourceNote: "‘배궁사영’과 ‘배중사영’으로 전하는 같은 계열의 이야기입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=5202&la=0&webMd=1", verification: "전승 비교"
+        },
+        {
+            id: "yangsanggunja", word: "양상군자", hanja: "梁上君子", theme: "인물",
+            meaning: "도둑을 완곡하게 이르는 말.",
+            story: "진식은 밤에 집 안으로 들어와 들보 위에 숨은 도둑을 발견했습니다. 그는 소리쳐 잡는 대신 자손들을 불러 사람은 스스로 힘써야 하며 나쁜 사람도 본래부터 악한 것은 아니라면서 ‘들보 위의 군자’를 예로 들었습니다. 부끄러워 내려온 도둑에게는 다시 살 길도 마련해 주었습니다.",
+            lesson: "잘못을 꾸짖을 때에도 사람이 달라질 가능성을 남겨 줄 수 있습니다.",
+            source: "진 화교(華嶠) 《후한서》 진식 일화", sourceNote: "현존 인용문과 후대 《후한서》 기록을 통해 전하는 이야기입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-382&la=0&webMd=2", verification: "문헌 확인"
+        },
+        {
+            id: "chomokgaebyeong", word: "초목개병", hanja: "草木皆兵", theme: "역사",
+            meaning: "겁에 질려 풀과 나무까지 모두 적군처럼 보임.",
+            story: "전진의 부견은 동진 군대와 싸우기 전 성에 올라 적진을 살폈습니다. 동진 군대의 진영이 매우 정돈된 데다 멀리 팔공산의 풀과 나무까지 군사처럼 보여 크게 두려워했습니다. 뒤이어 부견의 군대는 비수 전투에서 패했습니다.",
+            lesson: "불안이 커질수록 눈앞의 사실을 침착하게 구분해야 합니다.",
+            source: "《진서(晉書)》 〈부견재기 하(苻堅載記下)〉", sourceNote: "비수 전투를 앞둔 부견의 두려움을 묘사한 기록입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-20&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "baekbalbaekjung", word: "백발백중", hanja: "百發百中", theme: "노력",
+            meaning: "쏠 때마다 맞힌다는 뜻으로, 기술이나 예상이 매우 정확함.",
+            story: "초나라의 양유기는 백 걸음 밖의 버드나무 잎을 쏘아 화살 백 발을 모두 맞힐 만큼 뛰어난 명궁이었습니다. 한 사람은 계속 쏘다 지치면 단 한 발의 실수로 앞선 공이 사라질 수 있다며 알맞을 때 멈추는 지혜도 필요하다고 충고했습니다.",
+            lesson: "뛰어난 실력은 꾸준한 연습과 자기 상태를 살피는 판단에서 나옵니다.",
+            source: "《전국책(戰國策)》 〈서주책(西周策)〉", sourceNote: "명궁 양유기의 활쏘기와 그에게 건넨 충고에서 나온 표현입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=248&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "deungyongmun", word: "등용문", hanja: "登龍門", theme: "인물",
+            meaning: "출세하거나 성공하기 위해 반드시 넘어야 하는 중요한 관문.",
+            story: "후한의 관리 이응은 인품과 명망이 높아 젊은 선비들이 만나 인정받기를 큰 영광으로 여겼습니다. 사람들은 이응에게 받아들여지는 일을, 잉어가 거센 용문을 뛰어넘어 용이 되는 것에 빗대어 ‘용문에 오른다’고 불렀습니다.",
+            lesson: "중요한 기회를 통과하려면 그만큼의 실력과 준비를 쌓아야 합니다.",
+            source: "《후한서(後漢書)》 〈이응열전(李膺列傳)〉", sourceNote: "이응에게 인정받은 선비를 ‘용문에 올랐다’고 부른 기록에서 유래했습니다.",
+            reference: "https://ctext.org/dictionary.pl?char=%E7%99%BB%E9%BE%8D%E9%96%80&if=gb", verification: "원전 확인"
+        },
+        {
+            id: "mosun", word: "모순", hanja: "矛盾", theme: "지혜",
+            meaning: "말이나 행동의 앞뒤가 서로 맞지 않음.",
+            story: "초나라의 한 상인이 어떤 창도 막아 낼 수 있는 방패와 어떤 방패도 뚫을 수 있는 창을 판다고 자랑했습니다. 누군가 그 창으로 그 방패를 찌르면 어떻게 되느냐고 묻자 상인은 아무 말도 하지 못했습니다.",
+            lesson: "주장을 할 때는 앞뒤의 말이 서로 맞는지 살펴보아야 합니다.",
+            source: "《한비자(韓非子)》 〈난일(難一)〉", sourceNote: "창을 뜻하는 ‘모’와 방패를 뜻하는 ‘순’이 한 단어가 된 고사입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=89&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "sajok", word: "사족", hanja: "蛇足", theme: "지혜",
+            meaning: "필요 없이 덧붙여 오히려 일을 망치는 말이나 행동.",
+            story: "여러 사람이 땅에 뱀을 가장 빨리 그리는 사람이 술을 마시기로 했습니다. 먼저 다 그린 사람은 시간이 남자 뱀에게 발까지 그려 넣었고, 두 번째 사람이 뱀에는 원래 발이 없다며 술을 가져갔습니다.",
+            lesson: "완성된 일에 욕심을 내어 불필요한 것을 덧붙이지 마세요.",
+            source: "《전국책(戰國策)》 〈제책 이(齊策二)〉", sourceNote: "‘화사첨족(畫蛇添足)’ 이야기에서 ‘뱀의 발’만 남아 쓰이는 말입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-23&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "baekmi", word: "백미", hanja: "白眉", theme: "인물",
+            meaning: "여럿 가운데 가장 뛰어난 사람이나 사물.",
+            story: "촉나라의 마씨 형제 다섯은 모두 재주가 있었는데, 그중 마량이 가장 뛰어났습니다. 마량은 눈썹 사이에 흰 털이 있어 고향 사람들은 ‘마씨 집안의 다섯 인재 가운데 흰 눈썹의 마량이 으뜸’이라고 불렀습니다.",
+            lesson: "눈에 띄는 특징보다 꾸준히 쌓은 실력이 사람을 으뜸으로 만듭니다.",
+            source: "《삼국지(三國志)》 〈마량전(馬良傳)〉", sourceNote: "마량의 흰 눈썹과 뛰어난 재능을 함께 칭찬한 말에서 나왔습니다.",
+            reference: "https://dict.revised.moe.edu.tw/dictView.jsp?ID=26978&la=0&powerMode=0", verification: "원전 확인"
+        },
+        {
+            id: "gyereuk", word: "계륵", hanja: "鷄肋", theme: "역사",
+            meaning: "큰 쓸모는 없지만 버리기에는 아까운 것.",
+            story: "조조가 한중을 두고 싸우다가 진격할지 물러날지 고민하며 암호로 ‘닭의 갈비’를 내렸습니다. 양수는 닭갈비가 먹을 것은 적지만 버리기는 아깝듯, 조조가 한중을 포기하려 한다는 뜻으로 알아들었습니다.",
+            lesson: "아까움 때문에 붙잡고 있는 것이 정말 필요한지 냉정하게 판단할 때도 있습니다.",
+            source: "《삼국지(三國志)》 〈무제기〉 배송지 주 인용 《구주춘추》", sourceNote: "조조의 군중 암호를 양수가 해석한 일화에서 나온 말입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=22770&la=0&webMd=1", verification: "문헌 확인"
+        },
+        {
+            id: "toego", word: "퇴고", hanja: "推敲", theme: "배움",
+            meaning: "글의 표현을 여러 번 생각하며 더 알맞게 다듬음.",
+            story: "당나라 시인 가도는 시 속의 한 글자를 ‘밀다’로 할지 ‘두드리다’로 할지 고민하며 길에서도 손짓을 해 보았습니다. 마침 만난 한유가 ‘두드리다’가 더 좋겠다고 조언했고, 두 글자는 글을 다듬는 일을 뜻하게 되었습니다.",
+            lesson: "좋은 글은 한 번에 완성되기보다 여러 번 고쳐 쓰며 만들어집니다.",
+            source: "《유공가화록(劉公嘉話錄)》을 인용한 후대 문헌", sourceNote: "가도가 ‘推’와 ‘敲’ 가운데 한 글자를 고심한 문학 일화입니다.",
+            reference: "https://dict.concised.moe.edu.tw/dictView.jsp?ID=11716&la=0&powerMode=0", verification: "문헌 확인"
+        },
+        {
+            id: "osipbobaekbo", word: "오십보백보", hanja: "五十步百步", theme: "지혜",
+            meaning: "차이가 조금 있을 뿐 잘못이나 처지가 사실상 비슷함.",
+            story: "맹자는 전쟁터에서 백 걸음 달아난 병사를 오십 걸음 달아난 병사가 비웃는다면 어떻겠느냐고 양혜왕에게 물었습니다. 왕은 둘 다 달아난 것은 같다고 답했고, 맹자는 왕의 정치도 이웃 나라와 크게 다르지 않음을 일깨웠습니다.",
+            lesson: "남의 잘못을 비웃기 전에 나에게도 비슷한 잘못이 없는지 돌아보세요.",
+            source: "《맹자(孟子)》 〈양혜왕 상(梁惠王上)〉", sourceNote: "원문의 ‘오십보소백보(五十步笑百步)’를 우리말에서 줄여 쓰는 형태입니다.",
+            reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-384&la=0&webMd=1", verification: "원전 확인"
         }
     ];
+
+    const excludedIds = new Set([
+        "sujudaeto", "gakjuguggeom", "wanbyeokgwijo", "mungyeongjigyo",
+        "iljacheongeum", "nakyangjiga", "baegajeolhyeon", "namgailmong",
+        "mangyangboro", "nomajiji", "gyemyeonggudo", "sunmangchihan",
+        "baejungsayeong", "chomokgaebyeong"
+    ]);
+
+    const intermediateIds = new Set([
+        "ugongisan", "hogahowi", "jirokwima", "bulchihamun", "maengmosamcheon",
+        "gyeolchooseun", "pajukjise", "dongbyeongsangryeon", "gwontojungrae", "gyereuk"
+    ]);
+
+    const advancedIds = new Set([
+        "tosagupaeng", "sueojigyo", "jeolchatakma", "gwanpojigyo", "hyeongseoljigong",
+        "yeonmokgueo", "mosujacheon", "nangjungjichu", "owoldongju", "yangsanggunja"
+    ]);
+
+    return entries.filter((entry) => !excludedIds.has(entry.id)).map((entry) => ({
+        ...entry,
+        level: advancedIds.has(entry.id) ? "고급" : (intermediateIds.has(entry.id) ? "중급" : "초급")
+    }));
 });

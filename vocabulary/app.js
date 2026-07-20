@@ -1,7 +1,7 @@
 (function vocabularyStudyApp() {
     "use strict";
 
-    const DATA_URL = "../assets/data/english-vocabulary-3000-v1.json";
+    const DATA_URL = "../assets/data/english-vocabulary-3000-v2.json";
     const PROGRESS_KEY = "englishVocabulary3000ProgressV1";
     const STAGES = [
         { code: "elementary", name: "초급", range: "초등학교 권장", description: "생활에서 자주 쓰는 기본 어휘", levels: [1, 2, 3, 4] },
@@ -14,8 +14,9 @@
         "levelScreen", "studyScreen", "stageGroups", "loadingState", "toast", "playerGreeting",
         "totalKnown", "overallPercent", "overallBar", "totalStudied", "totalUnknown", "backToLevels",
         "shuffleButton", "studyStage", "studyTitle", "cardPosition", "levelStatus", "sessionBar",
-        "flashcard", "cardBadge", "wordText", "posText", "meaningText", "relatedText", "previousButton",
-        "speakButton", "nextButton", "unknownButton", "knownButton", "reviewUnknownButton", "studyMessage",
+        "flashcard", "cardBadge", "wordText", "posText", "meaningText", "exampleBlock", "exampleLabel", "exampleText",
+        "exampleKo", "relatedBlock", "relatedWords", "previousButton", "speakButton", "exampleSpeakButton",
+        "nextButton", "unknownButton", "knownButton", "reviewUnknownButton", "studyMessage",
     ].map((id) => [id, document.getElementById(id)]));
 
     const state = {
@@ -120,6 +121,21 @@
         return state.currentWords[state.currentIndex] || null;
     }
 
+    function updateRevealState() {
+        const word = currentWord();
+        if (!word) return;
+        elements.flashcard.classList.toggle("revealed", state.revealed);
+        elements.flashcard.setAttribute("aria-pressed", String(state.revealed));
+        elements.flashcard.setAttribute(
+            "aria-label",
+            state.revealed ? `${word.word}, 뜻과 예문이 표시됨` : `${word.word}, 눌러서 뜻과 예문 보기`,
+        );
+        elements.meaningText.setAttribute("aria-hidden", String(!state.revealed));
+        elements.exampleBlock.setAttribute("aria-hidden", String(!state.revealed));
+        elements.relatedBlock.setAttribute("aria-hidden", String(!state.revealed || elements.relatedBlock.hidden));
+        elements.exampleSpeakButton.disabled = !state.revealed || !word.example?.en;
+    }
+
     function renderStudyCard() {
         const word = currentWord();
         if (!word) return;
@@ -136,28 +152,35 @@
         elements.wordText.textContent = word.word;
         elements.posText.textContent = word.pos.join(" · ");
         elements.meaningText.textContent = word.meanings.join(" · ");
-        const related = [...word.alternate, ...word.relatedForms];
-        elements.relatedText.textContent = related.length ? `관련 표현: ${related.join(", ")}` : "";
+        elements.exampleLabel.textContent = word.example?.source === "generated_learning_prompt" ? "학습 문장" : "Example";
+        elements.exampleText.textContent = word.example?.en || "예문을 준비하고 있어요.";
+        elements.exampleKo.textContent = word.example?.ko || "";
+        const related = word.relatedWords || [
+            ...word.alternate.map((relatedWord) => ({ word: relatedWord, type: "다른 표기" })),
+            ...word.relatedForms.map((relatedWord) => ({ word: relatedWord, type: "변화형" })),
+        ];
+        elements.relatedWords.replaceChildren(...related.map((relatedWord) => {
+            const chip = document.createElement("span");
+            chip.className = "related-word";
+            const label = document.createElement("span");
+            label.textContent = relatedWord.word;
+            const type = document.createElement("small");
+            type.textContent = relatedWord.type;
+            chip.append(label, type);
+            return chip;
+        }));
+        elements.relatedBlock.hidden = related.length === 0;
         elements.cardBadge.textContent = status === "known" ? "외운 단어" : status === "unknown" ? "다시 보기" : "새 단어";
         elements.cardBadge.className = `card-badge ${status === "unseen" ? "" : status}`.trim();
-        elements.flashcard.classList.toggle("revealed", state.revealed);
-        elements.flashcard.setAttribute("aria-pressed", String(state.revealed));
-        elements.flashcard.setAttribute("aria-label", state.revealed ? `${word.word}, 뜻이 표시됨` : `${word.word}, 눌러서 뜻 보기`);
-        elements.meaningText.setAttribute("aria-hidden", String(!state.revealed));
+        updateRevealState();
         elements.previousButton.disabled = state.currentIndex === 0;
         elements.nextButton.disabled = state.currentIndex === state.currentWords.length - 1;
-        elements.studyMessage.textContent = state.unknownOnly ? "모른다고 표시한 단어만 복습 중입니다." : "카드를 누르거나 Space 키로 뜻을 확인하세요.";
+        elements.studyMessage.textContent = state.unknownOnly ? "모른다고 표시한 단어만 복습 중입니다." : "카드를 누르거나 Space 키로 뜻·예문·연관 단어를 확인하세요.";
     }
 
     function toggleMeaning() {
         state.revealed = !state.revealed;
-        elements.flashcard.classList.toggle("revealed", state.revealed);
-        elements.flashcard.setAttribute("aria-pressed", String(state.revealed));
-        elements.meaningText.setAttribute("aria-hidden", String(!state.revealed));
-        elements.flashcard.setAttribute(
-            "aria-label",
-            state.revealed ? `${currentWord().word}, 뜻이 표시됨` : `${currentWord().word}, 눌러서 뜻 보기`,
-        );
+        updateRevealState();
     }
 
     function moveCard(direction) {
@@ -182,17 +205,24 @@
         }
     }
 
-    function speakCurrentWord() {
-        const word = currentWord();
-        if (!word || !("speechSynthesis" in window)) {
+    function speakText(text, rate = 0.85) {
+        if (!text || !("speechSynthesis" in window)) {
             showToast("이 브라우저에서는 발음 듣기를 지원하지 않아요.");
             return;
         }
         window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(word.word);
+        const utterance = new SpeechSynthesisUtterance(text);
         utterance.lang = "en-US";
-        utterance.rate = 0.85;
+        utterance.rate = rate;
         window.speechSynthesis.speak(utterance);
+    }
+
+    function speakCurrentWord() {
+        speakText(currentWord()?.word);
+    }
+
+    function speakCurrentExample() {
+        speakText(currentWord()?.example?.en, 0.78);
     }
 
     function shuffleCurrentLevel() {
@@ -218,6 +248,7 @@
         elements.unknownButton.addEventListener("click", () => markWord("unknown"));
         elements.knownButton.addEventListener("click", () => markWord("known"));
         elements.speakButton.addEventListener("click", speakCurrentWord);
+        elements.exampleSpeakButton.addEventListener("click", speakCurrentExample);
         elements.shuffleButton.addEventListener("click", shuffleCurrentLevel);
         elements.backToLevels.addEventListener("click", backToLevels);
         elements.reviewUnknownButton.addEventListener("click", () => openLevel(state.currentLevel, { unknownOnly: true }));
@@ -237,6 +268,9 @@
             if (!response.ok) throw new Error(`Vocabulary data request failed: ${response.status}`);
             state.data = await response.json();
             if (state.data.totalWords !== 3000 || !Array.isArray(state.data.words)) throw new Error("Invalid vocabulary data");
+            if (!state.data.words.every((word) => word.example?.en && word.example?.ko && Array.isArray(word.relatedWords))) {
+                throw new Error("Vocabulary learning data is incomplete");
+            }
             state.levels = core.groupByLevel(state.data.words);
             if (state.levels.size !== 15) throw new Error("Invalid vocabulary levels");
             const playerName = localStorage.getItem("classPlayerName");

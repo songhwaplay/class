@@ -71,6 +71,9 @@ test("renders the learning index and the arithmetic catalog in workbook order", 
   assert.match(catalogHtml, /href="\/arithmetic\/grade-2-add-subtract-3"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/group-counting-1"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/length-measuring-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/multiplication-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/multiplication-2"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/multiplication-3"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
 
@@ -329,6 +332,79 @@ test("renders the grade-two length-measuring worksheet with eight physical lines
   assert.match(css, /\.length-list\s*\{[\s\S]*?grid-template-rows:\s*repeat\(8,/);
   assert.match(css, /\.length-question\.is-correct[\s\S]*?background:\s*var\(--green-soft\)/);
   assert.match(css, /\.length-question\.is-wrong[\s\S]*?background:\s*var\(--red-soft\)/);
+});
+
+test("renders the first multiplication worksheet with the workbook blank pattern", async () => {
+  const response = await render("/arithmetic/multiplication-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /구구단 ①/);
+  assert.match(html, /aria-label="A4 구구단 ① 문제지"/);
+  assert.match(html, /aria-label="A4 구구단 ① 전체 답지"/);
+  assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
+  assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
+  assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 30);
+  assert.equal((html.match(/<span>×<\/span>/g) ?? []).length, 60);
+  assert.match(css, /\.multiplication-columns\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,/);
+  assert.match(css, /\.multiplication-column\s*\{[\s\S]*?grid-template-rows:\s*repeat\(10,/);
+  assert.match(css, /\.multiplication-question\.is-correct[\s\S]*?background:\s*var\(--green-soft\)/);
+  assert.match(css, /\.multiplication-question\.is-wrong[\s\S]*?background:\s*var\(--red-soft\)/);
+
+  assert.deepEqual([...html.matchAll(/aria-label="(multiplication-\d+-\d+) 답"/g)].map((match) => match[1]), [
+    "multiplication-0-0", "multiplication-0-1", "multiplication-0-2", "multiplication-0-3", "multiplication-0-4",
+    "multiplication-0-5", "multiplication-0-6", "multiplication-0-7", "multiplication-0-8", "multiplication-0-9",
+    "multiplication-1-0", "multiplication-1-1", "multiplication-1-2", "multiplication-1-3", "multiplication-1-4",
+    "multiplication-1-5", "multiplication-1-6", "multiplication-1-7", "multiplication-1-8", "multiplication-1-9",
+    "multiplication-2-0", "multiplication-2-1", "multiplication-2-2", "multiplication-2-3", "multiplication-2-4",
+    "multiplication-2-5", "multiplication-2-6", "multiplication-2-7", "multiplication-2-8", "multiplication-2-9",
+  ]);
+});
+
+test("renders the second multiplication worksheet with three and four times tables", async () => {
+  const response = await render("/arithmetic/multiplication-2");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /구구단 ②/);
+  assert.match(html, /aria-label="A4 구구단 ② 문제지"/);
+  assert.match(html, /aria-label="A4 구구단 ② 전체 답지"/);
+  assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
+  assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
+  assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 30);
+  assert.deepEqual([...html.matchAll(/aria-label="(multiplication-two-\d+-\d+) 답"/g)].map((match) => match[1]), [
+    "multiplication-two-0-0", "multiplication-two-0-1", "multiplication-two-0-2", "multiplication-two-0-3", "multiplication-two-0-4",
+    "multiplication-two-0-5", "multiplication-two-0-6", "multiplication-two-0-7", "multiplication-two-0-8", "multiplication-two-0-9",
+    "multiplication-two-1-0", "multiplication-two-1-1", "multiplication-two-1-2", "multiplication-two-1-3", "multiplication-two-1-4",
+    "multiplication-two-1-5", "multiplication-two-1-6", "multiplication-two-1-7", "multiplication-two-1-8", "multiplication-two-1-9",
+    "multiplication-two-2-0", "multiplication-two-2-1", "multiplication-two-2-2", "multiplication-two-2-3", "multiplication-two-2-4",
+    "multiplication-two-2-5", "multiplication-two-2-6", "multiplication-two-2-7", "multiplication-two-2-8", "multiplication-two-2-9",
+  ]);
+});
+
+test("renders the third multiplication worksheet with six and seven times tables", async () => {
+  const response = await render("/arithmetic/multiplication-3");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /구구단 ③/);
+  assert.match(html, /aria-label="A4 구구단 ③ 문제지"/);
+  assert.match(html, /aria-label="A4 구구단 ③ 전체 답지"/);
+  assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
+  assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
+  assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 30);
+  assert.deepEqual([...html.matchAll(/aria-label="(multiplication-three-\d+-\d+) 답"/g)].map((match) => match[1]), [
+    "multiplication-three-0-0", "multiplication-three-0-1", "multiplication-three-0-2", "multiplication-three-0-3", "multiplication-three-0-4",
+    "multiplication-three-0-5", "multiplication-three-0-6", "multiplication-three-0-7", "multiplication-three-0-8", "multiplication-three-0-9",
+    "multiplication-three-1-0", "multiplication-three-1-1", "multiplication-three-1-2", "multiplication-three-1-3", "multiplication-three-1-4",
+    "multiplication-three-1-5", "multiplication-three-1-6", "multiplication-three-1-7", "multiplication-three-1-8", "multiplication-three-1-9",
+    "multiplication-three-2-0", "multiplication-three-2-1", "multiplication-three-2-2", "multiplication-three-2-3", "multiplication-three-2-4",
+    "multiplication-three-2-5", "multiplication-three-2-6", "multiplication-three-2-7", "multiplication-three-2-8", "multiplication-three-2-9",
+  ]);
 });
 
 test("renders the sequential give-and-take worksheet and printable answers", async () => {

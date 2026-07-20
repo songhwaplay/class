@@ -107,6 +107,12 @@ export default function ArithmeticCatalogPage() {
                                         ? "/arithmetic/group-counting-1"
                                         : name === "2길이재기"
                                           ? "/arithmetic/length-measuring-1"
+                                          : name === "2구구단①"
+                                            ? "/arithmetic/multiplication-1"
+                                            : name === "2구구단②"
+                                              ? "/arithmetic/multiplication-2"
+                                              : name === "2구구단③"
+                                                ? "/arithmetic/multiplication-3"
                         : name === "3분수②"
                           ? "/fraction"
                           : null;
