@@ -18,7 +18,7 @@
   --shadow: 0 18px 55px rgba(37, 32, 24, 0.09);
 }
 
-/* Keep rendered fraction bars clear of digits in html2canvas PDF captures. */
+/* Keep rendered fraction bars clear of digits on screen and paper. */
 .a4-sheet .fraction.fraction-display {
   display: inline-flex;
   flex-direction: column;
@@ -1765,6 +1765,19 @@ main {
     display: block !important;
     break-before: page;
     page-break-before: always;
+  }
+
+  html[data-print-mode="worksheet"] .answer-stage {
+    display: none !important;
+  }
+
+  html[data-print-mode="answers"] .worksheet-stage {
+    display: none !important;
+  }
+
+  html[data-print-mode="answers"] .answer-stage {
+    break-before: auto;
+    page-break-before: auto;
   }
 
   .a4-sheet {

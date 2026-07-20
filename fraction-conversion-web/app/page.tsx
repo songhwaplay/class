@@ -379,8 +379,6 @@ export default function Home() {
   const [results, setResults] = useState<Record<string, GradeResult>>({});
   const [sheetScale, setSheetScale] = useState(0.6);
   const [printMenuOpen, setPrintMenuOpen] = useState(false);
-  const [printBusy, setPrintBusy] = useState<PrintMode | null>(null);
-  const [printError, setPrintError] = useState("");
 
   useEffect(() => {
     function fitA4Sheet() {
@@ -455,102 +453,16 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
-  async function downloadPrintPdf(mode: PrintMode) {
+  function printMaterials(mode: PrintMode) {
     setPrintMenuOpen(false);
-    setPrintBusy(mode);
-    setPrintError("");
+    document.documentElement.dataset.printMode = mode;
 
-    const targets =
-      mode === "worksheet"
-        ? [".worksheet-stage"]
-        : mode === "answers"
-          ? [".answer-stage"]
-          : [".worksheet-stage", ".answer-stage"];
+    const clearPrintMode = () => {
+      delete document.documentElement.dataset.printMode;
+    };
 
-    try {
-      const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
-        import("html2canvas"),
-        import("jspdf"),
-      ]);
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4", compress: true });
-
-      for (const [index, selector] of targets.entries()) {
-        const sourceStage = document.querySelector<HTMLElement>(selector);
-        const sourceSheet = sourceStage?.querySelector<HTMLElement>(".a4-sheet");
-        if (!sourceStage || !sourceSheet) throw new Error("인쇄할 문제지를 찾지 못했습니다.");
-
-        const captureHost = document.createElement("div");
-        const stageClone = sourceStage.cloneNode(true) as HTMLElement;
-        const sheetClone = stageClone.querySelector<HTMLElement>(".a4-sheet");
-        if (!sheetClone) throw new Error("인쇄할 페이지를 만들지 못했습니다.");
-
-        stageClone.removeAttribute("aria-hidden");
-        stageClone.classList.remove("answer-stage");
-        Object.assign(captureHost.style, {
-          position: "fixed",
-          left: "-10000px",
-          top: "0",
-          width: "794px",
-          height: "1123px",
-          overflow: "hidden",
-          background: "white",
-          zIndex: "-1",
-        });
-        Object.assign(stageClone.style, {
-          display: "block",
-          position: "relative",
-          width: "794px",
-          height: "1123px",
-          margin: "0",
-        });
-        Object.assign(sheetClone.style, {
-          position: "relative",
-          inset: "auto",
-          width: "794px",
-          height: "1123px",
-          transform: "none",
-        });
-        stageClone.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
-          input.value = "";
-        });
-        sheetClone.querySelectorAll<HTMLElement>(".fraction-display").forEach((fraction) => {
-          const numbers = fraction.querySelectorAll<HTMLElement>(".fraction-number");
-          if (numbers.length < 2) return;
-          numbers[0].style.transform = "translateY(-6px)";
-          numbers[1].style.transform = "translateY(4px)";
-        });
-        captureHost.appendChild(stageClone);
-        document.body.appendChild(captureHost);
-
-        try {
-          await document.fonts.ready;
-          await new Promise<void>((resolve) => {
-            window.requestAnimationFrame(() => window.requestAnimationFrame(() => resolve()));
-          });
-          const canvas = await html2canvas(sheetClone, {
-            backgroundColor: "#ffffff",
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            width: 794,
-            height: 1123,
-            windowWidth: 794,
-            windowHeight: 1123,
-          });
-          if (index > 0) pdf.addPage("a4", "portrait");
-          pdf.addImage(canvas.toDataURL("image/jpeg", 0.96), "JPEG", 0, 0, 210, 297, undefined, "FAST");
-        } finally {
-          captureHost.remove();
-        }
-      }
-
-      const suffix = mode === "worksheet" ? "문제지" : mode === "answers" ? "답지" : "문제지와_답지";
-      pdf.save(`분수변환_${questionSet.seed}_${suffix}.pdf`);
-    } catch {
-      setPrintError("PDF를 만들지 못했습니다. 잠시 후 다시 시도해 주세요.");
-    } finally {
-      setPrintBusy(null);
-    }
+    window.addEventListener("afterprint", clearPrintMode, { once: true });
+    window.requestAnimationFrame(() => window.print());
   }
 
   function renderSection(
@@ -651,19 +563,17 @@ export default function Home() {
               type="button"
               aria-expanded={printMenuOpen}
               aria-haspopup="menu"
-              disabled={printBusy !== null}
               onClick={() => setPrintMenuOpen((open) => !open)}
             >
-              {printBusy ? "PDF 만드는 중…" : "인쇄"}
+              인쇄
             </button>
             {printMenuOpen && (
               <div className="print-menu" role="menu" aria-label="인쇄할 자료 선택">
-                <button type="button" role="menuitem" onClick={() => downloadPrintPdf("worksheet")}>문제지만 PDF</button>
-                <button type="button" role="menuitem" onClick={() => downloadPrintPdf("answers")}>답지만 PDF</button>
-                <button type="button" role="menuitem" onClick={() => downloadPrintPdf("both")}>문제지+답지 PDF</button>
+                <button type="button" role="menuitem" onClick={() => printMaterials("worksheet")}>문제지만 인쇄</button>
+                <button type="button" role="menuitem" onClick={() => printMaterials("answers")}>답지만 인쇄</button>
+                <button type="button" role="menuitem" onClick={() => printMaterials("both")}>문제지+답지 인쇄</button>
               </div>
             )}
-            {printError && <span className="print-error" role="status">{printError}</span>}
           </div>
           <button className="button primary" type="button" onClick={checkAll}>전체 채점</button>
         </div>

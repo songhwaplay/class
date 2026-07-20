@@ -87,13 +87,13 @@ test("shows only right or wrong after grading", async () => {
   assert.doesNotMatch(pageSource, /function Explanation|풀이 보기|풀이 닫기|result\.message|explain-button/);
 });
 
-test("downloads printable PDFs without relying on the native print dialog", async () => {
+test("opens the browser print dialog without creating a download", async () => {
   const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
 
-  assert.match(pageSource, /import\("html2canvas"\)/);
-  assert.match(pageSource, /import\("jspdf"\)/);
-  assert.match(pageSource, /문제지만 PDF/);
-  assert.match(pageSource, /답지만 PDF/);
-  assert.match(pageSource, /문제지\+답지 PDF/);
-  assert.doesNotMatch(pageSource, /window\.print\(\)/);
+  assert.match(pageSource, /window\.print\(\)/);
+  assert.match(pageSource, /dataset\.printMode = mode/);
+  assert.match(pageSource, /문제지만 인쇄/);
+  assert.match(pageSource, /답지만 인쇄/);
+  assert.match(pageSource, /문제지\+답지 인쇄/);
+  assert.doesNotMatch(pageSource, /html2canvas|jsPDF|\.save\(/);
 });
