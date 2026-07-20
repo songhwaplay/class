@@ -42,14 +42,21 @@ test("renders the fraction conversion practice product", async () => {
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
 });
 
-test("renders the learning index and the arithmetic catalog in workbook order", async () => {
+test("renders the learning index, arithmetic mode choice, and catalog in workbook order", async () => {
   const indexResponse = await render("/");
   const indexHtml = await indexResponse.text();
   assert.match(indexHtml, /href="\/arithmetic"/);
   assert.match(indexHtml, /연산 학습지/);
   assert.match(indexHtml, /href="\/fraction"/);
 
-  const catalogResponse = await render("/arithmetic");
+  const modeResponse = await render("/arithmetic");
+  const modeHtml = await modeResponse.text();
+  assert.match(modeHtml, /href="\/arithmetic\/personal"/);
+  assert.match(modeHtml, /개인 모드/);
+  assert.match(modeHtml, /href="\/arithmetic\/race"/);
+  assert.match(modeHtml, /순위 모드/);
+
+  const catalogResponse = await render("/arithmetic/personal");
   const catalogHtml = await catalogResponse.text();
   assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 64);
   assert.ok(catalogHtml.indexOf("1수세기①") < catalogHtml.indexOf("1덧셈뺄셈①"));
@@ -75,7 +82,25 @@ test("renders the learning index and the arithmetic catalog in workbook order", 
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-2"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-3"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-4"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/multiplication-5"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
+});
+
+test("renders student and teacher ranking mode entry screens", async () => {
+  const studentResponse = await render("/arithmetic/race");
+  assert.equal(studentResponse.status, 200);
+  const studentHtml = await studentResponse.text();
+  assert.match(studentHtml, /학생 입장/);
+  assert.match(studentHtml, /방 번호/);
+  assert.match(studentHtml, /class="race-teacher-button" href="\/arithmetic\/race\/teacher">교사용 페이지<\/a>/);
+
+  const teacherResponse = await render("/arithmetic/race/teacher");
+  assert.equal(teacherResponse.status, 200);
+  const teacherHtml = await teacherResponse.text();
+  assert.match(teacherHtml, /연산 순위판/);
+  assert.match(teacherHtml, /교사 PIN/);
+  assert.match(teacherHtml, /방 만들기/);
+  assert.match(teacherHtml, /2구구단⑤/);
 });
 
 test("renders the first counting worksheet with interactive and printable answers", async () => {
@@ -430,6 +455,28 @@ test("renders the fourth multiplication worksheet with eight and nine times tabl
   ]);
 });
 
+test("renders the fifth multiplication worksheet as the workbook's five-by-twenty review", async () => {
+  const response = await render("/arithmetic/multiplication-5");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /구구단 ⑤/);
+  assert.match(html, /aria-label="A4 구구단 ⑤ 문제지"/);
+  assert.match(html, /aria-label="A4 구구단 ⑤ 전체 답지"/);
+  assert.equal((html.match(/data-testid="multiplication-five-question"/g) ?? []).length, 200);
+  assert.equal((html.match(/multiplication-five-input/g) ?? []).length, 100);
+  assert.equal((html.match(/multiplication-five-static-answer/g) ?? []).length, 100);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 100);
+  assert.equal((html.match(/aria-label="multiplication-five-\d+-\d+ 답"/g) ?? []).length, 100);
+  assert.equal((html.match(/<span>0<\/span><span>×<\/span><strong>8<\/strong><span>=<\/span>/g) ?? []).length, 2);
+  assert.equal((html.match(/<span>6<\/span><span>×<\/span><strong>1<\/strong><span>=<\/span>/g) ?? []).length, 4);
+  assert.equal((html.match(/<span>9<\/span><span>×<\/span><strong>9<\/strong><span>=<\/span>/g) ?? []).length, 4);
+  assert.match(css, /\.multiplication-five-columns\s*\{[\s\S]*?grid-template-columns:\s*repeat\(5,/);
+  assert.match(css, /\.multiplication-five-column\s*\{[\s\S]*?grid-template-rows:\s*repeat\(20,/);
+  assert.ok(css.indexOf(".multiplication-five-columns") > css.indexOf(".multiplication-columns"));
+});
+
 test("renders the sequential give-and-take worksheet and printable answers", async () => {
   const response = await render("/arithmetic/give-and-take-1");
   assert.equal(response.status, 200);
@@ -530,4 +577,19 @@ test("opens the browser print dialog without creating a download", async () => {
   assert.doesNotMatch(pageSource, /html2canvas|jsPDF|\.save\(/);
   assert.doesNotMatch(pageSource, /훈련실|곱하고 더하기|나누고 남기기|오늘의 분수 연습|기억할 한 줄|시제품/);
   assert.doesNotMatch(pageSource, />3학년 분수</);
+});
+
+test("uses server-backed score-first ranking and a single final submission", async () => {
+  const routeSource = await readFile(new URL("../app/api/arithmetic-race/route.ts", import.meta.url), "utf8");
+  const controllerSource = await readFile(new URL("../app/components/arithmetic-race-controller.tsx", import.meta.url), "utf8");
+  const hosting = JSON.parse(await readFile(new URL("../.openai/hosting.json", import.meta.url), "utf8"));
+
+  assert.equal(hosting.d1, "DB");
+  assert.match(routeSource, /correct_count\) \|\| 0\) - \(Number\(a\.correct_count\)/);
+  assert.match(routeSource, /submitted_at\) \|\| Infinity\) - \(Number\(b\.submitted_at\)/);
+  assert.match(routeSource, /submitted_at IS NULL/);
+  assert.match(routeSource, /ARITHMETIC_TEACHER_PIN/);
+  assert.doesNotMatch(routeSource, /2468/);
+  assert.match(controllerSource, /최종 제출 후에는 답을 고칠 수 없습니다/);
+  assert.match(controllerSource, /\.worksheet-stage/);
 });

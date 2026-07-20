@@ -1,0 +1,26 @@
+{
+  "version": 1,
+  "totalImages": 20,
+  "images": {
+    "139": { "word": "apple", "file": "apple.webp" },
+    "216": { "word": "ball", "file": "ball.webp" },
+    "219": { "word": "banana", "file": "banana.webp" },
+    "284": { "word": "bird", "file": "bird.webp" },
+    "314": { "word": "book", "file": "book.webp" },
+    "371": { "word": "bus", "file": "bus.webp" },
+    "404": { "word": "car", "file": "car.webp" },
+    "417": { "word": "cat", "file": "cat.webp" },
+    "437": { "word": "chair", "file": "chair.webp" },
+    "504": { "word": "clock", "file": "clock.webp" },
+    "842": { "word": "dog", "file": "dog.webp" },
+    "849": { "word": "door", "file": "door.webp" },
+    "1084": { "word": "fish", "file": "fish.webp" },
+    "1105": { "word": "flower", "file": "flower.webp" },
+    "1348": { "word": "house", "file": "house.webp" },
+    "2313": { "word": "school", "file": "school.webp" },
+    "2384": { "word": "shoe", "file": "shoe.webp" },
+    "2597": { "word": "sun", "file": "sun.webp" },
+    "2634": { "word": "table", "file": "table.webp" },
+    "2910": { "word": "water", "file": "water.webp" }
+  }
+}

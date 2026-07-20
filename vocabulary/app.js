@@ -2,25 +2,30 @@
     "use strict";
 
     const DATA_URL = "../assets/data/english-vocabulary-3000-v2.json";
+    const IMAGE_MANIFEST_URL = "../assets/data/vocabulary-word-images-v1.json";
+    const IMAGE_BASE_URL = "../assets/images/vocabulary/";
     const PROGRESS_KEY = "englishVocabulary3000ProgressV1";
+    const IMAGE_PREFERENCE_KEY = "englishVocabularyImagesVisibleV1";
     const STAGES = [
-        { code: "elementary", name: "초급", range: "초등학교 권장", description: "생활에서 자주 쓰는 기본 어휘", levels: [1, 2, 3, 4] },
-        { code: "middle_common", name: "중급", range: "중·고교 공통 권장", description: "학교 학습과 일상 표현을 넓히는 어휘", levels: [5, 6, 7, 8, 9, 10] },
-        { code: "advanced", name: "고급", range: "심화 과목 권장", description: "읽기와 사고력을 확장하는 심화 어휘", levels: [11, 12, 13, 14, 15] },
+        { code: "elementary", name: "초급", range: "초등학교 권장", description: "800개 · LEVEL 01-04", levels: [1, 2, 3, 4] },
+        { code: "middle_common", name: "중급", range: "중학교·고등학교 공통과목 권장", description: "1,200개 · LEVEL 05-10", levels: [5, 6, 7, 8, 9, 10] },
+        { code: "advanced", name: "고급", range: "그 외 과목 권장", description: "1,000개 · LEVEL 11-15", levels: [11, 12, 13, 14, 15] },
     ];
 
     const core = window.VocabularyCore;
     const elements = Object.fromEntries([
         "levelScreen", "studyScreen", "stageGroups", "loadingState", "toast", "playerGreeting",
         "totalKnown", "overallPercent", "overallBar", "totalStudied", "totalUnknown", "backToLevels",
-        "shuffleButton", "studyStage", "studyTitle", "cardPosition", "levelStatus", "sessionBar",
+        "shuffleButton", "imageToggleButton", "studyStage", "studyTitle", "cardPosition", "levelStatus", "sessionBar",
         "flashcard", "cardBadge", "wordText", "posText", "meaningText", "exampleBlock", "exampleLabel", "exampleText",
-        "exampleKo", "relatedBlock", "relatedWords", "previousButton", "speakButton", "exampleSpeakButton",
+        "exampleKo", "relatedBlock", "relatedWords", "answerLayout", "wordImageBlock", "wordImage",
+        "previousButton", "speakButton", "exampleSpeakButton",
         "nextButton", "unknownButton", "knownButton", "reviewUnknownButton", "studyMessage",
     ].map((id) => [id, document.getElementById(id)]));
 
     const state = {
         data: null,
+        imageMap: new Map(),
         levels: new Map(),
         progress: loadProgress(),
         currentLevel: null,
@@ -28,6 +33,7 @@
         currentIndex: 0,
         revealed: false,
         unknownOnly: false,
+        showImages: localStorage.getItem(IMAGE_PREFERENCE_KEY) !== "false",
     };
 
     function loadProgress() {
@@ -133,7 +139,24 @@
         elements.meaningText.setAttribute("aria-hidden", String(!state.revealed));
         elements.exampleBlock.setAttribute("aria-hidden", String(!state.revealed));
         elements.relatedBlock.setAttribute("aria-hidden", String(!state.revealed || elements.relatedBlock.hidden));
+        elements.wordImageBlock.setAttribute("aria-hidden", String(!state.revealed || elements.wordImageBlock.hidden));
         elements.exampleSpeakButton.disabled = !state.revealed || !word.example?.en;
+    }
+
+    function updateImagePreference() {
+        elements.imageToggleButton.textContent = state.showImages ? "그림 켜짐" : "그림 꺼짐";
+        elements.imageToggleButton.setAttribute("aria-pressed", String(state.showImages));
+    }
+
+    function renderWordImage(word) {
+        const image = state.showImages ? state.imageMap.get(String(word.id)) : null;
+        elements.wordImageBlock.hidden = !image;
+        elements.answerLayout.classList.toggle("has-image", Boolean(image));
+        if (!image) {
+            elements.wordImage.removeAttribute("src");
+            return;
+        }
+        elements.wordImage.src = `${IMAGE_BASE_URL}${image.file}`;
     }
 
     function renderStudyCard() {
@@ -152,6 +175,7 @@
         elements.wordText.textContent = word.word;
         elements.posText.textContent = word.pos.join(" · ");
         elements.meaningText.textContent = word.meanings.join(" · ");
+        renderWordImage(word);
         elements.exampleBlock.hidden = !word.example;
         elements.exampleLabel.textContent = "Example";
         elements.exampleText.textContent = word.example?.en || "";
@@ -251,6 +275,16 @@
         elements.speakButton.addEventListener("click", speakCurrentWord);
         elements.exampleSpeakButton.addEventListener("click", speakCurrentExample);
         elements.shuffleButton.addEventListener("click", shuffleCurrentLevel);
+        elements.imageToggleButton.addEventListener("click", () => {
+            state.showImages = !state.showImages;
+            localStorage.setItem(IMAGE_PREFERENCE_KEY, String(state.showImages));
+            updateImagePreference();
+            renderStudyCard();
+        });
+        elements.wordImage.addEventListener("error", () => {
+            elements.wordImageBlock.hidden = true;
+            elements.answerLayout.classList.remove("has-image");
+        });
         elements.backToLevels.addEventListener("click", backToLevels);
         elements.reviewUnknownButton.addEventListener("click", () => openLevel(state.currentLevel, { unknownOnly: true }));
         window.addEventListener("keydown", (event) => {
@@ -265,9 +299,21 @@
 
     async function initialize() {
         try {
-            const response = await fetch(DATA_URL);
+            const [response, imageResponse] = await Promise.all([
+                fetch(DATA_URL),
+                fetch(IMAGE_MANIFEST_URL).catch(() => null),
+            ]);
             if (!response.ok) throw new Error(`Vocabulary data request failed: ${response.status}`);
             state.data = await response.json();
+            if (imageResponse?.ok) {
+                const manifest = await imageResponse.json();
+                const imageEntries = Object.entries(manifest.images || {}).filter(([id, image]) => (
+                    /^\d+$/.test(id)
+                    && image?.word
+                    && /^[a-z0-9-]+\.webp$/.test(image?.file || "")
+                ));
+                state.imageMap = new Map(imageEntries);
+            }
             if (state.data.totalWords !== 3000 || !Array.isArray(state.data.words)) throw new Error("Invalid vocabulary data");
             if (!state.data.words.every((word) => (
                 (word.example === null || (
@@ -281,6 +327,8 @@
             }
             state.levels = core.groupByLevel(state.data.words);
             if (state.levels.size !== 15) throw new Error("Invalid vocabulary levels");
+            elements.imageToggleButton.hidden = state.imageMap.size === 0;
+            updateImagePreference();
             const playerName = localStorage.getItem("classPlayerName");
             if (playerName) elements.playerGreeting.textContent = `${playerName} 님의 15레벨 단어 학습`;
             renderOverallProgress();

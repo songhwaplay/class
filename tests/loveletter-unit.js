@@ -16,7 +16,7 @@ function playingGame(hands, deck = [1, 2, 3]) {
     const game = gameWithPlayers();
     game.phase = "playing";
     game.round = 1;
-    game.targetScore = 5;
+    game.targetScore = 3;
     game.turnIndex = 0;
     game.deck = [...deck];
     game.setAside = 4;
@@ -42,7 +42,7 @@ assert.deepEqual(
 
 const started = gameWithPlayers();
 assert.equal(LoveLetter.startMatch(started, () => 0).ok, true);
-assert.equal(started.targetScore, 5, "3인 게임은 하트 5개가 목표입니다.");
+assert.equal(started.targetScore, 3, "3인 게임은 하트 3개가 목표입니다.");
 assert.equal(started.deck.length, 11, "비공개 1장, 시작 손패 3장, 첫 차례 드로우 1장을 제외해야 합니다.");
 assert.equal(started.hands.host.length, 2, "첫 플레이어는 카드 두 장으로 차례를 시작합니다.");
 assert.equal(started.hands.guest1.length, 1);
@@ -50,7 +50,7 @@ assert.equal(started.hands.guest1.length, 1);
 const fourPlayer = gameWithPlayers();
 LoveLetter.addPlayer(fourPlayer, "guest3", "구름");
 LoveLetter.startMatch(fourPlayer, () => 0);
-assert.equal(fourPlayer.targetScore, 4, "4인 게임은 하트 4개가 목표입니다.");
+assert.equal(fourPlayer.targetScore, 3, "4인 게임은 하트 3개가 목표입니다.");
 
 const forcedQueen = playingGame({ host: [7, 5], guest1: [2], guest2: [3] });
 assert.equal(
@@ -122,4 +122,4 @@ const server = fs.readFileSync(path.join(projectRoot, "game-hub-server", "server
 assert.match(server, /loveletter:\s*4/, "서버의 러브레터 방 정원은 4명이어야 합니다.");
 assert.match(server, /LOVELETTER_REVEAL/, "비밀 확인 결과는 대상 플레이어에게만 전송해야 합니다.");
 
-console.log("loveletter-unit: deck, 3-4 player scoring, card effects, hidden hands ok");
+console.log("loveletter-unit: deck, classroom scoring, card effects, hidden hands ok");

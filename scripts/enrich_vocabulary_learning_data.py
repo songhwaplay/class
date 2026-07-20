@@ -162,6 +162,130 @@ def compact_meaning(value: str) -> str:
     return value if len(value) <= 90 else value[:87].rstrip() + "…"
 
 
+def normalize_source_example(english: str, word: str) -> str:
+    english = clean_text(english).strip(' "')
+    first_word_match = re.match(r"([A-Za-z]+)", english)
+    sentence_starters = {
+        "a", "an", "the", "i", "you", "he", "she", "it", "we", "they",
+        "this", "that", "these", "those", "there", "my", "your", "his",
+        "her", "our", "their", "people", "students", "children", "someone",
+    }
+    if first_word_match:
+        first_word = first_word_match.group(1)
+        if first_word.islower() and (
+            first_word.casefold() in sentence_starters
+            or first_word.casefold() == word.casefold()
+        ):
+            english = first_word.capitalize() + english[len(first_word):]
+    if english and english[-1] not in ".?!":
+        english += "."
+    return english
+
+
+def card_example_limits(level: int) -> tuple[int, int, int, int]:
+    if level <= 4:
+        return 10, 72, 110, 1
+    if level <= 10:
+        return 12, 86, 135, 1
+    return 14, 100, 165, 1
+
+
+def is_study_card_example(
+    word: str,
+    english: str,
+    korean: str,
+    level: int,
+    explicit_forms: list[str],
+) -> bool:
+    max_words, max_english_chars, max_korean_chars, max_commas = card_example_limits(level)
+    word_count = len(re.findall(r"[A-Za-z]+(?:'[A-Za-z]+)?", english))
+    lowered = english.casefold()
+    legal_markers = (
+        "this agreement",
+        "the distributor",
+        "contract products",
+        "either party",
+        "hereinafter",
+        "pursuant to",
+        "subject to the conditions",
+        "unless otherwise agreed",
+        "general conditions",
+        "certified copy of this convention",
+        "board of directors",
+        "exclusive distributor",
+        "in accordance with",
+        "arbitration proceedings",
+        "issuing bank",
+        "occupation authorities",
+        "northern government",
+        "alleged loss",
+        "substantiating payment",
+        "legal language",
+        "third parties",
+        "technical assistance and materials",
+        "hereof",
+        "hereto",
+        "herein",
+        "hereby",
+        "thereof",
+    )
+    legal_pair = "shall" in lowered and any(
+        marker in lowered
+        for marker in ("agreement", "contract", "convention", "party", "parties", "claim", "charterer")
+    )
+    unsuitable_topics = (
+        "murder",
+        "suicide",
+        "torture",
+        "rifle",
+        "weapon",
+        "sexual",
+        "naked",
+        "bleeding",
+        "death",
+        "killed",
+        "firearms",
+        "hostages",
+        "terrorist",
+        "attack",
+        "victim",
+        "secret police",
+        "corruption",
+        "graft",
+        " war ",
+        " vice ",
+        "clergy",
+    )
+    proper_nouns = re.findall(r"\b[A-Z][a-z]{2,}\b", english)
+    first_letter = LATIN_RE.search(english)
+    return all(
+        (
+            1 <= word_count <= max_words,
+            len(english) <= max_english_chars,
+            not korean or len(korean) <= max_korean_chars,
+            english.count(",") <= max_commas,
+            len(re.findall(r"[.!?]+", english)) <= 1,
+            not any(character in english for character in "[]{};…:—"),
+            "/" not in english,
+            "source:" not in lowered,
+            not re.search(r"\.\s*\d{2,4}\s*$", english),
+            not legal_pair,
+            not any(topic in lowered for topic in unsuitable_topics),
+            " beat " not in f" {lowered} ",
+            "there was things" not in lowered,
+            " shall " not in f" {lowered} ",
+            " contract " not in f" {lowered} ",
+            len(proper_nouns) <= 2,
+            not re.search(r"\b(?:18|19|20)\d{2}\b", english),
+            len(re.findall(r"\b[A-Z]{3,}\b", english)) <= 1,
+            bool(first_letter and first_letter.group(0).isupper()),
+            not lowered.rstrip().endswith(f'"{word.casefold()}"'),
+            not any(marker in lowered for marker in legal_markers),
+            contains_word_form(english, word, explicit_forms),
+        )
+    )
+
+
 def load_kowiktionary(
     source: Path,
     words_by_key: dict[str, dict],
@@ -391,7 +515,18 @@ def main() -> None:
         meaning = compact_meaning(item["lexical"]["meanings_ko"][0])
         pos_codes = [entry["code"] for entry in item["lexical"]["parts_of_speech"]]
         override = overrides.get(key)
-        candidates = wiki_examples.get(key, [])
+        candidates = [
+            normalized
+            for candidate in wiki_examples.get(key, [])
+            for normalized in [{**candidate, "en": normalize_source_example(candidate["en"], word)}]
+            if is_study_card_example(
+                word,
+                normalized["en"],
+                normalized["ko"],
+                level,
+                word_forms.get(key, []),
+            )
+        ]
         if override:
             selected = {
                 "en": clean_text(override["en"]),
@@ -399,6 +534,14 @@ def main() -> None:
                 "source": "curated_override",
                 "translationType": "translation",
             }
+            if not is_study_card_example(
+                word,
+                selected["en"],
+                selected["ko"],
+                level,
+                word_forms.get(key, []),
+            ):
+                raise ValueError(f"Curated example does not meet card rules: {word}")
             selected_synset = ""
         elif candidates:
             selected = min(
@@ -420,8 +563,10 @@ def main() -> None:
             wordnet_candidates = [
                 (example, synset, synset_rank)
                 for synset_rank, synset in enumerate(word_synsets.get(key, []))
-                for example in synset_examples.get(synset, [])
-                if LATIN_RE.search(example) and contains_word_form(example, word, word_forms.get(key, []))
+                for raw_example in synset_examples.get(synset, [])
+                for example in [normalize_source_example(raw_example, word)]
+                if LATIN_RE.search(example)
+                and is_study_card_example(word, example, "", level, word_forms.get(key, []))
             ]
             if wordnet_candidates:
                 primary_suffixes = POS_SYNSET_SUFFIXES.get(pos_codes[0], set()) if pos_codes else set()
@@ -495,8 +640,15 @@ def main() -> None:
             for value in enrichment.values()
         ),
         "example_length": all(
-            not value["example"] or len(value["example"]["en"]) <= 320
-            for value in enrichment.values()
+            not enrichment[str(item["id"])]["example"]
+            or is_study_card_example(
+                item["word"],
+                enrichment[str(item["id"])]["example"]["en"],
+                enrichment[str(item["id"])]["example"]["ko"],
+                int(item["level"]["global"]),
+                word_forms.get(item["word"].casefold(), []),
+            )
+            for item in words
         ),
         "relation_limit": all(len(value["relatedWords"]) <= 4 for value in enrichment.values()),
     }

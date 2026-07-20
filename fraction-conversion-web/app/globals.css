@@ -198,6 +198,228 @@
   }
 }
 
+/* 연산 모드 · 순위 모드 */
+.arithmetic-mode-page,
+.race-entry-page {
+  min-height: 100dvh;
+}
+
+.arithmetic-mode-shell,
+.race-entry-shell {
+  width: min(900px, calc(100% - 32px));
+  margin: 0 auto;
+  padding: 34px 0;
+}
+
+.arithmetic-mode-grid,
+.race-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.race-entry-grid {
+  grid-template-columns: minmax(0, 560px);
+  justify-content: center;
+}
+
+.arithmetic-mode-card {
+  position: relative;
+  min-height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: white;
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: var(--shadow);
+}
+
+.arithmetic-mode-card.personal { background: linear-gradient(145deg, white, var(--teal-soft)); }
+.arithmetic-mode-card.race { background: linear-gradient(145deg, white, var(--coral-soft)); }
+.arithmetic-mode-card > span { color: var(--muted); font-weight: 800; }
+.arithmetic-mode-card > strong { font-size: 34px; }
+.arithmetic-mode-card > i { align-self: flex-end; font-size: 30px; font-style: normal; }
+
+.race-join-card,
+.race-waiting-card,
+.race-create-panel,
+.race-room-panel,
+.race-ranking-panel {
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.race-join-card {
+  display: grid;
+  gap: 16px;
+  padding: 28px;
+}
+
+.race-join-card h2,
+.race-ranking-panel h2 { margin: 0; }
+.race-join-card label,
+.race-create-panel label { display: grid; gap: 7px; color: var(--muted); font-weight: 800; }
+.race-join-card input,
+.race-create-panel input,
+.race-create-panel select {
+  min-height: 48px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 10px 12px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 18px;
+}
+
+.race-join-card button,
+.race-create-panel button,
+.race-room-panel button,
+.race-submit-bar button {
+  min-height: 48px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--coral);
+  color: white;
+  padding: 10px 18px;
+  font: inherit;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.race-join-card button:disabled,
+.race-create-panel button:disabled,
+.race-room-panel button:disabled,
+.race-submit-bar button:disabled { opacity: .5; cursor: default; }
+
+.race-teacher-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -6px;
+}
+
+.race-teacher-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: white;
+  color: var(--muted);
+  padding: 6px 11px;
+  font-size: 12px;
+  font-weight: 900;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(24, 35, 59, 0.06);
+}
+
+.race-teacher-button:hover {
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.race-waiting-card {
+  margin-top: 30px;
+  padding: 48px 28px;
+  text-align: center;
+}
+.race-waiting-card > span { color: var(--coral); font-weight: 900; }
+.race-waiting-card h2 { margin: 12px 0 28px; font-size: 34px; }
+.race-waiting-card > strong { color: var(--muted); }
+.race-form-error { color: var(--red); font-weight: 800; text-align: center; }
+
+.race-teacher-page {
+  min-height: 100dvh;
+  padding: 22px;
+  background: var(--paper-deep);
+  color: var(--ink);
+}
+
+.race-teacher-header {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 18px;
+}
+.race-teacher-header a { color: var(--muted); text-decoration: none; font-weight: 800; }
+.race-teacher-header h1 { margin: 0; }
+.race-create-panel { width: min(760px, 100%); display: grid; grid-template-columns: 160px 1fr auto; gap: 12px; padding: 20px; }
+.race-teacher-layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: 18px; align-items: start; }
+.race-room-panel { display: grid; gap: 14px; padding: 22px; text-align: center; }
+.race-room-panel > span { color: var(--muted); font-weight: 800; }
+.race-room-panel > strong { color: var(--coral); font-size: 54px; letter-spacing: .08em; }
+.race-room-panel h2 { margin: 0; }
+.race-room-panel p { margin: 0; color: var(--muted); }
+.race-room-panel button.race-close { min-height: 40px; background: #6d7480; }
+.race-live { border-radius: 9px; background: var(--green-soft); color: var(--green); padding: 14px; }
+.race-ranking-panel { padding: 20px; }
+.race-ranking-panel > header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.race-ranking-panel > header span { color: var(--muted); font-size: 13px; }
+.race-ranking-list { display: grid; gap: 8px; margin-top: 16px; }
+.race-ranking-row { display: grid; grid-template-columns: 70px minmax(110px, 1fr) 120px 70px; gap: 10px; align-items: center; padding: 13px; border: 1px solid var(--line); border-radius: 10px; }
+.race-ranking-row > strong { color: var(--coral); font-size: 20px; }
+.race-ranking-row.rank-1 { background: #fff7d9; border-color: #e7c65d; }
+.race-ranking-row.rank-2 { background: #f2f5f7; border-color: #bdc7ce; }
+.race-ranking-row.rank-3 { background: #fff0e5; border-color: #cf9c77; }
+.race-ranking-row time { text-align: right; font-variant-numeric: tabular-nums; }
+.race-ranking-panel h3 { margin: 24px 0 10px; }
+.race-waiting-list { display: flex; flex-wrap: wrap; gap: 7px; }
+.race-waiting-list > span { border-radius: 999px; background: var(--teal-soft); padding: 7px 11px; font-weight: 800; }
+.race-empty { color: var(--muted); }
+
+.race-submit-bar {
+  position: fixed;
+  z-index: 1000;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  min-width: min(620px, calc(100% - 20px));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 1px solid #cfc6b8;
+  border-radius: 14px;
+  background: rgba(255, 253, 248, .96);
+  padding: 9px 12px;
+  box-shadow: 0 10px 35px rgba(24, 35, 59, .2);
+  backdrop-filter: blur(8px);
+}
+.race-submit-bar time { font-size: 22px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.race-room { color: var(--muted); font-size: 12px; }
+.race-submitted { color: var(--green); font-weight: 800; }
+.race-error { position: absolute; left: 0; right: 0; bottom: calc(100% + 5px); color: var(--red); text-align: center; font-weight: 800; }
+
+html[data-race-mode="true"] .counting-toolbar .toolbar,
+html[data-race-mode="true"] .counting-toolbar .counting-progress { visibility: hidden; }
+html[data-race-mode="true"] .counting-back { pointer-events: none; visibility: hidden; }
+html[data-race-mode="true"] body { padding-bottom: 72px; }
+
+@media (max-width: 720px) {
+  .arithmetic-mode-grid,
+  .race-entry-grid,
+  .race-teacher-layout { grid-template-columns: 1fr; }
+  .arithmetic-mode-card { min-height: 180px; }
+  .race-create-panel { grid-template-columns: 1fr; }
+  .race-ranking-panel > header { align-items: flex-start; flex-direction: column; }
+  .race-ranking-row { grid-template-columns: 55px 1fr; }
+  .race-ranking-row > span,
+  .race-ranking-row > time { grid-column: 2; text-align: left; }
+  .race-submit-bar { gap: 8px; }
+  .race-submit-bar .race-room { display: none; }
+}
+
+@media print {
+  .race-submit-bar { display: none !important; }
+}
+
 /* 2구구단① */
 .multiplication-sheet {
   padding-bottom: 25px;
@@ -290,6 +512,36 @@
     background: white;
     color: black;
   }
+}
+
+/* 2구구단⑤ */
+.multiplication-five-columns {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.multiplication-five-column {
+  grid-template-rows: repeat(20, minmax(0, 1fr));
+}
+
+.multiplication-five-question {
+  grid-template-columns: 18px 13px 18px 13px 39px;
+  gap: 2px;
+  padding: 2px 2px 10px;
+  font-size: 17px;
+}
+
+.multiplication-five-input,
+.multiplication-five-static-answer {
+  width: 39px;
+  height: 30px;
+  border-radius: 5px;
+  font-size: 17px;
+}
+
+.multiplication-five-question .counting-result {
+  right: 2px;
+  bottom: 0;
+  font-size: 9px;
 }
 
 /* 2길이재기 */

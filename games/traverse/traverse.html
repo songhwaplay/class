@@ -16,7 +16,7 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 .btn.primary,.tab.active{background:var(--gold2);color:#17202a}.btn:disabled{opacity:.45;cursor:not-allowed}
 .music-control{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:13px;flex-wrap:wrap}.music-bars{display:flex;gap:3px;padding:4px;background:#120e09;border:2px solid #66491e}.music-segment{width:24px;height:19px;padding:0;border:1px solid #74531f;background:#2a1d11;cursor:pointer}.music-segment.on{background:linear-gradient(135deg,#a96020,#f3b34e)}
 .name-missing{max-width:560px;text-align:center}.name-missing h2{color:var(--gold2)}
-.game-shell{position:relative}.game-head{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:11px}.game-title{font:900 24px Georgia,serif;color:var(--gold2);letter-spacing:2px}.turn-box{text-align:center;padding:8px 16px;border:1px solid var(--gold);background:#0b141d;border-radius:999px;font-weight:900}.head-actions{text-align:right}
+.game-shell{position:relative}.game-head{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;border-bottom:1px solid var(--line);padding-bottom:11px}.game-title{font:900 24px Georgia,serif;color:var(--gold2);letter-spacing:2px}.turn-box{min-width:180px;text-align:center;padding:7px 16px;border:1px solid var(--gold);background:#0b141d;border-radius:14px;font-weight:900}.turn-line{display:flex;align-items:center;justify-content:center;gap:8px}.turn-seconds{min-width:35px;color:#8ee3a1;font-variant-numeric:tabular-nums}.turn-box.urgent .turn-seconds{color:#ff766e}.turn-track{height:5px;margin-top:5px;overflow:hidden;border-radius:999px;background:rgba(255,255,255,.13)}.turn-bar{width:100%;height:100%;transform-origin:left center;background:linear-gradient(90deg,#68d986,#f0d465,#ee625b)}.head-actions{text-align:right}
 .game-layout{display:grid;grid-template-columns:minmax(0,1fr) 245px;gap:16px;margin-top:15px}.board-area{min-width:0}.board-stage{position:relative;width:min(690px,100%);margin:auto;padding:36px}
 .board{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));grid-template-rows:repeat(10,minmax(0,1fr));aspect-ratio:1;border:4px solid #8d733b;background:#13202a;box-shadow:0 10px 25px rgba(0,0,0,.5)}
 .cell{position:relative;display:grid;place-items:center;border:1px solid rgba(220,205,164,.23);background:rgba(25,39,49,.92);min-width:0;min-height:0;width:100%;height:100%;cursor:pointer;outline:none;touch-action:manipulation}.cell.alt{background:rgba(35,49,59,.94)}.cell.corner{background:#070b0e}.cell.active-start{box-shadow:inset 0 0 0 3px rgba(120,184,238,.24)}.cell.active-dest{box-shadow:inset 0 0 0 3px rgba(244,220,135,.35)}.cell.selected-cell{box-shadow:inset 0 0 0 4px #fff0a2,0 0 12px rgba(255,226,105,.75);z-index:3}
@@ -42,7 +42,7 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 <body>
 <audio id="bgm" src="../../assets/sound/traverse.mp3" loop preload="auto"></audio>
 <section id="missingScreen" class="screen hidden"><div class="panel name-missing"><h2>이름이 없습니다</h2><p>메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</p><button class="btn primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></div></section>
-<section id="lobbyScreen" class="screen hidden" data-multiplayer-lobby><div class="panel">
+<section id="lobbyScreen" class="screen hidden mp-lobby-compact" data-multiplayer-lobby><div class="panel">
 <h1 class="title">TRAVERSE</h1><div class="subtitle">온라인 보드게임 · 2인 또는 4인 · 3인 플레이 금지</div>
 <div class="mp-lobby-card mp-lobby-player-name">PLAYER <span id="savedName">-</span></div>
 <div class="mp-lobby-tabs"><button id="hostTab" class="tab active" type="button">CREATE ROOM</button><button id="joinTab" class="tab" type="button">JOIN ROOM</button></div>
@@ -53,7 +53,7 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 <div class="music-control"><strong>MUSIC</strong><button class="btn" type="button" data-mute>MUTE</button><div class="music-bars"><button class="music-segment" type="button" data-level="1"></button><button class="music-segment" type="button" data-level="2"></button><button class="music-segment" type="button" data-level="3"></button><button class="music-segment" type="button" data-level="4"></button><button class="music-segment" type="button" data-level="5"></button></div></div>
 </div></section>
 <section id="gameScreen" class="screen hidden"><div class="game-shell">
-<div class="game-head"><div class="game-title">TRAVERSE</div><div id="turnBox" class="turn-box">게임 준비 중</div><div class="head-actions"><button id="rulesBtnGame" class="btn" type="button">RULES</button> <button id="leaveBtn" class="btn" type="button">나가기</button></div></div>
+<div class="game-head"><div class="game-title">TRAVERSE</div><div id="turnBox" class="turn-box"><div class="turn-line"><span id="turnText">게임 준비 중</span><span id="turnSeconds" class="turn-seconds">30초</span></div><div class="turn-track"><div id="turnTimerBar" class="turn-bar"></div></div></div><div class="head-actions"><button id="rulesBtnGame" class="btn" type="button">RULES</button> <button id="leaveBtn" class="btn" type="button">나가기</button></div></div>
 <div class="game-layout"><div class="board-area"><div class="board-stage"><div id="labelTop" class="side-label top">-</div><div id="labelRight" class="side-label right">-</div><div id="labelBottom" class="side-label bottom">-</div><div id="labelLeft" class="side-label left">-</div><div id="board" class="board" aria-label="트래버스 게임판"></div></div><div id="message" class="message">게임 준비 중입니다.</div></div>
 <aside class="side-panel"><div class="info-card"><div class="info-title">PLAYERS</div><div id="playerStatus"></div></div><div class="info-card"><div class="info-title">TURN ACTION</div><div class="chain-actions"><button id="endJumpBtn" class="btn primary" type="button" disabled>점프 종료</button><button id="cancelSelectBtn" class="btn" type="button">선택 취소</button></div></div><div class="info-card"><div class="info-title">GAME LOG</div><div id="gameLog" class="log"></div></div><div class="info-card"><div class="info-title">MUSIC</div><div class="music-control game-music"><button class="btn" type="button" data-mute>MUTE</button><div class="music-bars"><button class="music-segment" type="button" data-level="1" aria-label="음악 볼륨 1"></button><button class="music-segment" type="button" data-level="2" aria-label="음악 볼륨 2"></button><button class="music-segment" type="button" data-level="3" aria-label="음악 볼륨 3"></button><button class="music-segment" type="button" data-level="4" aria-label="음악 볼륨 4"></button><button class="music-segment" type="button" data-level="5" aria-label="음악 볼륨 5"></button></div></div></div></aside></div>
 </div></section>
@@ -62,8 +62,10 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 <script>
 "use strict";
 const GAME_ID="traverse",NAME_KEY="classPlayerName",BOARD_SIZE=10;
+const TURN_MS=30000,JUMP_GRACE_MS=10000;
 const SHAPES=["triangle","circle","diamond","square","square","diamond","circle","triangle"],SIDE_ORDER_4=["bottom","right","top","left"],PLAYER_COLORS=["#e4b94f","#62a8e5","#e76f67","#69bd84"];
 let lobby=null,myId=null,myRole="host",players={},started=false,state=null,selectedPieceId=null,legalOptions=[];
+let hostTurnTimer=null,clientTimerRaf=null;
 const $=id=>document.getElementById(id);
 function savedName(){return String(localStorage.getItem(NAME_KEY)||"").trim()}
 function key(r,c){return `${r},${c}`}function inBounds(r,c){return r>=0&&r<10&&c>=0&&c<10}function isCorner(r,c){return (r===0||r===9)&&(c===0||c===9)}
@@ -109,7 +111,7 @@ function syncLobbyState(snapshot){
 }
 function send(payload){return lobby?.send(payload)||false}
 function broadcast(payload){return lobby?.broadcast(payload)||false}
-function handleGameMessage(sender,data){if(!data)return;if(data.type==="MOVE_REQ"&&myRole==="host"){hostMove(sender,data.pieceId,data.row,data.col);return}if(data.type==="END_JUMP_REQ"&&myRole==="host"){hostEndJump(sender);return}if(data.type==="STATE"){players=data.players||players;state=data.state;selectedPieceId=state.jump?.pieceId||null;renderAll();return}if(data.type==="WIN"){players=data.players||players;state=data.state;renderAll();showWinner(data.winnerId)}}
+function handleGameMessage(sender,data){if(!data)return;if(data.type==="MOVE_REQ"&&myRole==="host"){hostMove(sender,data.pieceId,data.row,data.col);return}if(data.type==="END_JUMP_REQ"&&myRole==="host"){hostEndJump(sender);return}if(data.type==="STATE"){players=data.players||players;state=data.state;selectedPieceId=state.jump?.pieceId||null;renderAll();return}if(data.type==="WIN"){players=data.players||players;state=data.state;clearTimeout(hostTurnTimer);renderAll();showWinner(data.winnerId)}}
 function lobbyPresentation({count,role}){
  if(role!=="host")return{canStart:false,startText:"WAITING FOR HOST",guideText:`현재 ${count}명 접속`};
  if(count===1)return{canStart:false,startText:"WAITING FOR PLAYERS",guideText:"한 명이 더 들어오면 2인전을 시작할 수 있습니다."};
@@ -117,13 +119,18 @@ function lobbyPresentation({count,role}){
  if(count===3)return{canStart:false,startText:"ONE MORE PLAYER NEEDED",guideText:"3인전은 균형 문제로 금지됩니다. 한 명을 더 기다리세요.",warning:true};
  return{canStart:true,startText:"START GAME · 4 PLAYERS",guideText:"4인전 준비가 완료되었습니다."}
 }
-function makeInitialState(){const ids=shuffle(Object.keys(players)),sides={};if(ids.length===2){sides[ids[0]]="bottom";sides[ids[1]]="top"}else ids.forEach((id,i)=>sides[id]=SIDE_ORDER_4[i]);const colors={};ids.forEach((id,i)=>colors[id]=PLAYER_COLORS[i]);const pieces=[];ids.forEach(owner=>{const side=sides[owner];SHAPES.forEach((type,i)=>{let row,col;if(side==="top"){row=0;col=i+1}else if(side==="bottom"){row=9;col=i+1}else if(side==="left"){row=i+1;col=0}else{row=i+1;col=9}pieces.push({id:`${owner}-${i}`,owner,type,row,col,leftStart:false,locked:false})})});return{order:ids,sides,colors,pieces,turnIndex:0,jump:null,winner:null,log:[`${players[ids[0]].name}님이 먼저 시작합니다.`]}}
+function makeInitialState(){const ids=shuffle(Object.keys(players)),sides={};if(ids.length===2){sides[ids[0]]="bottom";sides[ids[1]]="top"}else ids.forEach((id,i)=>sides[id]=SIDE_ORDER_4[i]);const colors={};ids.forEach((id,i)=>colors[id]=PLAYER_COLORS[i]);const pieces=[];ids.forEach(owner=>{const side=sides[owner];SHAPES.forEach((type,i)=>{let row,col;if(side==="top"){row=0;col=i+1}else if(side==="bottom"){row=9;col=i+1}else if(side==="left"){row=i+1;col=0}else{row=i+1;col=9}pieces.push({id:`${owner}-${i}`,owner,type,row,col,leftStart:false,locked:false})})});return{order:ids,sides,colors,pieces,turnIndex:0,jump:null,winner:null,turnDeadline:Date.now()+TURN_MS,log:[`${players[ids[0]].name}님이 먼저 시작합니다.`]}}
 function showGame(){$("lobbyScreen").classList.add("hidden");$("gameScreen").classList.remove("hidden")}
 function requestMove(pieceId,row,col){if(myRole==="host")hostMove(myId,pieceId,row,col);else send({type:"MOVE_REQ",pieceId,row,col})}
-function hostMove(sender,pieceId,row,col){if(!state||state.winner||String(sender)!==String(currentPlayerId()))return;const piece=pieceById(pieceId);if(!piece||String(piece.owner)!==String(sender)||piece.locked)return;if(state.jump&&state.jump.pieceId!==pieceId)return;const options=legalMovesFor(piece,Boolean(state.jump)),opt=options.find(o=>o.row===row&&o.col===col);if(!opt)return;const from={row:piece.row,col:piece.col};piece.row=row;piece.col=col;if(!isStartRow(piece,row,col))piece.leftStart=true;selectedPieceId=piece.id;if(opt.kind==="step"){state.log.unshift(`${players[sender].name}: ${shapeKo(piece.type)} 한 칸 이동`);finishTurn(piece);return}if(!state.jump)state.jump={pieceId:piece.id,visited:[key(from.row,from.col),key(row,col)]};else state.jump.visited.push(key(row,col));state.log.unshift(`${players[sender].name}: ${shapeKo(piece.type)} 점프`);const more=legalMovesFor(piece,true);if(more.length===0&&isValidEnd(piece,piece.row,piece.col)){finishTurn(piece);return}publishState()}
-function hostEndJump(sender){if(!state?.jump||String(sender)!==String(currentPlayerId()))return;const piece=pieceById(state.jump.pieceId);if(!piece||!isValidEnd(piece,piece.row,piece.col))return;finishTurn(piece)}
-function finishTurn(piece){if(isDestinationRow(piece,piece.row,piece.col))piece.locked=true;state.jump=null;selectedPieceId=null;const owner=piece.owner;if(state.pieces.filter(p=>p.owner===owner).every(p=>p.locked)){state.winner=owner;state.log.unshift(`${players[owner].name}님이 모든 말을 도착시켰습니다.`);broadcast({type:"WIN",players,state,winnerId:owner});renderAll();showWinner(owner);return}advanceTurn();publishState()}
-function advanceTurn(){const count=state.order.length;for(let i=1;i<=count;i++){const idx=(state.turnIndex+i)%count,id=state.order[idx];if(playerHasMove(id)){state.turnIndex=idx;return}state.log.unshift(`${players[id].name}: 움직일 수 없어 차례를 건너뜁니다.`)}state.log.unshift("모든 플레이어가 움직일 수 없습니다.")}
+function scheduleHostTurnTimer(){clearTimeout(hostTurnTimer);if(myRole!=="host"||!state||state.winner)return;if(!Number.isFinite(state.turnDeadline)||state.turnDeadline<=0)state.turnDeadline=Date.now()+TURN_MS;const delay=Math.max(0,state.turnDeadline-Date.now());hostTurnTimer=setTimeout(hostTurnExpired,delay+25)}
+function resetTurnClock(duration=TURN_MS){state.turnDeadline=Date.now()+duration;scheduleHostTurnTimer()}
+function extendJumpClock(){state.turnDeadline=Math.max(state.turnDeadline||0,Date.now()+JUMP_GRACE_MS);scheduleHostTurnTimer()}
+function finishForcedJump(piece){let safety=32;while(piece&&!isValidEnd(piece,piece.row,piece.col)&&safety-->0){const opt=legalMovesFor(piece,true)[0];if(!opt)break;piece.row=opt.row;piece.col=opt.col;if(!isStartRow(piece,piece.row,piece.col))piece.leftStart=true;state.jump.visited.push(key(piece.row,piece.col))}return Boolean(piece&&isValidEnd(piece,piece.row,piece.col))}
+function hostTurnExpired(){if(myRole!=="host"||!state||state.winner)return;if(Date.now()+20<(state.turnDeadline||0)){scheduleHostTurnTimer();return}const expiredId=currentPlayerId(),name=players[expiredId]?.name||"플레이어";if(state.jump){const piece=pieceById(state.jump.pieceId);finishForcedJump(piece);state.log.unshift(`${name}: 시간 초과 · 점프 자동 종료`);if(piece&&isValidEnd(piece,piece.row,piece.col)){finishTurn(piece);return}}state.log.unshift(`${name}: 시간 초과 · 차례 넘김`);state.jump=null;selectedPieceId=null;advanceTurn();publishState()}
+function hostMove(sender,pieceId,row,col){if(!state||state.winner||String(sender)!==String(currentPlayerId()))return;if(Date.now()>(state.turnDeadline||0)){hostTurnExpired();return}const piece=pieceById(pieceId);if(!piece||String(piece.owner)!==String(sender)||piece.locked)return;if(state.jump&&state.jump.pieceId!==pieceId)return;const options=legalMovesFor(piece,Boolean(state.jump)),opt=options.find(o=>o.row===row&&o.col===col);if(!opt)return;const from={row:piece.row,col:piece.col};piece.row=row;piece.col=col;if(!isStartRow(piece,row,col))piece.leftStart=true;selectedPieceId=piece.id;if(opt.kind==="step"){state.log.unshift(`${players[sender].name}: ${shapeKo(piece.type)} 한 칸 이동`);finishTurn(piece);return}if(!state.jump)state.jump={pieceId:piece.id,visited:[key(from.row,from.col),key(row,col)]};else state.jump.visited.push(key(row,col));state.log.unshift(`${players[sender].name}: ${shapeKo(piece.type)} 점프`);const more=legalMovesFor(piece,true);if(more.length===0&&isValidEnd(piece,piece.row,piece.col)){finishTurn(piece);return}extendJumpClock();publishState()}
+function hostEndJump(sender){if(!state?.jump||String(sender)!==String(currentPlayerId()))return;if(Date.now()>(state.turnDeadline||0)){hostTurnExpired();return}const piece=pieceById(state.jump.pieceId);if(!piece||!isValidEnd(piece,piece.row,piece.col))return;finishTurn(piece)}
+function finishTurn(piece){if(isDestinationRow(piece,piece.row,piece.col))piece.locked=true;state.jump=null;selectedPieceId=null;const owner=piece.owner;if(state.pieces.filter(p=>p.owner===owner).every(p=>p.locked)){state.winner=owner;state.turnDeadline=0;clearTimeout(hostTurnTimer);state.log.unshift(`${players[owner].name}님이 모든 말을 도착시켰습니다.`);broadcast({type:"WIN",players,state,winnerId:owner});renderAll();showWinner(owner);return}advanceTurn();publishState()}
+function advanceTurn(){const count=state.order.length;for(let i=1;i<=count;i++){const idx=(state.turnIndex+i)%count,id=state.order[idx];if(playerHasMove(id)){state.turnIndex=idx;resetTurnClock();return}state.log.unshift(`${players[id].name}: 움직일 수 없어 차례를 건너뜁니다.`)}state.log.unshift("모든 플레이어가 움직일 수 없습니다.")}
 function publishState(){broadcast({type:"STATE",players,state});renderAll()}
 function choosePiece(id){
  if(!state||!started){showToast("게임이 아직 시작되지 않았습니다.");return}
@@ -155,7 +162,20 @@ function handleCell(row,col){
 }
 function cancelSelection(){if(state?.jump)return;selectedPieceId=null;legalOptions=[];renderAll()}function requestEndJump(){if(!myTurn()||!state?.jump)return;const piece=pieceById(state.jump.pieceId);if(!isValidEnd(piece,piece.row,piece.col)){showToast("이 칸에서는 점프를 끝낼 수 없습니다.");return}if(myRole==="host")hostEndJump(myId);else send({type:"END_JUMP_REQ"})}
 function shapeKo(type){return{square:"사각형",diamond:"마름모",circle:"원",triangle:"삼각형"}[type]}
-function renderAll(){if(!state)return;if(state.jump)selectedPieceId=state.jump.pieceId;if(selectedPieceId){const p=pieceById(selectedPieceId);legalOptions=p?legalMovesFor(p,Boolean(state.jump)):[]}else legalOptions=[];renderBoard();renderStatus();renderLog()}
+function startClientTurnTimer(){
+ cancelAnimationFrame(clientTimerRaf);
+ const seconds=$("turnSeconds"),bar=$("turnTimerBar"),box=$("turnBox");
+ const tick=()=>{
+   if(!state||state.winner){seconds.textContent="";bar.style.transform="scaleX(0)";box.classList.remove("urgent");return}
+   const remain=Math.max(0,(state.turnDeadline||0)-Date.now());
+   seconds.textContent=`${Math.ceil(remain/1000)}초`;
+   bar.style.transform=`scaleX(${Math.min(1,remain/TURN_MS)})`;
+   box.classList.toggle("urgent",remain<=JUMP_GRACE_MS);
+   clientTimerRaf=requestAnimationFrame(tick)
+ };
+ tick()
+}
+function renderAll(){if(!state)return;if(state.jump)selectedPieceId=state.jump.pieceId;if(selectedPieceId){const p=pieceById(selectedPieceId);legalOptions=p?legalMovesFor(p,Boolean(state.jump)):[]}else legalOptions=[];renderBoard();renderStatus();renderLog();startClientTurnTimer()}
 function renderBoard(){
   const board=$("board");
   const selected=selectedPieceId?pieceById(selectedPieceId):null;
@@ -239,7 +259,7 @@ function renderBoard(){
 }
 function renderStatus(){
  const current=currentPlayerId();
- $("turnBox").textContent=state.winner?"게임 종료":turnLabel();
+ $("turnText").textContent=state.winner?"게임 종료":turnLabel();
  const jumpPiece=state.jump?pieceById(state.jump.pieceId):null;
  if(state.winner)$("message").textContent=`${players?.[state.winner]?.name||"플레이어"}님이 승리했습니다!`;
  else if(!myTurn())$("message").textContent=`${players?.[current]?.name||"상대방"}님의 움직임을 기다리는 중입니다.`;
@@ -258,6 +278,7 @@ function showRules(){
  <ol class="rules-list">
    <li><strong>목표:</strong> 내 말 8개를 모두 보드 반대편의 도착 줄로 보내면 승리합니다. 모서리 칸은 도착 칸에 포함되지 않습니다.</li>
    <li><strong>차례:</strong> 한 차례에는 말 하나만 움직입니다. 움직일 수 있는 말이 하나라도 있으면 차례를 건너뛸 수 없습니다.</li>
+   <li><strong>제한 시간:</strong> 한 사람의 차례는 30초입니다. 시간이 끝나면 자동으로 다음 사람에게 넘어가며, 연속 점프 뒤에는 최소 10초가 보장됩니다.</li>
    <li><strong>화면 방향:</strong> 장기 게임처럼 각 참가자의 자기 진영이 항상 화면 아래쪽에 보이도록 보드가 자동 회전합니다.</li>
    <li><strong>이동 안내:</strong> 내 차례에 말 모양을 직접 누르면 선택한 말이 빛나고, 이동 가능한 칸이 노란색 점 또는 고리로 표시됩니다.</li>
    <li><strong>사각형:</strong> 상·하·좌·우 방향으로 움직이거나 점프합니다.</li>
@@ -275,7 +296,7 @@ function showRules(){
  $("modalClose").textContent="확인";$("modalClose").onclick=()=>$("overlay").classList.remove("show");$("overlay").classList.add("show")
 }
 function showWinner(id){$("modalTitle").textContent="GAME COMPLETE";$("modalBody").innerHTML=`<p style="text-align:center;font-size:20px"><strong>${escapeHtml(players[id].name)}</strong>님이 승리했습니다!</p>`;$("modalClose").textContent="처음으로";$("modalClose").onclick=()=>location.reload();$("overlay").classList.add("show")}
-function showEndOverlay(title,message){$("gameScreen").classList.remove("hidden");$("lobbyScreen").classList.add("hidden");$("modalTitle").textContent=title;$("modalBody").innerHTML=`<p style="text-align:center">${escapeHtml(message)}</p>`;$("modalClose").textContent="처음으로";$("modalClose").onclick=()=>location.reload();$("overlay").classList.add("show")}
+function showEndOverlay(title,message){clearTimeout(hostTurnTimer);cancelAnimationFrame(clientTimerRaf);$("gameScreen").classList.remove("hidden");$("lobbyScreen").classList.add("hidden");$("modalTitle").textContent=title;$("modalBody").innerHTML=`<p style="text-align:center">${escapeHtml(message)}</p>`;$("modalClose").textContent="처음으로";$("modalClose").onclick=()=>location.reload();$("overlay").classList.add("show")}
 const bgm=$("bgm");let musicLevel=Number(localStorage.getItem("traverseVolume")||3);if(!Number.isInteger(musicLevel)||musicLevel<1||musicLevel>5)musicLevel=3;let muted=localStorage.getItem("traverseMuted")==="true";
 function renderMusic(){document.querySelectorAll("[data-level]").forEach(b=>b.classList.toggle("on",!muted&&Number(b.dataset.level)<=musicLevel));document.querySelectorAll("[data-mute]").forEach(b=>b.textContent=muted?"PLAY":"MUTE")}
 async function playMusic(){if(!bgm)return;bgm.volume=musicLevel/5;muted=false;localStorage.setItem("traverseMuted","false");try{await bgm.play()}catch(_){}renderMusic()}function setLevel(n){musicLevel=Math.max(1,Math.min(5,Number(n)));localStorage.setItem("traverseVolume",musicLevel);playMusic()}function toggleMute(){if(!bgm)return;if(muted||bgm.paused)playMusic();else{bgm.pause();muted=true;localStorage.setItem("traverseMuted","true");renderMusic()}}
@@ -299,7 +320,7 @@ function init(){
    onStateChange:syncLobbyState,
    getLobbyPresentation:lobbyPresentation,
    createStartData:()=>({state:makeInitialState()}),
-   onStarted:({data})=>{state=data?.state;selectedPieceId=null;showGame();renderAll()},
+   onStarted:({data,role})=>{state=data?.state;myRole=role;selectedPieceId=null;showGame();renderAll();if(myRole==="host")scheduleHostTurnTimer()},
    onGameMessage:handleGameMessage,
    onAbort:({title,message})=>showEndOverlay(title,message)
  }).mount()

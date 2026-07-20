@@ -13,7 +13,7 @@ const CARD_NAMES = Object.freeze({
   8: "공주"
 });
 const BASE_DECK = Object.freeze([1, 1, 1, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 7, 8]);
-const TARGET_SCORES = Object.freeze({ 3: 5, 4: 4 });
+const TARGET_SCORES = Object.freeze({ 3: 3, 4: 3 });
 
 function randomInt(maximum) {
   return crypto.randomInt(maximum);

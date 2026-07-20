@@ -70,6 +70,7 @@ main { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 64px 0 80
 .hero-copy h1 { margin: 0; font: 800 clamp(42px, 7vw, 74px)/1.05 Georgia, "Times New Roman", serif; letter-spacing: -2px; }
 .hero-copy h1 em { color: var(--red); font-style: normal; }
 .hero-description { max-width: 630px; margin: 22px 0 0; color: var(--muted); font-size: 17px; line-height: 1.8; }
+.source-counts { margin: 12px 0 0; color: var(--ink); font-size: 15px; font-weight: 900; letter-spacing: .1px; }
 
 .overall-card {
     padding: 24px;
@@ -120,6 +121,7 @@ main { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 64px 0 80
 .study-toolbar h1 { margin: 0; font: 800 36px/1 Georgia, serif; }
 .study-stage { margin-bottom: 6px; }
 .study-toolbar .text-button:last-child { justify-self: end; }
+.toolbar-actions { display: flex; justify-self: end; align-items: center; gap: 16px; }
 .text-button { padding: 9px 0; border: 0; background: transparent; color: var(--red-dark); font-weight: 900; cursor: pointer; }
 .session-progress { margin-bottom: 18px; }
 .session-progress-copy { display: flex; justify-content: space-between; margin-bottom: 9px; color: var(--muted); font-size: 13px; font-weight: 700; }
@@ -151,8 +153,15 @@ main { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 64px 0 80
 .word-text { font: 800 clamp(52px, 8vw, 78px)/1 Georgia, serif; letter-spacing: -2px; }
 .pos-text { margin-top: 12px; color: var(--muted); font-size: 15px; font-weight: 700; }
 .card-divider { width: 56px; height: 3px; margin: 22px 0 18px; background: var(--gold); }
-.meaning-text { max-width: 650px; color: transparent; font-size: clamp(17px, 3vw, 22px); font-weight: 800; line-height: 1.7; text-shadow: 0 0 10px rgba(36,48,45,.28); transition: color .16s ease, text-shadow .16s ease; }
+.answer-layout { display: block; width: min(690px, 100%); }
+.answer-copy { display: block; min-width: 0; }
+.word-image-block { display: none; overflow: hidden; width: 146px; aspect-ratio: 1; border: 1px solid rgba(199,154,82,.34); border-radius: 14px; background: #f7f0e2; opacity: 0; visibility: hidden; transform: translateY(5px); transition: opacity .18s ease, transform .18s ease, visibility .18s ease; }
+.word-image-block img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.meaning-text { display: block; max-width: 650px; margin: 0 auto; color: transparent; font-size: clamp(17px, 3vw, 22px); font-weight: 800; line-height: 1.7; text-shadow: 0 0 10px rgba(36,48,45,.28); transition: color .16s ease, text-shadow .16s ease; }
 .flashcard.revealed .meaning-text { color: var(--ink); text-shadow: none; }
+.flashcard.revealed .answer-layout.has-image { display: grid; grid-template-columns: 146px minmax(0, 1fr); align-items: start; gap: 18px; }
+.flashcard.revealed .answer-layout.has-image .meaning-text { text-align: left; }
+.flashcard.revealed .word-image-block { display: block; opacity: 1; visibility: visible; transform: none; }
 .example-block, .related-block {
     width: min(650px, 100%);
     opacity: 0;
@@ -217,14 +226,16 @@ main { width: min(1160px, calc(100% - 32px)); margin: 0 auto; padding: 64px 0 80
     .hero-description { font-size: 15px; }
     .level-grid { grid-template-columns: repeat(2, 1fr); }
     .study-toolbar { grid-template-columns: 1fr 1fr; align-items: center; }
-    .study-toolbar > div { grid-column: 1 / -1; grid-row: 1; }
+    .study-heading { grid-column: 1 / -1; grid-row: 1; }
     .study-toolbar .text-button { grid-row: 2; justify-self: start; }
-    .study-toolbar .text-button:last-child { justify-self: end; }
+    .toolbar-actions { grid-column: 2; grid-row: 2; justify-self: end; gap: 12px; }
     .flashcard { min-height: 520px; padding: 50px 24px 48px; }
     .word-text { font-size: clamp(48px, 18vw, 72px); }
     .utility-actions { grid-template-columns: 1fr 1fr; }
     .example-block { padding: 12px 14px; }
     .example-text { font-size: 15px; }
+    .flashcard.revealed .answer-layout.has-image { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; }
+    .word-image-block { width: 92px; border-radius: 10px; }
     .memory-actions button { min-height: 58px; }
 }
 

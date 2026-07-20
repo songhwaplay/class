@@ -8,6 +8,27 @@
     gap: 9px;
 }
 
+/* Keep waiting rooms compact without shrinking the actual game board. */
+[data-multiplayer-lobby].mp-lobby-compact {
+    width: 100%;
+    max-width: 760px;
+    min-height: 0;
+    margin-inline: auto;
+}
+
+[data-multiplayer-lobby].mp-lobby-compact > .panel {
+    width: 100%;
+    max-width: 760px;
+    min-height: 0;
+    margin-inline: auto;
+}
+
+.shell:has(> [data-multiplayer-lobby].mp-lobby-compact:not(.hidden)),
+.app-shell:has(> [data-multiplayer-lobby].mp-lobby-compact:not(.hidden)) {
+    width: min(800px, 100%);
+    min-height: 0;
+}
+
 [data-multiplayer-lobby] .mp-lobby-card {
     width: min(680px, 100%);
     margin: 13px auto;
@@ -108,6 +129,10 @@
 }
 
 @media (max-width: 520px) {
+    [data-multiplayer-lobby].mp-lobby-compact > .panel {
+        margin-bottom: 9px;
+    }
+
     [data-multiplayer-lobby] .mp-lobby-row > input,
     [data-multiplayer-lobby] .mp-lobby-row > button,
     [data-multiplayer-lobby] .mp-lobby-actions > button {

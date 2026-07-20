@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="2022 개정 교육과정 영어 기본어휘 3,000단어를 예문과 연관 단어로 익히는 15레벨 단어 카드">
+    <meta name="description" content="교육부 고시 제2022-33호 영어과 교육과정 기본 어휘 3,000단어 학습">
     <title>영어 단어 3,000 · 15레벨 학습</title>
     <link rel="stylesheet" href="styles.css">
     <script src="vocabulary-core.js" defer></script>
@@ -26,13 +26,14 @@
     <main>
         <section id="levelScreen" class="level-screen" aria-labelledby="pageTitle">
             <div class="hero-copy">
-                <p class="eyebrow">2022 개정 교육과정 기본어휘</p>
-                <h1 id="pageTitle">매일 한 단계씩,<br><em>영어 단어 3,000</em></h1>
-                <p class="hero-description">초급 4개, 중급 6개, 고급 5개 레벨로 나눴어요. 각 레벨은 200단어이며 학습 결과는 이 기기에 자동 저장됩니다.</p>
+                <p class="eyebrow">교육부 고시 제2022-33호 [별책 14]</p>
+                <h1 id="pageTitle">영어과 기본 어휘 <em>3,000</em></h1>
+                <p class="hero-description">출처: 교육부(2022), 「영어과 교육과정」 [별표 3] 기본 어휘, pp. 254-290.</p>
+                <p class="source-counts">초급 800개 · 중급 1,200개 · 고급 1,000개</p>
             </div>
 
             <div class="overall-card" aria-label="전체 학습 현황">
-                <div>
+                <div class="study-heading">
                     <span class="overall-label">나의 진도</span>
                     <strong id="overallPercent">0%</strong>
                 </div>
@@ -50,7 +51,10 @@
                     <p id="studyStage" class="study-stage">초급</p>
                     <h1 id="studyTitle">초급 1</h1>
                 </div>
-                <button id="shuffleButton" class="text-button" type="button">순서 섞기</button>
+                <div class="toolbar-actions">
+                    <button id="imageToggleButton" class="text-button" type="button" aria-pressed="true">그림 켜짐</button>
+                    <button id="shuffleButton" class="text-button" type="button">순서 섞기</button>
+                </div>
             </div>
 
             <div class="session-progress">
@@ -66,15 +70,22 @@
                 <span id="wordText" class="word-text">word</span>
                 <span id="posText" class="pos-text">명사</span>
                 <span class="card-divider" aria-hidden="true"></span>
-                <span id="meaningText" class="meaning-text">카드를 눌러 뜻을 확인하세요.</span>
-                <span id="exampleBlock" class="example-block" aria-hidden="true">
-                    <span id="exampleLabel" class="detail-label">Example</span>
-                    <span id="exampleText" class="example-text"></span>
-                    <span id="exampleKo" class="example-ko"></span>
-                </span>
-                <span id="relatedBlock" class="related-block" aria-hidden="true">
-                    <span class="detail-label">연관 단어</span>
-                    <span id="relatedWords" class="related-words"></span>
+                <span id="answerLayout" class="answer-layout">
+                    <span id="wordImageBlock" class="word-image-block" hidden aria-hidden="true">
+                        <img id="wordImage" alt="" width="420" height="420">
+                    </span>
+                    <span class="answer-copy">
+                        <span id="meaningText" class="meaning-text">카드를 눌러 뜻을 확인하세요.</span>
+                        <span id="exampleBlock" class="example-block" aria-hidden="true">
+                            <span id="exampleLabel" class="detail-label">Example</span>
+                            <span id="exampleText" class="example-text"></span>
+                            <span id="exampleKo" class="example-ko"></span>
+                        </span>
+                        <span id="relatedBlock" class="related-block" aria-hidden="true">
+                            <span class="detail-label">연관 단어</span>
+                            <span id="relatedWords" class="related-words"></span>
+                        </span>
+                    </span>
                 </span>
                 <span class="reveal-hint">카드 누르기 · Space</span>
             </button>
