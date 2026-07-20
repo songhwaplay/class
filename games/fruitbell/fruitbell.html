@@ -198,7 +198,7 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
     <ul>
       <li>각 플레이어는 자기 차례에 <strong>내 카드 뒤집기</strong>를 눌러 카드 한 장을 공개합니다.</li>
       <li>공개된 카드들 가운데 같은 과일의 합이 정확히 <strong>5개</strong>가 되면 종을 누릅니다.</li>
-      <li>정답일 때 가장 먼저 종을 누른 플레이어가 공개 카드들을 가져갑니다.</li>
+      <li>정답일 때 가장 먼저 종을 누른 플레이어가 <strong>각 플레이어 앞에 누적된 공개 카드 더미 전부</strong>를 가져갑니다.</li>
       <li>과일 합이 5개가 아닌데 종을 누르면 벌칙을 받습니다.</li>
       <li>제한 시간 안에 카드를 뒤집지 않으면 카드 1장 벌칙을 받거나 차례가 넘어갑니다.</li>
       <li>개인전은 가장 많은 카드를 모은 플레이어가 승리합니다.</li>
@@ -214,7 +214,7 @@ const GAME_ID="fruitbell";
 const FRUITS=["strawberry","banana","lime","plum"];
 let lobby=null,myId=null,myRole="host",players={},started=false;
 let gameMode="individual";
-let state={turn:0,order:[],scores:{},decks:{},faceUp:{},wonCards:{},penaltyPot:[],locked:false,ended:false,turnDeadline:0,gameMode:"individual",teams:{}};
+let state={turn:0,order:[],scores:{},decks:{},faceUp:{},faceUpPiles:{},wonCards:{},penaltyPot:[],locked:false,ended:false,turnDeadline:0,gameMode:"individual",teams:{}};
 let hostTurnTimer=null,clientTimerRaf=null;
 let bellSample=null;
 let lastBellNoticeText="";
@@ -385,20 +385,29 @@ function makeDeck(){
 function createFruitBellStartData(){
  const hostName=currentPlayerName();
  if(myId&&players[myId])players[myId].name=hostName;
- const order=Object.keys(players).slice(0,4),deck=makeDeck(),decks={},faceUp={},scores={},wonCards={};
- order.forEach(id=>{decks[id]=[];faceUp[id]=null;scores[id]=0;wonCards[id]=[]});
+ const order=Object.keys(players).slice(0,4),deck=makeDeck(),decks={},faceUp={},faceUpPiles={},scores={},wonCards={};
+ order.forEach(id=>{decks[id]=[];faceUp[id]=null;faceUpPiles[id]=[];scores[id]=0;wonCards[id]=[]});
  deck.forEach((c,i)=>decks[order[i%order.length]].push(c));
- state={turn:0,order,scores,decks,faceUp,wonCards,penaltyPot:[],locked:false,ended:false,turnDeadline:Date.now()+4000,gameMode,teams:buildTeams(order)};
+ state={turn:0,order,scores,decks,faceUp,faceUpPiles,wonCards,penaltyPot:[],locked:false,ended:false,turnDeadline:Date.now()+4000,gameMode,teams:buildTeams(order)};
  return{state,gameMode}
 }
 function startFruitBellGame(data){state=data?.state;if(!state)return;applyGameMode(data.gameMode||state.gameMode);showGame();renderGame();startClientTimer();if(myRole==="host")scheduleHostTurnTimer()}
 function showGame(){$("lobby").classList.add("hidden");$("gameScreen").classList.remove("hidden")}
 function myTurn(){return state.order[state.turn]===myId}
 function requestFlip(){if(!started||state.ended||!myTurn())return;if(myRole==="host")hostFlip(myId);else send({type:"FLIP_REQ"})}
+function getFaceUpPile(playerId){
+ state.faceUpPiles=state.faceUpPiles||{};
+ if(!Array.isArray(state.faceUpPiles[playerId])){
+   state.faceUpPiles[playerId]=state.faceUp?.[playerId]?[state.faceUp[playerId]]:[];
+ }
+ return state.faceUpPiles[playerId];
+}
 function hostFlip(sender){
  if(state.ended||state.locked||state.order[state.turn]!==sender)return;
  const deck=state.decks[sender];if(!deck.length){endMatch();return}
- state.faceUp[sender]=deck.pop();
+ const card=deck.pop();
+ getFaceUpPile(sender).push(card);
+ state.faceUp[sender]=card;
  state.turn=(state.turn+1)%state.order.length;
  state.turnDeadline=Date.now()+4000;
  syncState();
@@ -554,10 +563,9 @@ function pressBell(){if(!started||state.ended)return;playBrightBell();if(myRole=
 function collectOpenCards(){
  const pile=[];
  state.order.forEach(id=>{
-   if(state.faceUp[id]){
-     pile.push(state.faceUp[id]);
-     state.faceUp[id]=null;
-   }
+   pile.push(...getFaceUpPile(id));
+   state.faceUpPiles[id]=[];
+   state.faceUp[id]=null;
  });
  if(state.penaltyPot?.length){
    pile.push(...state.penaltyPot);
@@ -652,7 +660,7 @@ function renderGame(){
  }).join("");
  const noticeText=state.notice?.text||"";
  $("message").textContent=noticeText||(myTurn()?"내 차례입니다. 4초 안에 카드를 뒤집으세요.":`${players[state.order[state.turn]]?.name||""} 차례입니다.`);
- $("potCount").textContent=Object.values(state.faceUp||{}).filter(Boolean).length+(state.penaltyPot?.length||0);
+ $("potCount").textContent=state.order.reduce((total,id)=>total+getFaceUpPile(id).length,0)+(state.penaltyPot?.length||0);
  const flipBtn=$("flipBtn");
  flipBtn.disabled=!myTurn()||state.locked||state.ended;
  flipBtn.classList.toggle("my-turn",myTurn()&&!state.locked&&!state.ended);

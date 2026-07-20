@@ -2,13 +2,13 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-async function render() {
+async function render(pathname = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
 
   return worker.fetch(
-    new Request("http://localhost/", {
+    new Request(`http://localhost${pathname}`, {
       headers: { accept: "text/html" },
     }),
     {
@@ -24,12 +24,12 @@ async function render() {
 }
 
 test("renders the fraction conversion practice product", async () => {
-  const response = await render();
+  const response = await render("/fraction");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>분수 변환 훈련실<\/title>/);
+  assert.match(html, /<title>수학 학습지<\/title>/);
   assert.match(html, /대분수를 가분수로/);
   assert.match(html, /가분수를 대분수로/);
   assert.match(html, /전체 채점/);
@@ -40,6 +40,24 @@ test("renders the fraction conversion practice product", async () => {
   assert.equal((html.match(/data-testid="question-card"/g) ?? []).length, 16);
   assert.equal((html.match(/data-testid="answer-card"/g) ?? []).length, 16);
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
+});
+
+test("renders the learning index and the arithmetic catalog in workbook order", async () => {
+  const indexResponse = await render("/");
+  const indexHtml = await indexResponse.text();
+  assert.match(indexHtml, /href="\/arithmetic"/);
+  assert.match(indexHtml, /연산 학습지/);
+  assert.match(indexHtml, /href="\/fraction"/);
+
+  const catalogResponse = await render("/arithmetic");
+  const catalogHtml = await catalogResponse.text();
+  assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 64);
+  assert.ok(catalogHtml.indexOf("1수세기①") < catalogHtml.indexOf("1덧셈뺄셈①"));
+  assert.ok(catalogHtml.indexOf("3분수①") < catalogHtml.indexOf("3분수②"));
+  assert.ok(catalogHtml.indexOf("3분수②") < catalogHtml.indexOf("3무게,들이"));
+  assert.ok(catalogHtml.indexOf("6비례식") < catalogHtml.indexOf("6원기둥"));
+  assert.match(catalogHtml, /href="\/fraction"[^>]*data-testid="worksheet-choice"/);
+  assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
 
 test("keeps the printable worksheet on one compact A4 page", async () => {
@@ -55,6 +73,7 @@ test("keeps the printable worksheet on one compact A4 page", async () => {
   assert.match(printBlock, /min-height:\s*10\.5mm/);
   assert.match(printBlock, /page-break-inside:\s*avoid/);
   assert.match(printBlock, /\.answer-stage\s*\{[\s\S]*?display:\s*block !important;[\s\S]*?page-break-before:\s*always;/);
+  assert.match(printBlock, /\.a4-sheet \.fraction-line\s*\{[\s\S]*?border-top:\s*2px solid currentColor;[\s\S]*?background:\s*transparent !important;/);
   assert.doesNotMatch(printBlock, /margin:\s*12mm/);
 });
 
@@ -81,14 +100,14 @@ test("keeps the desktop worksheet in one two-column viewport", async () => {
 });
 
 test("shows only right or wrong after grading", async () => {
-  const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const pageSource = await readFile(new URL("../app/fraction/page.tsx", import.meta.url), "utf8");
 
   assert.match(pageSource, /result\.correct \? "맞음" : "틀림"/);
   assert.doesNotMatch(pageSource, /function Explanation|풀이 보기|풀이 닫기|result\.message|explain-button/);
 });
 
 test("opens the browser print dialog without creating a download", async () => {
-  const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+  const pageSource = await readFile(new URL("../app/fraction/page.tsx", import.meta.url), "utf8");
 
   assert.match(pageSource, /window\.print\(\)/);
   assert.match(pageSource, /dataset\.printMode = mode/);
@@ -96,4 +115,6 @@ test("opens the browser print dialog without creating a download", async () => {
   assert.match(pageSource, /답지만 인쇄/);
   assert.match(pageSource, /문제지\+답지 인쇄/);
   assert.doesNotMatch(pageSource, /html2canvas|jsPDF|\.save\(/);
+  assert.doesNotMatch(pageSource, /훈련실|곱하고 더하기|나누고 남기기|오늘의 분수 연습|기억할 한 줄|시제품/);
+  assert.doesNotMatch(pageSource, />3학년 분수</);
 });

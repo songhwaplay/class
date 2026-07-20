@@ -1,0 +1,24 @@
+"use strict";
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const vm=require("node:vm");
+const html=fs.readFileSync(path.resolve(__dirname,"..","games","diamondgame","diamondgame.html"),"utf8");
+const scripts=[...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
+assert.equal(scripts.length,1,"인라인 게임 스크립트가 하나여야 합니다.");
+const context=vm.createContext({console,localStorage:{getItem:()=>""},document:{getElementById:()=>null,createElementNS:()=>({setAttribute(){},addEventListener(){},appendChild(){}}),createDocumentFragment:()=>({appendChild(){}})},window:{addEventListener(){}},setTimeout,clearTimeout});
+vm.runInContext(scripts[0][1],context,{filename:"diamondgame-inline.js"});
+assert.equal(vm.runInContext("CELLS.length",context),121,"별 모양 보드는 121칸이어야 합니다.");
+for(const camp of ["top","bottom","upperLeft","upperRight","lowerLeft","lowerRight"]){assert.equal(vm.runInContext(`cellsInCamp("${camp}").length`,context),10,`${camp} 진영은 10칸이어야 합니다.`)}
+const snapshot={players:{red:{name:"가나다"},blue:{name:"라마바"},yellow:{name:"사아자"}}};
+const initial=vm.runInContext(`createInitialState(${JSON.stringify(snapshot)})`,context);
+assert.equal(Object.keys(initial.pieces).length,30,"3인 게임은 말 30개로 시작해야 합니다.");
+assert.deepEqual(Array.from(initial.order),["red","blue","yellow"],"진행 순서를 보존해야 합니다.");
+vm.runInContext(`state={order:["red","blue"],pieces:{"0,0":"red"},turnIndex:0,jump:null,winner:null,log:[]}`,context);
+assert.equal(vm.runInContext(`legalMoves("red",0,0).filter(move=>move.kind==="step").length`,context),6,"빈 중앙에서는 여섯 방향으로 한 칸 이동할 수 있어야 합니다.");
+vm.runInContext(`state={order:["red","blue"],pieces:{"0,0":"red","2,0":"blue"},turnIndex:0,jump:null,winner:null,log:[]}`,context);
+assert.equal(vm.runInContext(`legalMoves("red",0,0).some(move=>move.kind==="jump"&&move.x===4&&move.y===0)`,context),true,"인접한 말을 넘어 빈칸으로 점프할 수 있어야 합니다.");
+assert.equal(vm.runInContext(`canEnterCamp("red",10,-4)`,context),false,"상대 색 진영에는 들어갈 수 없어야 합니다.");
+assert.match(html,/allowedPlayerCounts:\[2,3\]/,"2~3인 시작만 허용해야 합니다.");
+assert.doesNotMatch(html,/localStorage\.setItem\s*\(/,"이름 변경은 게임 페이지에서 허용하지 않습니다.");
+console.log("diamondgame-unit: 121 cells, six 10-cell camps, 2-3 players ok");

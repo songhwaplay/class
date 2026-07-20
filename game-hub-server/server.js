@@ -16,6 +16,8 @@ const MAX_ROOM_PLAYERS = {
   nimgame: 2,
   janggi: 2,
   omok: 2,
+  connect6: 2,
+  diamondgame: 3,
   loveletter: 4,
   avalon: 8
 };
