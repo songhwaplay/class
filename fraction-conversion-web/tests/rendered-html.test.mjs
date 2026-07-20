@@ -57,7 +57,25 @@ test("renders the learning index and the arithmetic catalog in workbook order", 
   assert.ok(catalogHtml.indexOf("3분수②") < catalogHtml.indexOf("3무게,들이"));
   assert.ok(catalogHtml.indexOf("6비례식") < catalogHtml.indexOf("6원기둥"));
   assert.match(catalogHtml, /href="\/fraction"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/counting-1"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
+});
+
+test("renders the first counting worksheet with interactive and printable answers", async () => {
+  const response = await render("/arithmetic/counting-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /수 세기①/);
+  assert.match(html, /몇 개인지 숫자로 쓰세요/);
+  assert.match(html, /몇 개인지 한글로 쓰세요/);
+  assert.match(html, /주어진 수만큼 그리세요/);
+  assert.match(html, />전체 채점<\/button>/);
+  assert.match(html, />인쇄<\/button>/);
+  assert.match(html, /aria-label="A4 수 세기 문제지"/);
+  assert.match(html, /aria-label="A4 수 세기 전체 답지"/);
+  assert.equal((html.match(/class="counting-question"/g) ?? []).length, 12);
+  assert.equal((html.match(/class="drawing-question"/g) ?? []).length, 6);
 });
 
 test("keeps the printable worksheet on one compact A4 page", async () => {

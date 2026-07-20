@@ -19,6 +19,12 @@ assert.equal(vm.runInContext(`legalMoves("red",0,0).filter(move=>move.kind==="st
 vm.runInContext(`state={order:["red","blue"],pieces:{"0,0":"red","2,0":"blue"},turnIndex:0,jump:null,winner:null,log:[]}`,context);
 assert.equal(vm.runInContext(`legalMoves("red",0,0).some(move=>move.kind==="jump"&&move.x===4&&move.y===0)`,context),true,"인접한 말을 넘어 빈칸으로 점프할 수 있어야 합니다.");
 assert.equal(vm.runInContext(`canEnterCamp("red",10,-4)`,context),false,"상대 색 진영에는 들어갈 수 없어야 합니다.");
+vm.runInContext(`state.order=["red","blue","yellow"];myId="red"`,context);
+assert.ok(vm.runInContext(`point({x:0,y:-8}).y`,context)>450,"빨강의 출발 진영은 자기 화면 아래쪽이어야 합니다.");
+vm.runInContext(`myId="blue"`,context);
+assert.ok(vm.runInContext(`point({x:-12,y:4}).y`,context)>450,"파랑의 출발 진영은 자기 화면 아래쪽이어야 합니다.");
+vm.runInContext(`myId="yellow"`,context);
+assert.ok(vm.runInContext(`point({x:12,y:4}).y`,context)>450,"노랑의 출발 진영은 자기 화면 아래쪽이어야 합니다.");
 assert.match(html,/allowedPlayerCounts:\[2,3\]/,"2~3인 시작만 허용해야 합니다.");
 assert.doesNotMatch(html,/localStorage\.setItem\s*\(/,"이름 변경은 게임 페이지에서 허용하지 않습니다.");
 console.log("diamondgame-unit: 121 cells, six 10-cell camps, 2-3 players ok");
