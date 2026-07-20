@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>메인 게임 메뉴</title>
+    <title>수학 학습지와 게임</title>
     <script src="assets/sound/music-control.js" defer></script>
     <style>
         :root {
@@ -79,6 +79,48 @@
         }
 
         h1 { margin-top: 0; }
+
+        .hub-section {
+            width: min(760px, 100%);
+            margin: 0 auto 38px;
+        }
+
+        .section-title {
+            margin: 0 0 16px;
+            font-size: 30px;
+        }
+
+        .worksheet-container {
+            display: flex;
+            justify-content: center;
+        }
+
+        .worksheet-container a {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            align-items: center;
+            width: min(340px, calc(100vw - 40px));
+            padding: 18px 20px;
+            border: 2px solid var(--gold);
+            background: linear-gradient(135deg, #7d4a16, #3a210f);
+            color: #fff0c7;
+            text-align: left;
+            text-decoration: none;
+            font-family: "Malgun Gothic", sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+        .worksheet-container a:hover,
+        .worksheet-container a:focus-visible {
+            border-color: #ffd18a;
+            background: linear-gradient(135deg, #a9651c, #4a2910);
+        }
+
+        .worksheet-arrow {
+            color: var(--gold-bright);
+            font-size: 24px;
+        }
 
         .menu-container {
             display: flex;
@@ -225,8 +267,19 @@
         </div>
     </div>
 
-    <h1>게임 선택</h1>
-    <div class="menu-container">
+    <section class="hub-section worksheet-section" aria-labelledby="worksheet-title">
+        <h1 id="worksheet-title" class="section-title">학습지</h1>
+        <div class="worksheet-container">
+            <a href="https://fraction-lab-20260720.stimpack486443.chatgpt.site/arithmetic">
+                <span>연산</span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="hub-section game-section" aria-labelledby="game-title">
+        <h2 id="game-title" class="section-title">게임</h2>
+        <div class="menu-container">
         <a href="games/fruitbell/fruitbell.html">할리갈리 (Halli Galli)</a>
         <a href="games/setgame/setgame.html">세트 (Set)</a>
         <a href="games/nimgame/nimgame.html">님 (Nim)</a>
@@ -242,7 +295,8 @@
         <a href="games/traverse/traverse.html">트래버스 (Traverse)</a>
         <a href="games/avalon/avalon.html">레지스탕스: 아발론 (The Resistance: Avalon)</a>
         <a id="cds95GameLink" href="https://world-voyage-classroom.onrender.com/">대항해시대 (Age of Exploration)</a>
-    </div>
+        </div>
+    </section>
 
     <script>
         (() => {
