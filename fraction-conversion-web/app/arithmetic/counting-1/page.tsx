@@ -191,7 +191,10 @@ export default function CountingOnePage() {
               <h2>몇 개인지 숫자로 쓰세요.</h2>
               <div className="counting-question-list">
                 {questionSet.counts.slice(0, 3).map((count, index) => (
-                  <article className="counting-question" key={`number-${index}`}>
+                  <article
+                    className={`counting-question${results[index + 1] === true ? " is-correct" : results[index + 1] === false ? " is-wrong" : ""}`}
+                    key={`number-${index}`}
+                  >
                     <span className="counting-question-number">{index + 1}</span>
                     <Symbols symbol={questionSet.countSymbols[index]} count={count} />
                     <span className="counting-arrow" aria-hidden="true">→</span>
@@ -218,7 +221,10 @@ export default function CountingOnePage() {
               <h2>몇 개인지 한글로 쓰세요.</h2>
               <div className="counting-question-list">
                 {questionSet.counts.slice(3, 6).map((count, index) => (
-                  <article className="counting-question" key={`word-${index}`}>
+                  <article
+                    className={`counting-question${results[index + 4] === true ? " is-correct" : results[index + 4] === false ? " is-wrong" : ""}`}
+                    key={`word-${index}`}
+                  >
                     <span className="counting-question-number">{index + 4}</span>
                     <Symbols symbol={questionSet.countSymbols[index]} count={count} />
                     <span className="counting-arrow" aria-hidden="true">→</span>
@@ -245,7 +251,10 @@ export default function CountingOnePage() {
             <h2>주어진 수만큼 그리세요.</h2>
             <div className="drawing-question-list">
               {questionSet.counts.slice(6, 9).map((count, index) => (
-                <article className="drawing-question" key={`drawing-${index}`}>
+                <article
+                  className={`drawing-question${results[index + 7] === true ? " is-correct" : results[index + 7] === false ? " is-wrong" : ""}`}
+                  key={`drawing-${index}`}
+                >
                   <div className="drawing-prompt">
                     <span className="counting-question-number">{index + 7}</span>
                     <strong>{questionSet.drawSymbols[index]}</strong>

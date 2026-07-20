@@ -144,11 +144,19 @@
 
 <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
+<audio id="bgm" src="../../assets/sound/loveletter-round-1.mp3" preload="auto" loop></audio>
+<script src="../../assets/sound/music-control.js"></script>
 <script>
 "use strict";
 
 const GAME_ID="loveletter";
 const NAME_KEY="classPlayerName";
+const LOVELETTER_MUSIC=Object.freeze([
+  "../../assets/sound/loveletter-round-1.mp3",
+  "../../assets/sound/loveletter-round-2.mp3",
+  "../../assets/sound/loveletter-round-3.mp3",
+  "../../assets/sound/loveletter-round-4.mp3"
+]);
 const SERVER_MESSAGE=Object.freeze({STATE:"LOVELETTER_STATE",REVEAL:"LOVELETTER_REVEAL",ERROR:"LOVELETTER_ERROR"});
 const CARD_META=Object.freeze({
   1:{name:"근위병",file:"guard.png",count:5,effect:"다른 플레이어의 카드를 추측합니다. 맞히면 그 플레이어가 탈락합니다."},
@@ -170,6 +178,7 @@ let selectedTarget=null;
 let selectedGuess=null;
 let actionPending=false;
 let lastActionNumber=-1;
+let currentMusicIndex=0;
 
 function imagePath(value){return `../../assets/images/loveletter-cards/${CARD_META[value].file}`}
 function playerById(id){return gameState?.players.find(player=>player.id===id)||null}
@@ -178,8 +187,22 @@ function showToast(message){clearTimeout(toastTimer);$("toast").textContent=mess
 function showRules(){$("rulesOverlay").classList.remove("hidden")}
 function hideRules(){$("rulesOverlay").classList.add("hidden")}
 function showGame(){$("lobbyScreen").classList.add("hidden");$("gameScreen").classList.remove("hidden")}
-function showLobby(){$("gameScreen").classList.add("hidden");$("lobbyScreen").classList.remove("hidden");gameState=null;resetSelection()}
+function showLobby(){$("gameScreen").classList.add("hidden");$("lobbyScreen").classList.remove("hidden");gameState=null;resetSelection();syncRoundMusic(1)}
 function resetSelection(){selectedCard=null;selectedTarget=null;selectedGuess=null;actionPending=false}
+
+function syncRoundMusic(round){
+  const bgm=$("bgm");
+  if(!bgm)return;
+  const roundNumber=Math.max(1,Math.floor(Number(round)||1));
+  const nextIndex=(roundNumber-1)%LOVELETTER_MUSIC.length;
+  if(nextIndex===currentMusicIndex)return;
+  currentMusicIndex=nextIndex;
+  const resume=!bgm.paused;
+  bgm.src=LOVELETTER_MUSIC[nextIndex];
+  bgm.loop=true;
+  bgm.load();
+  if(resume)bgm.play().catch(()=>{});
+}
 
 function buildRules(){
   const fragment=document.createDocumentFragment();
@@ -313,6 +336,7 @@ function renderResult(){
 function renderGame(){
   if(!gameState||gameState.phase==="lobby")return;
   showGame();
+  syncRoundMusic(gameState.round);
   $("roundText").textContent=String(gameState.round);
   $("deckText").textContent=String(gameState.deckCount);
   $("deckCount").textContent=`${gameState.deckCount}장`;

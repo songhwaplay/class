@@ -58,6 +58,9 @@ test("renders the learning index and the arithmetic catalog in workbook order", 
   assert.ok(catalogHtml.indexOf("6비례식") < catalogHtml.indexOf("6원기둥"));
   assert.match(catalogHtml, /href="\/fraction"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/counting-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/add-subtract-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/add-subtract-2"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/give-and-take-1"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
 
@@ -76,6 +79,50 @@ test("renders the first counting worksheet with interactive and printable answer
   assert.match(html, /aria-label="A4 수 세기 전체 답지"/);
   assert.equal((html.match(/class="counting-question"/g) ?? []).length, 12);
   assert.equal((html.match(/class="drawing-question"/g) ?? []).length, 6);
+});
+
+test("renders the first addition and subtraction worksheet in three columns", async () => {
+  const response = await render("/arithmetic/add-subtract-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /덧셈뺄셈①/);
+  assert.match(html, />전체 채점<\/button>/);
+  assert.match(html, />인쇄<\/button>/);
+  assert.match(html, /aria-label="A4 덧셈뺄셈① 문제지"/);
+  assert.match(html, /aria-label="A4 덧셈뺄셈① 전체 답지"/);
+  assert.equal((html.match(/class="addsub-equation-row"/g) ?? []).length, 60);
+  assert.equal((html.match(/class="addsub-input /g) ?? []).length, 30);
+});
+
+test("renders the second addition and subtraction worksheet with two-digit entries", async () => {
+  const response = await render("/arithmetic/add-subtract-2");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /덧셈뺄셈②/);
+  assert.match(html, /aria-label="A4 덧셈뺄셈② 문제지"/);
+  assert.match(html, /aria-label="A4 덧셈뺄셈② 전체 답지"/);
+  assert.equal((html.match(/class="addsub-equation-row"/g) ?? []).length, 60);
+  assert.equal((html.match(/class="addsub-input /g) ?? []).length, 30);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 30);
+});
+
+test("renders the sequential give-and-take worksheet and printable answers", async () => {
+  const response = await render("/arithmetic/give-and-take-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /주고받기/);
+  assert.match(html, /글을 읽고 물음에 답하시오\. \[1~3번\]/);
+  assert.match(html, /첫 번째 놀이에서 지혜는 슬기에게 카드/);
+  assert.match(html, /두 번째 놀이에서 슬기는 용기에게 카드/);
+  assert.match(html, /세 번째 놀이에서 용기는 지혜에게 카드/);
+  assert.match(html, /aria-label="A4 주고받기 문제지"/);
+  assert.match(html, /aria-label="A4 주고받기 전체 답지"/);
+  assert.equal((html.match(/data-testid="give-question"/g) ?? []).length, 6);
+  assert.equal((html.match(/class="give-answer-input"/g) ?? []).length, 7);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 7);
 });
 
 test("keeps the printable worksheet on one compact A4 page", async () => {
@@ -122,6 +169,17 @@ test("shows only right or wrong after grading", async () => {
 
   assert.match(pageSource, /result\.correct \? "맞음" : "틀림"/);
   assert.doesNotMatch(pageSource, /function Explanation|풀이 보기|풀이 닫기|result\.message|explain-button/);
+});
+
+test("uses soft green and red row shading for arithmetic grading", async () => {
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const countingSource = await readFile(new URL("../app/arithmetic/counting-1/page.tsx", import.meta.url), "utf8");
+  const addSubSource = await readFile(new URL("../app/arithmetic/add-subtract-1/page.tsx", import.meta.url), "utf8");
+
+  assert.match(css, /\.counting-question\.is-correct,[\s\S]*?background:\s*var\(--green-soft\)/);
+  assert.match(css, /\.counting-question\.is-wrong,[\s\S]*?background:\s*var\(--red-soft\)/);
+  assert.match(countingSource, /counting-question\$\{results\[index \+ 1\][\s\S]*?is-correct/);
+  assert.match(addSubSource, /addsub-equation-row\$\{graded[\s\S]*?is-correct/);
 });
 
 test("opens the browser print dialog without creating a download", async () => {

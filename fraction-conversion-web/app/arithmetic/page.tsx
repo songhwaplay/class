@@ -78,7 +78,18 @@ export default function ArithmeticCatalogPage() {
 
         <ol className="worksheet-catalog" aria-label="연산 학습지 목록">
           {worksheetNames.map((name, index) => {
-            const route = name === "1수세기①" ? "/arithmetic/counting-1" : name === "3분수②" ? "/fraction" : null;
+            const route =
+              name === "1수세기①"
+                ? "/arithmetic/counting-1"
+                : name === "1덧셈뺄셈①"
+                  ? "/arithmetic/add-subtract-1"
+                  : name === "1덧셈뺄셈②"
+                    ? "/arithmetic/add-subtract-2"
+                    : name === "1주고받기"
+                      ? "/arithmetic/give-and-take-1"
+                      : name === "3분수②"
+                        ? "/fraction"
+                        : null;
             const content = (
               <>
                 <span className="worksheet-number">{String(index + 1).padStart(2, "0")}</span>

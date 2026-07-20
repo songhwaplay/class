@@ -26,5 +26,11 @@ assert.ok(vm.runInContext(`point({x:-12,y:4}).y`,context)>450,"파랑의 출발 
 vm.runInContext(`myId="yellow"`,context);
 assert.ok(vm.runInContext(`point({x:12,y:4}).y`,context)>450,"노랑의 출발 진영은 자기 화면 아래쪽이어야 합니다.");
 assert.match(html,/allowedPlayerCounts:\[2,3\]/,"2~3인 시작만 허용해야 합니다.");
+assert.match(html,/diamond-1\.mp3/,"첫 번째 배경음악이 연결되어야 합니다.");
+assert.match(html,/diamond-2\.mp3/,"두 번째 배경음악이 연결되어야 합니다.");
+assert.match(html,/diamond-3\.mp3/,"세 번째 배경음악이 연결되어야 합니다.");
+assert.match(html,/assets\/images\/diamond-bg\.png/,"다이아몬드 게임 전용 배경이 연결되어야 합니다.");
+assert.match(html,/addEventListener\("ended",playNextBgm\)/,"세 곡을 순서대로 순환 재생해야 합니다.");
+assert.doesNotMatch(html,/<audio[^>]+\bloop\b/,"한 곡만 반복 재생하면 안 됩니다.");
 assert.doesNotMatch(html,/localStorage\.setItem\s*\(/,"이름 변경은 게임 페이지에서 허용하지 않습니다.");
 console.log("diamondgame-unit: 121 cells, six 10-cell camps, 2-3 players ok");
