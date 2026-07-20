@@ -1,0 +1,474 @@
+(function () {
+    "use strict";
+
+    const data = Array.isArray(window.IDIOM_DATA) ? window.IDIOM_DATA : [];
+    const core = window.IdiomCore;
+    const PROGRESS_KEY = "classIdiomsProgressV1";
+    const BEST_SCORE_KEY = "classIdiomsBestScoreV1";
+
+    const byId = (id) => document.getElementById(id);
+    const elements = {
+        headerKnown: byId("headerKnown"), headerTotal: byId("headerTotal"),
+        masteryPercent: byId("masteryPercent"), masteryBar: byId("masteryBar"),
+        knownCount: byId("knownCount"), reviewCount: byId("reviewCount"), unseenCount: byId("unseenCount"),
+        themeSelect: byId("themeSelect"), reviewOnlyButton: byId("reviewOnlyButton"), shuffleDeckButton: byId("shuffleDeckButton"),
+        emptyDeck: byId("emptyDeck"), showAllButton: byId("showAllButton"), studyArea: byId("studyArea"),
+        cardPosition: byId("cardPosition"), cardProgress: byId("cardProgress"), idiomCard: byId("idiomCard"),
+        themeBadge: byId("themeBadge"), verificationBadge: byId("verificationBadge"),
+        idiomHanja: byId("idiomHanja"), idiomWord: byId("idiomWord"), cardDetails: byId("cardDetails"),
+        idiomMeaning: byId("idiomMeaning"), idiomStory: byId("idiomStory"), idiomLesson: byId("idiomLesson"),
+        idiomSource: byId("idiomSource"), sourceNote: byId("sourceNote"), sourceLink: byId("sourceLink"),
+        previousCard: byId("previousCard"), nextCard: byId("nextCard"), revealCard: byId("revealCard"),
+        memoryActions: byId("memoryActions"), markReview: byId("markReview"), markKnown: byId("markKnown"),
+        gameIntro: byId("gameIntro"), quizStage: byId("quizStage"), quizResult: byId("quizResult"),
+        bestScore: byId("bestScore"), startQuiz: byId("startQuiz"), quizPosition: byId("quizPosition"),
+        quizStreak: byId("quizStreak"), quizScore: byId("quizScore"), quizBar: byId("quizBar"),
+        questionType: byId("questionType"), questionPrompt: byId("questionPrompt"), answerOptions: byId("answerOptions"),
+        answerFeedback: byId("answerFeedback"), feedbackTitle: byId("feedbackTitle"), feedbackCopy: byId("feedbackCopy"),
+        nextQuestion: byId("nextQuestion"), resultTitle: byId("resultTitle"), resultScore: byId("resultScore"),
+        resultMessage: byId("resultMessage"), retryQuiz: byId("retryQuiz"), reviewMistakes: byId("reviewMistakes"),
+        libraryTotal: byId("libraryTotal"), librarySearch: byId("librarySearch"), themeFilters: byId("themeFilters"),
+        libraryGrid: byId("libraryGrid"), libraryEmpty: byId("libraryEmpty"), toast: byId("toast"),
+        playerGreeting: byId("playerGreeting")
+    };
+
+    let progress = loadProgress();
+    let deck = [...data];
+    let currentIndex = 0;
+    let revealed = false;
+    let reviewOnly = false;
+    let selectedTheme = "전체";
+    let selectedQuizMode = "mixed";
+    let quiz = [];
+    let quizIndex = 0;
+    let quizScore = 0;
+    let quizStreak = 0;
+    let quizAnswered = false;
+    let quizMistakes = [];
+    let selectedLibraryTheme = "전체";
+    let toastTimer = 0;
+
+    function readJson(key, fallback) {
+        try {
+            const parsed = JSON.parse(localStorage.getItem(key));
+            return parsed ?? fallback;
+        } catch (_) {
+            return fallback;
+        }
+    }
+
+    function loadProgress() {
+        return core.normalizeProgress(readJson(PROGRESS_KEY, {}), data.map((item) => item.id));
+    }
+
+    function saveProgress() {
+        try { localStorage.setItem(PROGRESS_KEY, JSON.stringify(progress)); } catch (_) {}
+    }
+
+    function getBestScore() {
+        const value = Number(localStorage.getItem(BEST_SCORE_KEY) || 0);
+        return Number.isFinite(value) ? Math.max(0, Math.min(10, value)) : 0;
+    }
+
+    function showToast(message) {
+        clearTimeout(toastTimer);
+        elements.toast.textContent = message;
+        elements.toast.classList.add("show");
+        toastTimer = setTimeout(() => elements.toast.classList.remove("show"), 1700);
+    }
+
+    function currentIdiom() {
+        return deck[currentIndex] || null;
+    }
+
+    function renderSummary() {
+        const summary = core.summarize(data, progress);
+        elements.headerKnown.textContent = summary.known;
+        elements.headerTotal.textContent = `/ ${summary.total}`;
+        elements.masteryPercent.textContent = `${summary.percent}%`;
+        elements.masteryBar.style.width = `${summary.percent}%`;
+        elements.knownCount.textContent = summary.known;
+        elements.reviewCount.textContent = summary.review;
+        elements.unseenCount.textContent = summary.unseen;
+    }
+
+    function buildDeck(options = {}) {
+        const previousId = options.keepId || currentIdiom()?.id;
+        deck = core.filterDeck(data, {
+            status: reviewOnly ? "review" : "all",
+            progress
+        }, selectedTheme);
+
+        if (options.shuffle) deck = core.shuffle(deck);
+        const preservedIndex = previousId ? deck.findIndex((item) => item.id === previousId) : -1;
+        currentIndex = preservedIndex >= 0 ? preservedIndex : Math.min(currentIndex, Math.max(0, deck.length - 1));
+        revealed = false;
+        renderCard();
+    }
+
+    function setRevealed(value) {
+        if (!currentIdiom()) return;
+        revealed = value;
+        elements.idiomCard.classList.toggle("revealed", revealed);
+        elements.cardDetails.hidden = !revealed;
+        elements.memoryActions.hidden = !revealed;
+        elements.revealCard.textContent = revealed ? "뜻과 유래 접기" : "뜻과 유래 보기";
+        elements.revealCard.setAttribute("aria-expanded", String(revealed));
+    }
+
+    function renderMemoryStatus(idiom) {
+        const status = progress[idiom.id]?.status || "";
+        elements.markKnown.classList.toggle("selected", status === "known");
+        elements.markReview.classList.toggle("selected", status === "review");
+        elements.markKnown.setAttribute("aria-pressed", String(status === "known"));
+        elements.markReview.setAttribute("aria-pressed", String(status === "review"));
+    }
+
+    function renderCard() {
+        const idiom = currentIdiom();
+        const hasCards = Boolean(idiom);
+        elements.emptyDeck.hidden = hasCards;
+        elements.studyArea.hidden = !hasCards;
+        if (!idiom) return;
+
+        elements.cardPosition.textContent = `${currentIndex + 1} / ${deck.length}`;
+        elements.cardProgress.style.width = `${((currentIndex + 1) / deck.length) * 100}%`;
+        elements.themeBadge.textContent = idiom.theme;
+        elements.verificationBadge.textContent = idiom.verification;
+        elements.verificationBadge.classList.toggle("compare", idiom.verification !== "원전 확인");
+        elements.idiomHanja.textContent = idiom.hanja;
+        elements.idiomWord.textContent = idiom.word;
+        elements.idiomMeaning.textContent = idiom.meaning;
+        elements.idiomStory.textContent = idiom.story;
+        elements.idiomLesson.textContent = idiom.lesson;
+        elements.idiomSource.textContent = idiom.source;
+        elements.sourceNote.textContent = idiom.sourceNote;
+        elements.sourceLink.href = idiom.reference;
+        elements.previousCard.disabled = deck.length < 2;
+        elements.nextCard.disabled = deck.length < 2;
+        renderMemoryStatus(idiom);
+        setRevealed(revealed);
+    }
+
+    function moveCard(direction) {
+        if (!deck.length) return;
+        currentIndex = (currentIndex + direction + deck.length) % deck.length;
+        revealed = false;
+        renderCard();
+        elements.idiomCard.focus({ preventScroll: true });
+    }
+
+    function markCurrent(status) {
+        const idiom = currentIdiom();
+        if (!idiom) return;
+        progress[idiom.id] = { status, updatedAt: new Date().toISOString() };
+        saveProgress();
+        renderSummary();
+        showToast(status === "known" ? `‘${idiom.word}’ 암기 완료!` : `‘${idiom.word}’을 복습 목록에 담았어요.`);
+
+        if (reviewOnly && status === "known") {
+            buildDeck();
+        } else {
+            renderMemoryStatus(idiom);
+            setTimeout(() => moveCard(1), 320);
+        }
+    }
+
+    function switchView(viewName) {
+        document.querySelectorAll(".mode-tab").forEach((button) => {
+            const active = button.dataset.view === viewName;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-selected", String(active));
+        });
+        document.querySelectorAll(".view-panel").forEach((panel) => {
+            panel.hidden = panel.id !== `${viewName}View`;
+        });
+        if (viewName === "library") renderLibrary();
+    }
+
+    function renderBestScore() {
+        elements.bestScore.textContent = `${getBestScore()} / 10`;
+    }
+
+    function startQuiz() {
+        quiz = core.buildQuiz(data, 10, selectedQuizMode);
+        quizIndex = 0;
+        quizScore = 0;
+        quizStreak = 0;
+        quizAnswered = false;
+        quizMistakes = [];
+        elements.gameIntro.hidden = true;
+        elements.quizResult.hidden = true;
+        elements.quizStage.hidden = false;
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const question = quiz[quizIndex];
+        if (!question) return finishQuiz();
+        quizAnswered = false;
+        elements.quizPosition.textContent = `문제 ${quizIndex + 1} / ${quiz.length}`;
+        elements.quizStreak.textContent = quizStreak;
+        elements.quizScore.textContent = quizScore;
+        elements.quizBar.style.width = `${(quizIndex / quiz.length) * 100}%`;
+        elements.questionType.textContent = question.type === "story" ? "유래를 보고 맞혀요" : "뜻을 보고 맞혀요";
+        elements.questionPrompt.textContent = question.prompt;
+        elements.answerFeedback.hidden = true;
+        elements.answerFeedback.classList.remove("wrong");
+        elements.answerOptions.replaceChildren();
+
+        question.options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "answer-option";
+            button.dataset.answerId = option.id;
+            button.innerHTML = `<span>${index + 1}</span>${option.label}`;
+            button.addEventListener("click", () => chooseAnswer(option.id));
+            elements.answerOptions.append(button);
+        });
+        elements.answerOptions.querySelector("button")?.focus();
+    }
+
+    function chooseAnswer(answerId) {
+        if (quizAnswered) return;
+        quizAnswered = true;
+        const question = quiz[quizIndex];
+        const correct = answerId === question.answerId;
+        const answerIdiom = data.find((item) => item.id === question.answerId);
+
+        if (correct) {
+            quizScore += 1;
+            quizStreak += 1;
+        } else {
+            quizStreak = 0;
+            quizMistakes.push(question.answerId);
+            progress[question.answerId] = { status: "review", updatedAt: new Date().toISOString() };
+            saveProgress();
+            renderSummary();
+        }
+
+        elements.quizScore.textContent = quizScore;
+        elements.quizStreak.textContent = quizStreak;
+        elements.answerOptions.querySelectorAll("button").forEach((button) => {
+            button.disabled = true;
+            if (button.dataset.answerId === question.answerId) button.classList.add("correct");
+            else if (button.dataset.answerId === answerId) button.classList.add("wrong");
+        });
+        elements.feedbackTitle.textContent = correct ? "정답이에요!" : `정답은 ${question.answerLabel}`;
+        elements.feedbackCopy.textContent = correct
+            ? answerIdiom.lesson
+            : `${answerIdiom.meaning} · ${question.source}`;
+        elements.answerFeedback.classList.toggle("wrong", !correct);
+        elements.answerFeedback.hidden = false;
+        elements.nextQuestion.textContent = quizIndex === quiz.length - 1 ? "결과 보기 →" : "다음 문제 →";
+        elements.nextQuestion.focus();
+    }
+
+    function goToNextQuestion() {
+        if (!quizAnswered) return;
+        quizIndex += 1;
+        if (quizIndex >= quiz.length) finishQuiz();
+        else renderQuestion();
+    }
+
+    function finishQuiz() {
+        elements.quizStage.hidden = true;
+        elements.quizResult.hidden = false;
+        const best = Math.max(getBestScore(), quizScore);
+        try { localStorage.setItem(BEST_SCORE_KEY, String(best)); } catch (_) {}
+        renderBestScore();
+        elements.resultScore.textContent = `${quizScore} / ${quiz.length}`;
+
+        if (quizScore === quiz.length) {
+            elements.resultTitle.textContent = "이야기 박사 탄생!";
+            elements.resultMessage.textContent = "모든 문제를 맞혔어요. 뜻과 유래가 단단히 연결되었습니다.";
+        } else if (quizScore >= 7) {
+            elements.resultTitle.textContent = "기억이 아주 탄탄해요!";
+            elements.resultMessage.textContent = "틀린 성어의 이야기만 한 번 더 읽으면 완벽하겠어요.";
+        } else if (quizScore >= 4) {
+            elements.resultTitle.textContent = "좋은 출발이에요!";
+            elements.resultMessage.textContent = "유래 속 장면을 떠올리며 복습하면 더 오래 기억할 수 있어요.";
+        } else {
+            elements.resultTitle.textContent = "이제 이야기가 시작됐어요!";
+            elements.resultMessage.textContent = "점수보다 중요한 건 다시 만나는 횟수예요. 틀린 카드부터 천천히 복습해요.";
+        }
+        elements.reviewMistakes.hidden = quizMistakes.length === 0;
+    }
+
+    function reviewQuizMistakes() {
+        if (!quizMistakes.length) return;
+        reviewOnly = true;
+        selectedTheme = "전체";
+        elements.themeSelect.value = "전체";
+        elements.reviewOnlyButton.setAttribute("aria-pressed", "true");
+        buildDeck({ keepId: quizMistakes[0] });
+        const targetIndex = deck.findIndex((item) => item.id === quizMistakes[0]);
+        if (targetIndex >= 0) currentIndex = targetIndex;
+        revealed = false;
+        renderCard();
+        switchView("learn");
+        document.getElementById("learnHeading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function buildThemeControls() {
+        const themes = ["전체", ...new Set(data.map((item) => item.theme))];
+        themes.slice(1).forEach((theme) => {
+            const option = document.createElement("option");
+            option.value = theme;
+            option.textContent = theme;
+            elements.themeSelect.append(option);
+        });
+
+        elements.themeFilters.replaceChildren();
+        themes.forEach((theme) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = `theme-filter${theme === selectedLibraryTheme ? " active" : ""}`;
+            button.dataset.theme = theme;
+            button.textContent = theme;
+            button.addEventListener("click", () => {
+                selectedLibraryTheme = theme;
+                renderLibrary();
+            });
+            elements.themeFilters.append(button);
+        });
+    }
+
+    function openIdiomFromLibrary(id) {
+        reviewOnly = false;
+        selectedTheme = "전체";
+        elements.reviewOnlyButton.setAttribute("aria-pressed", "false");
+        elements.themeSelect.value = "전체";
+        buildDeck({ keepId: id });
+        currentIndex = deck.findIndex((item) => item.id === id);
+        revealed = true;
+        renderCard();
+        switchView("learn");
+        document.getElementById("learnHeading")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function renderLibrary() {
+        const query = elements.librarySearch.value.trim().toLocaleLowerCase("ko");
+        const filtered = data.filter((idiom) => {
+            const themeMatches = selectedLibraryTheme === "전체" || idiom.theme === selectedLibraryTheme;
+            const haystack = `${idiom.word} ${idiom.hanja} ${idiom.meaning} ${idiom.story}`.toLocaleLowerCase("ko");
+            return themeMatches && (!query || haystack.includes(query));
+        });
+
+        elements.themeFilters.querySelectorAll("button").forEach((button) => {
+            button.classList.toggle("active", button.dataset.theme === selectedLibraryTheme);
+        });
+        elements.libraryGrid.replaceChildren();
+        filtered.forEach((idiom) => {
+            const card = document.createElement("article");
+            card.className = "library-card";
+            card.tabIndex = 0;
+            card.setAttribute("role", "button");
+            card.setAttribute("aria-label", `${idiom.word} 자세히 학습하기`);
+            card.innerHTML = `
+                <span class="library-theme">${idiom.theme}</span>
+                <p class="library-hanja">${idiom.hanja}</p>
+                <h3>${idiom.word}</h3>
+                <p>${idiom.meaning}</p>
+                <footer><span>${idiom.verification}</span><span>이야기 보기 →</span></footer>`;
+            card.addEventListener("click", () => openIdiomFromLibrary(idiom.id));
+            card.addEventListener("keydown", (event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openIdiomFromLibrary(idiom.id);
+                }
+            });
+            elements.libraryGrid.append(card);
+        });
+        elements.libraryEmpty.hidden = filtered.length > 0;
+    }
+
+    document.querySelectorAll(".mode-tab").forEach((button) => {
+        button.addEventListener("click", () => switchView(button.dataset.view));
+    });
+
+    elements.themeSelect.addEventListener("change", () => {
+        selectedTheme = elements.themeSelect.value;
+        buildDeck();
+    });
+    elements.reviewOnlyButton.addEventListener("click", () => {
+        reviewOnly = !reviewOnly;
+        elements.reviewOnlyButton.setAttribute("aria-pressed", String(reviewOnly));
+        buildDeck();
+    });
+    elements.shuffleDeckButton.addEventListener("click", () => {
+        buildDeck({ shuffle: true });
+        showToast("카드 순서를 섞었어요.");
+    });
+    elements.showAllButton.addEventListener("click", () => {
+        reviewOnly = false;
+        selectedTheme = "전체";
+        elements.reviewOnlyButton.setAttribute("aria-pressed", "false");
+        elements.themeSelect.value = "전체";
+        buildDeck();
+    });
+    elements.previousCard.addEventListener("click", () => moveCard(-1));
+    elements.nextCard.addEventListener("click", () => moveCard(1));
+    elements.revealCard.addEventListener("click", () => setRevealed(!revealed));
+    elements.idiomCard.addEventListener("click", (event) => {
+        if (event.target.closest("a, button")) return;
+        setRevealed(!revealed);
+    });
+    elements.markKnown.addEventListener("click", () => markCurrent("known"));
+    elements.markReview.addEventListener("click", () => markCurrent("review"));
+
+    document.querySelectorAll(".quiz-mode").forEach((button) => {
+        button.addEventListener("click", () => {
+            selectedQuizMode = button.dataset.quizMode;
+            document.querySelectorAll(".quiz-mode").forEach((modeButton) => {
+                const selected = modeButton === button;
+                modeButton.classList.toggle("selected", selected);
+                modeButton.setAttribute("aria-pressed", String(selected));
+            });
+        });
+    });
+    elements.startQuiz.addEventListener("click", startQuiz);
+    elements.nextQuestion.addEventListener("click", goToNextQuestion);
+    elements.retryQuiz.addEventListener("click", startQuiz);
+    elements.reviewMistakes.addEventListener("click", reviewQuizMistakes);
+    elements.librarySearch.addEventListener("input", renderLibrary);
+
+    document.addEventListener("keydown", (event) => {
+        if (event.target.matches("input, select, textarea")) return;
+        const learnVisible = !byId("learnView").hidden;
+        const quizVisible = !elements.quizStage.hidden;
+
+        if (learnVisible) {
+            if (event.key === " ") {
+                event.preventDefault();
+                setRevealed(!revealed);
+            } else if (event.key === "ArrowLeft") moveCard(-1);
+            else if (event.key === "ArrowRight") moveCard(1);
+            else if (revealed && event.key.toLocaleLowerCase() === "k") markCurrent("known");
+            else if (revealed && event.key.toLocaleLowerCase() === "r") markCurrent("review");
+        } else if (quizVisible && !quizAnswered && /^[1-4]$/.test(event.key)) {
+            const option = quiz[quizIndex]?.options[Number(event.key) - 1];
+            if (option) chooseAnswer(option.id);
+        } else if (quizVisible && quizAnswered && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            goToNextQuestion();
+        }
+    });
+
+    function initialize() {
+        if (!data.length || !core) {
+            document.body.innerHTML = "<p>학습 데이터를 불러오지 못했습니다.</p>";
+            return;
+        }
+        const playerName = String(localStorage.getItem("classPlayerName") || "").replace(/[^가-힣]/g, "").slice(0, 6);
+        if (playerName) elements.playerGreeting.textContent = `${playerName} 님, 오늘은 어떤 이야기부터 만나 볼까요?`;
+        elements.libraryTotal.textContent = data.length;
+        buildThemeControls();
+        renderSummary();
+        renderBestScore();
+        buildDeck();
+        renderLibrary();
+    }
+
+    initialize();
+})();

@@ -18,7 +18,7 @@ type ProblemSet = {
   mixed: Equation[];
 };
 type PrintMode = "worksheet" | "answers" | "both";
-export type AdditionSubtractionVariant = "single-digit" | "two-digit";
+export type AdditionSubtractionVariant = "single-digit" | "two-digit" | "within-twenty" | "missing-parts";
 
 const INITIAL_SEED = 20260720;
 
@@ -160,8 +160,113 @@ function createTwoDigitProblemSet(seed: number): ProblemSet {
   return { seed, additions, subtractions, mixed };
 }
 
+function createWithinTwentyProblemSet(seed: number): ProblemSet {
+  const next = random(seed);
+
+  function addition(id: string): Equation {
+    const result = integer(next, 11, 18);
+    const right = integer(next, 6, 9);
+    return {
+      id,
+      left: result - right,
+      operator: "+",
+      right,
+      result,
+      hidden: ["result"],
+    };
+  }
+
+  function subtraction(id: string): Equation {
+    const left = integer(next, 11, 18);
+    const result = integer(next, 2, 9);
+    return {
+      id,
+      left,
+      operator: "−",
+      right: left - result,
+      result,
+      hidden: ["result"],
+    };
+  }
+
+  const additions = Array.from({ length: 10 }, (_, index) => addition(`addition-${index}`));
+  const subtractions = Array.from({ length: 10 }, (_, index) => subtraction(`subtraction-${index}`));
+  const mixedPattern: Array<"+" | "−"> = ["−", "−", "+", "−", "+", "−", "+", "−", "+", "−"];
+  const mixed = mixedPattern.map((operator, index) =>
+    operator === "+" ? addition(`mixed-${index}`) : subtraction(`mixed-${index}`),
+  );
+
+  return { seed, additions, subtractions, mixed };
+}
+
+function createMissingPartsProblemSet(seed: number): ProblemSet {
+  const next = random(seed);
+
+  function subtraction(id: string, hidden: Field): Equation {
+    const left = integer(next, 11, 18);
+    const result = integer(next, 2, 9);
+    return { id, left, operator: "−", right: left - result, result, hidden: [hidden] };
+  }
+
+  function additionFromRight(id: string, hidden: Field): Equation {
+    const result = integer(next, 11, 18);
+    const right = integer(next, 6, 9);
+    return { id, left: result - right, operator: "+", right, result, hidden: [hidden] };
+  }
+
+  function additionFromLeft(id: string, hidden: Field): Equation {
+    const result = integer(next, 11, 18);
+    const left = integer(next, 1, 9);
+    return { id, left, operator: "+", right: result - left, result, hidden: [hidden] };
+  }
+
+  const additions = [
+    subtraction("addition-0", "result"),
+    subtraction("addition-1", "result"),
+    subtraction("addition-2", "left"),
+    subtraction("addition-3", "result"),
+    additionFromRight("addition-4", "result"),
+    subtraction("addition-5", "right"),
+    subtraction("addition-6", "result"),
+    additionFromRight("addition-7", "result"),
+    additionFromLeft("addition-8", "left"),
+    additionFromLeft("addition-9", "right"),
+  ];
+
+  const subtractions = [
+    subtraction("subtraction-0", "left"),
+    subtraction("subtraction-1", "right"),
+    additionFromLeft("subtraction-2", "left"),
+    subtraction("subtraction-3", "right"),
+    subtraction("subtraction-4", "result"),
+    subtraction("subtraction-5", "right"),
+    additionFromLeft("subtraction-6", "left"),
+    subtraction("subtraction-7", "right"),
+    subtraction("subtraction-8", "result"),
+    subtraction("subtraction-9", "right"),
+  ];
+
+  const mixed = [
+    subtraction("mixed-0", "left"),
+    additionFromLeft("mixed-1", "left"),
+    subtraction("mixed-2", "left"),
+    subtraction("mixed-3", "result"),
+    additionFromLeft("mixed-4", "left"),
+    subtraction("mixed-5", "right"),
+    subtraction("mixed-6", "result"),
+    additionFromLeft("mixed-7", "left"),
+    subtraction("mixed-8", "left"),
+    subtraction("mixed-9", "right"),
+  ];
+
+  return { seed, additions, subtractions, mixed };
+}
+
 function createProblemSet(seed: number, variant: AdditionSubtractionVariant): ProblemSet {
-  return variant === "two-digit" ? createTwoDigitProblemSet(seed) : createSingleDigitProblemSet(seed);
+  if (variant === "two-digit") return createTwoDigitProblemSet(seed);
+  if (variant === "within-twenty") return createWithinTwentyProblemSet(seed);
+  if (variant === "missing-parts") return createMissingPartsProblemSet(seed);
+  return createSingleDigitProblemSet(seed);
 }
 
 function answerId(equation: Equation, field: Field) {
@@ -230,8 +335,15 @@ function EquationRow({
 }
 
 export function AdditionSubtractionWorksheet({ variant }: { variant: AdditionSubtractionVariant }) {
-  const title = variant === "two-digit" ? "덧셈뺄셈②" : "덧셈뺄셈①";
-  const maxLength = variant === "two-digit" ? 2 : 1;
+  const title =
+    variant === "two-digit"
+      ? "덧셈뺄셈②"
+      : variant === "within-twenty"
+        ? "덧셈뺄셈③"
+        : variant === "missing-parts"
+          ? "덧셈뺄셈④"
+          : "덧셈뺄셈①";
+  const maxLength = variant === "single-digit" ? 1 : 2;
   const [questionSet, setQuestionSet] = useState(() => createProblemSet(INITIAL_SEED, variant));
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
@@ -287,7 +399,7 @@ export function AdditionSubtractionWorksheet({ variant }: { variant: AdditionSub
   function renderSheet(answerSheet: boolean) {
     const columns = [questionSet.additions, questionSet.subtractions, questionSet.mixed];
     return (
-      <div className={`a4-sheet counting-sheet addsub-sheet${variant === "two-digit" ? " two-digit" : ""}`} style={{ transform: `scale(${sheetScale})` }}>
+      <div className={`a4-sheet counting-sheet addsub-sheet${variant === "single-digit" ? "" : " two-digit"}`} style={{ transform: `scale(${sheetScale})` }}>
         <header className="counting-sheet-header">
           <div className="counting-sheet-title">
             <span>1학년</span>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="2022 개정 교육과정 영어 기본어휘 3,000단어를 15레벨로 학습하는 단어 카드">
+    <title>영어 단어 3,000 · 15레벨 학습</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="vocabulary-core.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <header class="site-header">
+        <a class="back-link" href="../index.html" aria-label="메인 화면으로 돌아가기">← 메인</a>
+        <div class="brand-mark" aria-hidden="true">W</div>
+        <div class="header-copy">
+            <strong>English 3000</strong>
+            <span id="playerGreeting">15레벨 단어 학습</span>
+        </div>
+        <div class="header-progress" aria-live="polite">
+            <span>외운 단어</span>
+            <strong id="totalKnown">0</strong><span>/ 3,000</span>
+        </div>
+    </header>
+
+    <main>
+        <section id="levelScreen" class="level-screen" aria-labelledby="pageTitle">
+            <div class="hero-copy">
+                <p class="eyebrow">2022 개정 교육과정 기본어휘</p>
+                <h1 id="pageTitle">매일 한 단계씩,<br><em>영어 단어 3,000</em></h1>
+                <p class="hero-description">초급 4개, 중급 6개, 고급 5개 레벨로 나눴어요. 각 레벨은 200단어이며 학습 결과는 이 기기에 자동 저장됩니다.</p>
+            </div>
+
+            <div class="overall-card" aria-label="전체 학습 현황">
+                <div>
+                    <span class="overall-label">나의 진도</span>
+                    <strong id="overallPercent">0%</strong>
+                </div>
+                <div class="overall-track" aria-hidden="true"><span id="overallBar"></span></div>
+                <p><b id="totalStudied">0</b>개 학습 · <b id="totalUnknown">0</b>개 다시 보기</p>
+            </div>
+
+            <div id="stageGroups" class="stage-groups" aria-live="polite"></div>
+        </section>
+
+        <section id="studyScreen" class="study-screen" hidden aria-labelledby="studyTitle">
+            <div class="study-toolbar">
+                <button id="backToLevels" class="text-button" type="button">← 레벨 선택</button>
+                <div>
+                    <p id="studyStage" class="study-stage">초급</p>
+                    <h1 id="studyTitle">초급 1</h1>
+                </div>
+                <button id="shuffleButton" class="text-button" type="button">순서 섞기</button>
+            </div>
+
+            <div class="session-progress">
+                <div class="session-progress-copy">
+                    <span id="cardPosition">1 / 200</span>
+                    <span id="levelStatus">외움 0 · 모름 0</span>
+                </div>
+                <div class="session-track" aria-hidden="true"><span id="sessionBar"></span></div>
+            </div>
+
+            <button id="flashcard" class="flashcard" type="button" aria-label="단어 뜻 보기" aria-pressed="false">
+                <span id="cardBadge" class="card-badge">새 단어</span>
+                <span id="wordText" class="word-text">word</span>
+                <span id="posText" class="pos-text">명사</span>
+                <span class="card-divider" aria-hidden="true"></span>
+                <span id="meaningText" class="meaning-text">카드를 눌러 뜻을 확인하세요.</span>
+                <span id="relatedText" class="related-text"></span>
+                <span class="reveal-hint">카드 누르기 · Space</span>
+            </button>
+
+            <div class="utility-actions" aria-label="카드 이동과 발음">
+                <button id="previousButton" type="button">← 이전</button>
+                <button id="speakButton" class="speak-button" type="button">발음 듣기</button>
+                <button id="nextButton" type="button">다음 →</button>
+            </div>
+
+            <div class="memory-actions" aria-label="암기 상태 선택">
+                <button id="unknownButton" class="unknown-button" type="button"><span>아직 몰라요</span><small>1</small></button>
+                <button id="knownButton" class="known-button" type="button"><span>외웠어요</span><small>2</small></button>
+            </div>
+
+            <button id="reviewUnknownButton" class="review-button" type="button">이 레벨의 모르는 단어만 다시 보기</button>
+            <p id="studyMessage" class="study-message" role="status"></p>
+        </section>
+    </main>
+
+    <div id="loadingState" class="loading-state" role="status">
+        <span class="loading-mark">W</span>
+        <p>3,000단어를 준비하고 있어요…</p>
+    </div>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

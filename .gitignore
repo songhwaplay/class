@@ -1,0 +1,14 @@
+# Dependency and package-manager caches
+node_modules/
+.pnpm-store/
+.npm-cache/
+
+# Python caches
+__pycache__/
+*.py[cod]
+
+# Locally generated reports and previews
+/outputs/
+
+# Standalone nested repository (commit/publish it separately)
+/hanguksa-basic/

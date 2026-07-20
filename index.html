@@ -92,7 +92,9 @@
 
         .worksheet-container {
             display: flex;
+            flex-wrap: wrap;
             justify-content: center;
+            gap: 14px;
         }
 
         .worksheet-container a {
@@ -120,6 +122,17 @@
         .worksheet-arrow {
             color: var(--gold-bright);
             font-size: 24px;
+        }
+
+        .worksheet-copy {
+            display: grid;
+            gap: 4px;
+        }
+
+        .worksheet-copy small {
+            color: #d7c19c;
+            font-size: 12px;
+            font-weight: 600;
         }
 
         .menu-container {
@@ -268,10 +281,18 @@
     </div>
 
     <section class="hub-section worksheet-section" aria-labelledby="worksheet-title">
-        <h1 id="worksheet-title" class="section-title">학습지</h1>
+        <h1 id="worksheet-title" class="section-title">학습</h1>
         <div class="worksheet-container">
             <a href="https://fraction-lab-20260720.stimpack486443.chatgpt.site/arithmetic">
-                <span>연산</span>
+                <span class="worksheet-copy"><strong>연산</strong><small>수학 연산 학습지</small></span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="vocabulary/index.html">
+                <span class="worksheet-copy"><strong>영어 단어 3,000</strong><small>초·중·고 15레벨 단어 카드</small></span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="idioms/index.html">
+                <span class="worksheet-copy"><strong>고사성어 탐험대</strong><small>유래로 익히고 퀴즈로 복습하기</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
         </div>

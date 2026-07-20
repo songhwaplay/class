@@ -87,9 +87,23 @@ export default function ArithmeticCatalogPage() {
                     ? "/arithmetic/add-subtract-2"
                     : name === "1주고받기"
                       ? "/arithmetic/give-and-take-1"
-                      : name === "3분수②"
-                        ? "/fraction"
-                        : null;
+                      : name === "1보수"
+                        ? "/arithmetic/complements-1"
+                        : name === "1덧셈뺄셈③"
+                          ? "/arithmetic/add-subtract-3"
+                          : name === "1덧셈뺄셈④"
+                            ? "/arithmetic/add-subtract-4"
+                            : name === "1수읽기"
+                              ? "/arithmetic/number-reading-1"
+                              : name === "1뛰어세기"
+                                ? "/arithmetic/skip-counting-1"
+                                : name === "2덧셈뺄셈①"
+                                  ? "/arithmetic/grade-2-add-subtract-1"
+                                  : name === "2덧셈뺄셈②"
+                                    ? "/arithmetic/grade-2-add-subtract-2"
+                        : name === "3분수②"
+                          ? "/fraction"
+                          : null;
             const content = (
               <>
                 <span className="worksheet-number">{String(index + 1).padStart(2, "0")}</span>
