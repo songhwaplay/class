@@ -1,0 +1,241 @@
+.teacher-shell {
+    width: min(1040px, calc(100% - 32px));
+}
+
+.teacher-panel {
+    padding: clamp(28px, 5vw, 48px);
+    text-align: center;
+}
+
+.teacher-panel h2 {
+    margin: 0;
+    font-size: clamp(26px, 4vw, 36px);
+}
+
+.teacher-guide {
+    margin: 12px auto 24px;
+    color: var(--muted-ink);
+    line-height: 1.7;
+}
+
+.teacher-room-card {
+    display: grid;
+    max-width: 540px;
+    margin: 0 auto 22px;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 18px 20px;
+    border: 2px solid #b38349;
+    border-radius: 8px;
+    background: #f9ead0;
+}
+
+.teacher-room-card > span {
+    color: #7c5d3c;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.teacher-room-card > strong {
+    color: #432511;
+    font-family: Georgia, serif;
+    font-size: 38px;
+    letter-spacing: 0.14em;
+}
+
+.teacher-room-card .secondary-button {
+    min-height: 44px;
+}
+
+.teacher-room-card .lobby-status {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+.teacher-counts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 22px 0;
+}
+
+.teacher-counts > div {
+    display: grid;
+    gap: 7px;
+    padding: 16px 12px;
+    border: 1px solid #d0b184;
+    border-radius: 7px;
+    background: #fffaf0;
+}
+
+.teacher-counts span {
+    color: #7b6856;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.teacher-counts strong {
+    font-size: 19px;
+}
+
+.teacher-player-list {
+    display: flex;
+    min-height: 54px;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 8px 0;
+}
+
+.teacher-player-list .mp-lobby-player {
+    padding: 8px 12px;
+    border: 1px solid #ba9565;
+    border-radius: 999px;
+    background: #f8ecd7;
+    color: #4f321e;
+    font-size: 14px;
+    font-weight: 900;
+}
+
+.teacher-player-list .mp-lobby-player.me {
+    display: none;
+}
+
+.teacher-main-button {
+    margin-top: 20px;
+}
+
+.teacher-notice {
+    min-height: 22px;
+    margin: 16px 0 0;
+    color: #8b3e31;
+    font-weight: 800;
+}
+
+.race-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    text-align: left;
+}
+
+.phase-badge {
+    flex: 0 0 auto;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: #e8f2e7;
+    color: #236141;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.phase-badge.ended {
+    background: #f5dfb7;
+    color: #744416;
+}
+
+.teacher-ranking-list {
+    display: grid;
+    gap: 9px;
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.teacher-rank-row {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr) 90px 110px;
+    gap: 12px;
+    align-items: center;
+    min-height: 58px;
+    padding: 10px 16px;
+    border: 1px solid #d7be98;
+    border-radius: 7px;
+    background: #fffaf0;
+    text-align: left;
+}
+
+.teacher-rank-row:first-child {
+    border-color: #aa762d;
+    background: #ffefc9;
+}
+
+.teacher-rank-row.is-playing {
+    border-style: dashed;
+    background: #f2ede4;
+    color: #74685d;
+}
+
+.teacher-rank-number {
+    color: #8b5b28;
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.teacher-rank-name {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 900;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.teacher-rank-score,
+.teacher-rank-time {
+    font-weight: 900;
+    text-align: right;
+}
+
+.teacher-rank-time {
+    color: #6f6257;
+    font-size: 13px;
+}
+
+.empty-ranking {
+    margin: 28px 0;
+    padding: 24px;
+    border: 1px dashed #c4a578;
+    color: var(--muted-ink);
+}
+
+.teacher-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 28px;
+}
+
+@media (max-width: 680px) {
+    .teacher-shell {
+        width: min(100% - 20px, 1040px);
+    }
+
+    .teacher-room-card {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-room-card .lobby-status {
+        grid-column: auto;
+    }
+
+    .teacher-counts {
+        grid-template-columns: 1fr;
+    }
+
+    .race-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .teacher-rank-row {
+        grid-template-columns: 46px minmax(0, 1fr) auto;
+    }
+
+    .teacher-rank-time {
+        grid-column: 2 / -1;
+        text-align: left;
+    }
+}

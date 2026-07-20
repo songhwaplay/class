@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#24150c">
+    <title>한글 맞춤법</title>
+    <link rel="stylesheet" href="../assets/network/multiplayer-lobby.css">
+    <link rel="stylesheet" href="styles.css">
+    <script src="../assets/network/game-network.js" defer></script>
+    <script src="../assets/network/multiplayer-lobby.js" defer></script>
+    <script src="questions.js" defer></script>
+    <script src="questions-extra.js" defer></script>
+    <script src="question-deck.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <audio id="spellingBgm" src="../assets/sound/spelling-bg.mp3" loop preload="auto"></audio>
+    <div class="page-shell">
+        <header class="topbar">
+            <a class="back-link" href="../index.html" aria-label="메인 화면으로 돌아가기">← 메인</a>
+            <div class="topbar-actions">
+                <button id="bgmToggle" class="audio-toggle hidden" type="button" aria-pressed="false">음악 켜기</button>
+                <div class="record" aria-label="개인 모드 최고 기록">
+                    <span>개인 최고 기록</span>
+                    <strong id="headerBestScore">0/10</strong>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div class="title-block">
+                <p class="eyebrow">KOREAN SPELLING</p>
+                <h1>한글 맞춤법</h1>
+                <p id="playerGreeting" class="player-greeting">헷갈리는 우리말, 하나씩 골라 볼까요?</p>
+            </div>
+
+            <section id="modeScreen" class="panel start-panel" aria-labelledby="modeTitle">
+                <span class="seal" aria-hidden="true">가</span>
+                <h2 id="modeTitle">학습 방식을 선택하세요</h2>
+                <p class="lead">혼자 연습하거나, 같은 반 친구들과 동시에 풀고 순위를 겨룰 수 있어요.</p>
+                <div class="mode-grid">
+                    <button id="personalModeButton" class="mode-card" type="button">
+                        <strong>개인 모드</strong>
+                        <span>160문제를 차례로 풀며, 한 바퀴 전에는 같은 문제가 다시 나오지 않아요.</span>
+                        <small>PERSONAL MODE</small>
+                    </button>
+                    <button id="classModeButton" class="mode-card" type="button">
+                        <strong>학급 단체전 · 순위 모드</strong>
+                        <span>학급 코드로 참가해 정답 수와 완료 시간으로 순위를 겨뤄요.</span>
+                        <small>CLASS RANKING MODE</small>
+                    </button>
+                </div>
+                <a class="teacher-link" href="teacher.html">교사용 학급 만들기·순위판 →</a>
+            </section>
+
+            <section id="personalScreen" class="panel start-panel hidden" aria-labelledby="personalTitle">
+                <span class="seal" aria-hidden="true">나</span>
+                <p class="mode-kicker">개인 모드</p>
+                <h2 id="personalTitle">둘 중 맞는 표현을 골라요</h2>
+                <p class="lead">160문제 중 10문제씩 나와요. 전체 문제를 한 번씩 풀기 전에는 같은 문제가 다시 나오지 않아요.</p>
+                <div class="category-list" aria-label="출제 영역">
+                    <span>표준어</span>
+                    <span>준말</span>
+                    <span>낱말 구별</span>
+                    <span>띄어쓰기</span>
+                    <span>사이시옷</span>
+                    <span>외래어 표기</span>
+                </div>
+                <button id="personalStartButton" class="primary-button" type="button">개인 학습 시작</button>
+                <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
+                <p class="keyboard-tip">컴퓨터에서는 숫자 1·2로도 답을 고를 수 있어요.</p>
+            </section>
+
+            <section id="missingScreen" class="panel start-panel hidden" aria-labelledby="missingTitle">
+                <span class="seal" aria-hidden="true">명</span>
+                <h2 id="missingTitle">이름을 먼저 저장해 주세요</h2>
+                <p class="lead">학급 순위에는 메인 화면에서 저장한 한글 이름이 표시됩니다.</p>
+                <a class="primary-button" href="../index.html">메인에서 이름 저장</a>
+                <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
+            </section>
+
+            <section id="lobbyScreen" class="panel start-panel class-lobby hidden" aria-labelledby="classLobbyTitle">
+                <p class="mode-kicker">학급 단체전 · 순위 모드</p>
+                <h2 id="classLobbyTitle">학급 코드로 참가하세요</h2>
+                <p class="lead"><strong id="savedName"></strong> 님으로 참가합니다. 교사가 알려 준 숫자 4자리를 입력하세요.</p>
+
+                <div id="joinPane" class="join-pane">
+                    <label for="joinCode">학급 코드</label>
+                    <div class="join-row">
+                        <input id="joinCode" class="room-code-input" inputmode="numeric" maxlength="4" autocomplete="one-time-code" placeholder="0000">
+                        <button id="joinBtn" class="primary-button" type="button">학급 참가</button>
+                    </div>
+                    <p id="joinStatus" class="lobby-status" role="status">교사가 만든 학급 코드를 입력하세요.</p>
+                </div>
+
+                <div id="classWaitingPanel" class="waiting-panel hidden">
+                    <div class="room-badge">학급 코드 <strong id="studentRoomCode">----</strong></div>
+                    <h3>교사의 시작을 기다리고 있어요</h3>
+                    <div id="lobbyPlayers" class="mp-lobby-players" aria-label="참가 학생"></div>
+                    <p id="lobbyGuide" class="lobby-status">학급에 연결하는 중입니다.</p>
+                </div>
+
+                <button id="leaveClassButton" class="text-button" type="button">← 학급에서 나가기</button>
+            </section>
+
+            <section id="quizScreen" class="quiz-screen hidden" aria-labelledby="questionText">
+                <div class="quiz-status">
+                    <div>
+                        <span id="quizModeLabel" class="mode-status">개인 모드</span>
+                        <span class="status-label">문제</span>
+                        <strong><span id="questionNumber">1</span>/10</strong>
+                    </div>
+                    <div class="score-box">
+                        <span class="status-label">점수</span>
+                        <strong><span id="currentScore">0</span>점</strong>
+                    </div>
+                </div>
+                <div class="progress-track" aria-hidden="true">
+                    <span id="progressFill"></span>
+                </div>
+
+                <article class="panel question-panel">
+                    <span id="questionCategory" class="question-category">표준어</span>
+                    <p id="questionPrompt" class="question-prompt">빈칸에 들어갈 알맞은 말을 고르세요.</p>
+                    <h2 id="questionText" class="question-text"></h2>
+                    <div id="choiceList" class="choice-list" aria-label="답 선택"></div>
+
+                    <div id="feedback" class="feedback hidden" aria-live="polite">
+                        <h3 id="feedbackTitle"></h3>
+                        <p id="correctAnswer" class="correct-answer"></p>
+                        <p id="explanation" class="explanation"></p>
+                        <button id="nextButton" class="primary-button next-button" type="button">다음 문제</button>
+                    </div>
+                </article>
+            </section>
+
+            <section id="resultScreen" class="panel result-panel hidden" aria-labelledby="resultTitle">
+                <p class="eyebrow">LEARNING COMPLETE</p>
+                <h2 id="resultTitle">학습 결과</h2>
+                <div class="score-medallion" aria-label="최종 점수">
+                    <strong id="finalScore">0</strong>
+                    <span>/ 10</span>
+                </div>
+                <p id="resultMessage" class="result-message"></p>
+                <p id="bestMessage" class="best-message"></p>
+
+                <div id="classRankArea" class="class-rank-area hidden">
+                    <div id="myRankCard" class="my-rank-card">순위를 집계하고 있어요.</div>
+                    <h3>학급 실시간 순위</h3>
+                    <ol id="classRankingList" class="ranking-list"></ol>
+                    <p id="rankingWaiting" class="ranking-waiting"></p>
+                </div>
+
+                <div id="reviewArea" class="review-area">
+                    <h3>나의 오답노트</h3>
+                    <p id="perfectReview" class="perfect-review hidden">틀린 문제가 없어요. 완벽합니다!</p>
+                    <ol id="missedList" class="missed-list"></ol>
+                </div>
+
+                <div class="result-actions">
+                    <button id="restartButton" class="primary-button" type="button">새 문제 풀기</button>
+                    <button id="resultModeButton" class="secondary-button" type="button">방식 다시 선택</button>
+                    <a class="secondary-button" href="../index.html">메인으로</a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            문항 해설은
+            <a href="https://www.korean.go.kr/kornorms/main/main.do" target="_blank" rel="noopener noreferrer">한국어 어문 규범</a>과
+            <a href="https://stdict.korean.go.kr/" target="_blank" rel="noopener noreferrer">표준국어대사전</a>을 기준으로 구성했습니다.
+        </footer>
+    </div>
+
+    <p id="announcer" class="visually-hidden" aria-live="assertive"></p>
+</body>
+</html>

@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const vm = require("node:vm");
 const Blokus = require(path.resolve(__dirname, "..", "game-hub-server", "blokus"));
 
 assert.equal(Blokus.PIECES.length, 21, "한 색은 서로 다른 21개 조각으로 구성되어야 합니다.");
@@ -62,11 +63,18 @@ assert.equal(
 const threePlayer = Blokus.createGame("a", "하나");
 Blokus.addPlayer(threePlayer, "b", "두리");
 Blokus.addPlayer(threePlayer, "c", "세나");
-Blokus.startGame(threePlayer);
-assert.deepEqual(threePlayer.turnColors, ["blue", "red", "yellow"]);
-assert.equal(Blokus.stateFor(threePlayer, "a").placements.length, 0);
-assert.equal(Blokus.stateFor(threePlayer, "a").remaining.blue.length, 21);
-assert.equal(Blokus.stateFor(threePlayer, "a").activePlayerId, "a");
+const threePlayerStart = Blokus.startGame(threePlayer);
+assert.equal(threePlayerStart.ok, false, "비대칭인 3인전은 시작할 수 없어야 합니다.");
+assert.equal(threePlayer.phase, "lobby");
+assert.match(threePlayerStart.error, /2명 또는 4명/);
+
+const fourPlayer = Blokus.createGame("a", "하나");
+Blokus.addPlayer(fourPlayer, "b", "두리");
+Blokus.addPlayer(fourPlayer, "c", "세나");
+Blokus.addPlayer(fourPlayer, "d", "네오");
+assert.equal(Blokus.startGame(fourPlayer).ok, true);
+assert.deepEqual(fourPlayer.turnColors, ["blue", "red", "yellow", "green"]);
+assert.deepEqual(fourPlayer.turnColors.map(color => fourPlayer.colorOwners[color]), ["a", "b", "c", "d"]);
 
 const blocked = Blokus.createGame("host", "가람");
 Blokus.addPlayer(blocked, "guest", "누리");
@@ -103,10 +111,42 @@ assert.equal(Blokus.colorScore(perfect, "blue"), 20, "한 칸 조각을 마지�
 const htmlPath = path.resolve(__dirname, "..", "games", "blokus", "blokus.html");
 if (fs.existsSync(htmlPath)) {
   const html = fs.readFileSync(htmlPath, "utf8");
-  assert.match(html, /allowedPlayerCounts:\s*\[2,\s*3,\s*4\]/);
+  assert.match(html, /allowedPlayerCounts:\s*\[2,\s*4\]/);
   assert.match(html, /BLOKUS_ACTION/);
   assert.match(html, /rotate|회전/i);
   assert.match(html, /flip|뒤집/i);
+  assert.match(html, /function viewRotation\s*\(/, "플레이어별 보드 방향 계산이 필요합니다.");
+  assert.match(html, /function toViewPoint\s*\(/, "서버 좌표를 화면 좌표로 변환해야 합니다.");
+  assert.match(html, /function fromViewPoint\s*\(/, "화면에서 선택한 칸을 서버 좌표로 복원해야 합니다.");
+  assert.match(html, /내 시작점이 왼쪽 아래/, "플레이어 시점 안내가 필요합니다.");
+  assert.match(html, /assets\/images\/blokus-cover\.png/, "블로커스 표지 이미지를 사용해야 합니다.");
+  assert.match(html, /assets\/sound\/blokus-bgm\.mp3/, "블로커스 배경음악을 사용해야 합니다.");
+  assert.match(html, /assets\/sound\/music-control\.js/, "공통 음악 컨트롤을 연결해야 합니다.");
+  assert.ok(fs.statSync(path.resolve(__dirname, "..", "assets", "images", "blokus-cover.png")).size > 0);
+  assert.ok(fs.statSync(path.resolve(__dirname, "..", "assets", "sound", "blokus-bgm.mp3")).size > 0);
+  assert.doesNotMatch(html, /id=["']placeBtn["']/, "별도의 배치 확정 버튼이 없어야 합니다.");
+  assert.match(
+    html,
+    /function selectBoardCell\s*\([^)]*\)\s*\{[\s\S]*?placeSelected\(\);/,
+    "보드 칸을 클릭하면 즉시 배치를 요청해야 합니다."
+  );
+  const touchHelperSource = html.match(/function touchPressState\([^)]*\)\s*\{[\s\S]*?\n  \}/)?.[0];
+  assert.ok(touchHelperSource, "터치 배치 상태 계산 함수가 필요합니다.");
+  const touchPressState = vm.runInNewContext(`(${touchHelperSource})`);
+  const firstTouch = touchPressState("touch", null, "0,19");
+  assert.equal(firstTouch.touchLike, true);
+  assert.equal(firstTouch.confirmedTouch, false, "첫 터치는 위치만 선택해야 합니다.");
+  assert.equal(firstTouch.nextTouchKey, "0,19");
+  const secondTouch = touchPressState("touch", firstTouch.nextTouchKey, "0,19");
+  assert.equal(secondTouch.confirmedTouch, true, "같은 칸의 두 번째 터치가 배치를 확정해야 합니다.");
+  assert.equal(secondTouch.nextTouchKey, null);
+  const movedTouch = touchPressState("touch", "0,19", "1,19");
+  assert.equal(movedTouch.confirmedTouch, false, "다른 칸을 터치하면 다시 첫 터치 상태여야 합니다.");
+  assert.equal(movedTouch.nextTouchKey, "1,19");
+  const mousePress = touchPressState("mouse", null, "0,19");
+  assert.equal(mousePress.touchLike, false, "마우스는 터치 확인 단계를 거치지 않아야 합니다.");
+  assert.equal(mousePress.nextTouchKey, null);
+  assert.match(html, /같은 칸을 한 번 더 터치/, "터치 배치 확인 안내가 필요합니다.");
 }
 
 const server = fs.readFileSync(path.resolve(__dirname, "..", "game-hub-server", "server.js"), "utf8");

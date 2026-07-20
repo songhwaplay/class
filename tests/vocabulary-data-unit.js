@@ -87,7 +87,7 @@ const imageManifestPath = path.join(__dirname, "..", "assets", "data", "vocabula
 const imageManifest = JSON.parse(fs.readFileSync(imageManifestPath, "utf8"));
 const imageEntries = Object.entries(imageManifest.images);
 assert.strictEqual(imageManifest.version, 1);
-assert.strictEqual(imageManifest.totalImages, 63);
+assert.strictEqual(imageManifest.totalImages, 214);
 assert.strictEqual(imageEntries.length, imageManifest.totalImages);
 imageEntries.forEach(([id, image]) => {
     const word = payload.words.find((entry) => String(entry.id) === id);
@@ -104,8 +104,8 @@ const imageCandidatesPath = path.join(__dirname, "..", "assets", "data", "vocabu
 const imageCandidates = JSON.parse(fs.readFileSync(imageCandidatesPath, "utf8"));
 assert.strictEqual(imageCandidates.elementaryWords, 800);
 assert.strictEqual(imageCandidates.targetImages, 214);
-assert.strictEqual(imageCandidates.existingImages, 63);
-assert.strictEqual(imageCandidates.pendingImages, 151);
+assert.strictEqual(imageCandidates.existingImages, 214);
+assert.strictEqual(imageCandidates.pendingImages, 0);
 assert.strictEqual(imageCandidates.meaningReviewCount, 0);
 assert.strictEqual(imageCandidates.potentialImagesAfterMeaningReview, 214);
 assert.strictEqual(imageCandidates.candidates.length, imageCandidates.targetImages);

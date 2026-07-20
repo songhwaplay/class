@@ -64,7 +64,6 @@
       <div class="row spread">
         <div><div class="eyebrow">ROOM CODE</div><div id="gameRoomCode" class="code">----</div></div>
         <div class="row">
-          <button id="copyBtnGame" class="secondary" type="button">COPY</button>
           <button id="rulesBtnGame" class="secondary" type="button">RULES</button>
         </div>
       </div>
@@ -258,7 +257,6 @@ function init(){
 
   $("turnBtn").addEventListener("click",submitTurn);
   $("restartBtn").addEventListener("click",restartGame);
-  $("copyBtnGame").addEventListener("click",()=>lobby.copyRoomCode());
   $("closeRulesBtn").addEventListener("click",hideRules);
   $("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});
   $("reloadBtn").addEventListener("click",()=>location.reload());

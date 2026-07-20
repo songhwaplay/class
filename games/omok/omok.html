@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>오목 · Online Omok</title>
 <link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <style>
@@ -11,6 +11,7 @@
 <script src="../../assets/network/game-network.js"></script>
 <script src="../../assets/network/multiplayer-lobby.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
+<link rel="stylesheet" href="../../assets/device-game.css">
 </head>
 <body>
 <main class="shell">
@@ -65,7 +66,6 @@
       <div class="row spread">
         <div><div class="eyebrow">ROOM CODE</div><div id="gameRoomCode" class="code">----</div></div>
         <div class="row">
-          <button id="copyBtnGame" class="secondary" type="button">COPY</button>
           <button id="rulesBtnGame" class="secondary" type="button">RULES</button>
           <button id="leaveBtnGame" class="secondary" type="button">메인 화면</button>
         </div>
@@ -443,7 +443,6 @@ function init(){
     onAbort:showAbort
   }).mount();
 
-  $("copyBtnGame").addEventListener("click",()=>lobby.copyRoomCode());
   $("closeRulesBtn").addEventListener("click",hideRules);
   $("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});
   $("rematchBtn").addEventListener("click",startRematch);

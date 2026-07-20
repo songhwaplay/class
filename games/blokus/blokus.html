@@ -9,8 +9,11 @@
   <link rel="stylesheet" href="styles.css">
   <script src="../../assets/network/game-network.js"></script>
   <script src="../../assets/network/multiplayer-lobby.js"></script>
+  <script src="../../assets/sound/music-control.js" defer></script>
+  <link rel="stylesheet" href="../../assets/device-game.css">
 </head>
 <body>
+  <audio id="bgm" src="../../assets/sound/blokus-bgm.mp3" loop preload="auto"></audio>
   <main class="shell">
     <section id="missingScreen" class="panel missing-panel hidden">
       <div class="eyebrow">PLAYER NAME REQUIRED</div>
@@ -28,10 +31,12 @@
           <div class="hero-facts">
             <div class="hero-fact"><strong>20×20</strong><span>정식 게임 보드</span></div>
             <div class="hero-fact"><strong>21</strong><span>색마다 다른 조각</span></div>
-            <div class="hero-fact"><strong>2–4</strong><span>함께하는 플레이어</span></div>
+            <div class="hero-fact"><strong>2 / 4</strong><span>지원하는 플레이어</span></div>
           </div>
         </div>
-        <div class="mosaic" aria-hidden="true"><div id="mosaicGrid" class="mosaic-grid"></div></div>
+        <figure class="hero-art" aria-hidden="true">
+          <img src="../../assets/images/blokus-cover.png" alt="">
+        </figure>
       </article>
 
       <article class="panel lobby-panel">
@@ -66,7 +71,7 @@
         <section class="lobby-roster">
           <div class="lobby-roster-head"><div class="eyebrow">PLAYERS</div><span>입장 순서대로 색을 배정해요</span></div>
           <div id="lobbyPlayers" class="mp-lobby-players"></div>
-          <p id="lobbyGuide" class="mp-lobby-guide">2~4명이 모이면 시작할 수 있습니다.</p>
+          <p id="lobbyGuide" class="mp-lobby-guide">2명 또는 4명이 모이면 시작할 수 있습니다.</p>
         </section>
 
         <div class="lobby-actions">
@@ -86,7 +91,6 @@
       </div>
       <div class="room-lockup"><div class="eyebrow">ROOM</div><div id="gameRoomCode" class="room-code">----</div></div>
       <nav class="header-actions" aria-label="게임 메뉴">
-        <button id="copyGameBtn" class="quiet" type="button">번호 복사</button>
         <button id="rulesBtnGame" class="quiet" type="button">규칙</button>
         <button id="leaveBtnGame" class="quiet" type="button">나가기</button>
       </nav>
@@ -112,8 +116,8 @@
           </div>
         </div>
         <div class="board-legend">
-          <span class="legend-key"><i class="legend-corner"></i>색 점이 첫 조각의 시작 모서리예요.</span>
-          <span>조각 선택 → 회전·뒤집기 → 보드 칸 선택 → 놓기</span>
+          <span class="legend-key"><i class="legend-corner"></i>내 시작점이 왼쪽 아래에 오도록 보드를 맞췄어요.</span>
+          <span>마우스는 클릭 즉시 · 터치는 같은 칸을 두 번 눌러 배치</span>
         </div>
       </article>
 
@@ -135,9 +139,8 @@
         </div>
         <div class="piece-list-wrap"><div id="pieceGrid" class="piece-grid"></div></div>
         <div class="side-actions">
-          <div id="placementStatus" class="placement-status">조각을 고른 뒤 보드에서 놓을 위치를 선택하세요.</div>
+          <div id="placementStatus" class="placement-status">마우스는 클릭 즉시, 터치는 같은 칸을 두 번 누르면 놓습니다.</div>
           <div class="action-grid">
-            <button id="placeBtn" class="primary place-button" type="button" disabled>이곳에 놓기</button>
             <button id="hintBtn" class="secondary" type="button">자리 찾기</button>
             <button id="clearBtn" class="secondary" type="button">선택 해제</button>
             <button id="passBtn" class="danger" type="button" disabled>더 이상 못 둬요</button>
@@ -214,6 +217,8 @@
   let selectedPieceId = null;
   let selectedShape = [];
   let anchor = null;
+  let touchConfirmKey = null;
+  let boardPointerType = "mouse";
   let actionPending = false;
   let lastRevision = -1;
   let toastTimer = null;
@@ -239,6 +244,27 @@
   function isMyTurn() { return gameState?.phase === "playing" && gameState.activePlayerId === myId(); }
   function activePlayer() { return gameState?.players.find(player => player.id === gameState.activePlayerId) || null; }
   function colorValue(color) { return COLORS[color]?.value || "#7b8794"; }
+
+  function viewRotation() {
+    const primaryColor = gameState?.myColors?.[0];
+    return ({ green: 0, yellow: 1, red: 2, blue: 3 })[primaryColor] ?? 0;
+  }
+
+  function toViewPoint(point) {
+    const { x, y } = point;
+    if (viewRotation() === 1) return { x: 19 - y, y: x };
+    if (viewRotation() === 2) return { x: 19 - x, y: 19 - y };
+    if (viewRotation() === 3) return { x: y, y: 19 - x };
+    return { x, y };
+  }
+
+  function fromViewPoint(point) {
+    const { x, y } = point;
+    if (viewRotation() === 1) return { x: y, y: 19 - x };
+    if (viewRotation() === 2) return { x: 19 - x, y: 19 - y };
+    if (viewRotation() === 3) return { x: 19 - y, y: x };
+    return { x, y };
+  }
 
   function normalize(cells) {
     if (!cells.length) return [];
@@ -282,49 +308,62 @@
     return graphic;
   }
 
-  function renderMosaic() {
-    const colors = new Map([
-      ["0,0","blue"],["1,0","blue"],["0,1","blue"],["0,2","blue"],["1,2","blue"],
-      ["7,0","red"],["8,0","red"],["9,0","red"],["8,1","red"],["8,2","red"],
-      ["2,4","yellow"],["3,4","yellow"],["3,5","yellow"],["4,5","yellow"],["4,6","yellow"],
-      ["6,5","green"],["6,6","green"],["7,6","green"],["7,7","green"],["8,7","green"],
-      ["0,8","red"],["1,8","red"],["1,9","red"],["4,8","blue"],["5,8","blue"],["6,8","blue"],["5,9","blue"],
-      ["9,8","yellow"],["9,9","yellow"]
-    ]);
-    const fragment = document.createDocumentFragment();
-    for (let y = 0; y < 10; y += 1) for (let x = 0; x < 10; x += 1) {
-      const cell = document.createElement("span");
-      const color = colors.get(`${x},${y}`);
-      if (color) cell.className = color;
-      fragment.appendChild(cell);
-    }
-    $("mosaicGrid").replaceChildren(fragment);
-  }
-
   function createBoard() {
     const fragment = document.createDocumentFragment();
     for (let y = 0; y < 20; y += 1) for (let x = 0; x < 20; x += 1) {
       const cell = document.createElement("button");
       cell.type = "button";
       cell.className = "board-cell";
+      cell.dataset.viewX = String(x);
+      cell.dataset.viewY = String(y);
       cell.setAttribute("role", "gridcell");
       cell.setAttribute("aria-label", `${y + 1}행 ${x + 1}열`);
-      cell.addEventListener("mouseenter", () => {
-        if (selectedPieceId && isMyTurn()) { anchor = { x, y }; renderBoard(); renderSelection(); }
+      cell.addEventListener("pointerenter", event => {
+        if (event.pointerType !== "mouse") return;
+        if (selectedPieceId && isMyTurn() && !actionPending) {
+          touchConfirmKey = null;
+          anchor = { x, y };
+          renderBoard();
+          renderSelection();
+        }
       });
-      cell.addEventListener("click", () => selectBoardCell(x, y));
+      cell.addEventListener("pointerdown", event => { boardPointerType = event.pointerType || "mouse"; });
+      cell.addEventListener("click", event => {
+        const pointerType = event.detail === 0
+          ? "keyboard"
+          : (event.pointerType || (event.sourceCapabilities?.firesTouchEvents ? "touch" : boardPointerType));
+        selectBoardCell(x, y, pointerType);
+      });
       boardCells.set(`${x},${y}`, cell);
       fragment.appendChild(cell);
     }
     $("board").replaceChildren(fragment);
   }
 
-  function selectBoardCell(x, y) {
+  function touchPressState(pointerType, currentKey, nextKey) {
+    const touchLike = pointerType === "touch" || pointerType === "pen";
+    const confirmedTouch = touchLike && currentKey === nextKey;
+    return {
+      touchLike,
+      confirmedTouch,
+      nextTouchKey: touchLike && !confirmedTouch ? nextKey : null
+    };
+  }
+
+  function selectBoardCell(x, y, pointerType = "mouse") {
+    if (actionPending) return;
     if (!isMyTurn()) { showToast("지금은 다른 플레이어의 차례입니다."); return; }
     if (!selectedPieceId) { showToast("먼저 오른쪽에서 조각을 선택하세요."); return; }
+    const nextTouchKey = `${x},${y}`;
+    const pressState = touchPressState(pointerType, touchConfirmKey, nextTouchKey);
+    touchConfirmKey = pressState.nextTouchKey;
     anchor = { x, y };
     renderBoard();
     renderSelection();
+    const validation = validatePreview(selectedPieceId, absolutePreview());
+    if (!validation.ok) { showToast(validation.message || "이 칸에는 놓을 수 없습니다."); return; }
+    if (pressState.touchLike && !pressState.confirmedTouch) { showToast("같은 칸을 한 번 더 터치하면 놓습니다."); return; }
+    placeSelected();
   }
 
   function occupiedMap() {
@@ -337,7 +376,7 @@
 
   function absolutePreview() {
     if (!selectedPieceId || !anchor) return [];
-    return selectedShape.map(cell => ({ x: cell.x + anchor.x, y: cell.y + anchor.y }));
+    return selectedShape.map(cell => fromViewPoint({ x: cell.x + anchor.x, y: cell.y + anchor.y }));
   }
 
   function validatePreview(pieceId, cells, color = gameState?.activeColor) {
@@ -364,15 +403,17 @@
   function cornerAnchor(shape, color) {
     const corner = gameState?.colors.find(entry => entry.id === color)?.startCorner;
     if (!corner) return null;
+    const viewCorner = toViewPoint(corner);
     const width = Math.max(...shape.map(cell => cell.x)) + 1;
     const height = Math.max(...shape.map(cell => cell.y)) + 1;
-    return { x: corner.x === 0 ? 0 : 20 - width, y: corner.y === 0 ? 0 : 20 - height };
+    return { x: viewCorner.x === 0 ? 0 : 20 - width, y: viewCorner.y === 0 ? 0 : 20 - height };
   }
 
   function isFirstPlacement(color) { return !(gameState?.placements || []).some(placement => placement.color === color); }
 
   function selectPiece(pieceId) {
     if (!isMyTurn() || actionPending) return;
+    touchConfirmKey = null;
     selectedPieceId = pieceId;
     selectedShape = normalize(PIECE_MAP.get(pieceId).cells);
     anchor = isFirstPlacement(gameState.activeColor) ? cornerAnchor(selectedShape, gameState.activeColor) : null;
@@ -383,6 +424,7 @@
 
   function rotateSelected() {
     if (!selectedPieceId || !isMyTurn()) return;
+    touchConfirmKey = null;
     selectedShape = rotateShape(selectedShape);
     if (isFirstPlacement(gameState.activeColor)) anchor = cornerAnchor(selectedShape, gameState.activeColor);
     renderSelection(); renderBoard();
@@ -390,13 +432,14 @@
 
   function flipSelected() {
     if (!selectedPieceId || !isMyTurn()) return;
+    touchConfirmKey = null;
     selectedShape = flipShape(selectedShape);
     if (isFirstPlacement(gameState.activeColor)) anchor = cornerAnchor(selectedShape, gameState.activeColor);
     renderSelection(); renderBoard();
   }
 
   function clearSelection() {
-    selectedPieceId = null; selectedShape = []; anchor = null;
+    selectedPieceId = null; selectedShape = []; anchor = null; touchConfirmKey = null;
     renderPieces(); renderSelection(); renderBoard();
   }
 
@@ -410,13 +453,15 @@
       cell.setAttribute("aria-label", `${Number(key.split(",")[1]) + 1}행 ${Number(key.split(",")[0]) + 1}열`);
     }
     for (const color of gameState.colors || []) {
-      const cell = boardCells.get(`${color.startCorner.x},${color.startCorner.y}`);
+      const viewCorner = toViewPoint(color.startCorner);
+      const cell = boardCells.get(`${viewCorner.x},${viewCorner.y}`);
       if (cell) { cell.classList.add("corner"); cell.style.setProperty("--corner-color", colorValue(color.id)); }
     }
     const latestOrder = Math.max(...(gameState.placements || []).map(placement => placement.order), -1);
     for (const placement of gameState.placements || []) {
       for (const point of placement.cells) {
-        const cell = boardCells.get(`${point.x},${point.y}`);
+        const viewPoint = toViewPoint(point);
+        const cell = boardCells.get(`${viewPoint.x},${viewPoint.y}`);
         if (!cell) continue;
         cell.classList.add("occupied");
         if (placement.order === latestOrder) cell.classList.add("last");
@@ -428,7 +473,8 @@
     if (!preview.length) return;
     const validation = validatePreview(selectedPieceId, preview);
     for (const point of preview) {
-      const cell = boardCells.get(`${point.x},${point.y}`);
+      const viewPoint = toViewPoint(point);
+      const cell = boardCells.get(`${viewPoint.x},${viewPoint.y}`);
       if (!cell) continue;
       cell.classList.add(validation.ok ? "preview-valid" : "preview-invalid");
       cell.style.setProperty("--preview-color", colorValue(gameState.activeColor));
@@ -493,14 +539,14 @@
   function renderSelection() {
     const stage = $("pieceStage");
     const preview = absolutePreview();
-    const validation = preview.length ? validatePreview(selectedPieceId, preview) : { ok: false, message: selectedPieceId ? "보드에서 놓을 칸을 선택하세요." : "조각을 고른 뒤 보드에서 놓을 위치를 선택하세요." };
+    const validation = preview.length ? validatePreview(selectedPieceId, preview) : { ok: false, message: selectedPieceId ? "마우스는 클릭하고, 터치는 원하는 칸을 두 번 누르세요." : "조각을 고른 뒤 보드에서 놓을 칸을 선택하세요." };
     stage.replaceChildren();
     stage.style.setProperty("--piece-color", colorValue(gameState?.activeColor));
     if (selectedPieceId) {
       stage.classList.remove("empty");
       stage.appendChild(makePieceGraphic(selectedPieceId, "large-piece", selectedShape));
       $("selectionName").textContent = `${selectedPieceId} · ${selectedShape.length}칸`;
-      $("selectionGuide").textContent = anchor ? "보드의 반투명 모양을 확인하세요." : "보드에서 조각의 기준 칸을 선택하세요.";
+      $("selectionGuide").textContent = touchConfirmKey ? "같은 칸을 한 번 더 터치하면 배치합니다." : "마우스는 클릭 즉시, 터치는 두 번째 터치에 배치합니다.";
     } else {
       stage.classList.add("empty");
       stage.innerHTML = "조각을<br>고르세요";
@@ -510,17 +556,18 @@
     $("rotateBtn").disabled = !selectedPieceId || !isMyTurn() || actionPending;
     $("flipBtn").disabled = !selectedPieceId || !isMyTurn() || actionPending;
     $("clearBtn").disabled = !selectedPieceId || actionPending;
-    $("placeBtn").disabled = !validation.ok || actionPending;
-    $("placeBtn").textContent = actionPending ? "놓는 중…" : "이곳에 놓기";
     $("hintBtn").disabled = !isMyTurn() || actionPending || gameState?.canPass;
     $("passBtn").disabled = !gameState?.canPass || actionPending;
     const status = $("placementStatus");
-    status.textContent = gameState?.canPass && isMyTurn() ? "가능한 배치가 없습니다. 이 색의 플레이를 종료하세요." : validation.message;
+    status.textContent = gameState?.canPass && isMyTurn()
+      ? "가능한 배치가 없습니다. 이 색의 플레이를 종료하세요."
+      : (touchConfirmKey && validation.ok ? "위치가 선택됐습니다. 같은 칸을 한 번 더 터치하세요." : validation.message);
     status.className = `placement-status${preview.length ? (validation.ok ? " valid" : " invalid") : ""}`;
   }
 
   function findHint() {
     if (!isMyTurn() || actionPending) return;
+    touchConfirmKey = null;
     const color = gameState.activeColor;
     for (const pieceId of gameState.remaining[color] || []) {
       for (const shape of orientationsFor(pieceId)) {
@@ -529,9 +576,12 @@
         for (let y = 0; y <= 20 - height; y += 1) for (let x = 0; x <= 20 - width; x += 1) {
           const cells = shape.map(cell => ({ x: cell.x + x, y: cell.y + y }));
           if (validatePreview(pieceId, cells, color).ok) {
+            const viewCells = cells.map(toViewPoint);
+            const minimumX = Math.min(...viewCells.map(cell => cell.x));
+            const minimumY = Math.min(...viewCells.map(cell => cell.y));
             selectedPieceId = pieceId;
-            selectedShape = shape;
-            anchor = { x, y };
+            selectedShape = normalize(viewCells);
+            anchor = { x: minimumX, y: minimumY };
             renderPieces(); renderSelection(); renderBoard();
             showToast("가능한 자리 한 곳을 찾았습니다.");
             return;
@@ -546,6 +596,7 @@
     const cells = absolutePreview();
     const validation = cells.length ? validatePreview(selectedPieceId, cells) : { ok: false };
     if (!validation.ok || actionPending) return;
+    touchConfirmKey = null;
     actionPending = true; renderSelection(); renderPieces();
     const sent = lobby.sendServer({ type: "BLOKUS_ACTION", action: "PLACE", pieceId: selectedPieceId, cells });
     if (!sent) { actionPending = false; renderSelection(); renderPieces(); showToast("서버에 배치를 보내지 못했습니다."); }
@@ -597,7 +648,7 @@
     actionPending = false;
     if (revisionChanged) {
       lastRevision = state.revision;
-      selectedPieceId = null; selectedShape = []; anchor = null;
+      selectedPieceId = null; selectedShape = []; anchor = null; touchConfirmKey = null;
     }
     if (state.phase === "lobby") {
       if (lobby.snapshot().started) { lobby.returnToLobby(); showLobby(); showToast(state.lastAction || "대기실로 돌아왔습니다."); }
@@ -621,24 +672,23 @@
   function showAbort({ title, message }) { $("abortTitle").textContent = title; $("abortMessage").textContent = message; $("abortOverlay").classList.remove("hidden"); }
 
   function init() {
-    renderMosaic();
     createBoard();
     lobby = ClassroomMultiplayerLobby.create({
       gameId: GAME_ID,
       getPlayerName: () => /^[가-힣]{2,6}$/.test(savedName) ? savedName : "",
-      allowedPlayerCounts: [2, 3, 4],
+      allowedPlayerCounts: [2, 4],
       maxPlayers: 4,
       rulesButtonIds: ["rulesBtnLobby", "rulesBtnGame"],
       leaveButtonIds: ["leaveBtnLobby", "leaveBtnGame"],
       onRules: showRules,
       onLeave: () => location.href = "../../index.html",
       onNotice: showToast,
-      onInvalidStart: () => showToast("2~4명이 모여야 시작할 수 있습니다."),
+      onInvalidStart: () => showToast("블로커스는 2명 또는 4명일 때 시작할 수 있습니다."),
       onStateChange: syncLobby,
       getLobbyPresentation: ({ count, role, canStart }) => ({
         canStart,
         startText: role === "host" && canStart ? `${count}명으로 게임 시작` : "플레이어를 기다리는 중",
-        guideText: role === "host" ? `현재 ${count}명 · 2~4명이면 시작할 수 있어요.` : "방장이 게임을 시작할 때까지 기다려 주세요."
+        guideText: role === "host" ? `현재 ${count}명 · 2인 또는 4인일 때 시작할 수 있어요.` : "방장이 게임을 시작할 때까지 기다려 주세요."
       }),
       createStartData: () => ({ serverAuthoritative: true }),
       onStarted: () => { showGame(); if (lobby.snapshot().role === "host") sendHostAction("START"); },
@@ -647,12 +697,10 @@
       onAbort: showAbort
     }).mount();
 
-    $("copyGameBtn").addEventListener("click", () => lobby.copyRoomCode());
     $("rotateBtn").addEventListener("click", rotateSelected);
     $("flipBtn").addEventListener("click", flipSelected);
     $("clearBtn").addEventListener("click", clearSelection);
     $("hintBtn").addEventListener("click", findHint);
-    $("placeBtn").addEventListener("click", placeSelected);
     $("passBtn").addEventListener("click", passTurn);
     $("closeRulesBtn").addEventListener("click", hideRules);
     $("rulesOverlay").addEventListener("click", event => { if (event.target === $("rulesOverlay")) hideRules(); });

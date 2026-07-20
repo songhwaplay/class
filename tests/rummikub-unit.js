@@ -90,6 +90,9 @@ if (fs.existsSync(htmlPath)) {
   const html = fs.readFileSync(htmlPath, "utf8");
   assert.match(html, /allowedPlayerCounts:\[2,3,4\]/, "루미큐브는 2~4인을 지원해야 합니다.");
   assert.match(html, /RUMMIKUB_ACTION/, "서버 판정 방식으로 동작해야 합니다.");
+  assert.match(html, /id="sortNumberBtn"/, "내 타일 숫자순 정렬 버튼이 있어야 합니다.");
+  assert.match(html, /id="sortColorBtn"/, "내 타일 색상순 정렬 버튼이 있어야 합니다.");
+  assert.match(html, /function compareRackTiles\(/, "내 타일 정렬 로직이 있어야 합니다.");
   assert.doesNotMatch(html, /joker|조커/i, "조커 규칙과 타일을 포함하면 안 됩니다.");
 }
 const server = fs.readFileSync(path.resolve(__dirname, "..", "game-hub-server", "server.js"), "utf8");

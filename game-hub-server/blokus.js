@@ -91,7 +91,7 @@ function createGame(hostId, hostName) {
     lastPiece: {},
     placements: [],
     winnerIds: [],
-    lastAction: "2~4명이 모이면 시작할 수 있습니다.",
+    lastAction: "2명 또는 4명이 모이면 시작할 수 있습니다.",
     revision: 0
   };
 }
@@ -140,7 +140,8 @@ function assignColors(players) {
       }
     };
   }
-  const turnColors = COLOR_ORDER.slice(0, players.length);
+  if (players.length !== 4) return { turnColors: [], owners: {} };
+  const turnColors = [...COLOR_ORDER];
   return {
     turnColors,
     owners: Object.fromEntries(turnColors.map((color, index) => [color, players[index].id]))
@@ -149,8 +150,8 @@ function assignColors(players) {
 
 function startGame(game) {
   if (game.phase !== "lobby") return { ok: false, error: "이미 시작한 게임입니다." };
-  if (game.players.length < 2 || game.players.length > 4) {
-    return { ok: false, error: "게임 시작에는 2~4명이 필요합니다." };
+  if (![2, 4].includes(game.players.length)) {
+    return { ok: false, error: "블로커스는 2명 또는 4명일 때 시작할 수 있습니다." };
   }
   const assignment = assignColors(game.players);
   game.colorOwners = assignment.owners;

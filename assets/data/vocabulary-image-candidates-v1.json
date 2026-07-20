@@ -3,8 +3,8 @@
   "source": "english-vocabulary-3000-v2.json + Open English WordNet",
   "elementaryWords": 800,
   "targetImages": 214,
-  "existingImages": 63,
-  "pendingImages": 151,
+  "existingImages": 214,
+  "pendingImages": 0,
   "meaningReviewCount": 0,
   "potentialImagesAfterMeaningReview": 214,
   "categoryCounts": {
@@ -538,8 +538,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "동물.",
-      "existingImage": false,
-      "score": 124
+      "existingImage": true,
+      "score": 1124
     },
     {
       "id": 243,
@@ -548,8 +548,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "곰.",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 284,
@@ -578,8 +578,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "닭.",
-      "existingImage": false,
-      "score": 139
+      "existingImage": true,
+      "score": 1139
     },
     {
       "id": 1084,
@@ -598,8 +598,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "말",
-      "existingImage": false,
-      "score": 137
+      "existingImage": true,
+      "score": 1137
     },
     {
       "id": 216,
@@ -618,8 +618,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "울리는 종.",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 306,
@@ -628,8 +628,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "판자, 널빤지",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 307,
@@ -638,8 +638,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(해상 교통 수단) 배.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 324,
@@ -648,8 +648,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "병.",
-      "existingImage": false,
-      "score": 128
+      "existingImage": true,
+      "score": 1128
     },
     {
       "id": 330,
@@ -658,8 +658,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "상자.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 371,
@@ -678,8 +678,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "사진기, 카메라.",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 405,
@@ -688,8 +688,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(연하장, 엽서 따위) 카드.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 437,
@@ -708,8 +708,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "컵",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 777,
@@ -718,8 +718,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "책상.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 864,
@@ -728,8 +728,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "드레스; 원피스.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 1070,
@@ -738,8 +738,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "서류, 문서.",
-      "existingImage": false,
-      "score": 118
+      "existingImage": true,
+      "score": 1118
     },
     {
       "id": 1102,
@@ -748,8 +748,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "마루, 복도.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 1211,
@@ -758,8 +758,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "유리.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 1288,
@@ -768,8 +768,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(대개 남성용) 모자.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 1497,
@@ -778,8 +778,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "열쇠. (비유) 무엇을 푸는 데 중요한 것; 실마리, 요점, 비결.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 1507,
@@ -788,8 +788,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(일반적 의미) 칼.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 1891,
@@ -798,8 +798,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "바지.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 1892,
@@ -808,8 +808,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "종이",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 2127,
@@ -818,8 +818,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "라디오.",
-      "existingImage": false,
-      "score": 123
+      "existingImage": true,
+      "score": 1123
     },
     {
       "id": 2246,
@@ -828,8 +828,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "반지.",
-      "existingImage": false,
-      "score": 124
+      "existingImage": true,
+      "score": 1124
     },
     {
       "id": 2382,
@@ -838,8 +838,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "셔츠, 와이셔츠, 남방",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 2899,
@@ -848,8 +848,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "벽.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 2958,
@@ -858,8 +858,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "창문, 창.",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 1116,
@@ -868,8 +868,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체 부분) 발.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 1762,
@@ -878,8 +878,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체 부분) 목.",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 1797,
@@ -888,8 +888,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체 기관) 코.",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 339,
@@ -898,8 +898,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "아침밥.",
-      "existingImage": false,
-      "score": 135
+      "existingImage": true,
+      "score": 1135
     },
     {
       "id": 384,
@@ -908,8 +908,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "케이크",
-      "existingImage": false,
-      "score": 140
+      "existingImage": true,
+      "score": 1140
     },
     {
       "id": 667,
@@ -918,8 +918,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "크림.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 1653,
@@ -928,8 +928,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "고기, 육류.",
-      "existingImage": false,
-      "score": 140
+      "existingImage": true,
+      "score": 1140
     },
     {
       "id": 1686,
@@ -938,8 +938,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "우유.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 134,
@@ -948,8 +948,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "아파트.",
-      "existingImage": false,
-      "score": 121
+      "existingImage": true,
+      "score": 1121
     },
     {
       "id": 222,
@@ -958,8 +958,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "은행.",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 346,
@@ -968,8 +968,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "다리, 교량",
-      "existingImage": false,
-      "score": 124
+      "existingImage": true,
+      "score": 1124
     },
     {
       "id": 476,
@@ -978,8 +978,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "교회.",
-      "existingImage": false,
-      "score": 118
+      "existingImage": true,
+      "score": 1118
     },
     {
       "id": 525,
@@ -988,8 +988,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "일반적으로 한국에서 말하는 단과 대학교.",
-      "existingImage": false,
-      "score": 111
+      "existingImage": true,
+      "score": 1111
     },
     {
       "id": 1505,
@@ -998,8 +998,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "부엌.",
-      "existingImage": false,
-      "score": 123
+      "existingImage": true,
+      "score": 1123
     },
     {
       "id": 1898,
@@ -1008,8 +1008,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "공원.",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 2219,
@@ -1018,8 +1018,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "식당, 음식점.",
-      "existingImage": false,
-      "score": 120
+      "existingImage": true,
+      "score": 1120
     },
     {
       "id": 2386,
@@ -1028,8 +1028,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "(작은) 가게, 상점.",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 240,
@@ -1038,8 +1038,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "바닷가, 해안, 모래사장.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 1250,
@@ -1048,8 +1048,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "바닥; 해저, 강바닥, 개울 바닥 (The bottom of a body of water.)",
-      "existingImage": false,
-      "score": 126
+      "existingImage": true,
+      "score": 1126
     },
     {
       "id": 1731,
@@ -1058,8 +1058,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "(지리) 산.",
-      "existingImage": false,
-      "score": 128
+      "existingImage": true,
+      "score": 1128
     },
     {
       "id": 2251,
@@ -1068,8 +1068,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "(지리) 강.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 2324,
@@ -1078,8 +1078,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "바다, 해양.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 2425,
@@ -1088,8 +1088,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "하늘.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 2519,
@@ -1098,8 +1098,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "별, 성좌.",
-      "existingImage": false,
-      "score": 128
+      "existingImage": true,
+      "score": 1128
     },
     {
       "id": 192,
@@ -1108,8 +1108,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "숙모, 이모. 또는 아주머니. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 658,
@@ -1118,8 +1118,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "남자 사촌. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 120
+      "existingImage": true,
+      "score": 1120
     },
     {
       "id": 1810,
@@ -1128,8 +1128,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "간호사.",
-      "existingImage": false,
-      "score": 117
+      "existingImage": true,
+      "score": 1117
     },
     {
       "id": 2051,
@@ -1138,8 +1138,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "왕자. 드물게는 군주.",
-      "existingImage": false,
-      "score": 120
+      "existingImage": true,
+      "score": 1120
     },
     {
       "id": 2116,
@@ -1148,8 +1148,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "여왕.",
-      "existingImage": false,
-      "score": 121
+      "existingImage": true,
+      "score": 1121
     },
     {
       "id": 1721,
@@ -1158,8 +1158,8 @@
       "category": "phenomenon",
       "categoryLabel": "자연현상",
       "meaning": "(지구의 위성) 달.",
-      "existingImage": false,
-      "score": 118
+      "existingImage": true,
+      "score": 1118
     },
     {
       "id": 2597,
@@ -1178,8 +1178,8 @@
       "category": "plant",
       "categoryLabel": "식물",
       "meaning": "(식물) 장미.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 2783,
@@ -1188,8 +1188,8 @@
       "category": "plant",
       "categoryLabel": "식물",
       "meaning": "나무.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 234,
@@ -1198,8 +1198,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "(동물) 박쥐.",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 251,
@@ -1208,8 +1208,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "(곤충) 벌. 특히 호박벌, 꿀벌, 가위벌 종류. (학명 Apiformes)",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 660,
@@ -1218,8 +1218,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "암소.",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 874,
@@ -1228,8 +1228,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "오리",
-      "existingImage": false,
-      "score": 137
+      "existingImage": true,
+      "score": 1137
     },
     {
       "id": 908,
@@ -1238,8 +1238,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "(동물) 코끼리.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 1141,
@@ -1248,8 +1248,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "(동물) 여우.",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 1579,
@@ -1258,8 +1258,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "(동물) 사자.",
-      "existingImage": false,
-      "score": 137
+      "existingImage": true,
+      "score": 1137
     },
     {
       "id": 1716,
@@ -1268,8 +1268,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "원숭이.",
-      "existingImage": false,
-      "score": 135
+      "existingImage": true,
+      "score": 1135
     },
     {
       "id": 1732,
@@ -1278,8 +1278,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "(동물) 생쥐.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 1958,
@@ -1288,8 +1288,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "돼지.",
-      "existingImage": false,
-      "score": 138
+      "existingImage": true,
+      "score": 1138
     },
     {
       "id": 2104,
@@ -1298,8 +1298,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "(동물) 강아지.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 2125,
@@ -1308,8 +1308,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "토끼.",
-      "existingImage": false,
-      "score": 135
+      "existingImage": true,
+      "score": 1135
     },
     {
       "id": 2637,
@@ -1318,8 +1318,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "꼬리.",
-      "existingImage": false,
-      "score": 137
+      "existingImage": true,
+      "score": 1137
     },
     {
       "id": 2723,
@@ -1328,8 +1328,8 @@
       "category": "animal",
       "categoryLabel": "동물",
       "meaning": "호랑이.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 80,
@@ -1338,8 +1338,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(주로 미국에서) 비행기.",
-      "existingImage": false,
-      "score": 125
+      "existingImage": true,
+      "score": 1125
     },
     {
       "id": 83,
@@ -1348,8 +1348,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "사진첩, 앨범.",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 232,
@@ -1358,8 +1358,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "바구니, 광주리.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 265,
@@ -1368,8 +1368,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "허리띠, 혁대, 벨트.",
-      "existingImage": false,
-      "score": 125
+      "existingImage": true,
+      "score": 1125
     },
     {
       "id": 277,
@@ -1378,8 +1378,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "자전거.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 355,
@@ -1388,8 +1388,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "솔.",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 398,
@@ -1398,8 +1398,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "모자.",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 504,
@@ -1418,8 +1418,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "코트, 외투.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 665,
@@ -1428,8 +1428,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "크레용.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 699,
@@ -1438,8 +1438,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "가리는 막, 커튼, 칸막이",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 843,
@@ -1448,8 +1448,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "인형. (비유) 인형처럼 예쁜 여자.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 1128,
@@ -1458,8 +1458,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "포크.",
-      "existingImage": false,
-      "score": 125
+      "existingImage": true,
+      "score": 1125
     },
     {
       "id": 1261,
@@ -1468,8 +1468,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "서양의 현악기 기타.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 1309,
@@ -1478,8 +1478,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "헬멧, 투구.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 1474,
@@ -1488,8 +1488,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(의복) 앞이 트인 남자 또는 여자의 웃옷.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 1629,
@@ -1498,8 +1498,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "지도.",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 1780,
@@ -1508,8 +1508,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(인쇄 매체) 신문.",
-      "existingImage": false,
-      "score": 112
+      "existingImage": true,
+      "score": 1112
     },
     {
       "id": 1800,
@@ -1518,8 +1518,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "공책, 필기장, 연습장.",
-      "existingImage": false,
-      "score": 119
+      "existingImage": true,
+      "score": 1119
     },
     {
       "id": 1927,
@@ -1528,8 +1528,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "펜.",
-      "existingImage": false,
-      "score": 126
+      "existingImage": true,
+      "score": 1126
     },
     {
       "id": 1929,
@@ -1538,8 +1538,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "연필.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 1952,
@@ -1548,8 +1548,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(악기) 피아노.",
-      "existingImage": false,
-      "score": 124
+      "existingImage": true,
+      "score": 1124
     },
     {
       "id": 2239,
@@ -1558,8 +1558,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "리본; 띠 모양의 것",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 2256,
@@ -1568,8 +1568,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "로봇.",
-      "existingImage": false,
-      "score": 128
+      "existingImage": true,
+      "score": 1128
     },
     {
       "id": 2315,
@@ -1578,8 +1578,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(언제나 복수) 가위.",
-      "existingImage": false,
-      "score": 125
+      "existingImage": true,
+      "score": 1125
     },
     {
       "id": 2384,
@@ -1598,8 +1598,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "스커트, 치마.",
-      "existingImage": false,
-      "score": 128
+      "existingImage": true,
+      "score": 1128
     },
     {
       "id": 2454,
@@ -1608,8 +1608,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "양말.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 2500,
@@ -1618,8 +1618,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "숟가락.",
-      "existingImage": false,
-      "score": 128
+      "existingImage": true,
+      "score": 1128
     },
     {
       "id": 2581,
@@ -1628,8 +1628,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "지하철.(미국식 영어)",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 2660,
@@ -1638,8 +1638,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "전화기.",
-      "existingImage": false,
-      "score": 120
+      "existingImage": true,
+      "score": 1120
     },
     {
       "id": 2661,
@@ -1648,8 +1648,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "텔레비전.",
-      "existingImage": false,
-      "score": 117
+      "existingImage": true,
+      "score": 1117
     },
     {
       "id": 2818,
@@ -1658,8 +1658,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "우산.",
-      "existingImage": false,
-      "score": 125
+      "existingImage": true,
+      "score": 1125
     },
     {
       "id": 2879,
@@ -1668,8 +1668,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "바이올린.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 313,
@@ -1678,8 +1678,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "동물의 뼈.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 885,
@@ -1688,8 +1688,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체 부분) 귀.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 1078,
@@ -1698,8 +1698,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "손가락.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 1580,
@@ -1708,8 +1708,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "입술.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 2747,
@@ -1718,8 +1718,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "이, 치아, 이빨.",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 139,
@@ -1748,8 +1748,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "소고기(쇠고기), 고기",
-      "existingImage": false,
-      "score": 135
+      "existingImage": true,
+      "score": 1135
     },
     {
       "id": 286,
@@ -1758,8 +1758,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "비스킷; 작은 과자",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 337,
@@ -1768,8 +1768,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(음식) 빵. (비유) 생계.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 396,
@@ -1778,8 +1778,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "사탕.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 409,
@@ -1788,8 +1788,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "홍당무, 당근.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 458,
@@ -1798,8 +1798,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "치즈.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 469,
@@ -1808,8 +1808,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "초콜릿.",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 623,
@@ -1818,8 +1818,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "밀가루 반죽을 구워 바삭바삭하게 만든 과자, 쿠키.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 854,
@@ -1828,8 +1828,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(음식) 도넛.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 899,
@@ -1838,8 +1838,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "알, 달걀.",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 1157,
@@ -1848,8 +1848,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "과일.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 1235,
@@ -1858,8 +1858,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(식물) 포도. 또는 포도의 열매.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 1273,
@@ -1868,8 +1868,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(음식) 햄버거",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 1489,
@@ -1878,8 +1878,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(음료) 주스.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 1849,
@@ -1888,8 +1888,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "오렌지.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 1970,
@@ -1898,8 +1898,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(음식) 피자.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 2014,
@@ -1908,8 +1908,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(식물) 감자.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 2289,
@@ -1918,8 +1918,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "샐러드.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 2292,
@@ -1928,8 +1928,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "소금.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 2296,
@@ -1938,8 +1938,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "샌드위치.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 2473,
@@ -1948,8 +1948,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "국, 수프.",
-      "existingImage": false,
-      "score": 135
+      "existingImage": true,
+      "score": 1135
     },
     {
       "id": 2478,
@@ -1958,8 +1958,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(음식) 이탈리아의 국수, 스파게티.",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 2530,
@@ -1968,8 +1968,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(음식) 스테이크.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 2589,
@@ -1978,8 +1978,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "설탕.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 2740,
@@ -1988,8 +1988,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "토마토.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 2911,
@@ -1998,8 +1998,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "(식물) 수박. 또는 그 열매.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 1039,
@@ -2008,8 +2008,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "농장.",
-      "existingImage": false,
-      "score": 117
+      "existingImage": true,
+      "score": 1117
     },
     {
       "id": 1182,
@@ -2018,8 +2018,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "정원, 공원.",
-      "existingImage": false,
-      "score": 119
+      "existingImage": true,
+      "score": 1119
     },
     {
       "id": 1566,
@@ -2028,8 +2028,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "도서관, 도서실, 책방.",
-      "existingImage": false,
-      "score": 118
+      "existingImage": true,
+      "score": 1118
     },
     {
       "id": 2223,
@@ -2038,8 +2038,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "화장실",
-      "existingImage": false,
-      "score": 117
+      "existingImage": true,
+      "score": 1117
     },
     {
       "id": 3000,
@@ -2048,8 +2048,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "동물원.",
-      "existingImage": false,
-      "score": 122
+      "existingImage": true,
+      "score": 1122
     },
     {
       "id": 1124,
@@ -2058,8 +2058,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "숲, 삼림.",
-      "existingImage": false,
-      "score": 119
+      "existingImage": true,
+      "score": 1119
     },
     {
       "id": 1322,
@@ -2068,8 +2068,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "언덕, 구릉.",
-      "existingImage": false,
-      "score": 123
+      "existingImage": true,
+      "score": 1123
     },
     {
       "id": 1519,
@@ -2078,8 +2078,8 @@
       "category": "object",
       "categoryLabel": "자연물·사물",
       "meaning": "호수, 저수지.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 49,
@@ -2088,8 +2088,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "성인.",
-      "existingImage": false,
-      "score": 116
+      "existingImage": true,
+      "score": 1116
     },
     {
       "id": 1233,
@@ -2098,8 +2098,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "할아버지. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 111
+      "existingImage": true,
+      "score": 1111
     },
     {
       "id": 1897,
@@ -2108,8 +2108,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "(군집명사로 쓸 때에는) 어버이, 부모. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 115
+      "existingImage": true,
+      "score": 1115
     },
     {
       "id": 507,
@@ -2118,8 +2118,8 @@
       "category": "phenomenon",
       "categoryLabel": "자연현상",
       "meaning": "구름.",
-      "existingImage": false,
-      "score": 112
+      "existingImage": true,
+      "score": 1112
     },
     {
       "id": 2446,
@@ -2128,8 +2128,8 @@
       "category": "phenomenon",
       "categoryLabel": "자연현상",
       "meaning": "(하늘에서 내리는) 눈.",
-      "existingImage": false,
-      "score": 113
+      "existingImage": true,
+      "score": 1113
     },
     {
       "id": 1105,
@@ -2148,8 +2148,8 @@
       "category": "shape",
       "categoryLabel": "모양",
       "meaning": "동그라미, 원, 원주.",
-      "existingImage": false,
-      "score": 99
+      "existingImage": true,
+      "score": 1099
     },
     {
       "id": 2974,
@@ -2158,8 +2158,8 @@
       "category": "substance",
       "categoryLabel": "물질",
       "meaning": "(재련한) 나무, 목재.",
-      "existingImage": false,
-      "score": 109
+      "existingImage": true,
+      "score": 1109
     }
   ],
   "meaningReview": []

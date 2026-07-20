@@ -34,7 +34,27 @@
         hogahowi: "assets/idioms/hogahowi.webp",
         tasanjiseok: "assets/idioms/tasanjiseok.webp",
         daegimanseong: "assets/idioms/daegimanseong.webp",
-        yubimuhwan: "assets/idioms/yubimuhwan.webp"
+        yubimuhwan: "assets/idioms/yubimuhwan.webp",
+        ongojisin: "assets/idioms/ongojisin.webp",
+        jeonhwawibok: "assets/idioms/jeonhwawibok.webp",
+        maengmosamcheon: "assets/idioms/maengmosamcheon.webp",
+        jirokwima: "assets/idioms/jirokwima.webp",
+        pajukjise: "assets/idioms/pajukjise.webp",
+        gyereuk: "assets/idioms/gyereuk.webp",
+        gyeolchooseun: "assets/idioms/gyeolchooseun.webp",
+        bulchihamun: "assets/idioms/bulchihamun.webp",
+        dongbyeongsangryeon: "assets/idioms/dongbyeongsangryeon.webp",
+        gwontojungrae: "assets/idioms/gwontojungrae.webp",
+        gwanpojigyo: "assets/idioms/gwanpojigyo.webp",
+        tosagupaeng: "assets/idioms/tosagupaeng.webp",
+        sueojigyo: "assets/idioms/sueojigyo.webp",
+        hyeongseoljigong: "assets/idioms/hyeongseoljigong.webp",
+        jeolchatakma: "assets/idioms/jeolchatakma.webp",
+        yeonmokgueo: "assets/idioms/yeonmokgueo.webp",
+        mosujacheon: "assets/idioms/mosujacheon.webp",
+        nangjungjichu: "assets/idioms/nangjungjichu.webp",
+        owoldongju: "assets/idioms/owoldongju.webp",
+        yangsanggunja: "assets/idioms/yangsanggunja.webp"
     };
 
     function migrateLegacyStorage() {

@@ -7,6 +7,7 @@ const { WebSocketServer, WebSocket } = require("ws");
 const LoveLetter = require("./loveletter");
 const Rummikub = require("./rummikub");
 const Blokus = require("./blokus");
+const DrawRelay = require("./drawrelay");
 
 const app = express();
 const server = http.createServer(app);
@@ -23,7 +24,9 @@ const MAX_ROOM_PLAYERS = {
   loveletter: 4,
   rummikub: 4,
   blokus: 4,
-  avalon: 8
+  drawrelay: 8,
+  avalon: 8,
+  spelling: 61
 };
 
 const FINISHER_GAMES = new Set(["coinweighing", "hanoitower", "sphinx"]);
@@ -97,6 +100,81 @@ function blokusBroadcast(room) {
 
 function blokusError(socket, message) {
   safeSend(socket, { type: "BLOKUS_ERROR", message });
+}
+
+function drawRelayBroadcast(room) {
+  if (!room?.drawrelay) return;
+  for (const [id, client] of room.clients) {
+    safeSend(client, {
+      type: "DRAWRELAY_STATE",
+      state: DrawRelay.stateFor(room.drawrelay, id)
+    });
+  }
+  scheduleDrawRelayDeadline(room);
+}
+
+function drawRelayError(socket, message) {
+  safeSend(socket, { type: "DRAWRELAY_ERROR", message });
+}
+
+function scheduleDrawRelayDeadline(room) {
+  clearTimeout(room?.drawrelayTimer);
+  const game = room?.drawrelay;
+  if (!game || game.phase !== "playing") return;
+  const expectedStep = game.step;
+  const delay = Math.max(20, game.deadline - Date.now() + 800);
+  room.drawrelayTimer = setTimeout(() => {
+    if (game.phase !== "playing" || game.step !== expectedStep) return;
+    for (const player of game.players) {
+      if (game.pending[player.id]) continue;
+      const submission = game.actionType === "draw" ? { strokes: [] } : { text: "시간 초과" };
+      DrawRelay.submit(game, player.id, submission);
+    }
+    drawRelayBroadcast(room);
+  }, delay);
+  room.drawrelayTimer.unref?.();
+}
+
+function spellingPublicState(room) {
+  const game = room?.spelling;
+  if (!game) return null;
+
+  const finishers = game.players
+    .filter(player => game.results[player.id])
+    .map(player => ({
+      id: player.id,
+      name: player.name,
+      score: game.results[player.id].score,
+      elapsedMs: game.results[player.id].elapsedMs
+    }))
+    .sort((a, b) => b.score - a.score || a.elapsedMs - b.elapsedMs || a.name.localeCompare(b.name, "ko"))
+    .map((player, index) => ({ ...player, rank: index + 1 }));
+  const rankingById = new Map(finishers.map(player => [player.id, player]));
+
+  return {
+    phase: game.phase,
+    sessionId: game.sessionId,
+    questionIds: game.phase === "lobby" ? [] : game.questionIds,
+    startedAt: game.startedAt,
+    participants: game.players.map(player => ({
+      id: player.id,
+      name: player.name,
+      status: rankingById.has(player.id) ? "finished" : game.phase === "lobby" ? "waiting" : "playing"
+    })),
+    rankings: finishers
+  };
+}
+
+function spellingBroadcast(room) {
+  const state = spellingPublicState(room);
+  if (!state) return;
+  for (const client of room.clients.values()) {
+    safeSend(client, { type: "SPELLING_STATE", state });
+  }
+}
+
+function spellingError(socket, message) {
+  safeSend(socket, { type: "SPELLING_ERROR", message });
 }
 
 const AVALON_TEAM_SIZES = {
@@ -414,6 +492,8 @@ wss.on("connection", socket => {
         if (existingRoom.loveletter) loveLetterBroadcast(existingRoom);
         if (existingRoom.rummikub) rummikubBroadcast(existingRoom);
         if (existingRoom.blokus) blokusBroadcast(existingRoom);
+        if (existingRoom.drawrelay) drawRelayBroadcast(existingRoom);
+        if (existingRoom.spelling) spellingBroadcast(existingRoom);
         return;
       }
       if (resumeOnly) {
@@ -448,6 +528,19 @@ wss.on("connection", socket => {
       if (gameId === "blokus") {
         room.blokus = Blokus.createGame(playerId, cleanToken(message.name, 12) || "방장");
       }
+      if (gameId === "drawrelay") {
+        room.drawrelay = DrawRelay.createGame(playerId, cleanToken(message.name, 12) || "방장");
+      }
+      if (gameId === "spelling") {
+        room.spelling = {
+          phase: "lobby",
+          sessionId: "",
+          questionIds: [],
+          startedAt: 0,
+          players: [],
+          results: {}
+        };
+      }
       rooms.set(key, room);
       socket.meta.roomKey = key;
       socket.meta.role = "host";
@@ -463,6 +556,8 @@ wss.on("connection", socket => {
       if (room.loveletter) loveLetterBroadcast(room);
       if (room.rummikub) rummikubBroadcast(room);
       if (room.blokus) blokusBroadcast(room);
+      if (room.drawrelay) drawRelayBroadcast(room);
+      if (room.spelling) spellingBroadcast(room);
       return;
     }
 
@@ -496,6 +591,8 @@ wss.on("connection", socket => {
         if (room.loveletter) loveLetterBroadcast(room);
         if (room.rummikub) rummikubBroadcast(room);
         if (room.blokus) blokusBroadcast(room);
+        if (room.drawrelay) drawRelayBroadcast(room);
+        if (room.spelling) spellingBroadcast(room);
         return;
       }
       if (resumeOnly) {
@@ -557,6 +654,34 @@ wss.on("connection", socket => {
         }
         Blokus.addPlayer(room.blokus, playerId, cleanToken(message.name, 12) || `플레이어 ${room.blokus.players.length + 1}`);
       }
+      if (room.drawrelay) {
+        if (room.drawrelay.phase !== "lobby") {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "이미 시작한 게임입니다." });
+          return;
+        }
+        DrawRelay.addPlayer(room.drawrelay, playerId, cleanToken(message.name, 12) || `플레이어 ${room.drawrelay.players.length + 1}`);
+      }
+      if (room.spelling) {
+        if (room.spelling.phase !== "lobby") {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "이미 시작한 학급 순위전입니다." });
+          return;
+        }
+        const name = cleanToken(message.name, 12);
+        if (!/^[가-힣]{2,6}$/.test(name)) {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "메인 화면에서 한글 이름을 먼저 저장하세요." });
+          return;
+        }
+        room.spelling.players.push({ id: playerId, name });
+      }
 
       safeSend(socket, {
         type: "ROOM_JOINED",
@@ -575,6 +700,96 @@ wss.on("connection", socket => {
       if (room.loveletter) loveLetterBroadcast(room);
       if (room.rummikub) rummikubBroadcast(room);
       if (room.blokus) blokusBroadcast(room);
+      if (room.drawrelay) drawRelayBroadcast(room);
+      if (room.spelling) spellingBroadcast(room);
+      return;
+    }
+
+    if (type === "SPELLING_ACTION") {
+      const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
+      const game = room?.spelling;
+      const action = cleanToken(message.action, 30);
+      if (!room || !game) {
+        spellingError(socket, "한글 맞춤법 학급에 참가하지 않았습니다.");
+        return;
+      }
+
+      if (action === "START") {
+        if (playerId !== room.hostId) {
+          spellingError(socket, "교사 화면에서만 순위전을 시작할 수 있습니다.");
+          return;
+        }
+        if (game.phase !== "lobby") {
+          spellingError(socket, "이미 순위전이 진행 중입니다.");
+          return;
+        }
+        if (game.players.length < 1) {
+          spellingError(socket, "학생이 한 명 이상 참가해야 합니다.");
+          return;
+        }
+        const questionIds = Array.isArray(message.questionIds)
+          ? [...new Set(message.questionIds.map(id => cleanToken(id, 60)).filter(id => /^[a-z0-9_-]+$/i.test(id)))]
+          : [];
+        if (questionIds.length !== 10) {
+          spellingError(socket, "순위전 문항 10개가 필요합니다.");
+          return;
+        }
+        game.phase = "running";
+        game.sessionId = crypto.randomUUID();
+        game.questionIds = questionIds;
+        game.startedAt = Date.now();
+        game.results = {};
+        spellingBroadcast(room);
+        return;
+      }
+
+      if (action === "SUBMIT") {
+        if (game.phase !== "running") {
+          spellingError(socket, "현재 진행 중인 순위전이 없습니다.");
+          return;
+        }
+        if (cleanToken(message.sessionId, 80) !== game.sessionId) {
+          spellingError(socket, "현재 순위전의 결과가 아닙니다.");
+          return;
+        }
+        if (!game.players.some(player => player.id === playerId)) {
+          spellingError(socket, "참가 학생만 결과를 제출할 수 있습니다.");
+          return;
+        }
+        const score = Number(message.score);
+        if (!Number.isInteger(score) || score < 0 || score > 10) {
+          spellingError(socket, "점수가 올바르지 않습니다.");
+          return;
+        }
+        if (!game.results[playerId]) {
+          game.results[playerId] = {
+            score,
+            elapsedMs: Math.max(0, Date.now() - game.startedAt)
+          };
+        }
+        if (game.players.length > 0 && game.players.every(player => game.results[player.id])) {
+          game.phase = "ended";
+        }
+        spellingBroadcast(room);
+        return;
+      }
+
+      if (action === "RESET") {
+        if (playerId !== room.hostId) {
+          spellingError(socket, "교사 화면에서만 새 순위전을 준비할 수 있습니다.");
+          return;
+        }
+        game.phase = "lobby";
+        game.sessionId = "";
+        game.questionIds = [];
+        game.startedAt = 0;
+        game.results = {};
+        game.players = game.players.filter(player => room.clients.has(player.id));
+        spellingBroadcast(room);
+        return;
+      }
+
+      spellingError(socket, "알 수 없는 학급 순위전 요청입니다.");
       return;
     }
 
@@ -784,6 +999,40 @@ wss.on("connection", socket => {
       return;
     }
 
+    if (type === "DRAWRELAY_ACTION") {
+      const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
+      const game = room?.drawrelay;
+      const action = cleanToken(message.action, 30);
+      if (!room || !game) {
+        drawRelayError(socket, "그림 릴레이 방에 참가하지 않았습니다.");
+        return;
+      }
+
+      let result;
+      if (action === "START") {
+        result = playerId === room.hostId
+          ? DrawRelay.startGame(game, cleanToken(message.packId, 20))
+          : { ok: false, error: "방장만 게임을 시작할 수 있습니다." };
+      } else if (action === "SUBMIT_DRAWING") {
+        result = DrawRelay.submit(game, playerId, { strokes: message.strokes });
+      } else if (action === "SUBMIT_GUESS") {
+        result = DrawRelay.submit(game, playerId, { text: message.text });
+      } else if (action === "RETURN_LOBBY") {
+        result = playerId === room.hostId
+          ? DrawRelay.resetToLobby(game)
+          : { ok: false, error: "방장만 대기실로 돌아갈 수 있습니다." };
+      } else {
+        result = { ok: false, error: "알 수 없는 행동입니다." };
+      }
+
+      if (!result.ok) {
+        drawRelayError(socket, result.error || "행동을 처리하지 못했습니다.");
+        return;
+      }
+      drawRelayBroadcast(room);
+      return;
+    }
+
     if (type === "GAME_MESSAGE") {
       const key = socket.meta.roomKey;
       const room = key ? rooms.get(key) : null;
@@ -820,6 +1069,7 @@ wss.on("connection", socket => {
       if (!currentRoom || currentRoom.clients.get(playerId) !== socket) return;
 
       if (socket.meta.role === "host" || playerId === currentRoom.hostId) {
+        clearTimeout(currentRoom.drawrelayTimer);
         for (const [id, client] of currentRoom.clients) {
           if (id !== playerId) {
             safeSend(client, {
@@ -865,6 +1115,22 @@ wss.on("connection", socket => {
           Blokus.resetToLobby(currentRoom.blokus, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
         }
       }
+      if (currentRoom.drawrelay) {
+        const gameWasActive = currentRoom.drawrelay.phase !== "lobby";
+        DrawRelay.removePlayer(currentRoom.drawrelay, playerId);
+        if (gameWasActive) {
+          DrawRelay.resetToLobby(currentRoom.drawrelay, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
+        }
+      }
+      if (currentRoom.spelling) {
+        const spelling = currentRoom.spelling;
+        if (spelling.phase === "lobby" || !spelling.results[playerId]) {
+          spelling.players = spelling.players.filter(player => player.id !== playerId);
+        }
+        if (spelling.phase === "running" && spelling.players.length > 0 && spelling.players.every(player => spelling.results[player.id])) {
+          spelling.phase = "ended";
+        }
+      }
       safeSend(currentRoom.clients.get(currentRoom.hostId), {
         type: "PLAYER_LEFT",
         playerId
@@ -874,6 +1140,8 @@ wss.on("connection", socket => {
       if (currentRoom.loveletter) loveLetterBroadcast(currentRoom);
       if (currentRoom.rummikub) rummikubBroadcast(currentRoom);
       if (currentRoom.blokus) blokusBroadcast(currentRoom);
+      if (currentRoom.drawrelay) drawRelayBroadcast(currentRoom);
+      if (currentRoom.spelling) spellingBroadcast(currentRoom);
 
       if (currentRoom.clients.size === 0) rooms.delete(key);
     };

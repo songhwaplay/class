@@ -136,7 +136,9 @@
 .length-question.is-correct,
 .multiplication-question.is-correct,
 .clock-question.is-correct,
-.division-story-problem.is-correct {
+.division-story-problem.is-correct,
+.time-conversion-question.is-correct,
+.time-calculation-question.is-correct {
   background: var(--green-soft);
   box-shadow: inset 3px 0 #bfe2ce;
 }
@@ -154,7 +156,9 @@
 .length-question.is-wrong,
 .multiplication-question.is-wrong,
 .clock-question.is-wrong,
-.division-story-problem.is-wrong {
+.division-story-problem.is-wrong,
+.time-conversion-question.is-wrong,
+.time-calculation-question.is-wrong {
   background: var(--red-soft);
   box-shadow: inset 3px 0 #f0c6bf;
 }
@@ -200,9 +204,276 @@
   .clock-question.is-correct,
   .clock-question.is-wrong,
   .division-story-problem.is-correct,
-  .division-story-problem.is-wrong {
+  .division-story-problem.is-wrong,
+  .time-conversion-question.is-correct,
+  .time-conversion-question.is-wrong,
+  .time-calculation-question.is-correct,
+  .time-calculation-question.is-wrong {
     background: white;
     box-shadow: none;
+  }
+}
+
+/* 3시간② */
+.time-calculation-sheet {
+  padding-bottom: 25px;
+}
+
+.time-calculation-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d7cec1;
+  border-radius: 10px;
+  background: white;
+}
+
+.time-calculation-question {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(2, auto) 2px auto;
+  align-content: center;
+  gap: 12px;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 18px 14px 28px;
+  color: #17233c;
+  font-size: 22px;
+  font-weight: 850;
+}
+
+.time-calculation-question:nth-child(2n) {
+  border-right: 0;
+}
+
+.time-calculation-question:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.time-calculation-number {
+  position: absolute;
+  top: 8px;
+  left: 10px;
+  color: #647087;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.time-calculation-line {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+}
+
+.time-calculation-line > b {
+  font-size: 25px;
+  text-align: center;
+}
+
+.time-calculation-value {
+  display: grid;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.time-calculation-value.two {
+  grid-template-columns: 58px 30px 58px 30px;
+}
+
+.time-calculation-value.three {
+  grid-template-columns: 44px 28px 44px 24px 44px 22px;
+}
+
+.time-calculation-value strong {
+  font: inherit;
+  text-align: right;
+}
+
+.time-calculation-value span {
+  color: #566176;
+  font-size: 15px;
+  font-weight: 750;
+  text-align: left;
+}
+
+.time-calculation-rule {
+  width: calc(100% - 26px);
+  height: 2px;
+  justify-self: end;
+  background: #17233c;
+}
+
+.time-calculation-input,
+.time-calculation-static {
+  width: 56px;
+  height: 42px;
+  border: 1.5px solid #8e96a3;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font: inherit;
+  font-size: 20px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.time-calculation-value.three .time-calculation-input,
+.time-calculation-value.three .time-calculation-static {
+  width: 42px;
+}
+
+.time-calculation-input {
+  outline: none;
+}
+
+.time-calculation-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.time-calculation-static {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.time-calculation-question .counting-result {
+  right: 6px;
+  bottom: 3px;
+}
+
+@media print {
+  .time-calculation-sheet {
+    padding-bottom: 7mm;
+  }
+
+  .time-calculation-grid {
+    margin-top: 3.7mm;
+  }
+
+  .time-calculation-input,
+  .time-calculation-static {
+    background: white;
+    color: black;
+  }
+}
+
+/* 3시간① */
+.time-conversion-sheet {
+  padding-bottom: 25px;
+}
+
+.time-conversion-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d7cec1;
+  border-radius: 10px;
+  background: white;
+}
+
+.time-conversion-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr) 20px 70px 30px;
+  align-items: center;
+  gap: 5px;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 12px 12px 23px;
+  color: #17233c;
+  font-size: 22px;
+  font-weight: 850;
+}
+
+.time-conversion-question:nth-child(2n) {
+  border-right: 0;
+}
+
+.time-conversion-question:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.time-conversion-number {
+  color: #647087;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.time-conversion-expression {
+  white-space: nowrap;
+  text-align: right;
+}
+
+.time-conversion-expression strong {
+  font: inherit;
+}
+
+.time-conversion-input,
+.time-conversion-static {
+  width: 68px;
+  height: 44px;
+  border: 1.5px solid #8e96a3;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font: inherit;
+  font-size: 21px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.time-conversion-input {
+  outline: none;
+}
+
+.time-conversion-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.time-conversion-static {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.time-conversion-unit {
+  color: #566176;
+  font-size: 16px;
+  font-weight: 750;
+}
+
+.time-conversion-question .counting-result {
+  right: 6px;
+  bottom: 3px;
+}
+
+@media print {
+  .time-conversion-sheet {
+    padding-bottom: 7mm;
+  }
+
+  .time-conversion-grid {
+    margin-top: 3.7mm;
+  }
+
+  .time-conversion-input,
+  .time-conversion-static {
+    background: white;
+    color: black;
   }
 }
 
@@ -754,6 +1025,404 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 .grade-three-multiplication-two-input,
 .grade-three-multiplication-two-static-answer {
   width: 72px;
+}
+
+/* 3곱셈③ */
+.grade-three-multiplication-three-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d7cec1;
+  border-radius: 10px;
+  background: white;
+}
+
+.grade-three-multiplication-three-question {
+  grid-template-columns: 42px 14px 36px 14px 60px;
+  gap: 2px;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 13px 5px 24px;
+  font-size: 20px;
+}
+
+.grade-three-multiplication-three-question:nth-child(4n) {
+  border-right: 0;
+}
+
+.grade-three-multiplication-three-question:nth-last-child(-n + 4) {
+  border-bottom: 0;
+}
+
+.grade-three-multiplication-three-input,
+.grade-three-multiplication-three-static-answer {
+  width: 58px;
+  height: 42px;
+  font-size: 19px;
+}
+
+@media print {
+  .grade-three-multiplication-three-grid {
+    margin-top: 3.7mm;
+  }
+}
+
+/* 19단 */
+.nineteen-times-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.nineteen-times-column {
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+}
+
+.nineteen-times-question {
+  grid-template-columns: 42px 22px 42px 22px 68px;
+  gap: 5px;
+  padding-inline: 12px;
+  font-size: 25px;
+}
+
+.nineteen-times-input,
+.nineteen-times-static-answer {
+  width: 64px;
+  font-size: 21px;
+}
+
+/* 제곱수 */
+.square-memory {
+  display: grid;
+  gap: 8px;
+  margin-top: 13px;
+  padding: 11px 16px;
+  border: 1px solid #d7cec1;
+  border-radius: 10px;
+  background: #fbfaf7;
+}
+
+.square-memory-row {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #17233c;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.square-memory-row > strong {
+  width: 70px;
+  color: #e46753;
+}
+
+.square-memory-blank,
+.square-memory-answer {
+  min-width: 35px;
+  height: 24px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1.5px solid #8e96a3;
+  color: #17233c;
+  font-size: 15px;
+}
+
+.square-memory-blank {
+  color: transparent;
+}
+
+.square-number-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 10px;
+}
+
+.square-number-column {
+  grid-template-rows: repeat(9, minmax(0, 1fr));
+}
+
+.square-number-question {
+  grid-template-columns: 42px 22px 42px 22px 72px;
+  gap: 5px;
+  padding-inline: 10px;
+  font-size: 24px;
+}
+
+.square-number-input,
+.square-number-static-answer {
+  width: 68px;
+  font-size: 20px;
+}
+
+@media print {
+  .square-memory {
+    margin-top: 3.2mm;
+    padding-block: 2.2mm;
+  }
+
+  .square-number-columns {
+    margin-top: 2.6mm;
+  }
+}
+
+/* 3나눗셈② */
+.division-remainder-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.division-remainder-column {
+  grid-template-rows: repeat(10, minmax(0, 1fr));
+}
+
+.division-remainder-column-large {
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+
+.division-remainder-question {
+  grid-template-columns: 42px 17px 24px 17px 49px 22px 34px;
+  gap: 2px;
+  padding: 7px 5px 17px;
+  font-size: 19px;
+}
+
+.division-remainder-question-large {
+  grid-template-columns: 48px 17px 24px 17px 49px 22px 34px;
+  font-size: 20px;
+}
+
+.division-remainder-input,
+.division-remainder-static {
+  width: 47px;
+  height: 39px;
+  font-size: 18px;
+}
+
+.division-remainder-input-small,
+.division-remainder-static-small {
+  width: 32px;
+}
+
+/* 3나눗셈③ */
+.division-three-sheet {
+  padding-bottom: 22px;
+}
+
+.division-three-headings {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 10px;
+  color: #4c586c;
+  font-size: 12px;
+  text-align: center;
+}
+
+.division-three-headings strong {
+  padding: 4px 2px 6px;
+  border-bottom: 1px solid #d9d0c4;
+}
+
+.division-three-headings strong:nth-child(3) {
+  grid-column: span 2;
+}
+
+.division-three-columns {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin-top: 0;
+}
+
+.division-three-column {
+  grid-template-rows: repeat(29, minmax(0, 1fr));
+}
+
+.division-three-question {
+  grid-template-columns: 28px 10px 12px 10px 32px;
+  gap: 1px;
+  padding: 1px 3px 7px;
+  font-size: 13px;
+}
+
+.division-three-input,
+.division-three-static-answer {
+  width: 31px;
+  height: 21px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.division-three-question .counting-result {
+  right: 2px;
+  bottom: 0;
+  font-size: 8px;
+}
+
+/* 3분수① */
+.grade-three-fraction-sheet {
+  padding-bottom: 24px;
+}
+
+.grade-three-fraction-content {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-rows: minmax(0, 1.12fr) minmax(0, 0.88fr);
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+}
+
+.grade-three-fraction-value-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  border-bottom: 2px solid #a79d91;
+}
+
+.grade-three-fraction-relation-grid {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+
+.grade-three-fraction-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  align-items: center;
+  border-right: 1px dashed #d8d0c5;
+  border-bottom: 1px dashed #d8d0c5;
+  color: #17233c;
+  background: white;
+}
+
+.grade-three-fraction-question.value {
+  grid-template-columns: 24px 42px 22px 54px 22px 60px;
+  justify-content: center;
+  gap: 4px;
+  padding: 5px 8px 10px;
+  font-size: 20px;
+}
+
+.grade-three-fraction-question.value:nth-child(2n) {
+  border-right: 0;
+}
+
+.grade-three-fraction-question.value:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.grade-three-fraction-question.relation {
+  grid-template-columns: 30px minmax(0, 1fr);
+  gap: 8px;
+  padding: 4px 18px 8px;
+  border-right: 0;
+  font-size: 19px;
+}
+
+.grade-three-fraction-question.relation:last-child {
+  border-bottom: 0;
+}
+
+.grade-three-fraction-index {
+  align-self: start;
+  padding-top: 4px;
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.grade-three-fraction-sentence {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.grade-three-fraction-stack {
+  width: 54px;
+  height: 67px;
+  display: grid;
+  grid-template-rows: 31px 2px 31px;
+  align-items: center;
+  justify-items: stretch;
+  flex: 0 0 auto;
+  color: #17233c;
+  vertical-align: middle;
+}
+
+.grade-three-fraction-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  font-size: 20px;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.grade-three-fraction-line {
+  width: 100%;
+  height: 2px;
+  align-self: center;
+  background: currentColor;
+}
+
+.grade-three-fraction-value-input,
+.grade-three-fraction-part-input {
+  border: 1.5px solid #968f85;
+  border-radius: 6px;
+  background: white;
+  color: #17233c;
+  font: inherit;
+  font-weight: 850;
+  text-align: center;
+  outline: none;
+}
+
+.grade-three-fraction-value-input {
+  width: 58px;
+  height: 42px;
+  font-size: 20px;
+}
+
+.grade-three-fraction-part-input {
+  width: 50px;
+  height: 29px;
+  border-radius: 4px;
+  font-size: 18px;
+}
+
+.grade-three-fraction-value-input:focus,
+.grade-three-fraction-part-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.grade-three-fraction-static:not(.grade-three-fraction-stack) {
+  min-width: 58px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.grade-three-fraction-question .counting-result {
+  right: 5px;
+  bottom: 2px;
+  font-size: 9px;
+}
+
+@media print {
+  .grade-three-fraction-value-input,
+  .grade-three-fraction-part-input {
+    background: white;
+    color: black;
+  }
 }
 
 /* 2구구단⑤ */
@@ -2417,6 +3086,22 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
     color: #8a8f99;
     font-size: 11px;
     font-weight: 900;
+  }
+
+  .worksheet-title {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .worksheet-grade {
+    color: #7a746a;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
   }
 
   .worksheet-choice strong {

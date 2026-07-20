@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>다이아몬드 게임 · Online Diamond Game</title>
 <link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <style>
@@ -13,6 +13,7 @@ body{background:linear-gradient(rgba(7,10,16,.18),rgba(8,9,13,.24)),url("../../a
 <script src="../../assets/network/game-network.js"></script>
 <script src="../../assets/network/multiplayer-lobby.js"></script>
 <script src="../../assets/sound/music-control.js" defer></script>
+<link rel="stylesheet" href="../../assets/device-game.css">
 </head>
 <body>
 <main class="shell">
@@ -34,7 +35,7 @@ body{background:linear-gradient(rgba(7,10,16,.18),rgba(8,9,13,.24)),url("../../a
   </section>
 
   <section id="gameScreen" class="hidden">
-    <header class="panel"><div class="row spread"><div><div class="eyebrow">ROOM CODE</div><div id="gameRoomCode" class="code">----</div></div><div class="row"><button id="copyBtnGame" class="secondary" type="button">COPY</button><button id="rulesBtnGame" class="secondary" type="button">RULES</button><button id="leaveBtnGame" class="secondary" type="button">메인 화면</button></div></div></header>
+    <header class="panel"><div class="row spread"><div><div class="eyebrow">ROOM CODE</div><div id="gameRoomCode" class="code">----</div></div><div class="row"><button id="rulesBtnGame" class="secondary" type="button">RULES</button><button id="leaveBtnGame" class="secondary" type="button">메인 화면</button></div></div></header>
     <div class="game-layout">
       <section class="panel board-panel"><div class="board-frame"><span class="orientation goal">내 도착 진영</span><svg id="board" class="board" viewBox="0 0 500 524" role="grid" aria-label="내 진영이 아래쪽에 배치된 다이아몬드 게임판"></svg><span class="orientation home">내 출발 진영</span></div></section>
       <aside class="side">
@@ -158,7 +159,7 @@ function showAbort({title,message}){clearTimeout(hostTurnTimer);cancelAnimationF
 function playNextBgm(){const bgm=$("bgm");bgmIndex=(bgmIndex+1)%BGM_TRACKS.length;bgm.src=BGM_TRACKS[bgmIndex];bgm.load();bgm.play().catch(()=>{})}
 function init(){
  lobby=ClassroomMultiplayerLobby.create({gameId:GAME_ID,getPlayerName:()=>/^[가-힣]{2,6}$/.test(savedName)?savedName:"",allowedPlayerCounts:[2,3],maxPlayers:3,rulesButtonIds:["rulesBtnLobby","rulesBtnGame"],leaveButtonIds:["leaveBtnLobby","leaveBtnGame"],onRules:showRules,onLeave:()=>location.href="../../index.html",onNotice:showToast,onInvalidStart:()=>showToast("다이아몬드 게임은 2명 또는 3명이 필요합니다."),onStateChange:syncLobby,getLobbyPresentation:({count,role,canStart})=>({canStart,startText:role==="host"&&canStart?`START GAME · ${count} PLAYERS`:"WAITING FOR PLAYERS",guideText:role==="host"?(canStart?`${count}인 게임을 시작할 수 있습니다.`:"한 명 이상 더 기다리세요."):"방장이 게임을 시작할 때까지 기다리세요."}),createStartData:snapshot=>({state:createInitialState(snapshot)}),onStarted:({data,players:roomPlayers,myId:id,role})=>{players=roomPlayers;myId=id;myRole=role;state=data.state;showGame();renderAll();if(myRole==="host")scheduleHostTurnTimer()},onGameMessage:handleGameMessage,onAbort:showAbort}).mount();
- $("bgm").addEventListener("ended",playNextBgm);$("copyBtnGame").addEventListener("click",()=>lobby.copyRoomCode());$("closeRulesBtn").addEventListener("click",hideRules);$("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});$("endJumpBtn").addEventListener("click",requestEndJump);$("cancelBtn").addEventListener("click",()=>{if(state?.jump)return;selectedKey=null;renderAll()});$("rematchBtn").addEventListener("click",startRematch);$("returnLobbyBtn").addEventListener("click",returnToLobby);$("reloadBtn").addEventListener("click",()=>location.reload())
+ $("bgm").addEventListener("ended",playNextBgm);$("closeRulesBtn").addEventListener("click",hideRules);$("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});$("endJumpBtn").addEventListener("click",requestEndJump);$("cancelBtn").addEventListener("click",()=>{if(state?.jump)return;selectedKey=null;renderAll()});$("rematchBtn").addEventListener("click",startRematch);$("returnLobbyBtn").addEventListener("click",returnToLobby);$("reloadBtn").addEventListener("click",()=>location.reload())
 }
 window.addEventListener("DOMContentLoaded",init);
 </script>

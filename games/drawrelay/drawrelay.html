@@ -1,0 +1,570 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#173f45">
+  <title>그림 릴레이 · Draw Relay</title>
+  <link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="../../assets/network/game-network.js"></script>
+  <script src="../../assets/network/multiplayer-lobby.js"></script>
+  <link rel="stylesheet" href="../../assets/device-game.css">
+</head>
+<body>
+  <main class="shell">
+    <section id="missingScreen" class="paper-panel missing-panel hidden">
+      <div class="eyebrow">PLAYER NAME REQUIRED</div>
+      <h1>먼저 이름을 정해주세요</h1>
+      <p>수업용 게임 이름은 메인 화면에서만 바꿀 수 있습니다.</p>
+      <button class="primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>
+    </section>
+
+    <section id="lobbyScreen" class="lobby-layout hidden">
+      <article class="hero-panel">
+        <div class="hero-copy">
+          <div class="eyebrow light">DRAW · GUESS · PASS IT ON</div>
+          <h1>그림<br><span>릴레이</span></h1>
+          <p>내가 본 것은 딱 하나. 그림은 추측이 되고, 추측은 다시 그림이 됩니다. 마지막 장에서 얼마나 달라졌는지 함께 확인하세요.</p>
+        </div>
+        <div class="relay-preview" aria-hidden="true">
+          <div class="preview-card word-card"><small>01 · 제시어</small><strong>달에서<br>라면 먹기</strong></div>
+          <div class="preview-arrow">→</div>
+          <div class="preview-card doodle-card"><i class="moon"></i><i class="bowl"></i><i class="steam one"></i><i class="steam two"></i></div>
+          <div class="preview-arrow">→</div>
+          <div class="preview-card word-card coral"><small>03 · 추측</small><strong>우주인의<br>야식</strong></div>
+        </div>
+        <div class="hero-note">4–8 PLAYERS · 모두 동시에 진행</div>
+      </article>
+
+      <article class="paper-panel lobby-panel">
+        <div class="lobby-topline">
+          <div><div class="eyebrow">CLASSROOM EDITION</div><h2>릴레이 방 준비</h2></div>
+          <span class="player-badge"><i></i><span id="savedName">플레이어</span></span>
+        </div>
+        <p class="lobby-sub">새 방을 만들거나 친구가 알려준 네 자리 방 번호를 입력하세요.</p>
+
+        <div class="mp-lobby-tabs" role="tablist" aria-label="방 참여 방법">
+          <button id="hostTab" class="mp-lobby-tab active" type="button" role="tab">방 만들기</button>
+          <button id="joinTab" class="mp-lobby-tab" type="button" role="tab">방 참가하기</button>
+        </div>
+
+        <section id="hostPane" class="mp-lobby-pane">
+          <div class="room-row">
+            <div><div class="eyebrow">ROOM CODE</div><div id="roomCode" class="mp-lobby-code">----</div></div>
+            <button id="copyBtn" class="secondary" type="button">번호 복사</button>
+          </div>
+          <div id="hostStatus" class="mp-lobby-status">새 게임 방을 준비하고 있습니다.</div>
+        </section>
+
+        <section id="joinPane" class="mp-lobby-pane hidden">
+          <label class="eyebrow" for="joinCode">ROOM CODE</label>
+          <div class="mp-lobby-join-row">
+            <input id="joinCode" class="mp-lobby-code-input" inputmode="numeric" maxlength="4" placeholder="4자리 번호" autocomplete="off">
+            <button id="joinBtn" class="primary" type="button">입장</button>
+          </div>
+          <div id="joinStatus" class="mp-lobby-status">방장이 알려준 번호를 입력하세요.</div>
+        </section>
+
+        <section class="pack-section">
+          <div class="pack-head"><div><div class="eyebrow">WORD PACK</div><strong>제시어 꾸러미</strong></div><span id="packOwnerHint">방장이 선택해요</span></div>
+          <select id="packSelect" aria-label="제시어 꾸러미">
+            <option value="general">일상·상상</option>
+            <option value="history">역사</option>
+            <option value="science">과학</option>
+            <option value="society">사회·지리</option>
+          </select>
+        </section>
+
+        <section class="lobby-roster">
+          <div class="roster-head"><div class="eyebrow">PLAYERS</div><span>모두에게 서로 다른 제시어가 가요</span></div>
+          <div id="lobbyPlayers" class="mp-lobby-players"></div>
+          <p id="lobbyGuide" class="mp-lobby-guide">4명부터 8명까지 시작할 수 있습니다.</p>
+        </section>
+
+        <div class="lobby-actions">
+          <button id="startBtn" class="primary" type="button" disabled>플레이어를 기다리는 중</button>
+          <button id="rulesBtnLobby" class="secondary" type="button">게임 방법</button>
+          <button id="leaveBtnLobby" class="quiet" type="button">메인으로</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <main id="gameScreen" class="game-shell hidden">
+    <header class="paper-panel game-header">
+      <div class="brand-lockup"><span class="brand-pencil" aria-hidden="true"></span><div><div class="eyebrow">DRAW RELAY</div><strong>그림 릴레이</strong></div></div>
+      <div class="session-meta"><span id="packBadge">일상·상상</span><span>ROOM <b id="gameRoomCode">----</b></span></div>
+      <nav class="header-actions" aria-label="게임 메뉴">
+        <button id="rulesBtnGame" class="quiet" type="button">방법</button>
+        <button id="leaveBtnGame" class="quiet" type="button">나가기</button>
+      </nav>
+    </header>
+
+    <section id="progressPanel" class="paper-panel progress-panel">
+      <div class="step-copy"><div class="eyebrow">RELAY PROGRESS</div><strong id="stepTitle">첫 장을 준비 중입니다</strong><span id="stepMessage">서버 상태를 기다리고 있습니다.</span></div>
+      <div id="stepDots" class="step-dots" aria-label="릴레이 진행 단계"></div>
+      <div class="timer-card"><span>남은 시간</span><strong id="timerText">--:--</strong></div>
+      <div id="playerStatus" class="player-status" aria-label="제출 현황"></div>
+    </section>
+
+    <section id="playLayout" class="play-layout">
+      <aside class="paper-panel prompt-panel">
+        <div class="eyebrow">ONLY YOU CAN SEE THIS</div>
+        <h2 id="promptTitle">이번에 받은 내용</h2>
+        <div id="textPrompt" class="text-prompt">제시어를 기다리는 중입니다.</div>
+        <div id="drawingPrompt" class="drawing-prompt hidden"><canvas id="promptCanvas" width="1000" height="700" aria-label="앞사람이 그린 그림"></canvas></div>
+        <p id="promptNote">이전 내용은 볼 수 없습니다. 지금 보이는 것만 이어 주세요.</p>
+      </aside>
+
+      <section id="drawWorkspace" class="paper-panel workspace hidden">
+        <div class="workspace-head"><div><div class="eyebrow">YOUR DRAWING</div><h2>말이나 글자 없이 그림으로 표현하세요</h2></div><span id="strokeCount">0획</span></div>
+        <div class="canvas-frame"><canvas id="drawingCanvas" width="1000" height="700" aria-label="그림을 그리는 캔버스"></canvas></div>
+        <div class="drawing-tools">
+          <div id="colorTools" class="color-tools" role="group" aria-label="펜 색상">
+            <button type="button" class="color-dot active" data-color="#172033" style="--tool-color:#172033" aria-label="검정"></button>
+            <button type="button" class="color-dot" data-color="#ef476f" style="--tool-color:#ef476f" aria-label="분홍"></button>
+            <button type="button" class="color-dot" data-color="#ff9f1c" style="--tool-color:#ff9f1c" aria-label="주황"></button>
+            <button type="button" class="color-dot" data-color="#ffd166" style="--tool-color:#ffd166" aria-label="노랑"></button>
+            <button type="button" class="color-dot" data-color="#2ec4b6" style="--tool-color:#2ec4b6" aria-label="초록"></button>
+            <button type="button" class="color-dot" data-color="#3a86ff" style="--tool-color:#3a86ff" aria-label="파랑"></button>
+            <button type="button" class="color-dot" data-color="#8338ec" style="--tool-color:#8338ec" aria-label="보라"></button>
+          </div>
+          <div class="size-tools" role="group" aria-label="펜 굵기">
+            <button type="button" data-width="4" class="size-button active" aria-label="가는 펜"><i style="--dot-size:4px"></i></button>
+            <button type="button" data-width="9" class="size-button" aria-label="중간 펜"><i style="--dot-size:9px"></i></button>
+            <button type="button" data-width="16" class="size-button" aria-label="굵은 펜"><i style="--dot-size:16px"></i></button>
+          </div>
+          <button id="undoBtn" class="secondary compact" type="button">되돌리기</button>
+          <button id="clearCanvasBtn" class="secondary compact" type="button">모두 지우기</button>
+          <button id="submitDrawingBtn" class="primary submit-button" type="button">그림 제출</button>
+        </div>
+      </section>
+
+      <section id="guessWorkspace" class="paper-panel workspace guess-workspace hidden">
+        <div class="guess-card">
+          <div class="eyebrow">YOUR GUESS</div>
+          <h2>이 그림은 무엇을 뜻할까요?</h2>
+          <p>앞사람의 원래 제시어는 보이지 않습니다. 보이는 그림 그대로 짧게 적어 주세요.</p>
+          <label for="guessInput">내 추측</label>
+          <div class="guess-row"><input id="guessInput" maxlength="40" autocomplete="off" placeholder="예: 우주인의 야식"><button id="submitGuessBtn" class="primary" type="button">추측 제출</button></div>
+          <div class="character-count"><span id="guessCount">0</span>/40</div>
+        </div>
+      </section>
+
+      <section id="submittedWorkspace" class="paper-panel submitted-panel hidden">
+        <div class="submitted-mark" aria-hidden="true">✓</div>
+        <div class="eyebrow">PAGE PASSED</div>
+        <h2>다음 사람에게 넘겼습니다</h2>
+        <p id="submittedMessage">다른 참가자들의 제출을 기다리고 있어요.</p>
+        <div class="waiting-pencil" aria-hidden="true"><i></i></div>
+      </section>
+    </section>
+
+    <section id="revealPanel" class="paper-panel reveal-panel hidden">
+      <div class="reveal-head">
+        <div><div class="eyebrow">THE BIG REVEAL</div><h2>처음과 끝이 얼마나 달라졌을까요?</h2><p id="revealSummary"></p></div>
+        <div class="reveal-picker"><label for="chainSelect">공개할 책자</label><select id="chainSelect"></select></div>
+      </div>
+      <div id="revealTimeline" class="reveal-timeline"></div>
+      <div class="reveal-actions">
+        <button id="revealNextBtn" class="primary" type="button">다음 장 공개</button>
+        <button id="revealAllBtn" class="secondary" type="button">모두 보기</button>
+        <button id="returnLobbyBtn" class="quiet hidden" type="button">새 릴레이 준비</button>
+      </div>
+    </section>
+  </main>
+
+  <section id="rulesOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <div class="modal paper-panel">
+      <div class="eyebrow">HOW TO PLAY</div><h2 id="rulesTitle">보고, 그리고, 추측하고, 넘기기</h2>
+      <div class="rule-grid">
+        <article><span>01</span><strong>나만의 제시어</strong><p>모두 서로 다른 제시어를 받고 동시에 첫 그림을 그립니다.</p></article>
+        <article><span>02</span><strong>딱 한 장만 보기</strong><p>다음 사람은 앞사람의 그림만 보고 정답을 추측합니다.</p></article>
+        <article><span>03</span><strong>그림과 추측 반복</strong><p>추측은 다시 그림이 되고, 모든 책자가 한 칸씩 계속 이동합니다.</p></article>
+        <article><span>04</span><strong>모두 제출해야 이동</strong><p>제출한 뒤에는 고칠 수 없습니다. 모두 끝나면 다음 장이 열립니다.</p></article>
+        <article><span>05</span><strong>시간 제한</strong><p>그림은 60초, 추측은 30초입니다. 시간이 끝나면 현재 내용이 자동 제출됩니다.</p></article>
+        <article><span>06</span><strong>마지막에 함께 공개</strong><p>원래 제시어부터 마지막 결과까지 한 장씩 공개하며 즐깁니다.</p></article>
+      </div>
+      <p class="rule-note">그림에 글자나 숫자를 직접 쓰지 않는 것이 더 재미있어요. 점수와 승패는 없습니다.</p>
+      <button id="closeRulesBtn" class="primary" type="button">알겠어요</button>
+    </div>
+  </section>
+
+  <section id="abortOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal paper-panel"><div class="eyebrow">CONNECTION NOTICE</div><h2 id="abortTitle">게임 중단</h2><p id="abortMessage"></p><button id="reloadBtn" class="primary" type="button">처음부터 다시</button></div>
+  </section>
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script>
+  "use strict";
+
+  const GAME_ID = "drawrelay";
+  const NAME_KEY = "classPlayerName";
+  const SERVER_MESSAGE = Object.freeze({ STATE: "DRAWRELAY_STATE", ERROR: "DRAWRELAY_ERROR" });
+  const CANVAS_WIDTH = 1000;
+  const CANVAS_HEIGHT = 700;
+  const $ = id => document.getElementById(id);
+
+  let lobby = null;
+  let gameState = null;
+  let actionPending = false;
+  let strokes = [];
+  let activeStroke = null;
+  let penColor = "#172033";
+  let penWidth = 4;
+  let draftKey = "";
+  let autoSubmitSent = false;
+  let timerId = null;
+  let toastTimer = null;
+  let revealChainIndex = 0;
+  let revealedEntryCount = 1;
+  const savedName = String(localStorage.getItem(NAME_KEY) || "").trim();
+
+  function showToast(message) {
+    clearTimeout(toastTimer);
+    $("toast").textContent = message;
+    $("toast").classList.remove("hidden");
+    toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 2400);
+  }
+
+  function showRules() { $("rulesOverlay").classList.remove("hidden"); }
+  function hideRules() { $("rulesOverlay").classList.add("hidden"); }
+  function showLobby() { $("gameScreen").classList.add("hidden"); $("lobbyScreen").classList.remove("hidden"); }
+  function showGame() { $("lobbyScreen").classList.add("hidden"); $("gameScreen").classList.remove("hidden"); }
+  function showAbort({ title, message }) { $("abortTitle").textContent = title; $("abortMessage").textContent = message; $("abortOverlay").classList.remove("hidden"); }
+
+  function resetDraft(nextKey) {
+    draftKey = nextKey;
+    strokes = [];
+    activeStroke = null;
+    actionPending = false;
+    autoSubmitSent = false;
+    $("guessInput").value = "";
+    renderDrawing($("drawingCanvas"), strokes);
+    updateDraftControls();
+  }
+
+  function canvasPoint(event, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    return [
+      Math.round((event.clientX - rect.left) / rect.width * CANVAS_WIDTH),
+      Math.round((event.clientY - rect.top) / rect.height * CANVAS_HEIGHT)
+    ];
+  }
+
+  function renderDrawing(canvas, drawingStrokes) {
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.fillStyle = "#fffdf7";
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    for (const stroke of drawingStrokes || []) {
+      const points = stroke.points || [];
+      if (!points.length) continue;
+      context.strokeStyle = stroke.color || "#172033";
+      context.fillStyle = stroke.color || "#172033";
+      context.lineWidth = Number(stroke.width) || 4;
+      if (points.length === 1) {
+        context.beginPath();
+        context.arc(points[0][0], points[0][1], context.lineWidth / 2, 0, Math.PI * 2);
+        context.fill();
+        continue;
+      }
+      context.beginPath();
+      context.moveTo(points[0][0], points[0][1]);
+      for (let index = 1; index < points.length; index += 1) context.lineTo(points[index][0], points[index][1]);
+      context.stroke();
+    }
+  }
+
+  function beginStroke(event) {
+    if (gameState?.phase !== "playing" || gameState.actionType !== "draw" || gameState.mySubmitted || actionPending) return;
+    event.preventDefault();
+    const canvas = $("drawingCanvas");
+    canvas.setPointerCapture?.(event.pointerId);
+    activeStroke = { color: penColor, width: penWidth, points: [canvasPoint(event, canvas)] };
+    strokes.push(activeStroke);
+    renderDrawing(canvas, strokes);
+    updateDraftControls();
+  }
+
+  function moveStroke(event) {
+    if (!activeStroke) return;
+    event.preventDefault();
+    const canvas = $("drawingCanvas");
+    const point = canvasPoint(event, canvas);
+    const previous = activeStroke.points.at(-1);
+    if (previous && Math.hypot(point[0] - previous[0], point[1] - previous[1]) < 2) return;
+    activeStroke.points.push(point);
+    renderDrawing(canvas, strokes);
+  }
+
+  function endStroke(event) {
+    if (!activeStroke) return;
+    event.preventDefault();
+    activeStroke = null;
+    updateDraftControls();
+  }
+
+  function updateDraftControls() {
+    $("strokeCount").textContent = `${strokes.length}획`;
+    $("undoBtn").disabled = !strokes.length || actionPending;
+    $("clearCanvasBtn").disabled = !strokes.length || actionPending;
+    $("submitDrawingBtn").disabled = actionPending || gameState?.mySubmitted || !strokes.length;
+    const guessLength = $("guessInput").value.length;
+    $("guessCount").textContent = String(guessLength);
+    $("submitGuessBtn").disabled = actionPending || gameState?.mySubmitted || !$("guessInput").value.trim();
+  }
+
+  function setPenColor(color) {
+    penColor = color;
+    document.querySelectorAll("[data-color]").forEach(button => button.classList.toggle("active", button.dataset.color === color));
+  }
+
+  function setPenWidth(width) {
+    penWidth = Number(width);
+    document.querySelectorAll("[data-width]").forEach(button => button.classList.toggle("active", Number(button.dataset.width) === penWidth));
+  }
+
+  function submitDrawing(auto = false) {
+    if (actionPending || gameState?.mySubmitted || gameState?.actionType !== "draw") return;
+    if (!strokes.length && !auto) { showToast("선 하나라도 그린 뒤 제출해 주세요."); return; }
+    actionPending = true;
+    autoSubmitSent = auto;
+    updateDraftControls();
+    if (!lobby.sendServer({ type: "DRAWRELAY_ACTION", action: "SUBMIT_DRAWING", strokes })) {
+      actionPending = false; autoSubmitSent = false; updateDraftControls(); showToast("그림을 보내지 못했습니다.");
+    }
+  }
+
+  function submitGuess(auto = false) {
+    if (actionPending || gameState?.mySubmitted || gameState?.actionType !== "guess") return;
+    const text = $("guessInput").value.trim();
+    if (!text && !auto) { showToast("그림에서 떠오른 말을 적어 주세요."); return; }
+    actionPending = true;
+    autoSubmitSent = auto;
+    updateDraftControls();
+    if (!lobby.sendServer({ type: "DRAWRELAY_ACTION", action: "SUBMIT_GUESS", text: text || "시간 초과" })) {
+      actionPending = false; autoSubmitSent = false; updateDraftControls(); showToast("추측을 보내지 못했습니다.");
+    }
+  }
+
+  function renderProgress() {
+    const isReveal = gameState.phase === "reveal";
+    const actionLabel = gameState.actionType === "draw" ? "그림 그리기" : "그림 추측하기";
+    $("stepTitle").textContent = isReveal ? "모든 책자가 돌아왔습니다" : `${gameState.step + 1}장 · ${actionLabel}`;
+    $("stepMessage").textContent = gameState.lastAction;
+    $("packBadge").textContent = gameState.packLabel;
+    const dots = document.createDocumentFragment();
+    for (let index = 0; index < gameState.totalSteps; index += 1) {
+      const dot = document.createElement("i");
+      dot.className = index < gameState.step ? "done" : (index === gameState.step && !isReveal ? "active" : "");
+      dot.title = `${index + 1}장`;
+      dots.appendChild(dot);
+    }
+    $("stepDots").replaceChildren(dots);
+    const players = document.createDocumentFragment();
+    for (const player of gameState.players) {
+      const chip = document.createElement("span");
+      chip.className = `status-chip${player.submitted ? " done" : ""}`;
+      chip.textContent = `${player.submitted ? "✓ " : ""}${player.name}`;
+      players.appendChild(chip);
+    }
+    $("playerStatus").replaceChildren(players);
+  }
+
+  function renderPrompt() {
+    const prompt = gameState.prompt;
+    const drawingPrompt = prompt?.type === "drawing";
+    $("drawingPrompt").classList.toggle("hidden", !drawingPrompt);
+    $("textPrompt").classList.toggle("hidden", drawingPrompt);
+    if (drawingPrompt) {
+      $("promptTitle").textContent = "앞사람이 남긴 그림";
+      renderDrawing($("promptCanvas"), prompt.strokes || []);
+    } else {
+      $("promptTitle").textContent = gameState.step === 0 ? "나만의 첫 제시어" : "앞사람이 남긴 추측";
+      $("textPrompt").textContent = prompt?.text || "내용을 기다리는 중입니다.";
+    }
+  }
+
+  function renderWorkspace() {
+    const playing = gameState.phase === "playing";
+    const submitted = playing && gameState.mySubmitted;
+    $("playLayout").classList.toggle("hidden", !playing);
+    $("drawWorkspace").classList.toggle("hidden", !playing || submitted || gameState.actionType !== "draw");
+    $("guessWorkspace").classList.toggle("hidden", !playing || submitted || gameState.actionType !== "guess");
+    $("submittedWorkspace").classList.toggle("hidden", !submitted);
+    $("submittedMessage").textContent = `${gameState.submittedCount}/${gameState.players.length}명 제출 완료 · 모두 끝나면 다음 장이 열립니다.`;
+    updateDraftControls();
+  }
+
+  function createRevealEntry(entry, index) {
+    const article = document.createElement("article");
+    article.className = `reveal-entry ${entry.type}`;
+    const number = document.createElement("div");
+    number.className = "reveal-number";
+    number.textContent = String(index + 1).padStart(2, "0");
+    const content = document.createElement("div");
+    content.className = "reveal-content";
+    const meta = document.createElement("div");
+    meta.className = "reveal-meta";
+    meta.textContent = entry.type === "word" ? "처음 제시어" : `${entry.authorName} · ${entry.type === "drawing" ? "그림" : "추측"}`;
+    content.appendChild(meta);
+    if (entry.type === "drawing") {
+      const canvas = document.createElement("canvas");
+      canvas.width = CANVAS_WIDTH; canvas.height = CANVAS_HEIGHT; canvas.className = "reveal-canvas";
+      content.appendChild(canvas);
+      requestAnimationFrame(() => renderDrawing(canvas, entry.strokes || []));
+    } else {
+      const text = document.createElement("strong");
+      text.textContent = entry.text;
+      content.appendChild(text);
+    }
+    article.append(number, content);
+    return article;
+  }
+
+  function renderReveal() {
+    const revealing = gameState.phase === "reveal";
+    $("progressPanel").classList.toggle("hidden", revealing);
+    $("playLayout").classList.toggle("hidden", revealing);
+    $("revealPanel").classList.toggle("hidden", !revealing);
+    if (!revealing) return;
+    const chains = gameState.chains || [];
+    revealChainIndex = Math.max(0, Math.min(revealChainIndex, chains.length - 1));
+    const chain = chains[revealChainIndex];
+    const select = $("chainSelect");
+    if (select.options.length !== chains.length) {
+      select.replaceChildren(...chains.map((item, index) => {
+        const option = document.createElement("option"); option.value = String(index); option.textContent = `${item.ownerName}의 책자`; return option;
+      }));
+    }
+    select.value = String(revealChainIndex);
+    if (!chain) return;
+    revealedEntryCount = Math.max(1, Math.min(revealedEntryCount, chain.entries.length));
+    $("revealSummary").textContent = `${chain.ownerName}님에게서 시작한 ${chain.entries.length}장의 릴레이입니다.`;
+    const fragment = document.createDocumentFragment();
+    chain.entries.slice(0, revealedEntryCount).forEach((entry, index) => fragment.appendChild(createRevealEntry(entry, index)));
+    $("revealTimeline").replaceChildren(fragment);
+    $("revealNextBtn").disabled = revealedEntryCount >= chain.entries.length;
+    $("revealNextBtn").textContent = revealedEntryCount >= chain.entries.length ? "이 책자 공개 완료" : "다음 장 공개";
+    $("revealAllBtn").disabled = revealedEntryCount >= chain.entries.length;
+    $("returnLobbyBtn").classList.toggle("hidden", lobby.snapshot().role !== "host");
+  }
+
+  function renderGame() {
+    if (!gameState || gameState.phase === "lobby") return;
+    showGame();
+    const nextDraftKey = `${gameState.phase}:${gameState.step}:${gameState.actionType}`;
+    if (nextDraftKey !== draftKey) resetDraft(nextDraftKey);
+    actionPending = gameState.mySubmitted ? false : actionPending;
+    renderProgress();
+    if (gameState.phase === "playing") renderPrompt();
+    renderWorkspace();
+    renderReveal();
+    updateTimer();
+  }
+
+  function updateTimer() {
+    if (!gameState || gameState.phase !== "playing") { $("timerText").textContent = "완료"; return; }
+    const remaining = Math.max(0, Number(gameState.deadline) - Date.now());
+    const seconds = Math.ceil(remaining / 1000);
+    const minutes = Math.floor(seconds / 60);
+    $("timerText").textContent = `${String(minutes).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+    $("timerText").classList.toggle("urgent", seconds <= 10);
+    if (remaining <= 0 && !gameState.mySubmitted && !actionPending && !autoSubmitSent) {
+      if (gameState.actionType === "draw") submitDrawing(true); else submitGuess(true);
+    }
+  }
+
+  function installState(state) {
+    gameState = state;
+    if (state.mySubmitted) actionPending = false;
+    if (state.phase === "lobby") {
+      if (lobby.snapshot().started) { lobby.returnToLobby(); showLobby(); showToast(state.lastAction || "대기실로 돌아왔습니다."); }
+      return;
+    }
+    renderGame();
+  }
+
+  function handleServerMessage(message) {
+    if (message.type === SERVER_MESSAGE.STATE && message.state) { installState(message.state); return; }
+    if (message.type === SERVER_MESSAGE.ERROR) { actionPending = false; updateDraftControls(); showToast(message.message || "행동을 처리하지 못했습니다."); }
+  }
+
+  function syncLobby(snapshot) {
+    $("savedName").textContent = savedName || "플레이어";
+    $("gameRoomCode").textContent = snapshot.roomCode || "----";
+    $("packSelect").disabled = snapshot.role !== "host" || snapshot.started;
+    $("packOwnerHint").textContent = snapshot.role === "host" ? "방장이 선택해요" : "방장이 선택합니다";
+  }
+
+  function startHostGame(data) {
+    if (lobby.snapshot().role !== "host") return;
+    lobby.sendServer({ type: "DRAWRELAY_ACTION", action: "START", packId: data?.packId || $("packSelect").value });
+  }
+
+  function returnToLobby() {
+    if (lobby.snapshot().role !== "host") return;
+    lobby.sendServer({ type: "DRAWRELAY_ACTION", action: "RETURN_LOBBY" });
+  }
+
+  function init() {
+    const canvas = $("drawingCanvas");
+    canvas.addEventListener("pointerdown", beginStroke);
+    canvas.addEventListener("pointermove", moveStroke);
+    canvas.addEventListener("pointerup", endStroke);
+    canvas.addEventListener("pointercancel", endStroke);
+    canvas.addEventListener("pointerleave", event => { if (event.pointerType === "mouse") endStroke(event); });
+    document.querySelectorAll("[data-color]").forEach(button => button.addEventListener("click", () => setPenColor(button.dataset.color)));
+    document.querySelectorAll("[data-width]").forEach(button => button.addEventListener("click", () => setPenWidth(button.dataset.width)));
+    $("undoBtn").addEventListener("click", () => { strokes.pop(); renderDrawing(canvas, strokes); updateDraftControls(); });
+    $("clearCanvasBtn").addEventListener("click", () => { strokes = []; renderDrawing(canvas, strokes); updateDraftControls(); });
+    $("submitDrawingBtn").addEventListener("click", () => submitDrawing(false));
+    $("guessInput").addEventListener("input", updateDraftControls);
+    $("guessInput").addEventListener("keydown", event => { if (event.key === "Enter") { event.preventDefault(); submitGuess(false); } });
+    $("submitGuessBtn").addEventListener("click", () => submitGuess(false));
+    $("chainSelect").addEventListener("change", event => { revealChainIndex = Number(event.target.value) || 0; revealedEntryCount = 1; renderReveal(); });
+    $("revealNextBtn").addEventListener("click", () => { revealedEntryCount += 1; renderReveal(); });
+    $("revealAllBtn").addEventListener("click", () => { const chain = gameState?.chains?.[revealChainIndex]; revealedEntryCount = chain?.entries?.length || 1; renderReveal(); });
+    $("returnLobbyBtn").addEventListener("click", returnToLobby);
+    $("closeRulesBtn").addEventListener("click", hideRules);
+    $("rulesOverlay").addEventListener("click", event => { if (event.target === $("rulesOverlay")) hideRules(); });
+    $("reloadBtn").addEventListener("click", () => location.reload());
+    window.addEventListener("keydown", event => { if (event.key === "Escape" && !$("rulesOverlay").classList.contains("hidden")) hideRules(); });
+    renderDrawing(canvas, []);
+    renderDrawing($("promptCanvas"), []);
+    timerId = setInterval(updateTimer, 250);
+
+    lobby = ClassroomMultiplayerLobby.create({
+      gameId: GAME_ID,
+      getPlayerName: () => /^[가-힣]{2,6}$/.test(savedName) ? savedName : "",
+      minPlayers: 4,
+      maxPlayers: 8,
+      rulesButtonIds: ["rulesBtnLobby", "rulesBtnGame"],
+      leaveButtonIds: ["leaveBtnLobby", "leaveBtnGame"],
+      onRules: showRules,
+      onLeave: () => location.href = "../../index.html",
+      onNotice: showToast,
+      onInvalidStart: () => showToast("그림 릴레이는 4명부터 8명까지 시작할 수 있습니다."),
+      onStateChange: syncLobby,
+      getLobbyPresentation: ({ count, role, canStart }) => ({
+        canStart,
+        startText: role === "host" && canStart ? `${count}명으로 릴레이 시작` : "플레이어를 기다리는 중",
+        guideText: role === "host" ? `현재 ${count}명 · 4~8명일 때 시작할 수 있어요.` : "방장이 게임을 시작할 때까지 기다려 주세요."
+      }),
+      createStartData: () => ({ packId: $("packSelect").value, serverAuthoritative: true }),
+      onStarted: ({ data }) => { showGame(); startHostGame(data); },
+      onServerMessage: handleServerMessage,
+      onPlayerLeftDuringGame: () => showToast("플레이어가 나가 대기실로 돌아갑니다."),
+      onAbort: showAbort
+    }).mount();
+  }
+
+  window.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

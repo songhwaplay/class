@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>러브레터 · Love Letter</title>
 <link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <style>
@@ -27,6 +27,7 @@
 </style>
 <script src="../../assets/network/game-network.js"></script>
 <script src="../../assets/network/multiplayer-lobby.js"></script>
+<link rel="stylesheet" href="../../assets/device-game.css">
 </head>
 <body>
 <main class="shell">
@@ -94,7 +95,6 @@
       </div>
       <div class="deckBadge"><span class="eyebrow">DECK</span><strong id="deckText">0</strong></div>
       <div class="row" style="grid-column:1/-1;justify-content:center">
-        <button id="copyBtnGame" class="secondary" type="button">COPY CODE</button>
         <button id="rulesBtnGame" class="secondary" type="button">RULES</button>
         <button id="leaveBtnGame" class="secondary" type="button">메인 화면</button>
       </div>
@@ -436,7 +436,6 @@ function init(){
   }).mount();
 
   $("playBtn").addEventListener("click",submitPlay);
-  $("copyBtnGame").addEventListener("click",()=>lobby.copyRoomCode());
   $("closeRulesBtn").addEventListener("click",hideRules);
   $("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});
   $("closeRevealBtn").addEventListener("click",()=>$("revealOverlay").classList.add("hidden"));

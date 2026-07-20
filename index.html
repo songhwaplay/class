@@ -94,51 +94,7 @@
             font-size: 30px;
         }
 
-        .worksheet-container {
-            display: grid;
-            grid-template-columns: repeat(5, minmax(140px, 1fr));
-            gap: 10px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-        }
-
-        .worksheet-container a {
-            display: grid;
-            grid-template-columns: 1fr auto;
-            align-items: center;
-            min-height: 72px;
-            padding: 15px 14px;
-            border: 2px solid var(--gold);
-            background: linear-gradient(135deg, #7d4a16, #3a210f);
-            color: #fff0c7;
-            text-align: left;
-            text-decoration: none;
-            font-family: "Malgun Gothic", sans-serif;
-            font-size: clamp(15px, 1.55vw, 18px);
-            font-weight: 800;
-        }
-
-        .worksheet-container a:hover,
-        .worksheet-container a:focus-visible {
-            border-color: #ffd18a;
-            background: linear-gradient(135deg, #a9651c, #4a2910);
-        }
-
-        .worksheet-arrow {
-            color: var(--gold-bright);
-            font-size: 20px;
-        }
-
-        .worksheet-copy {
-            min-width: 0;
-            line-height: 1.25;
-        }
-
-        .boardgame-section,
-        .puzzle-section {
-            width: min(1180px, 100%);
-        }
-
+        .worksheet-container,
         .game-card-grid {
             display: flex;
             flex-wrap: wrap;
@@ -146,6 +102,7 @@
             gap: 10px;
         }
 
+        .worksheet-container a,
         .game-card-grid a {
             display: grid;
             grid-template-columns: 1fr auto;
@@ -161,23 +118,38 @@
             font-family: "Malgun Gothic", sans-serif;
         }
 
+        .worksheet-container a:hover,
+        .worksheet-container a:focus-visible,
         .game-card-grid a:hover,
         .game-card-grid a:focus-visible {
             border-color: #ffd18a;
             background: linear-gradient(135deg, #a9651c, #4a2910);
         }
 
+        .worksheet-arrow {
+            color: var(--gold-bright);
+            font-size: 20px;
+        }
+
+        .boardgame-section,
+        .puzzle-section {
+            width: min(1180px, 100%);
+        }
+
+        .worksheet-copy,
         .game-card-copy {
             display: grid;
             min-width: 0;
             gap: 4px;
         }
 
+        .worksheet-copy strong,
         .game-card-copy strong {
             font-size: 18px;
             line-height: 1.25;
         }
 
+        .worksheet-copy small,
         .game-card-copy small {
             color: #d7c19c;
             font-size: 12px;
@@ -283,21 +255,13 @@
             .music-control { gap: 7px; transform: scale(0.93); }
             .music-label { font-size: 14px; }
             .volume-step { width: 20px; }
-            .worksheet-container {
-                display: flex;
-                flex-direction: column;
-                overflow: visible;
-                padding-bottom: 0;
-            }
-            .worksheet-container a {
-                width: 100%;
-                min-height: 64px;
-                font-size: 18px;
-            }
+            .worksheet-container,
             .game-card-grid {
                 display: grid;
                 grid-template-columns: 1fr;
+                overflow: visible;
             }
+            .worksheet-container a,
             .game-card-grid a {
                 width: 100%;
                 min-height: 72px;
@@ -329,33 +293,37 @@
     </div>
 
     <section class="hub-section worksheet-section" aria-labelledby="worksheet-title">
-        <h1 id="worksheet-title" class="section-title">기초학습</h1>
+        <h1 id="worksheet-title" class="section-title">기초학력</h1>
         <div class="worksheet-container">
             <a href="https://fraction-lab-20260720.stimpack486443.chatgpt.site/arithmetic"
                data-requires-player="true"
                data-player-handoff="query">
-                <span class="worksheet-copy"><strong>연산</strong></span>
+                <span class="worksheet-copy"><strong>연산</strong><small>(Arithmetic)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
             <a href="vocabulary/index.html">
-                <span class="worksheet-copy"><strong>영어 단어 3,000</strong></span>
+                <span class="worksheet-copy"><strong>영어 단어 3,000</strong><small>(English Vocabulary 3,000)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
             <a href="idioms/index.html" data-requires-player="true">
-                <span class="worksheet-copy"><strong>고사성어</strong></span>
+                <span class="worksheet-copy"><strong>고사성어</strong><small>(Classical Chinese Idioms)</small></span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="spelling/index.html" data-requires-player="true">
+                <span class="worksheet-copy"><strong>한글 맞춤법</strong><small>(Korean Spelling)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
             <a id="hanguksaLearningLink"
                href="https://hanguksa-hanip.stimpack486443.chatgpt.site/"
                data-requires-player="true"
                data-player-handoff="fragment">
-                <span class="worksheet-copy"><strong>한능검 기본</strong></span>
+                <span class="worksheet-copy"><strong>한능검 기본</strong><small>(Korean History Basics)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
             <a id="cds95GameLink"
                href="https://world-voyage-classroom.onrender.com/"
                data-requires-player="true">
-                <span class="worksheet-copy"><strong>대항해시대</strong></span>
+                <span class="worksheet-copy"><strong>대항해시대</strong><small>(Age of Exploration)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
         </div>
@@ -373,6 +341,7 @@
             <a href="games/loveletter/loveletter.html"><span class="game-card-copy"><strong>러브레터</strong><small>(Love Letter)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
             <a href="games/rummikub/rummikub.html"><span class="game-card-copy"><strong>루미큐브</strong><small>(Rummikub)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
             <a href="games/blokus/blokus.html"><span class="game-card-copy"><strong>블로커스</strong><small>(Blokus)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
+            <a href="games/drawrelay/drawrelay.html"><span class="game-card-copy"><strong>그림 릴레이</strong><small>(Draw Relay)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
             <a href="games/setgame/setgame.html"><span class="game-card-copy"><strong>세트</strong><small>(Set)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
             <a href="games/davincicode/davincicode.html"><span class="game-card-copy"><strong>다빈치 코드</strong><small>(Da Vinci Code)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
             <a href="games/traverse/traverse.html"><span class="game-card-copy"><strong>트래버스</strong><small>(Traverse)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
