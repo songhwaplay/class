@@ -70,6 +70,7 @@ test("renders the learning index and the arithmetic catalog in workbook order", 
   assert.match(catalogHtml, /href="\/arithmetic\/grade-2-add-subtract-2"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/grade-2-add-subtract-3"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/group-counting-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/length-measuring-1"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
 
@@ -306,6 +307,28 @@ test("renders the grade-two group-counting worksheet with six symbol arrays", as
   assert.deepEqual([...html.matchAll(/aria-label="(group-\d+) 답"/g)].map((match) => match[1]), [
     "group-0", "group-1", "group-2", "group-3", "group-4", "group-5",
   ]);
+});
+
+test("renders the grade-two length-measuring worksheet with eight physical lines", async () => {
+  const response = await render("/arithmetic/length-measuring-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /길이 재기/);
+  assert.match(html, /어림하기/);
+  assert.match(html, /자로 재기/);
+  assert.match(html, /aria-label="A4 길이 재기 문제지"/);
+  assert.match(html, /aria-label="A4 길이 재기 전체 답지"/);
+  assert.equal((html.match(/data-testid="length-question"/g) ?? []).length, 16);
+  assert.equal((html.match(/class="length-input length-estimate-input"/g) ?? []).length, 8);
+  assert.equal((html.match(/class="length-input length-measured-input"/g) ?? []).length, 8);
+  assert.equal((html.match(/class="length-static-answer"/g) ?? []).length, 8);
+  assert.equal((html.match(/class="measure-line"/g) ?? []).length, 16);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 16);
+  assert.match(css, /\.length-list\s*\{[\s\S]*?grid-template-rows:\s*repeat\(8,/);
+  assert.match(css, /\.length-question\.is-correct[\s\S]*?background:\s*var\(--green-soft\)/);
+  assert.match(css, /\.length-question\.is-wrong[\s\S]*?background:\s*var\(--red-soft\)/);
 });
 
 test("renders the sequential give-and-take worksheet and printable answers", async () => {
