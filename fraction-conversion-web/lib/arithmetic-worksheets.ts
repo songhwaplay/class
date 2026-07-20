@@ -27,6 +27,12 @@ const readyRoutes: Record<string, string> = {
   "3덧셈뺄셈": "/arithmetic/grade-3-add-subtract",
   "3덧셈뺄셈빈칸": "/arithmetic/grade-3-add-subtract-blanks",
   "3보수뺄셈100": "/arithmetic/grade-3-complement-subtraction-100",
+  "3보수뺄셈1000": "/arithmetic/grade-3-complement-subtraction-1000",
+  "3덧셈뺄셈②": "/arithmetic/grade-3-add-subtract-2",
+  "3나눗셈①": "/arithmetic/grade-3-division-1",
+  "3곱셈①": "/arithmetic/grade-3-multiplication-1",
+  "3곱셈②": "/arithmetic/grade-3-multiplication-2",
+  "3길이": "/arithmetic/grade-3-length",
   "3분수②": "/fraction",
 };
 

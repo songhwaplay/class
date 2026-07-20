@@ -3,8 +3,8 @@
   "source": "english-vocabulary-3000-v2.json + Open English WordNet",
   "elementaryWords": 800,
   "targetImages": 214,
-  "existingImages": 20,
-  "pendingImages": 194,
+  "existingImages": 63,
+  "pendingImages": 151,
   "meaningReviewCount": 0,
   "potentialImagesAfterMeaningReview": 214,
   "categoryCounts": {
@@ -58,8 +58,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "뒤; 등",
-      "existingImage": false,
-      "score": 144
+      "existingImage": true,
+      "score": 1144
     },
     {
       "id": 1294,
@@ -68,8 +68,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체 부분) 머리.",
-      "existingImage": false,
-      "score": 144
+      "existingImage": true,
+      "score": 1144
     },
     {
       "id": 1332,
@@ -78,8 +78,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "집; 가정; 고향",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 1971,
@@ -88,8 +88,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "곳, 장소, 광장.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 2264,
@@ -98,8 +98,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "(건물의) 방, 실.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 207,
@@ -108,8 +108,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "아기, 어린아이, 유아.",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 331,
@@ -118,8 +118,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "(15세기 부터) 젊은 남자.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 353,
@@ -128,8 +128,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "형. 또는 오빠. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 1046,
@@ -138,8 +138,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "아버지. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 1150,
@@ -148,8 +148,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "친구, 동무.",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 1206,
@@ -158,8 +158,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "여자 어린이, 어린 여성",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 1622,
@@ -168,8 +168,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "남자, 남성.",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 1726,
@@ -178,8 +178,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "어머니. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 2464,
@@ -188,8 +188,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "결혼한 남녀 사이에서 태어난 남자. 아들. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 133
+      "existingImage": true,
+      "score": 1133
     },
     {
       "id": 2953,
@@ -198,8 +198,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "결혼한 남자의 배우자: 아내. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 132
+      "existingImage": true,
+      "score": 1132
     },
     {
       "id": 2972,
@@ -208,8 +208,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "여자, 여성, 여인.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 842,
@@ -228,8 +228,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "가방; 자루.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 250,
@@ -238,8 +238,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "침대.",
-      "existingImage": false,
-      "score": 140
+      "existingImage": true,
+      "score": 1140
     },
     {
       "id": 314,
@@ -258,8 +258,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "옷, 의복. 세탁물.",
-      "existingImage": false,
-      "score": 136
+      "existingImage": true,
+      "score": 1136
     },
     {
       "id": 1829,
@@ -268,8 +268,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "사무실.",
-      "existingImage": false,
-      "score": 137
+      "existingImage": true,
+      "score": 1137
     },
     {
       "id": 2381,
@@ -278,8 +278,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "(해상 교통 수단) 배, 선박.(A water-borne vessel generally larger than a boat.)",
-      "existingImage": false,
-      "score": 135
+      "existingImage": true,
+      "score": 1135
     },
     {
       "id": 2634,
@@ -298,8 +298,8 @@
       "category": "artifact",
       "categoryLabel": "사물·탈것",
       "meaning": "교통 수단 기차, 열차.",
-      "existingImage": false,
-      "score": 134
+      "existingImage": true,
+      "score": 1134
     },
     {
       "id": 308,
@@ -308,8 +308,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "몸, 신체, 육체.",
-      "existingImage": false,
-      "score": 139
+      "existingImage": true,
+      "score": 1139
     },
     {
       "id": 1014,
@@ -318,8 +318,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체기관) 눈.",
-      "existingImage": false,
-      "score": 144
+      "existingImage": true,
+      "score": 1144
     },
     {
       "id": 1269,
@@ -328,8 +328,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "머리카락, 머리털. 동물의 경우 털.",
-      "existingImage": false,
-      "score": 143
+      "existingImage": true,
+      "score": 1143
     },
     {
       "id": 1275,
@@ -338,8 +338,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체 부분) 손.",
-      "existingImage": false,
-      "score": 139
+      "existingImage": true,
+      "score": 1139
     },
     {
       "id": 1733,
@@ -348,8 +348,8 @@
       "category": "body",
       "categoryLabel": "신체",
       "meaning": "(신체기관) 입",
-      "existingImage": false,
-      "score": 142
+      "existingImage": true,
+      "score": 1142
     },
     {
       "id": 516,
@@ -358,8 +358,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "커피",
-      "existingImage": false,
-      "score": 143
+      "existingImage": true,
+      "score": 1143
     },
     {
       "id": 808,
@@ -368,8 +368,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "저녁밥, 한식",
-      "existingImage": false,
-      "score": 143
+      "existingImage": true,
+      "score": 1143
     },
     {
       "id": 866,
@@ -378,8 +378,8 @@
       "category": "food",
       "categoryLabel": "음식",
       "meaning": "음료, 마시는 것.",
-      "existingImage": false,
-      "score": 140
+      "existingImage": true,
+      "score": 1140
     },
     {
       "id": 484,
@@ -388,8 +388,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "도시, 시.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 888,
@@ -398,8 +398,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "땅, 대지. (비유) 세속, 이 세상.",
-      "existingImage": false,
-      "score": 130
+      "existingImage": true,
+      "score": 1130
     },
     {
       "id": 1342,
@@ -408,8 +408,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "병원.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 2252,
@@ -418,8 +418,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "길, 거리, 도로.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 2313,
@@ -438,8 +438,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "길, 거리, 도로.",
-      "existingImage": false,
-      "score": 129
+      "existingImage": true,
+      "score": 1129
     },
     {
       "id": 2759,
@@ -448,8 +448,8 @@
       "category": "location",
       "categoryLabel": "장소",
       "meaning": "city보다 작은 행정 구역.",
-      "existingImage": false,
-      "score": 131
+      "existingImage": true,
+      "score": 1131
     },
     {
       "id": 465,
@@ -458,8 +458,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "어린이, 아이.",
-      "existingImage": false,
-      "score": 126
+      "existingImage": true,
+      "score": 1126
     },
     {
       "id": 720,
@@ -468,8 +468,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "결혼한 남녀 사이에서 태어난 여자. 딸. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 123
+      "existingImage": true,
+      "score": 1123
     },
     {
       "id": 1361,
@@ -478,8 +478,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "결혼한 여자의 배우자: 남편. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 124
+      "existingImage": true,
+      "score": 1124
     },
     {
       "id": 1502,
@@ -488,8 +488,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "왕, 임금.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 1518,
@@ -498,8 +498,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "부인, 숙녀.",
-      "existingImage": false,
-      "score": 127
+      "existingImage": true,
+      "score": 1127
     },
     {
       "id": 2413,
@@ -508,8 +508,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "누나, 누이. 또는 언니. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 125
+      "existingImage": true,
+      "score": 1125
     },
     {
       "id": 2819,
@@ -518,8 +518,8 @@
       "category": "person",
       "categoryLabel": "사람",
       "meaning": "삼촌, 아저씨. (부록: 영어 가족과 친척)",
-      "existingImage": false,
-      "score": 126
+      "existingImage": true,
+      "score": 1126
     },
     {
       "id": 2910,

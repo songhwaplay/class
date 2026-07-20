@@ -51,11 +51,45 @@
         });
     }
 
+    function textSimilarity(left, right) {
+        const toBigrams = (value) => {
+            const normalized = String(value || "").replace(/[^가-힣A-Za-z0-9]/g, "");
+            const grams = new Set();
+            for (let index = 0; index < normalized.length - 1; index += 1) {
+                grams.add(normalized.slice(index, index + 2));
+            }
+            return grams;
+        };
+        const leftGrams = toBigrams(left);
+        const rightGrams = toBigrams(right);
+        if (!leftGrams.size || !rightGrams.size) return 0;
+        let common = 0;
+        leftGrams.forEach((gram) => {
+            if (rightGrams.has(gram)) common += 1;
+        });
+        return common / Math.max(leftGrams.size, rightGrams.size);
+    }
+
+    function selectDistractors(idiom, data, type, random = Math.random) {
+        const ranked = shuffle(data.filter((item) => item.id !== idiom.id), random)
+            .map((candidate) => {
+                let score = 0;
+                if (candidate.level === idiom.level) score += 6;
+                if (candidate.theme === idiom.theme) score += 12;
+                score += textSimilarity(idiom.meaning, candidate.meaning) * 5;
+                score += textSimilarity(idiom.story, candidate.story) * (type === "story" || type === "image" ? 3 : 1);
+                score += Math.max(0, 1 - Math.abs(idiom.word.length - candidate.word.length) / 4);
+                return { candidate, score };
+            })
+            .sort((left, right) => right.score - left.score);
+        return ranked.slice(0, 3).map((item) => item.candidate);
+    }
+
     function createQuestion(idiom, data, type, random = Math.random) {
         const promptType = type === "mixed"
             ? (random() < 0.5 ? "meaning" : "story")
             : type;
-        const wrong = shuffle(data.filter((item) => item.id !== idiom.id), random).slice(0, 3);
+        const wrong = selectDistractors(idiom, data, promptType, random);
         const options = shuffle([idiom, ...wrong], random).map((item) => ({
             id: item.id,
             label: `${item.word} · ${item.hanja}`
@@ -81,5 +115,5 @@
             .map((idiom) => createQuestion(idiom, data, normalizedType, random));
     }
 
-    return { shuffle, normalizeProgress, summarize, filterDeck, createQuestion, buildQuiz };
+    return { shuffle, normalizeProgress, summarize, filterDeck, selectDistractors, createQuestion, buildQuiz };
 });

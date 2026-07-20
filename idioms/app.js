@@ -28,7 +28,13 @@
         sajok: "assets/idioms/sajok.webp",
         baekmi: "assets/idioms/baekmi.webp",
         toego: "assets/idioms/toego.webp",
-        osipbobaekbo: "assets/idioms/osipbobaekbo.webp"
+        osipbobaekbo: "assets/idioms/osipbobaekbo.webp",
+        gwayubulgeup: "assets/idioms/gwayubulgeup.webp",
+        ugongisan: "assets/idioms/ugongisan.webp",
+        hogahowi: "assets/idioms/hogahowi.webp",
+        tasanjiseok: "assets/idioms/tasanjiseok.webp",
+        daegimanseong: "assets/idioms/daegimanseong.webp",
+        yubimuhwan: "assets/idioms/yubimuhwan.webp"
     };
 
     function migrateLegacyStorage() {

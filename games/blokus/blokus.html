@@ -1,0 +1,671 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#142238">
+  <title>블로커스 · Blokus</title>
+  <link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
+  <link rel="stylesheet" href="styles.css">
+  <script src="../../assets/network/game-network.js"></script>
+  <script src="../../assets/network/multiplayer-lobby.js"></script>
+</head>
+<body>
+  <main class="shell">
+    <section id="missingScreen" class="panel missing-panel hidden">
+      <div class="eyebrow">PLAYER NAME REQUIRED</div>
+      <h1>먼저 이름을 정해주세요</h1>
+      <p>수업용 게임 이름은 메인 화면에서만 바꿀 수 있습니다.</p>
+      <button class="primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>
+    </section>
+
+    <section id="lobbyScreen" class="lobby-layout hidden">
+      <article class="panel hero-panel">
+        <div class="hero-copy">
+          <div class="eyebrow">THE CORNER-TO-CORNER STRATEGY</div>
+          <h1 class="hero-title">BLOKUS<span>블로커스</span></h1>
+          <p class="hero-lead">변은 피하고, 모서리는 잇고. 단 한 칸의 틈까지 계산해 내 색의 길을 넓혀 보세요.</p>
+          <div class="hero-facts">
+            <div class="hero-fact"><strong>20×20</strong><span>정식 게임 보드</span></div>
+            <div class="hero-fact"><strong>21</strong><span>색마다 다른 조각</span></div>
+            <div class="hero-fact"><strong>2–4</strong><span>함께하는 플레이어</span></div>
+          </div>
+        </div>
+        <div class="mosaic" aria-hidden="true"><div id="mosaicGrid" class="mosaic-grid"></div></div>
+      </article>
+
+      <article class="panel lobby-panel">
+        <div class="lobby-topline">
+          <div><div class="eyebrow">CLASSROOM EDITION</div></div>
+          <span class="player-badge"><span id="savedName">플레이어</span></span>
+        </div>
+        <h2>게임 테이블 준비</h2>
+        <p class="lobby-sub">새 방을 만들거나 친구가 알려준 네 자리 방 번호를 입력하세요.</p>
+
+        <div class="mp-lobby-tabs" role="tablist" aria-label="방 참여 방법">
+          <button id="hostTab" class="mp-lobby-tab active" type="button" role="tab">방 만들기</button>
+          <button id="joinTab" class="mp-lobby-tab" type="button" role="tab">방 참가하기</button>
+        </div>
+
+        <section id="hostPane" class="mp-lobby-pane">
+          <div class="eyebrow">ROOM CODE</div>
+          <div id="roomCode" class="mp-lobby-code">----</div>
+          <button id="copyBtn" class="secondary" type="button">방 번호 복사</button>
+          <div id="hostStatus" class="mp-lobby-status">새 게임 방을 준비하고 있습니다.</div>
+        </section>
+
+        <section id="joinPane" class="mp-lobby-pane hidden">
+          <label class="eyebrow" for="joinCode">ROOM CODE</label>
+          <div class="mp-lobby-join-row">
+            <input id="joinCode" class="mp-lobby-code-input" inputmode="numeric" maxlength="4" placeholder="4자리 번호" autocomplete="off">
+            <button id="joinBtn" class="primary" type="button">입장</button>
+          </div>
+          <div id="joinStatus" class="mp-lobby-status">방장이 알려준 번호를 입력하세요.</div>
+        </section>
+
+        <section class="lobby-roster">
+          <div class="lobby-roster-head"><div class="eyebrow">PLAYERS</div><span>입장 순서대로 색을 배정해요</span></div>
+          <div id="lobbyPlayers" class="mp-lobby-players"></div>
+          <p id="lobbyGuide" class="mp-lobby-guide">2~4명이 모이면 시작할 수 있습니다.</p>
+        </section>
+
+        <div class="lobby-actions">
+          <button id="startBtn" class="primary" type="button" disabled>플레이어를 기다리는 중</button>
+          <button id="rulesBtnLobby" class="secondary" type="button">게임 규칙</button>
+          <button id="leaveBtnLobby" class="quiet" type="button">메인으로</button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <main id="gameScreen" class="game-shell hidden">
+    <header class="panel game-header">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+        <div><div class="eyebrow">CORNER STRATEGY</div><div class="brand-name">블로커스</div></div>
+      </div>
+      <div class="room-lockup"><div class="eyebrow">ROOM</div><div id="gameRoomCode" class="room-code">----</div></div>
+      <nav class="header-actions" aria-label="게임 메뉴">
+        <button id="copyGameBtn" class="quiet" type="button">번호 복사</button>
+        <button id="rulesBtnGame" class="quiet" type="button">규칙</button>
+        <button id="leaveBtnGame" class="quiet" type="button">나가기</button>
+      </nav>
+    </header>
+
+    <section id="playerStrip" class="player-strip" aria-label="플레이어 현황"></section>
+
+    <section id="playArea" class="game-layout">
+      <article class="panel board-panel">
+        <div class="turn-banner">
+          <div class="turn-copy">
+            <span id="turnColor" class="turn-color"></span>
+            <div>
+              <h2 id="turnTitle" class="turn-title">게임을 준비하고 있습니다</h2>
+              <div id="turnMessage" class="turn-message">서버 상태를 기다리는 중입니다.</div>
+            </div>
+          </div>
+          <span id="turnTag" class="turn-tag">20 × 20 BOARD</span>
+        </div>
+        <div id="boardScroll" class="board-scroll">
+          <div class="board-frame">
+            <div id="board" class="board" role="grid" aria-label="20 곱하기 20 블로커스 보드"></div>
+          </div>
+        </div>
+        <div class="board-legend">
+          <span class="legend-key"><i class="legend-corner"></i>색 점이 첫 조각의 시작 모서리예요.</span>
+          <span>조각 선택 → 회전·뒤집기 → 보드 칸 선택 → 놓기</span>
+        </div>
+      </article>
+
+      <aside class="panel side-panel">
+        <div class="side-head">
+          <div class="eyebrow">PIECE TRAY</div>
+          <div class="side-title-row"><h2 id="trayTitle" class="side-title">조각</h2><span id="trayCount" class="side-count">0개 남음</span></div>
+        </div>
+        <div class="selection-zone">
+          <div id="pieceStage" class="piece-stage empty">조각을<br>고르세요</div>
+          <div class="selection-copy">
+            <div id="selectionName" class="selection-name">선택 없음</div>
+            <p id="selectionGuide" class="selection-guide">아래 조각 중 하나를 선택하세요.</p>
+            <div class="transform-buttons">
+              <button id="rotateBtn" class="secondary" type="button">↻ 회전</button>
+              <button id="flipBtn" class="secondary" type="button">⇋ 뒤집기</button>
+            </div>
+          </div>
+        </div>
+        <div class="piece-list-wrap"><div id="pieceGrid" class="piece-grid"></div></div>
+        <div class="side-actions">
+          <div id="placementStatus" class="placement-status">조각을 고른 뒤 보드에서 놓을 위치를 선택하세요.</div>
+          <div class="action-grid">
+            <button id="placeBtn" class="primary place-button" type="button" disabled>이곳에 놓기</button>
+            <button id="hintBtn" class="secondary" type="button">자리 찾기</button>
+            <button id="clearBtn" class="secondary" type="button">선택 해제</button>
+            <button id="passBtn" class="danger" type="button" disabled>더 이상 못 둬요</button>
+          </div>
+          <div class="keyboard-tip">키보드: R 회전 · F 뒤집기 · Esc 선택 해제</div>
+        </div>
+      </aside>
+    </section>
+
+    <section id="resultPanel" class="panel result-panel hidden">
+      <div class="eyebrow">GAME COMPLETE</div>
+      <h2 id="resultTitle">게임 종료</h2>
+      <p id="resultMessage"></p>
+      <table class="scoreboard">
+        <thead><tr><th>플레이어</th><th>남은 칸</th><th>점수</th></tr></thead>
+        <tbody id="scoreBody"></tbody>
+      </table>
+      <div id="resultActions" class="result-actions"></div>
+    </section>
+  </main>
+
+  <section id="rulesOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+    <div class="modal">
+      <div class="eyebrow">HOW TO PLAY</div>
+      <h2 id="rulesTitle">모서리로 길을 잇는 게임</h2>
+      <p class="rule-intro">내 조각을 가장 많이 보드에 내려놓으면 승리합니다. 규칙은 단순하지만, 한 번 막힌 길은 다시 열기 어렵습니다.</p>
+      <div class="rule-grid">
+        <article class="rule-card"><span class="rule-number">01</span><strong>첫 조각은 시작점에</strong><p>각 색의 첫 조각은 보드 모서리에 표시된 같은 색 점을 반드시 덮어야 합니다.</p></article>
+        <article class="rule-card"><span class="rule-number">02</span><strong>모서리끼리 만나기</strong><p>다음 조각부터는 이미 놓은 같은 색 조각과 꼭짓점이 한 곳 이상 닿아야 합니다.</p></article>
+        <article class="rule-card"><span class="rule-number">03</span><strong>같은 색의 변은 금지</strong><p>같은 색 조각끼리는 위·아래·왼쪽·오른쪽 변이 닿을 수 없습니다. 다른 색과는 자유롭게 닿아도 됩니다.</p></article>
+        <article class="rule-card"><span class="rule-number">04</span><strong>회전과 뒤집기는 자유</strong><p>조각은 원하는 만큼 회전하거나 뒤집을 수 있습니다. 놓은 조각은 다시 움직일 수 없습니다.</p></article>
+        <article class="rule-card"><span class="rule-number">05</span><strong>놓을 곳이 없으면 종료</strong><p>서버가 가능한 자리를 모두 확인한 뒤 ‘더 이상 못 둬요’ 버튼을 열어 줍니다.</p></article>
+        <article class="rule-card"><span class="rule-number">06</span><strong>2인전은 두 색씩</strong><p>두 명이 플레이할 때는 서로 마주 보는 두 색을 맡고 번갈아 네 색을 모두 사용합니다.</p></article>
+      </div>
+      <div class="score-note"><strong>점수 계산</strong> · 남은 조각의 칸마다 −1점. 모두 놓으면 +15점, 한 칸 조각을 마지막에 놓았다면 +5점을 더 얻습니다.</div>
+      <button id="closeRulesBtn" class="primary" type="button" style="margin-top:18px">규칙 확인</button>
+    </div>
+  </section>
+
+  <section id="abortOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+    <div class="modal"><div class="eyebrow">CONNECTION NOTICE</div><h2 id="abortTitle">게임 중단</h2><p id="abortMessage"></p><button id="reloadBtn" class="primary" type="button">처음부터 다시</button></div>
+  </section>
+
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <script>
+  "use strict";
+
+  const GAME_ID = "blokus";
+  const NAME_KEY = "classPlayerName";
+  const SERVER_MESSAGE = Object.freeze({ STATE: "BLOKUS_STATE", ERROR: "BLOKUS_ERROR" });
+  const COLORS = Object.freeze({
+    blue: { label: "파랑", value: "#1788dd" },
+    red: { label: "빨강", value: "#e74b45" },
+    yellow: { label: "노랑", value: "#f2c535" },
+    green: { label: "초록", value: "#31a86d" }
+  });
+  const PIECES = Object.freeze([
+    ["I1", [[0,0]]], ["I2", [[0,0],[1,0]]], ["I3", [[0,0],[1,0],[2,0]]], ["V3", [[0,0],[0,1],[1,1]]],
+    ["I4", [[0,0],[1,0],[2,0],[3,0]]], ["O4", [[0,0],[1,0],[0,1],[1,1]]], ["T4", [[0,0],[1,0],[2,0],[1,1]]],
+    ["L4", [[0,0],[0,1],[0,2],[1,2]]], ["Z4", [[0,0],[1,0],[1,1],[2,1]]],
+    ["I5", [[0,0],[1,0],[2,0],[3,0],[4,0]]], ["L5", [[0,0],[0,1],[0,2],[0,3],[1,3]]],
+    ["Y5", [[0,0],[0,1],[1,1],[0,2],[0,3]]], ["N5", [[0,0],[0,1],[1,1],[1,2],[1,3]]],
+    ["P5", [[0,0],[1,0],[0,1],[1,1],[0,2]]], ["U5", [[0,0],[2,0],[0,1],[1,1],[2,1]]],
+    ["V5", [[0,0],[0,1],[0,2],[1,2],[2,2]]], ["W5", [[0,0],[0,1],[1,1],[1,2],[2,2]]],
+    ["X5", [[1,0],[0,1],[1,1],[2,1],[1,2]]], ["T5", [[0,0],[1,0],[2,0],[1,1],[1,2]]],
+    ["Z5", [[0,0],[1,0],[1,1],[1,2],[2,2]]], ["F5", [[1,0],[0,1],[1,1],[1,2],[2,2]]]
+  ].map(([id, cells]) => ({ id, cells: cells.map(([x,y]) => ({ x, y })) })));
+  const PIECE_MAP = new Map(PIECES.map(piece => [piece.id, piece]));
+  const $ = id => document.getElementById(id);
+
+  let lobby = null;
+  let gameState = null;
+  let selectedPieceId = null;
+  let selectedShape = [];
+  let anchor = null;
+  let actionPending = false;
+  let lastRevision = -1;
+  let toastTimer = null;
+  const boardCells = new Map();
+  const savedName = String(localStorage.getItem(NAME_KEY) || "").trim();
+
+  function html(value) {
+    return String(value).replace(/[&<>"']/g, char => ({ "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;" }[char]));
+  }
+
+  function showToast(message) {
+    clearTimeout(toastTimer);
+    $("toast").textContent = message;
+    $("toast").classList.remove("hidden");
+    toastTimer = setTimeout(() => $("toast").classList.add("hidden"), 2600);
+  }
+
+  function showRules() { $("rulesOverlay").classList.remove("hidden"); }
+  function hideRules() { $("rulesOverlay").classList.add("hidden"); }
+  function showGame() { $("lobbyScreen").classList.add("hidden"); $("gameScreen").classList.remove("hidden"); }
+  function showLobby() { $("gameScreen").classList.add("hidden"); $("lobbyScreen").classList.remove("hidden"); }
+  function myId() { return lobby?.snapshot().myId || ""; }
+  function isMyTurn() { return gameState?.phase === "playing" && gameState.activePlayerId === myId(); }
+  function activePlayer() { return gameState?.players.find(player => player.id === gameState.activePlayerId) || null; }
+  function colorValue(color) { return COLORS[color]?.value || "#7b8794"; }
+
+  function normalize(cells) {
+    if (!cells.length) return [];
+    const minimumX = Math.min(...cells.map(cell => cell.x));
+    const minimumY = Math.min(...cells.map(cell => cell.y));
+    return cells.map(cell => ({ x: cell.x - minimumX, y: cell.y - minimumY }))
+      .sort((left, right) => left.y - right.y || left.x - right.x);
+  }
+
+  function shapeKey(cells) { return normalize(cells).map(cell => `${cell.x},${cell.y}`).join(";"); }
+  function rotateShape(cells) { return normalize(cells.map(cell => ({ x: -cell.y, y: cell.x }))); }
+  function flipShape(cells) { return normalize(cells.map(cell => ({ x: -cell.x, y: cell.y }))); }
+
+  function orientationsFor(pieceId) {
+    const base = PIECE_MAP.get(pieceId)?.cells || [];
+    const found = new Map();
+    for (const flipped of [false, true]) {
+      let shape = flipped ? flipShape(base) : normalize(base);
+      for (let rotation = 0; rotation < 4; rotation += 1) {
+        found.set(shapeKey(shape), shape);
+        shape = rotateShape(shape);
+      }
+    }
+    return [...found.values()];
+  }
+
+  function makePieceGraphic(pieceId, className, shape = null) {
+    const cells = normalize(shape || PIECE_MAP.get(pieceId)?.cells || []);
+    const graphic = document.createElement("span");
+    graphic.className = className;
+    const width = Math.max(...cells.map(cell => cell.x), 0) + 1;
+    const height = Math.max(...cells.map(cell => cell.y), 0) + 1;
+    graphic.style.gridTemplateColumns = `repeat(${width}, auto)`;
+    graphic.style.gridTemplateRows = `repeat(${height}, auto)`;
+    for (const cell of cells) {
+      const block = document.createElement("i");
+      block.style.gridColumn = String(cell.x + 1);
+      block.style.gridRow = String(cell.y + 1);
+      graphic.appendChild(block);
+    }
+    return graphic;
+  }
+
+  function renderMosaic() {
+    const colors = new Map([
+      ["0,0","blue"],["1,0","blue"],["0,1","blue"],["0,2","blue"],["1,2","blue"],
+      ["7,0","red"],["8,0","red"],["9,0","red"],["8,1","red"],["8,2","red"],
+      ["2,4","yellow"],["3,4","yellow"],["3,5","yellow"],["4,5","yellow"],["4,6","yellow"],
+      ["6,5","green"],["6,6","green"],["7,6","green"],["7,7","green"],["8,7","green"],
+      ["0,8","red"],["1,8","red"],["1,9","red"],["4,8","blue"],["5,8","blue"],["6,8","blue"],["5,9","blue"],
+      ["9,8","yellow"],["9,9","yellow"]
+    ]);
+    const fragment = document.createDocumentFragment();
+    for (let y = 0; y < 10; y += 1) for (let x = 0; x < 10; x += 1) {
+      const cell = document.createElement("span");
+      const color = colors.get(`${x},${y}`);
+      if (color) cell.className = color;
+      fragment.appendChild(cell);
+    }
+    $("mosaicGrid").replaceChildren(fragment);
+  }
+
+  function createBoard() {
+    const fragment = document.createDocumentFragment();
+    for (let y = 0; y < 20; y += 1) for (let x = 0; x < 20; x += 1) {
+      const cell = document.createElement("button");
+      cell.type = "button";
+      cell.className = "board-cell";
+      cell.setAttribute("role", "gridcell");
+      cell.setAttribute("aria-label", `${y + 1}행 ${x + 1}열`);
+      cell.addEventListener("mouseenter", () => {
+        if (selectedPieceId && isMyTurn()) { anchor = { x, y }; renderBoard(); renderSelection(); }
+      });
+      cell.addEventListener("click", () => selectBoardCell(x, y));
+      boardCells.set(`${x},${y}`, cell);
+      fragment.appendChild(cell);
+    }
+    $("board").replaceChildren(fragment);
+  }
+
+  function selectBoardCell(x, y) {
+    if (!isMyTurn()) { showToast("지금은 다른 플레이어의 차례입니다."); return; }
+    if (!selectedPieceId) { showToast("먼저 오른쪽에서 조각을 선택하세요."); return; }
+    anchor = { x, y };
+    renderBoard();
+    renderSelection();
+  }
+
+  function occupiedMap() {
+    const map = new Map();
+    for (const placement of gameState?.placements || []) {
+      for (const cell of placement.cells) map.set(`${cell.x},${cell.y}`, placement.color);
+    }
+    return map;
+  }
+
+  function absolutePreview() {
+    if (!selectedPieceId || !anchor) return [];
+    return selectedShape.map(cell => ({ x: cell.x + anchor.x, y: cell.y + anchor.y }));
+  }
+
+  function validatePreview(pieceId, cells, color = gameState?.activeColor) {
+    if (!gameState || gameState.phase !== "playing") return { ok: false, message: "게임이 진행 중이 아닙니다." };
+    if (!isMyTurn()) return { ok: false, message: "지금은 다른 플레이어의 차례입니다." };
+    if (!(gameState.remaining[color] || []).includes(pieceId)) return { ok: false, message: "사용할 수 없는 조각입니다." };
+    if (cells.some(cell => cell.x < 0 || cell.y < 0 || cell.x >= 20 || cell.y >= 20)) return { ok: false, message: "조각이 보드 밖으로 나갑니다." };
+    const occupied = occupiedMap();
+    if (cells.some(cell => occupied.has(`${cell.x},${cell.y}`))) return { ok: false, message: "이미 조각이 놓인 칸입니다." };
+    const first = !(gameState.placements || []).some(placement => placement.color === color);
+    if (first) {
+      const corner = gameState.colors.find(entry => entry.id === color)?.startCorner;
+      const covers = cells.some(cell => cell.x === corner?.x && cell.y === corner?.y);
+      return covers ? { ok: true, message: "시작 모서리를 덮었습니다. 놓을 수 있어요." } : { ok: false, message: "첫 조각은 같은 색 시작점을 덮어야 합니다." };
+    }
+    const edges = [[1,0],[-1,0],[0,1],[0,-1]];
+    const corners = [[1,1],[1,-1],[-1,1],[-1,-1]];
+    const edgeTouch = cells.some(cell => edges.some(([dx,dy]) => occupied.get(`${cell.x + dx},${cell.y + dy}`) === color));
+    if (edgeTouch) return { ok: false, message: "같은 색 조각과 변이 닿았습니다." };
+    const cornerTouch = cells.some(cell => corners.some(([dx,dy]) => occupied.get(`${cell.x + dx},${cell.y + dy}`) === color));
+    return cornerTouch ? { ok: true, message: "모서리가 이어졌습니다. 놓을 수 있어요." } : { ok: false, message: "같은 색 조각의 모서리와 닿아야 합니다." };
+  }
+
+  function cornerAnchor(shape, color) {
+    const corner = gameState?.colors.find(entry => entry.id === color)?.startCorner;
+    if (!corner) return null;
+    const width = Math.max(...shape.map(cell => cell.x)) + 1;
+    const height = Math.max(...shape.map(cell => cell.y)) + 1;
+    return { x: corner.x === 0 ? 0 : 20 - width, y: corner.y === 0 ? 0 : 20 - height };
+  }
+
+  function isFirstPlacement(color) { return !(gameState?.placements || []).some(placement => placement.color === color); }
+
+  function selectPiece(pieceId) {
+    if (!isMyTurn() || actionPending) return;
+    selectedPieceId = pieceId;
+    selectedShape = normalize(PIECE_MAP.get(pieceId).cells);
+    anchor = isFirstPlacement(gameState.activeColor) ? cornerAnchor(selectedShape, gameState.activeColor) : null;
+    renderPieces();
+    renderSelection();
+    renderBoard();
+  }
+
+  function rotateSelected() {
+    if (!selectedPieceId || !isMyTurn()) return;
+    selectedShape = rotateShape(selectedShape);
+    if (isFirstPlacement(gameState.activeColor)) anchor = cornerAnchor(selectedShape, gameState.activeColor);
+    renderSelection(); renderBoard();
+  }
+
+  function flipSelected() {
+    if (!selectedPieceId || !isMyTurn()) return;
+    selectedShape = flipShape(selectedShape);
+    if (isFirstPlacement(gameState.activeColor)) anchor = cornerAnchor(selectedShape, gameState.activeColor);
+    renderSelection(); renderBoard();
+  }
+
+  function clearSelection() {
+    selectedPieceId = null; selectedShape = []; anchor = null;
+    renderPieces(); renderSelection(); renderBoard();
+  }
+
+  function renderBoard() {
+    if (!gameState) return;
+    for (const [key, cell] of boardCells) {
+      cell.className = "board-cell";
+      cell.style.removeProperty("--cell-color");
+      cell.style.removeProperty("--corner-color");
+      cell.style.removeProperty("--preview-color");
+      cell.setAttribute("aria-label", `${Number(key.split(",")[1]) + 1}행 ${Number(key.split(",")[0]) + 1}열`);
+    }
+    for (const color of gameState.colors || []) {
+      const cell = boardCells.get(`${color.startCorner.x},${color.startCorner.y}`);
+      if (cell) { cell.classList.add("corner"); cell.style.setProperty("--corner-color", colorValue(color.id)); }
+    }
+    const latestOrder = Math.max(...(gameState.placements || []).map(placement => placement.order), -1);
+    for (const placement of gameState.placements || []) {
+      for (const point of placement.cells) {
+        const cell = boardCells.get(`${point.x},${point.y}`);
+        if (!cell) continue;
+        cell.classList.add("occupied");
+        if (placement.order === latestOrder) cell.classList.add("last");
+        cell.style.setProperty("--cell-color", colorValue(placement.color));
+        cell.setAttribute("aria-label", `${point.y + 1}행 ${point.x + 1}열, ${COLORS[placement.color].label} 조각`);
+      }
+    }
+    const preview = absolutePreview();
+    if (!preview.length) return;
+    const validation = validatePreview(selectedPieceId, preview);
+    for (const point of preview) {
+      const cell = boardCells.get(`${point.x},${point.y}`);
+      if (!cell) continue;
+      cell.classList.add(validation.ok ? "preview-valid" : "preview-invalid");
+      cell.style.setProperty("--preview-color", colorValue(gameState.activeColor));
+    }
+  }
+
+  function renderPlayers() {
+    const fragment = document.createDocumentFragment();
+    for (const player of gameState.players || []) {
+      const card = document.createElement("article");
+      const active = player.id === gameState.activePlayerId && gameState.phase === "playing";
+      card.className = `player-card${active ? " active" : ""}${player.out ? " out" : ""}`;
+      card.style.setProperty("--active-color", active ? colorValue(gameState.activeColor) : "#a5adb6");
+      const dots = player.colors.map(color => `<i class="color-dot" style="--dot-color:${colorValue(color)}" title="${COLORS[color].label}"></i>`).join("");
+      card.innerHTML = `<div class="player-card-top"><span class="player-name">${html(player.name)}${player.id === myId() ? " · 나" : ""}</span><span class="player-piece-count">${player.pieceCount}조각</span></div><div class="color-dots">${dots}<span class="player-score">${gameState.phase === "ended" ? `${player.score}점` : `${player.squareCount}칸 남음`}</span></div>`;
+      fragment.appendChild(card);
+    }
+    $("playerStrip").replaceChildren(fragment);
+  }
+
+  function renderTurn() {
+    const player = activePlayer();
+    const color = gameState.activeColor;
+    $("turnColor").style.setProperty("--active-color", colorValue(color));
+    if (gameState.phase === "ended") {
+      $("turnTitle").textContent = "모든 색의 배치가 끝났습니다";
+      $("turnTag").textContent = "GAME COMPLETE";
+    } else if (isMyTurn()) {
+      $("turnTitle").textContent = `내 ${COLORS[color]?.label || ""} 차례입니다`;
+      $("turnTag").textContent = gameState.canPass ? "NO LEGAL MOVE" : "YOUR TURN";
+    } else {
+      $("turnTitle").textContent = `${player?.name || "플레이어"}님의 ${COLORS[color]?.label || ""} 차례`;
+      $("turnTag").textContent = "WAITING";
+    }
+    $("turnMessage").textContent = gameState.lastAction || "모서리로 길을 이어 보세요.";
+  }
+
+  function renderPieces() {
+    const color = gameState?.activeColor;
+    const remaining = gameState?.remaining?.[color] || [];
+    $("trayTitle").textContent = color ? `${COLORS[color].label} 조각` : "조각";
+    $("trayTitle").style.color = colorValue(color);
+    $("trayCount").textContent = `${remaining.length}개 남음`;
+    const fragment = document.createDocumentFragment();
+    for (const piece of PIECES) {
+      if (!remaining.includes(piece.id)) continue;
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = `piece-button${selectedPieceId === piece.id ? " selected" : ""}`;
+      button.style.setProperty("--piece-color", colorValue(color));
+      button.disabled = !isMyTurn() || actionPending;
+      button.setAttribute("aria-label", `${piece.id} 조각, ${piece.cells.length}칸`);
+      button.appendChild(makePieceGraphic(piece.id, "piece-mini"));
+      const id = document.createElement("span"); id.className = "piece-id"; id.textContent = piece.id;
+      button.appendChild(id);
+      button.addEventListener("click", () => selectPiece(piece.id));
+      fragment.appendChild(button);
+    }
+    $("pieceGrid").replaceChildren(fragment);
+  }
+
+  function renderSelection() {
+    const stage = $("pieceStage");
+    const preview = absolutePreview();
+    const validation = preview.length ? validatePreview(selectedPieceId, preview) : { ok: false, message: selectedPieceId ? "보드에서 놓을 칸을 선택하세요." : "조각을 고른 뒤 보드에서 놓을 위치를 선택하세요." };
+    stage.replaceChildren();
+    stage.style.setProperty("--piece-color", colorValue(gameState?.activeColor));
+    if (selectedPieceId) {
+      stage.classList.remove("empty");
+      stage.appendChild(makePieceGraphic(selectedPieceId, "large-piece", selectedShape));
+      $("selectionName").textContent = `${selectedPieceId} · ${selectedShape.length}칸`;
+      $("selectionGuide").textContent = anchor ? "보드의 반투명 모양을 확인하세요." : "보드에서 조각의 기준 칸을 선택하세요.";
+    } else {
+      stage.classList.add("empty");
+      stage.innerHTML = "조각을<br>고르세요";
+      $("selectionName").textContent = "선택 없음";
+      $("selectionGuide").textContent = isMyTurn() ? "아래 조각 중 하나를 선택하세요." : "내 차례가 되면 조각을 고를 수 있어요.";
+    }
+    $("rotateBtn").disabled = !selectedPieceId || !isMyTurn() || actionPending;
+    $("flipBtn").disabled = !selectedPieceId || !isMyTurn() || actionPending;
+    $("clearBtn").disabled = !selectedPieceId || actionPending;
+    $("placeBtn").disabled = !validation.ok || actionPending;
+    $("placeBtn").textContent = actionPending ? "놓는 중…" : "이곳에 놓기";
+    $("hintBtn").disabled = !isMyTurn() || actionPending || gameState?.canPass;
+    $("passBtn").disabled = !gameState?.canPass || actionPending;
+    const status = $("placementStatus");
+    status.textContent = gameState?.canPass && isMyTurn() ? "가능한 배치가 없습니다. 이 색의 플레이를 종료하세요." : validation.message;
+    status.className = `placement-status${preview.length ? (validation.ok ? " valid" : " invalid") : ""}`;
+  }
+
+  function findHint() {
+    if (!isMyTurn() || actionPending) return;
+    const color = gameState.activeColor;
+    for (const pieceId of gameState.remaining[color] || []) {
+      for (const shape of orientationsFor(pieceId)) {
+        const width = Math.max(...shape.map(cell => cell.x)) + 1;
+        const height = Math.max(...shape.map(cell => cell.y)) + 1;
+        for (let y = 0; y <= 20 - height; y += 1) for (let x = 0; x <= 20 - width; x += 1) {
+          const cells = shape.map(cell => ({ x: cell.x + x, y: cell.y + y }));
+          if (validatePreview(pieceId, cells, color).ok) {
+            selectedPieceId = pieceId;
+            selectedShape = shape;
+            anchor = { x, y };
+            renderPieces(); renderSelection(); renderBoard();
+            showToast("가능한 자리 한 곳을 찾았습니다.");
+            return;
+          }
+        }
+      }
+    }
+    showToast("놓을 수 있는 자리가 없습니다.");
+  }
+
+  function placeSelected() {
+    const cells = absolutePreview();
+    const validation = cells.length ? validatePreview(selectedPieceId, cells) : { ok: false };
+    if (!validation.ok || actionPending) return;
+    actionPending = true; renderSelection(); renderPieces();
+    const sent = lobby.sendServer({ type: "BLOKUS_ACTION", action: "PLACE", pieceId: selectedPieceId, cells });
+    if (!sent) { actionPending = false; renderSelection(); renderPieces(); showToast("서버에 배치를 보내지 못했습니다."); }
+  }
+
+  function passTurn() {
+    if (!gameState?.canPass || actionPending) return;
+    actionPending = true; renderSelection();
+    if (!lobby.sendServer({ type: "BLOKUS_ACTION", action: "PASS" })) {
+      actionPending = false; renderSelection(); showToast("서버에 종료 요청을 보내지 못했습니다.");
+    }
+  }
+
+  function renderResult() {
+    const ended = gameState.phase === "ended";
+    $("playArea").classList.toggle("hidden", ended);
+    $("resultPanel").classList.toggle("hidden", !ended);
+    if (!ended) return;
+    const winners = gameState.players.filter(player => gameState.winnerIds.includes(player.id));
+    $("resultTitle").textContent = winners.some(player => player.id === myId()) ? "승리했습니다!" : `${winners.map(player => player.name).join(", ")} 승리`;
+    $("resultMessage").textContent = gameState.lastAction;
+    const body = document.createDocumentFragment();
+    [...gameState.players].sort((left, right) => right.score - left.score).forEach(player => {
+      const row = document.createElement("tr");
+      if (gameState.winnerIds.includes(player.id)) row.className = "winner";
+      row.innerHTML = `<td>${html(player.name)}${player.id === myId() ? " · 나" : ""}</td><td>${player.squareCount}칸</td><td>${player.score}점</td>`;
+      body.appendChild(row);
+    });
+    $("scoreBody").replaceChildren(body);
+    const actions = document.createDocumentFragment();
+    if (lobby.snapshot().role === "host") {
+      const again = document.createElement("button"); again.type = "button"; again.className = "primary"; again.textContent = "같은 멤버로 다시"; again.addEventListener("click", () => sendHostAction("NEW_GAME"));
+      const back = document.createElement("button"); back.type = "button"; back.className = "secondary"; back.textContent = "대기실로"; back.addEventListener("click", () => sendHostAction("RETURN_LOBBY"));
+      actions.append(again, back);
+    } else {
+      const wait = document.createElement("span"); wait.textContent = "방장이 다음 게임을 준비할 때까지 기다려 주세요."; actions.appendChild(wait);
+    }
+    $("resultActions").replaceChildren(actions);
+  }
+
+  function renderGame() {
+    if (!gameState || gameState.phase === "lobby") return;
+    showGame(); renderPlayers(); renderTurn(); renderBoard(); renderPieces(); renderSelection(); renderResult();
+  }
+
+  function installState(state) {
+    const revisionChanged = state.revision !== lastRevision;
+    gameState = state;
+    actionPending = false;
+    if (revisionChanged) {
+      lastRevision = state.revision;
+      selectedPieceId = null; selectedShape = []; anchor = null;
+    }
+    if (state.phase === "lobby") {
+      if (lobby.snapshot().started) { lobby.returnToLobby(); showLobby(); showToast(state.lastAction || "대기실로 돌아왔습니다."); }
+      return;
+    }
+    renderGame();
+  }
+
+  function handleServerMessage(message) {
+    if (message.type === SERVER_MESSAGE.STATE && message.state) { installState(message.state); return; }
+    if (message.type === SERVER_MESSAGE.ERROR) {
+      actionPending = false; renderSelection(); renderPieces(); showToast(message.message || "행동을 처리하지 못했습니다.");
+    }
+  }
+
+  function sendHostAction(action) {
+    if (lobby.snapshot().role === "host") lobby.sendServer({ type: "BLOKUS_ACTION", action });
+  }
+
+  function syncLobby(snapshot) { $("gameRoomCode").textContent = snapshot.roomCode || "----"; }
+  function showAbort({ title, message }) { $("abortTitle").textContent = title; $("abortMessage").textContent = message; $("abortOverlay").classList.remove("hidden"); }
+
+  function init() {
+    renderMosaic();
+    createBoard();
+    lobby = ClassroomMultiplayerLobby.create({
+      gameId: GAME_ID,
+      getPlayerName: () => /^[가-힣]{2,6}$/.test(savedName) ? savedName : "",
+      allowedPlayerCounts: [2, 3, 4],
+      maxPlayers: 4,
+      rulesButtonIds: ["rulesBtnLobby", "rulesBtnGame"],
+      leaveButtonIds: ["leaveBtnLobby", "leaveBtnGame"],
+      onRules: showRules,
+      onLeave: () => location.href = "../../index.html",
+      onNotice: showToast,
+      onInvalidStart: () => showToast("2~4명이 모여야 시작할 수 있습니다."),
+      onStateChange: syncLobby,
+      getLobbyPresentation: ({ count, role, canStart }) => ({
+        canStart,
+        startText: role === "host" && canStart ? `${count}명으로 게임 시작` : "플레이어를 기다리는 중",
+        guideText: role === "host" ? `현재 ${count}명 · 2~4명이면 시작할 수 있어요.` : "방장이 게임을 시작할 때까지 기다려 주세요."
+      }),
+      createStartData: () => ({ serverAuthoritative: true }),
+      onStarted: () => { showGame(); if (lobby.snapshot().role === "host") sendHostAction("START"); },
+      onServerMessage: handleServerMessage,
+      onPlayerLeftDuringGame: () => showToast("플레이어가 나가 대기실로 돌아갑니다."),
+      onAbort: showAbort
+    }).mount();
+
+    $("copyGameBtn").addEventListener("click", () => lobby.copyRoomCode());
+    $("rotateBtn").addEventListener("click", rotateSelected);
+    $("flipBtn").addEventListener("click", flipSelected);
+    $("clearBtn").addEventListener("click", clearSelection);
+    $("hintBtn").addEventListener("click", findHint);
+    $("placeBtn").addEventListener("click", placeSelected);
+    $("passBtn").addEventListener("click", passTurn);
+    $("closeRulesBtn").addEventListener("click", hideRules);
+    $("rulesOverlay").addEventListener("click", event => { if (event.target === $("rulesOverlay")) hideRules(); });
+    $("reloadBtn").addEventListener("click", () => location.reload());
+    window.addEventListener("keydown", event => {
+      if (!$("rulesOverlay").classList.contains("hidden")) { if (event.key === "Escape") hideRules(); return; }
+      if (event.key.toLowerCase() === "r") rotateSelected();
+      else if (event.key.toLowerCase() === "f") flipSelected();
+      else if (event.key === "Escape") clearSelection();
+    });
+  }
+
+  window.addEventListener("DOMContentLoaded", init);
+  </script>
+</body>
+</html>

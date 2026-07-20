@@ -87,6 +87,12 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   assert.match(catalogHtml, /href="\/arithmetic\/grade-3-add-subtract"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/grade-3-add-subtract-blanks"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/grade-3-complement-subtraction-100"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-complement-subtraction-1000"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-add-subtract-2"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-division-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-multiplication-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-multiplication-2"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-length"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /2시계①|2시계②/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
@@ -122,9 +128,10 @@ test("keeps every race-ready worksheet connected to grading and score reading", 
   const selectorsBlock = controllerSource.match(/const questionSelectors = \[([\s\S]*?)\n\];/)?.[1] ?? "";
   const selectors = [...selectorsBlock.matchAll(/"(\.[^"]+)"/g)].map((match) => match[1]);
 
-  assert.equal(routes.length, 23);
+  assert.equal(routes.length, 29);
   assert.ok(selectors.includes(".multiplication-five-question"));
   assert.ok(selectors.includes(".clock-question"));
+  assert.ok(selectors.includes(".division-story-problem"));
 
   for (const route of routes) {
     const response = await render(route);
@@ -424,6 +431,157 @@ test("renders the grade-three complement subtraction to 100 worksheet", async ()
   assert.match(source, /<small>\/22 정답<\/small>/);
   assert.match(css, /\.hundred-complement-columns\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
   assert.match(css, /\.hundred-complement-column\s*\{[\s\S]*?grid-template-rows:\s*repeat\(11,/);
+});
+
+test("renders the grade-three complement subtraction to 1000 worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-complement-subtraction-1000");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-complement-subtraction-1000/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /보수뺄셈1000/);
+  assert.match(html, /aria-label="A4 3학년 보수뺄셈1000 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 보수뺄셈1000 전체 답지"/);
+  assert.equal((html.match(/data-testid="thousand-complement-row"/g) ?? []).length, 40);
+  assert.equal((html.match(/class="complement-input thousand-wide"/g) ?? []).length, 20);
+  assert.equal((html.match(/class="complement-static-answer thousand-wide"/g) ?? []).length, 20);
+  assert.equal((html.match(/maxLength="3"/g) ?? []).length, 20);
+  assert.equal((html.match(/<span>−<\/span>/g) ?? []).length, 40);
+  assert.match(source, /const left = 1000;/);
+  assert.match(source, /integer\(next, 13, left - 11\)/);
+  assert.match(source, /Array\.from\(\{ length: 10 \}/);
+  assert.match(source, /<small>\/20 정답<\/small>/);
+  assert.match(css, /\.thousand-complement-columns\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
+  assert.match(css, /\.thousand-complement-column\s*\{[\s\S]*?grid-template-rows:\s*repeat\(10,/);
+});
+
+test("renders the second grade-three addition and subtraction worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-add-subtract-2");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-add-subtract-2/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /덧셈뺄셈②/);
+  assert.match(html, /aria-label="A4 3학년 덧셈뺄셈② 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 덧셈뺄셈② 전체 답지"/);
+  assert.equal((html.match(/data-testid="grade-three-two-row"/g) ?? []).length, 40);
+  assert.equal((html.match(/class="complement-input grade-three-two-wide"/g) ?? []).length, 20);
+  assert.equal((html.match(/class="complement-static-answer grade-three-two-wide"/g) ?? []).length, 20);
+  assert.equal((html.match(/maxLength="4"/g) ?? []).length, 20);
+  assert.equal((html.match(/<span>\+<\/span>/g) ?? []).length, 20);
+  assert.equal((html.match(/<span>−<\/span>/g) ?? []).length, 20);
+  assert.match(source, /const linkedRight = integer\(next, 2, 8\) \* 100;/);
+  assert.match(source, /linkedLeft, linkedRight - integer\(next, 1, 2\)/);
+  assert.match(source, /integer\(next, 1, 8\) \* 100 \+ integer\(next, 98, 99\)/);
+  assert.match(source, /if \(index < 6\)[\s\S]*integer\(next, 5, 9\) \* 100/);
+  assert.match(source, /if \(index === 6\)[\s\S]*left - 111/);
+  assert.match(source, /integer\(next, 5, 10\) \* 100 \+ 1/);
+  assert.match(source, /<small>\/20 정답<\/small>/);
+  assert.match(css, /\.grade-three-two-columns\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
+  assert.match(css, /\.grade-three-two-column\s*\{[\s\S]*?grid-template-rows:\s*repeat\(10,/);
+});
+
+test("renders the first grade-three division story worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-division-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-division-1/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /나눗셈①/);
+  assert.match(html, /aria-label="A4 3학년 나눗셈① 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 나눗셈① 전체 답지"/);
+  assert.equal((html.match(/data-testid="division-story-problem"/g) ?? []).length, 20);
+  assert.equal((html.match(/class="division-answer-input equation"/g) ?? []).length, 10);
+  assert.equal((html.match(/class="division-answer-input answer"/g) ?? []).length, 10);
+  assert.equal((html.match(/class="division-static-answer equation"/g) ?? []).length, 10);
+  assert.equal((html.match(/class="division-static-answer answer"/g) ?? []).length, 10);
+  assert.equal((html.match(/<canvas/g) ?? []).length, 10);
+  assert.equal((html.match(/class="division-group-diagram"/g) ?? []).length, 10);
+  assert.equal((html.match(/maxLength="1"/g) ?? []).length, 20);
+  assert.match(source, /const STORY_TYPES:[\s\S]*?quotative[\s\S]*?partitive/);
+  assert.match(source, /const divisor = integer\(next, 2, 3\);/);
+  assert.match(source, /quotient: 6 \/ divisor/);
+  assert.match(source, /problem\.kind === "quotative" \? problem\.quotient : problem\.divisor/);
+  assert.match(source, /<small>\/10 정답<\/small>/);
+  assert.match(css, /\.division-story-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,[\s\S]*?grid-template-rows:\s*repeat\(5,/);
+  assert.match(css, /\.division-story-problem\.is-correct[\s\S]*?background:\s*var\(--green-soft\)/);
+  assert.match(css, /\.division-story-problem\.is-wrong[\s\S]*?background:\s*var\(--red-soft\)/);
+});
+
+test("renders the first grade-three multiplication worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-multiplication-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-multiplication-1/page.tsx", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /곱셈①/);
+  assert.match(html, /aria-label="A4 3학년 곱셈① 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 곱셈① 전체 답지"/);
+  assert.equal((html.match(/data-testid="grade-three-multiplication-equation"/g) ?? []).length, 32);
+  assert.equal((html.match(/class="vertical-input"/g) ?? []).length, 16);
+  assert.equal((html.match(/class="vertical-static-answer"/g) ?? []).length, 16);
+  assert.equal((html.match(/maxLength="3"/g) ?? []).length, 16);
+  assert.equal((html.match(/<i>×<\/i>/g) ?? []).length, 32);
+  assert.match(source, /const TOP_RANGES:[^\n]*\[\[77, 99\], \[15, 99\], \[15, 99\], \[77, 99\]\]/);
+  assert.match(source, /integer\(next, 2, 9\)/);
+  assert.match(source, /result: top \* bottom/);
+  assert.match(source, /<small>\/16 정답<\/small>/);
+});
+
+test("renders the second grade-three multiplication worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-multiplication-2");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-multiplication-2/page.tsx", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /곱셈②/);
+  assert.match(html, /aria-label="A4 3학년 곱셈② 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 곱셈② 전체 답지"/);
+  assert.equal((html.match(/data-testid="grade-three-multiplication-two-question"/g) ?? []).length, 44);
+  assert.equal((html.match(/class="multiplication-input grade-three-multiplication-two-input"/g) ?? []).length, 22);
+  assert.equal((html.match(/class="multiplication-static-answer grade-three-multiplication-two-static-answer"/g) ?? []).length, 22);
+  assert.equal((html.match(/maxLength="3"/g) ?? []).length, 22);
+  assert.equal((html.match(/<span>×<\/span>/g) ?? []).length, 44);
+  assert.match(source, /Array\.from\(\{ length: 2 \}/);
+  assert.match(source, /Array\.from\(\{ length: 11 \}/);
+  assert.match(source, /integer\(next, 11, 99\)/);
+  assert.match(source, /integer\(next, 2, 9\)/);
+  assert.match(source, /product: multiplicand \* multiplier/);
+  assert.match(source, /<small>\/22 정답<\/small>/);
+});
+
+test("renders the grade-three compound-length worksheet", async () => {
+  const response = await render("/arithmetic/grade-3-length");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-length/page.tsx", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /<strong>길이<\/strong>/);
+  assert.match(html, /aria-label="A4 3학년 길이 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 길이 전체 답지"/);
+  assert.equal((html.match(/data-testid="grade-three-length-question"/g) ?? []).length, 18);
+  assert.equal((html.match(/class="length-operation-input"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="length-operation-input minor"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="length-operation-static"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="length-operation-static minor"/g) ?? []).length, 9);
+  assert.equal((html.match(/<b>\+<\/b>/g) ?? []).length, 12);
+  assert.equal((html.match(/<b>−<\/b>/g) ?? []).length, 6);
+  assert.match(source, /base: 1000 \| 100 \| 10/);
+  assert.match(source, /integer\(next, 100, 999\)/);
+  assert.match(source, /integer\(next, 666, 999\)/);
+  assert.match(source, /integer\(next, 5, 9\) \* 10/);
+  assert.match(source, /Math\.floor\(total \/ units\.base\)/);
+  assert.match(source, /minor: total % units\.base/);
+  assert.match(source, /<small>\/9 정답<\/small>/);
 });
 
 test("renders the third grade-two worksheet with mixed missing terms", async () => {

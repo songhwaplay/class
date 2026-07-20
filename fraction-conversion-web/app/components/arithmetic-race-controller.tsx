@@ -8,7 +8,7 @@ type Session = {
 };
 
 const questionSelectors = [
-  ".counting-question", ".drawing-question", ".addsub-equation-row", ".reading-row", ".give-question", ".complement-row", ".skip-row", ".vertical-equation", ".digit-equation", ".group-question", ".length-question", ".multiplication-question", ".multiplication-five-question", ".clock-question",
+  ".counting-question", ".drawing-question", ".addsub-equation-row", ".reading-row", ".give-question", ".complement-row", ".skip-row", ".vertical-equation", ".digit-equation", ".group-question", ".length-question", ".multiplication-question", ".multiplication-five-question", ".clock-question", ".division-story-problem",
 ];
 
 function formatElapsed(milliseconds: number) {

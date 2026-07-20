@@ -1,8 +1,10 @@
 (() => {
     "use strict";
 
-    const HTTP_URL = "https://classroom-game-hub.onrender.com";
-    const WS_URL = "wss://classroom-game-hub.onrender.com";
+    const useLocalServer = ["localhost", "127.0.0.1"].includes(location.hostname) &&
+        new URLSearchParams(location.search).get("server") === "local";
+    const HTTP_URL = useLocalServer ? "http://127.0.0.1:10000" : "https://classroom-game-hub.onrender.com";
+    const WS_URL = useLocalServer ? "ws://127.0.0.1:10000" : "wss://classroom-game-hub.onrender.com";
     const MAX_OPEN_ATTEMPTS = 3;
     const HEALTH_ATTEMPTS = 3;
     let statusElement = null;
