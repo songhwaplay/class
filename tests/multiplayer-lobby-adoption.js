@@ -15,6 +15,7 @@ const expectedMultiplayerGames = [
     "loveletter",
     "nimgame",
     "omok",
+    "rummikub",
     "setgame",
     "traverse"
 ];

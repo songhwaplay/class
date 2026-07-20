@@ -5,6 +5,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const { WebSocketServer, WebSocket } = require("ws");
 const LoveLetter = require("./loveletter");
+const Rummikub = require("./rummikub");
 
 const app = express();
 const server = http.createServer(app);
@@ -19,6 +20,7 @@ const MAX_ROOM_PLAYERS = {
   connect6: 2,
   diamondgame: 3,
   loveletter: 4,
+  rummikub: 4,
   avalon: 8
 };
 
@@ -65,6 +67,20 @@ function loveLetterBroadcast(room) {
 
 function loveLetterError(socket, message) {
   safeSend(socket, { type: "LOVELETTER_ERROR", message });
+}
+
+function rummikubBroadcast(room) {
+  if (!room?.rummikub) return;
+  for (const [id, client] of room.clients) {
+    safeSend(client, {
+      type: "RUMMIKUB_STATE",
+      state: Rummikub.stateFor(room.rummikub, id)
+    });
+  }
+}
+
+function rummikubError(socket, message) {
+  safeSend(socket, { type: "RUMMIKUB_ERROR", message });
 }
 
 const AVALON_TEAM_SIZES = {
@@ -380,6 +396,7 @@ wss.on("connection", socket => {
         safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
         if (existingRoom.avalon) avalonBroadcast(existingRoom);
         if (existingRoom.loveletter) loveLetterBroadcast(existingRoom);
+        if (existingRoom.rummikub) rummikubBroadcast(existingRoom);
         return;
       }
       if (resumeOnly) {
@@ -408,6 +425,9 @@ wss.on("connection", socket => {
       if (gameId === "loveletter") {
         room.loveletter = LoveLetter.createGame(playerId, cleanToken(message.name, 12) || "방장");
       }
+      if (gameId === "rummikub") {
+        room.rummikub = Rummikub.createGame(playerId, cleanToken(message.name, 12) || "방장");
+      }
       rooms.set(key, room);
       socket.meta.roomKey = key;
       socket.meta.role = "host";
@@ -421,6 +441,7 @@ wss.on("connection", socket => {
       });
       if (room.avalon) avalonBroadcast(room);
       if (room.loveletter) loveLetterBroadcast(room);
+      if (room.rummikub) rummikubBroadcast(room);
       return;
     }
 
@@ -452,6 +473,7 @@ wss.on("connection", socket => {
         safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
         if (room.avalon) avalonBroadcast(room);
         if (room.loveletter) loveLetterBroadcast(room);
+        if (room.rummikub) rummikubBroadcast(room);
         return;
       }
       if (resumeOnly) {
@@ -493,6 +515,16 @@ wss.on("connection", socket => {
         }
         LoveLetter.addPlayer(room.loveletter, playerId, cleanToken(message.name, 12) || `플레이어 ${room.loveletter.players.length + 1}`);
       }
+      if (room.rummikub) {
+        if (room.rummikub.phase !== "lobby") {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "이미 시작한 게임입니다." });
+          return;
+        }
+        Rummikub.addPlayer(room.rummikub, playerId, cleanToken(message.name, 12) || `플레이어 ${room.rummikub.players.length + 1}`);
+      }
 
       safeSend(socket, {
         type: "ROOM_JOINED",
@@ -509,6 +541,7 @@ wss.on("connection", socket => {
       });
       if (room.avalon) avalonBroadcast(room);
       if (room.loveletter) loveLetterBroadcast(room);
+      if (room.rummikub) rummikubBroadcast(room);
       return;
     }
 
@@ -636,6 +669,47 @@ wss.on("connection", socket => {
       return;
     }
 
+    if (type === "RUMMIKUB_ACTION") {
+      const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
+      const game = room?.rummikub;
+      const action = cleanToken(message.action, 30);
+      if (!room || !game) {
+        rummikubError(socket, "루미큐브 방에 참가하지 않았습니다.");
+        return;
+      }
+
+      let result;
+      if (action === "START") {
+        result = playerId === room.hostId
+          ? Rummikub.startGame(game)
+          : { ok: false, error: "방장만 게임을 시작할 수 있습니다." };
+      } else if (action === "PLAY") {
+        result = Rummikub.play(game, playerId, message.groups);
+      } else if (action === "DRAW") {
+        result = Rummikub.draw(game, playerId);
+      } else if (action === "NEW_GAME") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 새 게임을 시작할 수 있습니다." };
+        else if (game.phase !== "ended") result = { ok: false, error: "게임이 끝난 뒤 새 게임을 시작할 수 있습니다." };
+        else {
+          Rummikub.resetToLobby(game);
+          result = Rummikub.startGame(game);
+        }
+      } else if (action === "RETURN_LOBBY") {
+        result = playerId === room.hostId
+          ? Rummikub.resetToLobby(game)
+          : { ok: false, error: "방장만 대기실로 돌아갈 수 있습니다." };
+      } else {
+        result = { ok: false, error: "알 수 없는 행동입니다." };
+      }
+
+      if (!result.ok) {
+        rummikubError(socket, result.error || "행동을 처리하지 못했습니다.");
+        return;
+      }
+      rummikubBroadcast(room);
+      return;
+    }
+
     if (type === "GAME_MESSAGE") {
       const key = socket.meta.roomKey;
       const room = key ? rooms.get(key) : null;
@@ -703,6 +777,13 @@ wss.on("connection", socket => {
           LoveLetter.resetToLobby(currentRoom.loveletter, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
         }
       }
+      if (currentRoom.rummikub) {
+        const gameWasActive = currentRoom.rummikub.phase !== "lobby";
+        Rummikub.removePlayer(currentRoom.rummikub, playerId);
+        if (gameWasActive) {
+          Rummikub.resetToLobby(currentRoom.rummikub, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
+        }
+      }
       safeSend(currentRoom.clients.get(currentRoom.hostId), {
         type: "PLAYER_LEFT",
         playerId
@@ -710,6 +791,7 @@ wss.on("connection", socket => {
 
       if (currentRoom.avalon) avalonBroadcast(currentRoom);
       if (currentRoom.loveletter) loveLetterBroadcast(currentRoom);
+      if (currentRoom.rummikub) rummikubBroadcast(currentRoom);
 
       if (currentRoom.clients.size === 0) rooms.delete(key);
     };

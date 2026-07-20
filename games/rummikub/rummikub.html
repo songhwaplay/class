@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>루미큐브 · Rummikub</title>
+<link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
+<style>
+:root{font-family:"Malgun Gothic",system-ui,-apple-system,sans-serif;color:#f6f1dd;background:#071b1c;--felt:#0d4a42;--felt2:#07352f;--cream:#fff8e7;--ink:#1e2728;--gold:#f3c965;--line:#d8bd783f;--red:#e2463f;--blue:#2877dc;--black:#20272c;--orange:#e98a24}*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:18px;background:radial-gradient(circle at 15% 0,#1f7566 0,transparent 28%),radial-gradient(circle at 92% 8%,#795b2038 0,transparent 24%),linear-gradient(145deg,#082422,#061817 60%,#020d0d);background-attachment:fixed}button,input{font:inherit}.hidden{display:none!important}.shell{width:min(1480px,100%);margin:auto}.panel{margin-bottom:14px;padding:18px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(145deg,#123b37ed,#082a28ee);box-shadow:inset 0 1px #fff1,0 18px 55px #0006}.eyebrow{color:var(--gold);font-size:11px;font-weight:950;letter-spacing:.19em}.title{margin:2px 0 5px;font-family:Georgia,"Times New Roman",serif;font-size:clamp(45px,8vw,78px);line-height:.94;color:#fff7d6;text-shadow:0 4px 0 #4d3215,0 12px 35px #0009}.subtitle{margin:0;color:#cfe3d9}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.spread{justify-content:space-between}.primary,.secondary,.danger{min-height:43px;padding:9px 16px;border-radius:11px;font-weight:950;cursor:pointer;transition:transform .14s,filter .14s,opacity .14s}.primary{border:1px solid #ffe49b;background:linear-gradient(#f8d779,#bd7e24);color:#2f210c;box-shadow:inset 0 1px #fff8}.secondary{border:1px solid #83ab9e;background:#123d38;color:#f6f3df}.danger{border:1px solid #d98473;background:#592b29;color:#ffe7df}.primary:hover:not(:disabled),.secondary:hover:not(:disabled),.danger:hover:not(:disabled){transform:translateY(-1px);filter:brightness(1.1)}button:disabled{cursor:not-allowed;opacity:.38}.code{color:#ffe095;font:950 30px/1 Consolas,monospace;letter-spacing:.16em}.lobbyHero{position:relative;overflow:hidden}.lobbyHero::after{content:"13";position:absolute;right:5%;top:50%;display:grid;place-items:center;width:84px;aspect-ratio:.72;transform:translateY(-50%) rotate(8deg);border:4px solid #f3e4bd;border-radius:10px;background:#fff9e8;color:var(--red);font:950 38px/1 Georgia;box-shadow:9px 10px 0 #0005,0 0 0 2px #947844}.lobbyCopy{max-width:70%}.lobbyFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:15px 0}.fact{padding:12px;border:1px solid #c5a86045;border-radius:12px;background:#031a1880;text-align:center}.fact strong{display:block;color:#ffe093;font-size:20px}.fact span{color:#bed1c9;font-size:12px}.gameHeader{display:grid;grid-template-columns:auto minmax(240px,1fr) auto;align-items:center;gap:14px}.brandMini{font-family:Georgia,serif;font-size:28px;font-weight:950;color:#ffe6a6}.headerCenter{text-align:center}.statusPill{display:inline-flex;align-items:center;gap:8px;margin-top:6px;padding:7px 12px;border:1px solid #e5c56c55;border-radius:999px;background:#031a18;color:#d8e6df;font-size:13px}.statusDot{width:8px;height:8px;border-radius:50%;background:#f2c65f;box-shadow:0 0 12px #f2c65f}.deckBadge{min-width:84px;padding:9px 12px;border:1px solid #dabc6755;border-radius:13px;background:#061d1b;text-align:center}.deckBadge strong{display:block;color:#ffe298;font-size:26px}.playerBar{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin-bottom:14px}.playerSeat{min-height:74px;padding:11px 12px;border:1px solid #54766b;border-radius:14px;background:#082723;transition:border-color .2s,box-shadow .2s}.playerSeat.active{border-color:#ffd875;box-shadow:0 0 0 2px #ffd87530,0 0 20px #dba73935}.playerSeat.winner{border-color:#fff0a9;background:#674619}.playerTop{display:flex;justify-content:space-between;gap:8px}.playerName{overflow:hidden;font-weight:950;text-overflow:ellipsis;white-space:nowrap}.playerCount{color:#ffe08c;font-size:12px;font-weight:900}.playerMeta{margin-top:7px;color:#a9c4bb;font-size:12px}.boardPanel{padding:13px}.boardTop{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:1px 5px 11px}.turnTitle{font-size:18px;font-weight:950;color:#fff2c3}.turnMessage{color:#bfd3cb;font-size:13px}.board{position:relative;min-height:315px;padding:18px;border:2px solid #98763f;border-radius:26px;background:radial-gradient(ellipse at 50% 20%,#176b5c 0,#0e5248 46%,#07362f 100%);box-shadow:inset 0 0 0 7px #092b28,inset 0 0 55px #001f1a,0 18px 42px #0007}.board::before{content:"TABLE";position:absolute;right:18px;bottom:12px;color:#e6d0921f;font:950 28px/1 Georgia;letter-spacing:.15em;pointer-events:none}.groupGrid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));align-items:start;gap:12px}.tileGroup{position:relative;display:flex;align-items:center;gap:5px;min-height:86px;padding:13px 10px 10px;border:1px dashed #c7e2d674;border-radius:14px;background:#052d2985;cursor:pointer;overflow-x:auto}.tileGroup::before{content:attr(data-label);position:absolute;left:10px;top:2px;color:#a8c6ba;font-size:9px;font-weight:950;letter-spacing:.12em}.tileGroup.valid{border-style:solid;border-color:#8dd29b8c}.tileGroup.invalid{border-color:#f29d888f;background:#4e222265}.emptyBoard{grid-column:1/-1;display:grid;place-items:center;min-height:255px;padding:25px;border:1px dashed #d5c1854f;border-radius:18px;color:#c0d6ce;text-align:center}.emptyBoard strong{display:block;margin-bottom:6px;color:#fff0b9;font-size:20px}.tile{position:relative;flex:0 0 auto;width:45px;height:64px;padding:0;border:3px solid #ecdfbf;border-radius:7px;background:linear-gradient(145deg,#fffdf4,#e9dfc7);color:var(--tile-color);font:950 25px/1 Georgia,"Times New Roman",serif;box-shadow:0 5px 0 #9e8b63,0 8px 12px #0005;cursor:pointer;transition:transform .13s,filter .13s,box-shadow .13s}.tile::after{content:"";position:absolute;left:50%;bottom:7px;width:6px;height:6px;transform:translateX(-50%);border-radius:50%;background:currentColor}.tile:hover:not(:disabled){transform:translateY(-4px)}.tile.selected{transform:translateY(-8px);border-color:#fff2a1;box-shadow:0 0 0 3px #f6d765,0 8px 0 #8b7139,0 12px 20px #0008}.tile.red{--tile-color:var(--red)}.tile.blue{--tile-color:var(--blue)}.tile.black{--tile-color:var(--black)}.tile.orange{--tile-color:var(--orange)}.myPanel{padding:14px 16px 17px}.rackHeader{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:9px}.rackTitle{font-size:18px;font-weight:950;color:#ffe5a0}.draftSummary{color:#b9cdc5;font-size:12px;text-align:right}.rack{display:flex;align-items:end;gap:7px;min-height:93px;padding:15px 16px 18px;border:1px solid #896d3b;border-radius:12px 12px 22px 22px;background:linear-gradient(#5a3f20,#2c1c0e 65%,#160e08);box-shadow:inset 0 5px 10px #0008,0 10px 25px #0005;overflow-x:auto}.rack .tile{width:48px;height:69px}.rackEmpty{margin:auto;color:#d5c79e;font-weight:900}.controls{display:grid;grid-template-columns:1fr auto auto auto auto;align-items:center;gap:8px;margin-top:13px}.helpText{color:#afc7be;font-size:12px;line-height:1.5}.resultPanel{padding:26px;text-align:center}.resultPanel h2{margin:0 0 8px;color:#ffe28d;font-family:Georgia,serif;font-size:38px}.resultActions{display:flex;justify-content:center;gap:9px;flex-wrap:wrap;margin-top:18px}.overlay{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:18px;background:#00100edb;backdrop-filter:blur(5px)}.modal{width:min(760px,100%);max-height:88vh;overflow:auto;padding:24px;border:1px solid #e2c269;border-radius:20px;background:linear-gradient(145deg,#174a43,#092b28);box-shadow:0 30px 90px #000}.modal h2{margin-top:4px;color:#ffe39b}.rulesGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}.rule{padding:13px;border:1px solid #beaa6b45;border-radius:12px;background:#041f1d}.rule strong{display:block;margin-bottom:5px;color:#ffe19a}.example{display:flex;gap:5px;margin-top:10px}.example .tile{width:36px;height:51px;font-size:20px;pointer-events:none}.toast{position:fixed;right:17px;bottom:17px;z-index:60;max-width:min(430px,calc(100vw - 34px));padding:13px 16px;border:1px solid #e4c46e;border-radius:11px;background:#082a27;color:#fff8de;box-shadow:0 14px 40px #000a}@media(max-width:820px){body{padding:10px}.panel{padding:14px}.gameHeader{grid-template-columns:1fr auto}.headerCenter{grid-column:1/-1;grid-row:1}.brandMini{font-size:22px}.playerBar{grid-template-columns:repeat(2,minmax(0,1fr))}.controls{grid-template-columns:repeat(2,minmax(0,1fr))}.helpText{grid-column:1/-1}.controls button{width:100%}.lobbyHero::after{opacity:.5}.lobbyCopy{max-width:80%}}@media(max-width:520px){body{padding:7px}.lobbyFacts{grid-template-columns:1fr}.lobbyHero::after{display:none}.lobbyCopy{max-width:none}.title{font-size:48px}.board{min-height:270px;padding:12px}.groupGrid{grid-template-columns:1fr}.tileGroup{min-height:79px;padding-inline:8px}.tile{width:40px;height:57px;font-size:22px}.rack .tile{width:43px;height:62px}.rulesGrid{grid-template-columns:1fr}.turnMessage{display:none}.playerSeat{min-height:66px;padding:9px}.boardTop{align-items:start}.draftSummary{max-width:52%}}
+.controls{grid-template-columns:1fr repeat(5,auto)}
+@media(max-width:820px){.controls{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+<script src="../../assets/network/game-network.js"></script>
+<script src="../../assets/network/multiplayer-lobby.js"></script>
+</head>
+<body>
+<main class="shell">
+  <section id="missingScreen" class="panel hidden">
+    <div class="eyebrow">PLAYER NAME REQUIRED</div>
+    <h1>이름이 없습니다</h1>
+    <p>이름 변경은 메인 화면에서만 가능합니다.</p>
+    <button class="primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>
+  </section>
+
+  <section id="lobbyScreen" class="hidden" data-multiplayer-lobby>
+    <header class="panel lobbyHero">
+      <div class="lobbyCopy">
+        <div class="eyebrow">THE CLASSIC TILE GAME</div>
+        <h1 class="title">루미큐브</h1>
+        <p class="subtitle">RUMMIKUB · 2–4 PLAYERS</p>
+        <p>PLAYER · <strong id="savedName">-</strong></p>
+        <div class="mp-lobby-tabs">
+          <button id="hostTab" class="primary" type="button">CREATE ROOM</button>
+          <button id="joinTab" class="secondary" type="button">JOIN ROOM</button>
+        </div>
+      </div>
+      <div class="lobbyFacts" aria-label="게임 요약">
+        <div class="fact"><strong>104</strong><span>NUMBER TILES</span></div>
+        <div class="fact"><strong>14</strong><span>STARTING TILES</span></div>
+        <div class="fact"><strong>30+</strong><span>FIRST MELD</span></div>
+      </div>
+    </header>
+
+    <section id="hostPane" class="panel mp-lobby-card hidden">
+      <div class="row spread">
+        <div><div class="eyebrow">ROOM CODE</div><div id="roomCode" class="code">----</div></div>
+        <button id="copyBtn" class="secondary" type="button">COPY CODE</button>
+      </div>
+      <div id="hostStatus" class="mp-lobby-status">방을 만드는 중입니다.</div>
+    </section>
+
+    <section id="joinPane" class="panel mp-lobby-card hidden">
+      <div class="mp-lobby-row">
+        <input id="joinCode" class="mp-lobby-code-input" inputmode="numeric" maxlength="4" placeholder="ROOM CODE · 4 DIGITS">
+        <button id="joinBtn" class="primary" type="button">JOIN ROOM</button>
+      </div>
+      <div id="joinStatus" class="mp-lobby-status">방장이 알려준 번호를 입력하세요.</div>
+    </section>
+
+    <section class="panel">
+      <div class="eyebrow">PLAYERS</div>
+      <div id="lobbyPlayers" class="mp-lobby-players"></div>
+      <p id="lobbyGuide" class="mp-lobby-guide">2~4명이 모이면 시작할 수 있습니다.</p>
+      <button id="startBtn" class="primary" type="button" disabled>WAITING FOR PLAYERS</button>
+      <div class="row" style="margin-top:10px">
+        <button id="rulesBtnLobby" class="secondary" type="button">RULES</button>
+        <button id="leaveBtnLobby" class="secondary" type="button">메인 화면</button>
+      </div>
+    </section>
+  </section>
+
+  <section id="gameScreen" class="hidden">
+    <header class="panel gameHeader">
+      <div><div class="eyebrow">RUMMIKUB</div><div class="brandMini">루미큐브</div></div>
+      <div class="headerCenter">
+        <div class="eyebrow">ROOM <span id="gameRoomCode">----</span></div>
+        <div id="turnStatus" class="statusPill"><span class="statusDot"></span><span>게임 준비 중</span></div>
+      </div>
+      <div class="deckBadge"><span class="eyebrow">POOL</span><strong id="deckCount">0</strong><span>타일</span></div>
+      <div class="row" style="grid-column:1/-1;justify-content:center">
+        <button id="copyBtnGame" class="secondary" type="button">COPY CODE</button>
+        <button id="rulesBtnGame" class="secondary" type="button">RULES</button>
+        <button id="leaveBtnGame" class="secondary" type="button">메인 화면</button>
+      </div>
+    </header>
+
+    <div id="playerBar" class="playerBar"></div>
+
+    <section id="playArea">
+      <section class="panel boardPanel">
+        <div class="boardTop">
+          <div><div id="turnTitle" class="turnTitle">게임을 준비하고 있습니다.</div><div id="turnMessage" class="turnMessage">서버 상태를 기다리는 중입니다.</div></div>
+          <div id="draftSummary" class="draftSummary">보드의 타일을 선택해 이동할 수 있습니다.</div>
+        </div>
+        <div id="board" class="board" aria-label="루미큐브 보드">
+          <div id="groupGrid" class="groupGrid"></div>
+        </div>
+      </section>
+
+      <section class="panel myPanel">
+        <div class="rackHeader"><div><div class="eyebrow">MY TILES</div><div class="rackTitle">내 타일 <span id="handCount">0</span>개</div></div><div id="selectionText" class="draftSummary">타일을 선택하세요.</div></div>
+        <div id="rack" class="rack" aria-label="내 타일 받침대"></div>
+        <div class="controls">
+          <div id="helpText" class="helpText">타일을 누른 뒤 조합 칸을 눌러 이동하세요.</div>
+          <button id="newGroupBtn" class="secondary" type="button">새 조합</button>
+          <button id="returnBtn" class="secondary" type="button">내 패로</button>
+          <button id="resetBtn" class="secondary" type="button">배치 초기화</button>
+          <button id="drawBtn" class="secondary" type="button">1개 뽑기</button>
+          <button id="playBtn" class="primary" type="button">배치 확정</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="resultPanel" class="panel resultPanel hidden">
+      <div class="eyebrow">GAME COMPLETE</div>
+      <h2 id="resultTitle">승리!</h2>
+      <p id="resultMessage"></p>
+      <div id="resultActions" class="resultActions"></div>
+    </section>
+  </section>
+</main>
+
+<section id="rulesOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="eyebrow">HOW TO PLAY</div>
+    <h2>루미큐브 규칙</h2>
+    <div class="rulesGrid">
+      <article class="rule"><strong>그룹 만들기</strong><span>같은 숫자, 서로 다른 색의 타일을 3~4개 모읍니다.</span><div class="example"><span class="tile red">8</span><span class="tile blue">8</span><span class="tile black">8</span></div></article>
+      <article class="rule"><strong>연속 숫자 만들기</strong><span>같은 색의 연속된 숫자를 3개 이상 이어 놓습니다.</span><div class="example"><span class="tile orange">4</span><span class="tile orange">5</span><span class="tile orange">6</span></div></article>
+      <article class="rule"><strong>최초 등록 30점</strong><span>처음 내려놓을 때는 내 타일만 사용해 숫자 합계 30점 이상을 만들어야 합니다.</span></article>
+      <article class="rule"><strong>보드 재배치</strong><span>최초 등록을 마친 뒤에는 보드 전체를 재배치할 수 있습니다. 단, 확정할 때 모든 조합이 완성되어야 합니다.</span></article>
+      <article class="rule"><strong>타일 뽑기</strong><span>낼 수 없거나 내고 싶지 않다면 타일 한 개를 뽑고 차례를 마칩니다.</span></article>
+      <article class="rule"><strong>승리</strong><span>내 타일을 가장 먼저 모두 내려놓는 사람이 승리합니다.</span></article>
+    </div>
+    <p>타일을 선택한 뒤 원하는 조합을 누르세요. 잘못 옮겼다면 <strong>배치 초기화</strong>로 이번 차례 시작 상태를 복원할 수 있습니다.</p>
+    <button id="closeRulesBtn" class="primary" type="button">CLOSE</button>
+  </div>
+</section>
+
+<section id="abortOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+  <div class="modal"><h2 id="abortTitle">게임 중단</h2><p id="abortMessage"></p><button id="reloadBtn" class="primary" type="button">처음부터</button></div>
+</section>
+
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+<audio id="bgm" src="../../assets/sound/rummikub.mp3" loop preload="auto"></audio>
+<script src="../../assets/sound/music-control.js" defer></script>
+<script>
+"use strict";
+
+const GAME_ID="rummikub";
+const NAME_KEY="classPlayerName";
+const SERVER_MESSAGE=Object.freeze({STATE:"RUMMIKUB_STATE",ERROR:"RUMMIKUB_ERROR"});
+const $=id=>document.getElementById(id);
+
+let lobby=null;
+let gameState=null;
+let draftGroups=[];
+let selectedTileId=null;
+let actionPending=false;
+let lastRevision=-1;
+let toastTimer=null;
+const savedName=String(localStorage.getItem(NAME_KEY)||"").trim();
+
+function showToast(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.remove("hidden");toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),2500)}
+function showRules(){$("rulesOverlay").classList.remove("hidden")}
+function hideRules(){$("rulesOverlay").classList.add("hidden")}
+function showGame(){$("lobbyScreen").classList.add("hidden");$("gameScreen").classList.remove("hidden")}
+function showLobby(){$("gameScreen").classList.add("hidden");$("lobbyScreen").classList.remove("hidden")}
+function myId(){return lobby?.snapshot().myId||""}
+function myPlayer(){return gameState?.players.find(player=>player.id===myId())||null}
+function playerById(id){return gameState?.players.find(player=>player.id===id)||null}
+function isMyTurn(){return gameState?.phase==="playing"&&gameState.turnPlayerId===myId()}
+function baseHandIds(){return new Set((gameState?.hand||[]).map(tile=>tile.id))}
+function allTiles(){return [...(gameState?.hand||[]),...(gameState?.board||[]).flat()]}
+function tileById(id){return allTiles().find(tile=>tile.id===id)||null}
+function html(value){return String(value).replace(/[&<>"']/g,char=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[char]))}
+
+function tileButton(tile, location){
+  const button=document.createElement("button");
+  button.type="button";
+  button.className=`tile ${tile.color}${selectedTileId===tile.id?" selected":""}`;
+  button.textContent=String(tile.number);
+  button.dataset.tileId=tile.id;
+  button.setAttribute("aria-label",`${tile.color} ${tile.number} 타일 · ${location}`);
+  button.disabled=!isMyTurn()||actionPending;
+  button.addEventListener("click",event=>{event.stopPropagation();selectTile(tile.id)});
+  return button;
+}
+
+function clientGroupType(groupIds){
+  const tiles=groupIds.map(tileById).filter(Boolean);
+  if(tiles.length<3)return null;
+  const colors=new Set(tiles.map(tile=>tile.color));
+  const numbers=tiles.map(tile=>tile.number);
+  const uniqueNumbers=new Set(numbers);
+  if(tiles.length<=4&&uniqueNumbers.size===1&&colors.size===tiles.length)return "set";
+  if(colors.size!==1||uniqueNumbers.size!==tiles.length)return null;
+  const sorted=[...numbers].sort((a,b)=>a-b);
+  return sorted.every((number,index)=>index===0||number===sorted[index-1]+1)?"run":null;
+}
+
+function selectTile(tileId){
+  if(!isMyTurn()||actionPending)return;
+  selectedTileId=selectedTileId===tileId?null:tileId;
+  renderDraft();
+}
+
+function removeFromGroups(tileId){draftGroups=draftGroups.map(group=>group.filter(id=>id!==tileId)).filter(group=>group.length)}
+function moveSelectedToGroup(index){
+  if(!selectedTileId||!isMyTurn())return;
+  const tileId=selectedTileId;
+  removeFromGroups(tileId);
+  while(draftGroups.length<=index)draftGroups.push([]);
+  draftGroups[index].push(tileId);
+  selectedTileId=null;
+  renderDraft();
+}
+
+function addNewGroup(){
+  if(!selectedTileId){showToast("먼저 이동할 타일을 선택하세요.");return}
+  const tileId=selectedTileId;
+  removeFromGroups(tileId);
+  draftGroups.push([tileId]);
+  selectedTileId=null;
+  renderDraft();
+}
+
+function returnToRack(){
+  if(!selectedTileId){showToast("내 패로 되돌릴 타일을 선택하세요.");return}
+  if(!baseHandIds().has(selectedTileId)){showToast("원래 보드에 있던 타일은 내 패로 가져올 수 없습니다.");return}
+  removeFromGroups(selectedTileId);
+  selectedTileId=null;
+  renderDraft();
+}
+
+function resetDraft(){draftGroups=(gameState?.board||[]).map(group=>group.map(tile=>tile.id));selectedTileId=null;renderDraft()}
+function playedIds(){const hand=baseHandIds();return draftGroups.flat().filter(id=>hand.has(id))}
+function openingScore(){return playedIds().reduce((sum,id)=>sum+(tileById(id)?.number||0),0)}
+function draftChanged(){
+  const original=(gameState?.board||[]).map(group=>group.map(tile=>tile.id));
+  const cleaned=draftGroups.filter(group=>group.length);
+  return JSON.stringify(original)!==JSON.stringify(cleaned);
+}
+function openingBoardPreserved(){
+  const original=(gameState?.board||[]).map(group=>group.map(tile=>tile.id));
+  if(draftGroups.length<original.length)return false;
+  return original.every((group,index)=>JSON.stringify(group)===JSON.stringify(draftGroups[index]));
+}
+
+function renderPlayers(){
+  const fragment=document.createDocumentFragment();
+  for(const player of gameState.players){
+    const seat=document.createElement("article");
+    seat.className=`playerSeat${player.id===gameState.turnPlayerId&&gameState.phase==="playing"?" active":""}${player.id===gameState.winnerId?" winner":""}`;
+    seat.innerHTML=`<div class="playerTop"><span class="playerName">${html(player.name)}${player.id===myId()?" · 나":""}</span><span class="playerCount">${player.tileCount}개</span></div><div class="playerMeta">${player.opened?"최초 등록 완료":"최초 등록 전"}</div>`;
+    fragment.appendChild(seat);
+  }
+  $("playerBar").replaceChildren(fragment);
+}
+
+function renderBoard(){
+  const grid=$("groupGrid");
+  const fragment=document.createDocumentFragment();
+  if(!draftGroups.length){
+    const empty=document.createElement("div");empty.className="emptyBoard";empty.innerHTML="<div><strong>아직 등록된 조합이 없습니다.</strong><span>내 차례에 타일을 선택하고 이곳을 누르거나 ‘새 조합’을 눌러 시작하세요.</span></div>";empty.addEventListener("click",addNewGroup);fragment.appendChild(empty);
+  }
+  draftGroups.forEach((group,index)=>{
+    const type=clientGroupType(group);
+    const box=document.createElement("div");
+    box.className=`tileGroup ${type?"valid":"invalid"}`;
+    box.dataset.label=type==="run"?"RUN · 연속":type==="set"?"GROUP · 같은 숫자":`조합 ${index+1} · 미완성`;
+    box.addEventListener("click",()=>moveSelectedToGroup(index));
+    group.forEach(id=>{const tile=tileById(id);if(tile)box.appendChild(tileButton(tile,`보드 조합 ${index+1}`))});
+    fragment.appendChild(box);
+  });
+  grid.replaceChildren(fragment);
+}
+
+function renderRack(){
+  const used=new Set(draftGroups.flat());
+  const remaining=(gameState.hand||[]).filter(tile=>!used.has(tile.id));
+  const fragment=document.createDocumentFragment();
+  if(!remaining.length){const empty=document.createElement("span");empty.className="rackEmpty";empty.textContent="모든 타일을 보드에 올렸습니다.";fragment.appendChild(empty)}
+  remaining.forEach(tile=>fragment.appendChild(tileButton(tile,"내 패")));
+  $("rack").replaceChildren(fragment);
+  $("handCount").textContent=String(gameState.hand.length);
+}
+
+function renderControls(){
+  const mine=myPlayer();
+  const myTurn=isMyTurn();
+  const groups=draftGroups.filter(group=>group.length);
+  const valid=groups.every(group=>Boolean(clientGroupType(group)));
+  const count=playedIds().length;
+  const score=openingScore();
+  const openingOk=mine?.opened||(score>=30&&openingBoardPreserved());
+  const canSubmit=myTurn&&!actionPending&&count>0&&valid&&openingOk;
+  const changed=draftChanged();
+  $("newGroupBtn").disabled=!myTurn||actionPending||!selectedTileId;
+  $("returnBtn").disabled=!myTurn||actionPending||!selectedTileId;
+  $("resetBtn").disabled=!myTurn||actionPending||!changed;
+  $("drawBtn").disabled=!myTurn||actionPending||changed;
+  $("playBtn").disabled=!canSubmit;
+  $("playBtn").textContent=actionPending?"판정 중...":"배치 확정";
+  $("drawBtn").textContent=gameState.deckCount?"1개 뽑기":"차례 넘기기";
+  $("selectionText").textContent=selectedTileId?`${tileById(selectedTileId)?.number||""} 타일 선택됨 · 이동할 곳을 누르세요.`:"타일을 선택하세요.";
+  if(!myTurn)$("helpText").textContent="다른 플레이어의 차례입니다. 보드 변화를 지켜보세요.";
+  else if(!mine?.opened)$("helpText").textContent=`최초 등록 ${score}/30점 · 기존 보드는 그대로 두고 내 타일만 등록하세요.`;
+  else $("helpText").textContent=`내 타일 ${count}개 사용 중 · 모든 조합을 완성한 뒤 확정하세요.`;
+  $("draftSummary").textContent=count?`이번 배치 · 내 타일 ${count}개${mine?.opened?"":` · ${score}점`}`:"보드의 타일을 선택해 이동할 수 있습니다.";
+}
+
+function renderDraft(){if(!gameState||gameState.phase!=="playing")return;renderBoard();renderRack();renderControls()}
+
+function renderResult(){
+  const ended=gameState.phase==="ended";
+  $("playArea").classList.toggle("hidden",ended);
+  $("resultPanel").classList.toggle("hidden",!ended);
+  if(!ended)return;
+  const winner=playerById(gameState.winnerId);
+  $("resultTitle").textContent=winner?.id===myId()?"내가 승리했습니다!":`${winner?.name||"플레이어"}님 승리!`;
+  $("resultMessage").textContent=gameState.lastAction;
+  const actions=document.createDocumentFragment();
+  if(lobby.snapshot().role==="host"){
+    const again=document.createElement("button");again.type="button";again.className="primary";again.textContent="NEW GAME";again.addEventListener("click",()=>sendHostAction("NEW_GAME"));
+    const back=document.createElement("button");back.type="button";back.className="secondary";back.textContent="RETURN TO LOBBY";back.addEventListener("click",()=>sendHostAction("RETURN_LOBBY"));actions.append(again,back);
+  }else{const wait=document.createElement("span");wait.textContent="방장이 다음 진행을 선택하는 중입니다.";actions.appendChild(wait)}
+  $("resultActions").replaceChildren(actions);
+}
+
+function renderGame(){
+  if(!gameState||gameState.phase==="lobby")return;
+  showGame();
+  $("deckCount").textContent=String(gameState.deckCount);
+  renderPlayers();
+  const active=playerById(gameState.turnPlayerId);
+  const status=gameState.phase==="ended"?"게임 종료":isMyTurn()?"내 차례":`${active?.name||"플레이어"}님의 차례`;
+  $("turnStatus").lastElementChild.textContent=status;
+  $("turnTitle").textContent=isMyTurn()?"내 차례입니다.":`${active?.name||"다른 플레이어"}님의 차례입니다.`;
+  $("turnMessage").textContent=gameState.lastAction;
+  renderDraft();
+  renderResult();
+}
+
+function installState(state){
+  gameState=state;
+  actionPending=false;
+  if(state.revision!==lastRevision){lastRevision=state.revision;draftGroups=(state.board||[]).map(group=>group.map(tile=>tile.id));selectedTileId=null}
+  if(state.phase==="lobby"){
+    if(lobby.snapshot().started){showLobby();lobby.returnToLobby();showToast(state.lastAction||"대기실로 돌아왔습니다.")}
+    return;
+  }
+  renderGame();
+}
+
+function submitPlay(){
+  if($("playBtn").disabled||actionPending)return;
+  actionPending=true;renderControls();
+  const groups=draftGroups.filter(group=>group.length);
+  if(!lobby.sendServer({type:"RUMMIKUB_ACTION",action:"PLAY",groups})){actionPending=false;renderControls();showToast("서버에 배치를 보내지 못했습니다.")}
+}
+
+function drawTile(){
+  if($("drawBtn").disabled||actionPending)return;
+  actionPending=true;renderControls();
+  if(!lobby.sendServer({type:"RUMMIKUB_ACTION",action:"DRAW"})){actionPending=false;renderControls();showToast("서버에 행동을 보내지 못했습니다.")}
+}
+
+function handleServerMessage(message){
+  if(message.type===SERVER_MESSAGE.STATE&&message.state){installState(message.state);return}
+  if(message.type===SERVER_MESSAGE.ERROR){actionPending=false;renderControls();showToast(message.message||"행동을 처리하지 못했습니다.")}
+}
+
+function sendHostAction(action){if(lobby.snapshot().role==="host")lobby.sendServer({type:"RUMMIKUB_ACTION",action})}
+function syncLobby(snapshot){$("gameRoomCode").textContent=snapshot.roomCode||"----"}
+function showAbort({title,message}){$("abortTitle").textContent=title;$("abortMessage").textContent=message;$("abortOverlay").classList.remove("hidden")}
+
+function init(){
+  lobby=ClassroomMultiplayerLobby.create({
+    gameId:GAME_ID,
+    getPlayerName:()=>/^[가-힣]{2,6}$/.test(savedName)?savedName:"",
+    allowedPlayerCounts:[2,3,4],
+    maxPlayers:4,
+    rulesButtonIds:["rulesBtnLobby","rulesBtnGame"],
+    leaveButtonIds:["leaveBtnLobby","leaveBtnGame"],
+    onRules:showRules,
+    onLeave:()=>location.href="../../index.html",
+    onNotice:showToast,
+    onInvalidStart:()=>showToast("2~4명이 모여야 시작할 수 있습니다."),
+    onStateChange:syncLobby,
+    getLobbyPresentation:({count,role,canStart})=>({canStart,startText:role==="host"&&canStart?`START GAME · ${count} PLAYERS`:"WAITING FOR PLAYERS",guideText:role==="host"?`현재 ${count}명 · 2~4명일 때 시작 가능`:"방장이 게임을 시작할 때까지 기다리세요."}),
+    createStartData:()=>({serverAuthoritative:true}),
+    onStarted:()=>{showGame();if(lobby.snapshot().role==="host")sendHostAction("START")},
+    onServerMessage:handleServerMessage,
+    onPlayerLeftDuringGame:()=>showToast("플레이어가 나가 대기실로 돌아갑니다."),
+    onAbort:showAbort
+  }).mount();
+
+  $("newGroupBtn").addEventListener("click",addNewGroup);
+  $("returnBtn").addEventListener("click",returnToRack);
+  $("resetBtn").addEventListener("click",resetDraft);
+  $("drawBtn").addEventListener("click",drawTile);
+  $("playBtn").addEventListener("click",submitPlay);
+  $("copyBtnGame").addEventListener("click",()=>lobby.copyRoomCode());
+  $("closeRulesBtn").addEventListener("click",hideRules);
+  $("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});
+  $("reloadBtn").addEventListener("click",()=>location.reload());
+}
+
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>
