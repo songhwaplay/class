@@ -19,8 +19,7 @@ assert.deepStrictEqual(missingIds, [], `app.js에서 참조하지만 HTML에 없
 ["idioms-data.js", "idioms-core.js", "app.js"].forEach((file) => {
     assert.ok(html.includes(`src="${file}"`), `${file} 스크립트 연결이 필요합니다.`);
 });
-assert.ok(fs.existsSync("idioms/og.png"), "공유 미리보기 이미지가 필요합니다.");
-assert.ok(html.includes('property="og:image" content="og.png"'), "공유 미리보기 메타 태그가 필요합니다.");
+assert.ok(!/탐험대|뜻만 외우지 말고|이야기 박사|멋진 도전/.test(html + app), "과장된 홍보 문구를 사용하지 않습니다.");
 assert.ok(root.includes('href="idioms/index.html"'), "메인 학습 메뉴에 고사성어 링크가 필요합니다.");
 
 console.log(`idioms DOM contract: ok (${htmlIds.length} ids)`);

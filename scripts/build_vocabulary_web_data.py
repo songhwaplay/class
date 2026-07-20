@@ -54,8 +54,14 @@ def main() -> None:
         "complete": all(word["word"] and word["pos"] and word["meanings"] for word in words),
         "unique": len({word["word"].casefold() for word in words}) == len(words),
         "learning": not enrichment_payload or all(
-            word.get("example", {}).get("en")
-            and word.get("example", {}).get("ko")
+            (
+                word.get("example") is None
+                or (
+                    word["example"].get("en")
+                    and word["example"].get("ko")
+                    and word["example"].get("source") != "generated_learning_prompt"
+                )
+            )
             and isinstance(word.get("relatedWords"), list)
             for word in words
         ),

@@ -152,8 +152,9 @@
         elements.wordText.textContent = word.word;
         elements.posText.textContent = word.pos.join(" · ");
         elements.meaningText.textContent = word.meanings.join(" · ");
-        elements.exampleLabel.textContent = word.example?.source === "generated_learning_prompt" ? "학습 문장" : "Example";
-        elements.exampleText.textContent = word.example?.en || "예문을 준비하고 있어요.";
+        elements.exampleBlock.hidden = !word.example;
+        elements.exampleLabel.textContent = "Example";
+        elements.exampleText.textContent = word.example?.en || "";
         elements.exampleKo.textContent = word.example?.ko || "";
         const related = word.relatedWords || [
             ...word.alternate.map((relatedWord) => ({ word: relatedWord, type: "다른 표기" })),
@@ -268,7 +269,14 @@
             if (!response.ok) throw new Error(`Vocabulary data request failed: ${response.status}`);
             state.data = await response.json();
             if (state.data.totalWords !== 3000 || !Array.isArray(state.data.words)) throw new Error("Invalid vocabulary data");
-            if (!state.data.words.every((word) => word.example?.en && word.example?.ko && Array.isArray(word.relatedWords))) {
+            if (!state.data.words.every((word) => (
+                (word.example === null || (
+                    word.example?.en
+                    && word.example?.ko
+                    && word.example?.source !== "generated_learning_prompt"
+                ))
+                && Array.isArray(word.relatedWords)
+            ))) {
                 throw new Error("Vocabulary learning data is incomplete");
             }
             state.levels = core.groupByLevel(state.data.words);

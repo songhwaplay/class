@@ -3,8 +3,8 @@
 
 The script prefers bilingual examples from Korean Wiktionary. When no Korean
 translation is available, it uses a natural Open English WordNet example and a
-Korean meaning hint. A small, deterministic learning prompt is the final
-fallback so every word remains usable offline.
+Korean meaning hint. Words without a sourced usage example are left blank for
+later review instead of receiving a synthetic placeholder.
 """
 
 from __future__ import annotations
@@ -68,6 +68,30 @@ def sense_key_word(value: str) -> str:
 
 def target_pattern(word: str) -> re.Pattern[str]:
     return re.compile(rf"(?<![A-Za-z]){re.escape(word)}(?![A-Za-z])", re.IGNORECASE)
+
+
+def regular_word_forms(word: str) -> set[str]:
+    forms = {word}
+    if not re.fullmatch(r"[A-Za-z]+", word):
+        return forms
+    lower = word.lower()
+    if lower.endswith("y") and len(lower) > 1 and lower[-2] not in "aeiou":
+        forms.update({lower[:-1] + "ies", lower[:-1] + "ied", lower + "ing"})
+    elif lower.endswith("e") and not lower.endswith("ee"):
+        forms.update({lower + "s", lower + "d", lower[:-1] + "ing"})
+    else:
+        forms.update({lower + "s", lower + "ed", lower + "ing"})
+        if re.search(r"[^aeiou][aeiou][^aeiouwxy]$", lower):
+            forms.update({lower + lower[-1] + "ed", lower + lower[-1] + "ing"})
+    if lower.endswith(("s", "x", "z", "ch", "sh", "o")):
+        forms.add(lower + "es")
+    return forms
+
+
+def contains_word_form(english: str, word: str, explicit_forms: list[str]) -> bool:
+    forms = regular_word_forms(word)
+    forms.update(clean_text(form) for form in explicit_forms)
+    return any(target_pattern(form).search(english) for form in forms if form)
 
 
 def split_bilingual_example(text: object, translation: object = "") -> tuple[str, str] | None:
@@ -204,9 +228,10 @@ def load_kowiktionary(
 def parse_wordnet_entries(
     yaml_dir: Path,
     targets: set[str],
-) -> tuple[dict[str, list[str]], dict[str, list[tuple[str, str]]]]:
+) -> tuple[dict[str, list[str]], dict[str, list[tuple[str, str]]], dict[str, list[str]]]:
     synsets: dict[str, list[str]] = defaultdict(list)
     relations: dict[str, list[tuple[str, str]]] = defaultdict(list)
+    forms: dict[str, list[str]] = defaultdict(list)
 
     for path in sorted(yaml_dir.glob("entries-*.yaml")):
         current_word = ""
@@ -228,7 +253,7 @@ def parse_wordnet_entries(
                         synsets[current_word].append(synset)
                     continue
                 stripped = line.strip()
-                if stripped in {"antonym:", "derivation:", "also:"}:
+                if stripped in {"antonym:", "derivation:", "also:", "form:"}:
                     current_relation = stripped[:-1]
                     continue
                 if re.match(r"^[A-Za-z_]+:", stripped):
@@ -237,6 +262,11 @@ def parse_wordnet_entries(
                 if current_relation:
                     relation_match = RELATION_ITEM_RE.match(line)
                     if relation_match:
+                        if current_relation == "form":
+                            form = clean_text(yaml_key(relation_match.group(1)))
+                            if form and form not in forms[current_word]:
+                                forms[current_word].append(form)
+                            continue
                         related_word = sense_key_word(relation_match.group(1))
                         relation_type = {
                             "antonym": "반의어",
@@ -246,7 +276,7 @@ def parse_wordnet_entries(
                         if related_word:
                             relations[current_word].append((related_word, relation_type))
 
-    return synsets, relations
+    return synsets, relations, forms
 
 
 def parse_wordnet_synsets(
@@ -300,30 +330,6 @@ def parse_wordnet_synsets(
     return examples, members
 
 
-def learning_fallback(word: str, primary_pos: str, meaning: str, level: int) -> dict:
-    if primary_pos == "verb":
-        english = f'The verb "{word}" is useful in this sentence.'
-        korean = f"이 문장에서 '{word}'의 뜻은 '{meaning}'예요."
-    elif primary_pos == "adjective":
-        english = f'The word "{word}" describes the situation.'
-        korean = f"'{word}'는 상황을 설명하며, 뜻은 '{meaning}'예요."
-    elif primary_pos == "adverb":
-        english = f'The speaker uses "{word}" to add detail.'
-        korean = f"말하는 사람은 '{word}'를 사용해 '{meaning}'라는 의미를 더해요."
-    elif level <= 4:
-        english = f'We learned the word "{word}" today.'
-        korean = f"오늘 배울 단어는 '{word}'이고, 뜻은 '{meaning}'예요."
-    else:
-        english = f'The context helps us understand the word "{word}".'
-        korean = f"문맥을 통해 확인할 '{word}'의 뜻은 '{meaning}'예요."
-    return {
-        "en": english,
-        "ko": korean,
-        "source": "generated_learning_prompt",
-        "translationType": "meaning_hint",
-    }
-
-
 def dedupe_relations(word: str, candidates: list[tuple[str, str]], limit: int = 4) -> list[dict]:
     type_priority = {"반의어": 0, "파생어": 1, "유의어": 2, "관련어": 3, "변화형": 4, "다른 표기": 5}
     best: dict[str, tuple[str, str]] = {}
@@ -350,6 +356,7 @@ def main() -> None:
     parser.add_argument("kowiktionary_source", type=Path)
     parser.add_argument("wordnet_yaml_dir", type=Path)
     parser.add_argument("destination", type=Path)
+    parser.add_argument("--overrides", type=Path)
     parser.add_argument("--report", type=Path)
     args = parser.parse_args()
 
@@ -357,9 +364,17 @@ def main() -> None:
     words = service["words"]
     words_by_key = {item["word"].casefold(): item for item in words}
     targets = set(words_by_key)
+    overrides = (
+        {
+            key.casefold(): value
+            for key, value in json.loads(args.overrides.read_text(encoding="utf-8")).items()
+        }
+        if args.overrides
+        else {}
+    )
 
     wiki_examples, wiki_relations = load_kowiktionary(args.kowiktionary_source, words_by_key)
-    word_synsets, wordnet_relations = parse_wordnet_entries(args.wordnet_yaml_dir, targets)
+    word_synsets, wordnet_relations, word_forms = parse_wordnet_entries(args.wordnet_yaml_dir, targets)
     wanted_synsets = {synset for values in word_synsets.values() for synset in values}
     synset_examples, synset_members = parse_wordnet_synsets(args.wordnet_yaml_dir, wanted_synsets)
 
@@ -375,10 +390,17 @@ def main() -> None:
         level = int(item["level"]["global"])
         meaning = compact_meaning(item["lexical"]["meanings_ko"][0])
         pos_codes = [entry["code"] for entry in item["lexical"]["parts_of_speech"]]
-        primary_pos = POS_MAP.get(pos_codes[0], pos_codes[0]) if pos_codes else "word"
-
+        override = overrides.get(key)
         candidates = wiki_examples.get(key, [])
-        if candidates:
+        if override:
+            selected = {
+                "en": clean_text(override["en"]),
+                "ko": clean_text(override["ko"]),
+                "source": "curated_override",
+                "translationType": "translation",
+            }
+            selected_synset = ""
+        elif candidates:
             selected = min(
                 candidates,
                 key=lambda candidate: example_score(
@@ -399,7 +421,7 @@ def main() -> None:
                 (example, synset, synset_rank)
                 for synset_rank, synset in enumerate(word_synsets.get(key, []))
                 for example in synset_examples.get(synset, [])
-                if LATIN_RE.search(example) and target_pattern(word).search(example)
+                if LATIN_RE.search(example) and contains_word_form(example, word, word_forms.get(key, []))
             ]
             if wordnet_candidates:
                 primary_suffixes = POS_SYNSET_SUFFIXES.get(pos_codes[0], set()) if pos_codes else set()
@@ -431,7 +453,7 @@ def main() -> None:
                 }
             else:
                 selected_synset = ""
-                selected = learning_fallback(word, primary_pos, meaning, level)
+                selected = None
 
         relation_candidates: list[tuple[str, str]] = []
         relation_candidates.extend((value, "다른 표기") for value in item["spellings"]["alternate"])
@@ -442,22 +464,40 @@ def main() -> None:
         for synset in related_synsets:
             relation_candidates.extend((member, "유의어") for member in synset_members.get(synset, []))
         related_words = dedupe_relations(word, relation_candidates)
+        if override and "relatedWords" in override:
+            related_words = dedupe_relations(
+                word,
+                [
+                    (related["word"], related["type"])
+                    for related in override["relatedWords"]
+                ],
+            )
 
         enrichment[str(item["id"])] = {
             "example": selected,
             "relatedWords": related_words,
         }
-        source_counts[selected["source"]] += 1
-        translation_counts[selected["translationType"]] += 1
+        if selected:
+            source_counts[selected["source"]] += 1
+            translation_counts[selected["translationType"]] += 1
         relation_counts.update(related["type"] for related in related_words)
         if related_words:
             relation_word_count += 1
 
     checks = {
         "total": len(enrichment) == 3000,
-        "all_examples": all(value["example"]["en"] for value in enrichment.values()),
-        "all_korean_support": all(value["example"]["ko"] for value in enrichment.values()),
-        "example_length": all(len(value["example"]["en"]) <= 320 for value in enrichment.values()),
+        "no_synthetic_examples": all(
+            not value["example"] or value["example"]["source"] != "generated_learning_prompt"
+            for value in enrichment.values()
+        ),
+        "all_sourced_examples_complete": all(
+            not value["example"] or (value["example"]["en"] and value["example"]["ko"])
+            for value in enrichment.values()
+        ),
+        "example_length": all(
+            not value["example"] or len(value["example"]["en"]) <= 320
+            for value in enrichment.values()
+        ),
         "relation_limit": all(len(value["relatedWords"]) <= 4 for value in enrichment.values()),
     }
     if not all(checks.values()):
@@ -468,7 +508,7 @@ def main() -> None:
         "sources": {
             "kowiktionary": "Korean Wiktionary / Kaikki extract (CC BY-SA)",
             "open_english_wordnet": "Open English WordNet",
-            "generated_learning_prompt": "Deterministic fallback learning prompt",
+            "curated_override": "Manually reviewed learning examples",
         },
         "words": enrichment,
     }
@@ -478,6 +518,8 @@ def main() -> None:
     report = {
         "checks": checks,
         "total": len(enrichment),
+        "words_with_sourced_examples": sum(1 for value in enrichment.values() if value["example"]),
+        "words_needing_example_review": sum(1 for value in enrichment.values() if not value["example"]),
         "example_source_counts": dict(source_counts),
         "translation_type_counts": dict(translation_counts),
         "words_with_related_words": relation_word_count,

@@ -45,7 +45,7 @@
         cardPosition: byId("cardPosition"), cardProgress: byId("cardProgress"), idiomCard: byId("idiomCard"),
         themeBadge: byId("themeBadge"), verificationBadge: byId("verificationBadge"),
         idiomHanja: byId("idiomHanja"), idiomWord: byId("idiomWord"), cardDetails: byId("cardDetails"),
-        idiomMeaning: byId("idiomMeaning"), idiomStory: byId("idiomStory"), idiomLesson: byId("idiomLesson"),
+        idiomMeaning: byId("idiomMeaning"), idiomStory: byId("idiomStory"),
         idiomSource: byId("idiomSource"), sourceNote: byId("sourceNote"), sourceLink: byId("sourceLink"),
         previousCard: byId("previousCard"), nextCard: byId("nextCard"), revealCard: byId("revealCard"),
         memoryActions: byId("memoryActions"), markReview: byId("markReview"), markKnown: byId("markKnown"),
@@ -172,7 +172,6 @@
         elements.idiomWord.textContent = idiom.word;
         elements.idiomMeaning.textContent = idiom.meaning;
         elements.idiomStory.textContent = idiom.story;
-        elements.idiomLesson.textContent = idiom.lesson;
         elements.idiomSource.textContent = idiom.source;
         elements.sourceNote.textContent = idiom.sourceNote;
         elements.sourceLink.href = idiom.reference;
@@ -196,7 +195,7 @@
         progress[idiom.id] = { status, updatedAt: new Date().toISOString() };
         saveProgress();
         renderSummary();
-        showToast(status === "known" ? `‘${idiom.word}’ 암기 완료!` : `‘${idiom.word}’을 복습 목록에 담았어요.`);
+        showToast(`${idiom.word}: ${status === "known" ? "암기 완료" : "복습 필요"}`);
 
         if (reviewOnly && status === "known") {
             buildDeck();
@@ -244,7 +243,7 @@
         elements.quizStreak.textContent = quizStreak;
         elements.quizScore.textContent = quizScore;
         elements.quizBar.style.width = `${(quizIndex / quiz.length) * 100}%`;
-        elements.questionType.textContent = question.type === "story" ? "유래를 보고 맞혀요" : "뜻을 보고 맞혀요";
+        elements.questionType.textContent = question.type === "story" ? "유래 문제" : "뜻 문제";
         elements.questionPrompt.textContent = question.prompt;
         elements.answerFeedback.hidden = true;
         elements.answerFeedback.classList.remove("wrong");
@@ -287,10 +286,8 @@
             if (button.dataset.answerId === question.answerId) button.classList.add("correct");
             else if (button.dataset.answerId === answerId) button.classList.add("wrong");
         });
-        elements.feedbackTitle.textContent = correct ? "정답이에요!" : `정답은 ${question.answerLabel}`;
-        elements.feedbackCopy.textContent = correct
-            ? answerIdiom.lesson
-            : `${answerIdiom.meaning} · ${question.source}`;
+        elements.feedbackTitle.textContent = correct ? "정답" : `오답 · 정답: ${question.answerLabel}`;
+        elements.feedbackCopy.textContent = `${answerIdiom.meaning} · ${question.source}`;
         elements.answerFeedback.classList.toggle("wrong", !correct);
         elements.answerFeedback.hidden = false;
         elements.nextQuestion.textContent = quizIndex === quiz.length - 1 ? "결과 보기 →" : "다음 문제 →";
@@ -312,19 +309,10 @@
         renderBestScore();
         elements.resultScore.textContent = `${quizScore} / ${quiz.length}`;
 
-        if (quizScore === quiz.length) {
-            elements.resultTitle.textContent = "이야기 박사 탄생!";
-            elements.resultMessage.textContent = "모든 문제를 맞혔어요. 뜻과 유래가 단단히 연결되었습니다.";
-        } else if (quizScore >= 7) {
-            elements.resultTitle.textContent = "기억이 아주 탄탄해요!";
-            elements.resultMessage.textContent = "틀린 성어의 이야기만 한 번 더 읽으면 완벽하겠어요.";
-        } else if (quizScore >= 4) {
-            elements.resultTitle.textContent = "좋은 출발이에요!";
-            elements.resultMessage.textContent = "유래 속 장면을 떠올리며 복습하면 더 오래 기억할 수 있어요.";
-        } else {
-            elements.resultTitle.textContent = "이제 이야기가 시작됐어요!";
-            elements.resultMessage.textContent = "점수보다 중요한 건 다시 만나는 횟수예요. 틀린 카드부터 천천히 복습해요.";
-        }
+        elements.resultTitle.textContent = "퀴즈 결과";
+        elements.resultMessage.textContent = quizMistakes.length
+            ? `오답 ${quizMistakes.length}개를 복습 목록에 추가했습니다.`
+            : "오답이 없습니다.";
         elements.reviewMistakes.hidden = quizMistakes.length === 0;
     }
 
@@ -410,7 +398,7 @@
                 <p class="library-hanja">${idiom.hanja}</p>
                 <h3>${idiom.word}</h3>
                 <p>${idiom.meaning}</p>
-                <footer><span>${idiom.verification}</span><span>이야기 보기 →</span></footer>`;
+                <footer><span>${idiom.verification}</span><span>상세 보기 →</span></footer>`;
             card.addEventListener("click", () => openIdiomFromLibrary(idiom.id));
             card.addEventListener("keydown", (event) => {
                 if (event.key === "Enter" || event.key === " ") {
@@ -443,7 +431,7 @@
     });
     elements.shuffleDeckButton.addEventListener("click", () => {
         buildDeck({ shuffle: true });
-        showToast("카드 순서를 섞었어요.");
+        showToast("카드 순서를 섞었습니다.");
     });
     elements.showAllButton.addEventListener("click", () => {
         reviewOnly = false;
@@ -514,7 +502,7 @@
             document.body.innerHTML = "<p>학습 데이터를 불러오지 못했습니다.</p>";
             return;
         }
-        if (playerName) elements.playerGreeting.textContent = `${playerName} 님, 오늘은 어떤 이야기부터 만나 볼까요?`;
+        if (playerName) elements.playerGreeting.textContent = `${playerName} 학습 기록`;
         elements.libraryTotal.textContent = data.length;
         buildThemeControls();
         renderSummary();

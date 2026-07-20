@@ -1,0 +1,87 @@
+{
+  "ignore": {
+    "en": "He ignored the warning and continued walking.",
+    "ko": "그는 경고를 무시하고 계속 걸었다.",
+    "relatedWords": [
+      { "word": "disregard", "type": "유의어" },
+      { "word": "neglect", "type": "유의어" },
+      { "word": "notice", "type": "반의어" }
+    ]
+  },
+  "rely": {
+    "en": "Many students rely on public transportation.",
+    "ko": "많은 학생이 대중교통에 의존한다."
+  },
+  "winter": {
+    "en": "The lake freezes in winter.",
+    "ko": "그 호수는 겨울에 언다."
+  },
+  "adult": {
+    "en": "Every child must be accompanied by an adult.",
+    "ko": "모든 어린이는 성인과 동행해야 한다."
+  },
+  "badminton": {
+    "en": "We played badminton after school.",
+    "ko": "우리는 방과 후에 배드민턴을 쳤다."
+  },
+  "robot": {
+    "en": "The robot can carry heavy boxes.",
+    "ko": "그 로봇은 무거운 상자를 나를 수 있다."
+  },
+  "aunt": {
+    "en": "My aunt lives in Busan.",
+    "ko": "우리 이모는 부산에 산다."
+  },
+  "jacket": {
+    "en": "He put on a jacket before going outside.",
+    "ko": "그는 밖에 나가기 전에 재킷을 입었다."
+  },
+  "vegetable": {
+    "en": "A carrot is a common vegetable.",
+    "ko": "당근은 흔히 먹는 채소다."
+  },
+  "spectrum": {
+    "en": "The colors form a continuous spectrum.",
+    "ko": "그 색들은 연속적인 스펙트럼을 이룬다."
+  },
+  "molecule": {
+    "en": "A water molecule contains two hydrogen atoms.",
+    "ko": "물 분자 하나에는 수소 원자 두 개가 들어 있다."
+  },
+  "countryside": {
+    "en": "They moved to the countryside for a quieter life.",
+    "ko": "그들은 더 조용한 생활을 위해 시골로 이사했다."
+  },
+  "equip": {
+    "en": "The school will equip the lab with new computers.",
+    "ko": "학교는 실험실에 새 컴퓨터를 갖출 것이다."
+  },
+  "bin": {
+    "en": "Please put the empty bottle in the recycling bin.",
+    "ko": "빈 병을 재활용 수거함에 넣어 주세요."
+  },
+  "you": {
+    "en": "Are you ready to begin?",
+    "ko": "시작할 준비가 되었니?"
+  },
+  "yes": {
+    "en": "Yes, I understand the question.",
+    "ko": "네, 그 질문을 이해했습니다."
+  },
+  "or": {
+    "en": "Would you like tea or coffee?",
+    "ko": "차와 커피 중 어느 것을 드시겠어요?"
+  },
+  "any": {
+    "en": "Do you have any questions?",
+    "ko": "질문이 있나요?"
+  },
+  "must": {
+    "en": "You must wear a seat belt.",
+    "ko": "안전띠를 반드시 매야 한다."
+  },
+  "tonight": {
+    "en": "We are having dinner together tonight.",
+    "ko": "우리는 오늘 밤 함께 저녁을 먹는다."
+  }
+}

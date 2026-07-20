@@ -74,6 +74,7 @@ test("renders the learning index and the arithmetic catalog in workbook order", 
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-1"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-2"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/multiplication-3"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/multiplication-4"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
 
@@ -404,6 +405,28 @@ test("renders the third multiplication worksheet with six and seven times tables
     "multiplication-three-1-5", "multiplication-three-1-6", "multiplication-three-1-7", "multiplication-three-1-8", "multiplication-three-1-9",
     "multiplication-three-2-0", "multiplication-three-2-1", "multiplication-three-2-2", "multiplication-three-2-3", "multiplication-three-2-4",
     "multiplication-three-2-5", "multiplication-three-2-6", "multiplication-three-2-7", "multiplication-three-2-8", "multiplication-three-2-9",
+  ]);
+});
+
+test("renders the fourth multiplication worksheet with eight and nine times tables", async () => {
+  const response = await render("/arithmetic/multiplication-4");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /구구단 ④/);
+  assert.match(html, /aria-label="A4 구구단 ④ 문제지"/);
+  assert.match(html, /aria-label="A4 구구단 ④ 전체 답지"/);
+  assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
+  assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
+  assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 30);
+  assert.deepEqual([...html.matchAll(/aria-label="(multiplication-four-\d+-\d+) 답"/g)].map((match) => match[1]), [
+    "multiplication-four-0-0", "multiplication-four-0-1", "multiplication-four-0-2", "multiplication-four-0-3", "multiplication-four-0-4",
+    "multiplication-four-0-5", "multiplication-four-0-6", "multiplication-four-0-7", "multiplication-four-0-8", "multiplication-four-0-9",
+    "multiplication-four-1-0", "multiplication-four-1-1", "multiplication-four-1-2", "multiplication-four-1-3", "multiplication-four-1-4",
+    "multiplication-four-1-5", "multiplication-four-1-6", "multiplication-four-1-7", "multiplication-four-1-8", "multiplication-four-1-9",
+    "multiplication-four-2-0", "multiplication-four-2-1", "multiplication-four-2-2", "multiplication-four-2-3", "multiplication-four-2-4",
+    "multiplication-four-2-5", "multiplication-four-2-6", "multiplication-four-2-7", "multiplication-four-2-8", "multiplication-four-2-9",
   ]);
 });
 

@@ -113,6 +113,8 @@ export default function ArithmeticCatalogPage() {
                                               ? "/arithmetic/multiplication-2"
                                               : name === "2구구단③"
                                                 ? "/arithmetic/multiplication-3"
+                                                : name === "2구구단④"
+                                                  ? "/arithmetic/multiplication-4"
                         : name === "3분수②"
                           ? "/fraction"
                           : null;
