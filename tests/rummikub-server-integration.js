@@ -8,6 +8,7 @@ const projectRoot = path.resolve(__dirname, "..");
 const serverRoot = path.join(projectRoot, "game-hub-server");
 const { WebSocket } = require(path.join(serverRoot, "node_modules", "ws"));
 const port = 22000 + Math.floor(Math.random() * 10000);
+const remoteUrl = String(process.env.RUMMIKUB_TEST_URL || "").trim();
 
 function waitForServer(process) {
   return new Promise((resolve, reject) => {
@@ -28,7 +29,7 @@ function waitForServer(process) {
 
 function connectClient() {
   return new Promise((resolve, reject) => {
-    const socket = new WebSocket(`ws://127.0.0.1:${port}`);
+    const socket = new WebSocket(remoteUrl || `ws://127.0.0.1:${port}`);
     const queue = [];
     const waiters = [];
     socket.on("message", raw => {
@@ -64,14 +65,14 @@ function connectClient() {
 }
 
 async function run() {
-  const server = spawn(process.execPath, [path.join(serverRoot, "server.js")], {
-    cwd: serverRoot,
-    env: { ...process.env, PORT: String(port), NODE_ENV: "test" },
-    stdio: ["ignore", "pipe", "pipe"]
-  });
+  const server = remoteUrl ? null : spawn(process.execPath, [path.join(serverRoot, "server.js")], {
+      cwd: serverRoot,
+      env: { ...process.env, PORT: String(port), NODE_ENV: "test" },
+      stdio: ["ignore", "pipe", "pipe"]
+    });
   const clients = [];
   try {
-    await waitForServer(server);
+    if (server) await waitForServer(server);
 
     const host = await connectClient();
     clients.push(host);
@@ -116,7 +117,7 @@ async function run() {
     for (const client of clients) {
       try { client.socket.close(4000, "TEST_COMPLETE"); } catch (_) {}
     }
-    server.kill();
+    server?.kill();
   }
 }
 
