@@ -68,6 +68,8 @@ test("renders the learning index and the arithmetic catalog in workbook order", 
   assert.match(catalogHtml, /href="\/arithmetic\/skip-counting-1"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/grade-2-add-subtract-1"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/grade-2-add-subtract-2"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-2-add-subtract-3"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/group-counting-1"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
 
@@ -255,6 +257,54 @@ test("renders the second grade-two worksheet with two missing digits per problem
     "digit-3-0-bottomTens", "digit-3-0-resultOnes",
     "digit-3-1-topOnes", "digit-3-1-resultTens",
     "digit-3-2-topTens", "digit-3-2-bottomOnes",
+  ]);
+});
+
+test("renders the third grade-two worksheet with mixed missing terms", async () => {
+  const response = await render("/arithmetic/grade-2-add-subtract-3");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  assert.match(html, /2학년/);
+  assert.match(html, /덧셈뺄셈③/);
+  assert.match(html, /aria-label="A4 덧셈뺄셈③ 문제지"/);
+  assert.match(html, /aria-label="A4 덧셈뺄셈③ 전체 답지"/);
+  assert.equal((html.match(/class="addsub-equation-row"/g) ?? []).length, 60);
+  assert.equal((html.match(/class="addsub-input /g) ?? []).length, 30);
+  assert.equal((html.match(/maxLength="3"/g) ?? []).length, 30);
+  assert.equal((html.match(/<span>\+<\/span>/g) ?? []).length, 26);
+  assert.equal((html.match(/<span>−<\/span>/g) ?? []).length, 34);
+
+  const blankOrder = [...html.matchAll(/aria-label="(grade2-(?:left|middle|right)-\d+ (?:left|right|result)) 답"/g)].map((match) => match[1]);
+  assert.deepEqual(blankOrder, [
+    "grade2-left-0 result", "grade2-left-1 result", "grade2-left-2 result", "grade2-left-3 result", "grade2-left-4 result",
+    "grade2-left-5 result", "grade2-left-6 result", "grade2-left-7 result", "grade2-left-8 result", "grade2-left-9 result",
+    "grade2-middle-0 left", "grade2-middle-1 right", "grade2-middle-2 left", "grade2-middle-3 right", "grade2-middle-4 result",
+    "grade2-middle-5 right", "grade2-middle-6 left", "grade2-middle-7 right", "grade2-middle-8 result", "grade2-middle-9 right",
+    "grade2-right-0 left", "grade2-right-1 left", "grade2-right-2 left", "grade2-right-3 result", "grade2-right-4 left",
+    "grade2-right-5 right", "grade2-right-6 result", "grade2-right-7 left", "grade2-right-8 left", "grade2-right-9 right",
+  ]);
+});
+
+test("renders the grade-two group-counting worksheet with six symbol arrays", async () => {
+  const response = await render("/arithmetic/group-counting-1");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /묶어 세기/);
+  assert.match(html, /aria-label="A4 묶어 세기 문제지"/);
+  assert.match(html, /aria-label="A4 묶어 세기 전체 답지"/);
+  assert.equal((html.match(/data-testid="group-question"/g) ?? []).length, 12);
+  assert.equal((html.match(/class="symbol-array"/g) ?? []).length, 12);
+  assert.equal((html.match(/class="group-input"/g) ?? []).length, 6);
+  assert.equal((html.match(/class="group-static-answer"/g) ?? []).length, 6);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 6);
+  assert.match(css, /\.group-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,[\s\S]*?grid-template-rows:\s*repeat\(3,/);
+  assert.match(css, /\.group-question\.is-correct[\s\S]*?background:\s*var\(--green-soft\)/);
+  assert.match(css, /\.group-question\.is-wrong[\s\S]*?background:\s*var\(--red-soft\)/);
+  assert.deepEqual([...html.matchAll(/aria-label="(group-\d+) 답"/g)].map((match) => match[1]), [
+    "group-0", "group-1", "group-2", "group-3", "group-4", "group-5",
   ]);
 });
 

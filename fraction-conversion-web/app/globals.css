@@ -131,7 +131,8 @@
 .complement-row.is-correct,
 .skip-row.is-correct,
 .vertical-equation.is-correct,
-.digit-equation.is-correct {
+.digit-equation.is-correct,
+.group-question.is-correct {
   background: var(--green-soft);
   box-shadow: inset 3px 0 #bfe2ce;
 }
@@ -144,7 +145,8 @@
 .complement-row.is-wrong,
 .skip-row.is-wrong,
 .vertical-equation.is-wrong,
-.digit-equation.is-wrong {
+.digit-equation.is-wrong,
+.group-question.is-wrong {
   background: var(--red-soft);
   box-shadow: inset 3px 0 #f0c6bf;
 }
@@ -180,9 +182,129 @@
   .vertical-equation.is-correct,
   .vertical-equation.is-wrong,
   .digit-equation.is-correct,
-  .digit-equation.is-wrong {
+  .digit-equation.is-wrong,
+  .group-question.is-correct,
+  .group-question.is-wrong {
     background: white;
     box-shadow: none;
+  }
+}
+
+/* 2묶어세기 */
+.group-sheet {
+  padding-bottom: 25px;
+}
+
+.group-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d7cec1;
+  border-radius: 10px;
+  background: white;
+}
+
+.group-question {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 10px;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 14px 20px 25px;
+}
+
+.group-question:nth-child(2n) {
+  border-right: 0;
+}
+
+.group-question:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.symbol-array {
+  width: 100%;
+  max-width: 295px;
+  min-height: 0;
+  align-self: center;
+  justify-self: center;
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  gap: 1px 5px;
+  color: #17233c;
+  font-family: "Segoe UI Symbol", "Malgun Gothic", sans-serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.group-answer-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #17233c;
+  font-size: 19px;
+  font-weight: 900;
+}
+
+.group-answer-row > b {
+  margin-right: 5px;
+  font-size: 17px;
+}
+
+.group-input,
+.group-static-answer {
+  width: 58px;
+  height: 42px;
+  border: 1.5px solid #928979;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  text-align: center;
+  font: inherit;
+}
+
+.group-input {
+  outline: none;
+}
+
+.group-input:focus {
+  border-color: #4763ad;
+  box-shadow: 0 0 0 2px rgba(71, 99, 173, 0.14);
+}
+
+.group-static-answer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.group-question .counting-result {
+  right: 7px;
+  bottom: 5px;
+}
+
+@media print {
+  .group-sheet {
+    padding-bottom: 7mm;
+  }
+
+  .group-grid {
+    margin-top: 3.7mm;
+  }
+
+  .group-input,
+  .group-static-answer {
+    background: white;
+    color: black;
   }
 }
 

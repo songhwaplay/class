@@ -18,7 +18,7 @@ type ProblemSet = {
   mixed: Equation[];
 };
 type PrintMode = "worksheet" | "answers" | "both";
-export type AdditionSubtractionVariant = "single-digit" | "two-digit" | "within-twenty" | "missing-parts";
+export type AdditionSubtractionVariant = "single-digit" | "two-digit" | "within-twenty" | "missing-parts" | "grade-two-missing-parts";
 
 const INITIAL_SEED = 20260720;
 
@@ -262,7 +262,83 @@ function createMissingPartsProblemSet(seed: number): ProblemSet {
   return { seed, additions, subtractions, mixed };
 }
 
+function createGradeTwoMissingPartsProblemSet(seed: number): ProblemSet {
+  const next = random(seed);
+
+  function standardSubtraction(id: string, hidden: Field): Equation {
+    const left = integer(next, 2, 9) * 10 + integer(next, 0, 5);
+    const right = integer(next, 0, left);
+    return { id, left, operator: "−", right, result: left - right, hidden: [hidden] };
+  }
+
+  function derivedAddition(id: string, hidden: Field, resultMinimum = 11): Equation {
+    const result = integer(next, resultMinimum, 99);
+    const left = integer(next, 9, result);
+    return { id, left, operator: "+", right: result - left, result, hidden: [hidden] };
+  }
+
+  function largeAddition(id: string, hidden: Field, onesMinimum: number, onesMaximum: number): Equation {
+    const left = integer(next, 7, 9) * 10 + integer(next, onesMinimum, onesMaximum);
+    const right = integer(next, 7, 9) * 10 + integer(next, onesMinimum, onesMaximum);
+    return { id, left, operator: "+", right, result: left + right, hidden: [hidden] };
+  }
+
+  function boundedSubtraction(id: string, hidden: Field): Equation {
+    const left = integer(next, 1, 9) * 10 + integer(next, 1, 2);
+    const result = integer(next, 3, left);
+    return { id, left, operator: "−", right: left - result, result, hidden: [hidden] };
+  }
+
+  function borrowingSubtraction(id: string, hidden: Field): Equation {
+    const left = integer(next, 6, 9) * 10 + integer(next, 6, 8);
+    const right = integer(next, 1, 5) * 10 + integer(next, 7, 9);
+    return { id, left, operator: "−", right, result: left - right, hidden: [hidden] };
+  }
+
+  const additions = [
+    standardSubtraction("grade2-left-0", "result"),
+    standardSubtraction("grade2-left-1", "result"),
+    largeAddition("grade2-left-2", "result", 1, 5),
+    boundedSubtraction("grade2-left-3", "result"),
+    largeAddition("grade2-left-4", "result", 6, 9),
+    standardSubtraction("grade2-left-5", "result"),
+    standardSubtraction("grade2-left-6", "result"),
+    derivedAddition("grade2-left-7", "result", 21),
+    derivedAddition("grade2-left-8", "result"),
+    derivedAddition("grade2-left-9", "result"),
+  ];
+
+  const subtractions = [
+    standardSubtraction("grade2-middle-0", "left"),
+    standardSubtraction("grade2-middle-1", "right"),
+    derivedAddition("grade2-middle-2", "left"),
+    standardSubtraction("grade2-middle-3", "right"),
+    standardSubtraction("grade2-middle-4", "result"),
+    borrowingSubtraction("grade2-middle-5", "right"),
+    derivedAddition("grade2-middle-6", "left"),
+    borrowingSubtraction("grade2-middle-7", "right"),
+    borrowingSubtraction("grade2-middle-8", "result"),
+    derivedAddition("grade2-middle-9", "right"),
+  ];
+
+  const mixed = [
+    standardSubtraction("grade2-right-0", "left"),
+    derivedAddition("grade2-right-1", "left"),
+    standardSubtraction("grade2-right-2", "left"),
+    standardSubtraction("grade2-right-3", "result"),
+    derivedAddition("grade2-right-4", "left"),
+    derivedAddition("grade2-right-5", "right"),
+    derivedAddition("grade2-right-6", "result"),
+    derivedAddition("grade2-right-7", "left", 21),
+    borrowingSubtraction("grade2-right-8", "left"),
+    borrowingSubtraction("grade2-right-9", "right"),
+  ];
+
+  return { seed, additions, subtractions, mixed };
+}
+
 function createProblemSet(seed: number, variant: AdditionSubtractionVariant): ProblemSet {
+  if (variant === "grade-two-missing-parts") return createGradeTwoMissingPartsProblemSet(seed);
   if (variant === "two-digit") return createTwoDigitProblemSet(seed);
   if (variant === "within-twenty") return createWithinTwentyProblemSet(seed);
   if (variant === "missing-parts") return createMissingPartsProblemSet(seed);
@@ -336,14 +412,17 @@ function EquationRow({
 
 export function AdditionSubtractionWorksheet({ variant }: { variant: AdditionSubtractionVariant }) {
   const title =
-    variant === "two-digit"
+    variant === "grade-two-missing-parts"
+      ? "덧셈뺄셈③"
+      : variant === "two-digit"
       ? "덧셈뺄셈②"
       : variant === "within-twenty"
         ? "덧셈뺄셈③"
         : variant === "missing-parts"
           ? "덧셈뺄셈④"
           : "덧셈뺄셈①";
-  const maxLength = variant === "single-digit" ? 1 : 2;
+  const maxLength = variant === "single-digit" ? 1 : variant === "grade-two-missing-parts" ? 3 : 2;
+  const grade = variant === "grade-two-missing-parts" ? "2학년" : "1학년";
   const [questionSet, setQuestionSet] = useState(() => createProblemSet(INITIAL_SEED, variant));
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
@@ -402,7 +481,7 @@ export function AdditionSubtractionWorksheet({ variant }: { variant: AdditionSub
       <div className={`a4-sheet counting-sheet addsub-sheet${variant === "single-digit" ? "" : " two-digit"}`} style={{ transform: `scale(${sheetScale})` }}>
         <header className="counting-sheet-header">
           <div className="counting-sheet-title">
-            <span>1학년</span>
+            <span>{grade}</span>
             <strong>{title}{answerSheet ? " 정답" : ""}</strong>
           </div>
           <div className="counting-sheet-info">

@@ -291,31 +291,49 @@
                 <span class="worksheet-copy"><strong>영어 단어 3,000</strong><small>초·중·고 15레벨 단어 카드</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
-            <a href="idioms/index.html">
+            <a href="idioms/index.html" data-requires-player="true">
                 <span class="worksheet-copy"><strong>고사성어 탐험대</strong><small>유래로 익히고 퀴즈로 복습하기</small></span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+            <a id="hanguksaLearningLink"
+               href="https://hanguksa-hanip.stimpack486443.chatgpt.site/"
+               data-requires-player="true"
+               data-player-handoff="fragment">
+                <span class="worksheet-copy"><strong>한능검 기본</strong><small>단원별 기출문제와 나의 오답 노트</small></span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+            <a id="cds95GameLink"
+               href="https://world-voyage-classroom.onrender.com/"
+               data-requires-player="true">
+                <span class="worksheet-copy"><strong>대항해시대</strong><small>세계 지리와 역사를 익히는 항해 탐험</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
         </div>
     </section>
 
-    <section class="hub-section game-section" aria-labelledby="game-title">
-        <h2 id="game-title" class="section-title">게임</h2>
+    <section class="hub-section boardgame-section" aria-labelledby="boardgame-title">
+        <h2 id="boardgame-title" class="section-title">보드게임</h2>
         <div class="menu-container">
-        <a href="games/fruitbell/fruitbell.html">할리갈리 (Halli Galli)</a>
-        <a href="games/setgame/setgame.html">세트 (Set)</a>
-        <a href="games/nimgame/nimgame.html">님 (Nim)</a>
-        <a href="games/coinweighing/coinweighing.html">동전 저울 (Coin Weighing)</a>
-        <a href="games/sphinx/sphinx.html">스핑크스 수수께끼 (Sphinx Riddles)</a>
-        <a href="games/hanoitower/hanoitower.html">하노이의 탑 (Tower of Hanoi)</a>
-        <a href="games/janggi/janggi.html">장기 (Janggi)</a>
-        <a href="games/omok/omok.html">오목 (Omok)</a>
-        <a href="games/connect6/connect6.html">육목 (Connect6)</a>
-        <a href="games/diamondgame/diamondgame.html">다이아몬드 게임 (Diamond Game)</a>
-        <a href="games/loveletter/loveletter.html">러브레터 (Love Letter)</a>
-        <a href="games/davincicode/davincicode.html">다빈치 코드 (Da Vinci Code)</a>
-        <a href="games/traverse/traverse.html">트래버스 (Traverse)</a>
-        <a href="games/avalon/avalon.html">레지스탕스: 아발론 (The Resistance: Avalon)</a>
-        <a id="cds95GameLink" href="https://world-voyage-classroom.onrender.com/">대항해시대 (Age of Exploration)</a>
+            <a href="games/fruitbell/fruitbell.html">할리갈리 (Halli Galli)</a>
+            <a href="games/setgame/setgame.html">세트 (Set)</a>
+            <a href="games/nimgame/nimgame.html">님 (Nim)</a>
+            <a href="games/janggi/janggi.html">장기 (Janggi)</a>
+            <a href="games/omok/omok.html">오목 (Omok)</a>
+            <a href="games/connect6/connect6.html">육목 (Connect6)</a>
+            <a href="games/diamondgame/diamondgame.html">다이아몬드 게임 (Diamond Game)</a>
+            <a href="games/loveletter/loveletter.html">러브레터 (Love Letter)</a>
+            <a href="games/davincicode/davincicode.html">다빈치 코드 (Da Vinci Code)</a>
+            <a href="games/traverse/traverse.html">트래버스 (Traverse)</a>
+            <a href="games/avalon/avalon.html">레지스탕스: 아발론 (The Resistance: Avalon)</a>
+        </div>
+    </section>
+
+    <section class="hub-section puzzle-section" aria-labelledby="puzzle-title">
+        <h2 id="puzzle-title" class="section-title">퍼즐</h2>
+        <div class="menu-container">
+            <a href="games/coinweighing/coinweighing.html">동전 저울 (Coin Weighing)</a>
+            <a href="games/sphinx/sphinx.html">스핑크스 수수께끼 (Sphinx Riddles)</a>
+            <a href="games/hanoitower/hanoitower.html">하노이의 탑 (Tower of Hanoi)</a>
         </div>
     </section>
 
@@ -331,6 +349,8 @@
             const nameEditArea = document.getElementById('nameEditArea');
             const savedPlayerArea = document.getElementById('savedPlayerArea');
             const savedPlayerName = document.getElementById('savedPlayerName');
+            const playerLearningLinks = Array.from(document.querySelectorAll('[data-requires-player="true"]'));
+            let nameEditing = false;
 
             function normalizePlayerName(value) {
                 return String(value || '').replace(/[^가-힣]/g, '').slice(0, 6);
@@ -340,10 +360,26 @@
                 return KOREAN_NAME_PATTERN.test(String(value || ''));
             }
 
+            function updatePlayerLearningLinks(name) {
+                playerLearningLinks.forEach((link) => {
+                    if (link.dataset.playerHandoff !== 'fragment') return;
+
+                    const baseHref = link.dataset.baseHref || link.href.split('#')[0];
+                    link.dataset.baseHref = baseHref;
+                    const targetUrl = new URL(baseHref, window.location.href);
+                    targetUrl.hash = isValidPlayerName(name)
+                        ? new URLSearchParams({ student: name }).toString()
+                        : '';
+                    link.href = targetUrl.toString();
+                });
+            }
+
             function showSavedPlayer(name) {
+                nameEditing = false;
                 savedPlayerName.textContent = name;
                 nameEditArea.style.display = 'none';
                 savedPlayerArea.style.display = 'flex';
+                updatePlayerLearningLinks(name);
                 const cds95GameLink = document.getElementById('cds95GameLink');
                 if (cds95GameLink) {
                     const gameUrl = new URL(cds95GameLink.href);
@@ -353,6 +389,7 @@
             }
 
             function showNameEditor(name = '') {
+                nameEditing = true;
                 playerNameInput.value = normalizePlayerName(name);
                 nameEditArea.style.display = 'block';
                 savedPlayerArea.style.display = 'none';
@@ -420,6 +457,18 @@
             saveNameButton.addEventListener('click', savePlayerName);
             changeNameButton.addEventListener('click', () => {
                 showNameEditor(localStorage.getItem(NAME_STORAGE_KEY) || '');
+            });
+            playerLearningLinks.forEach((link) => {
+                link.addEventListener('click', (event) => {
+                    const savedName = normalizePlayerName(localStorage.getItem(NAME_STORAGE_KEY) || '');
+                    if (!nameEditing && isValidPlayerName(savedName)) return;
+
+                    event.preventDefault();
+                    if (!nameEditing) showNameEditor(savedName);
+                    playerNameStatus.textContent = '먼저 학생 이름을 저장해 주세요.';
+                    playerNameStatus.classList.add('error');
+                    playerNameInput.focus();
+                });
             });
 
             const existingName = normalizePlayerName(localStorage.getItem(NAME_STORAGE_KEY) || '');

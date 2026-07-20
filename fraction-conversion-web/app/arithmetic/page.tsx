@@ -101,6 +101,10 @@ export default function ArithmeticCatalogPage() {
                                   ? "/arithmetic/grade-2-add-subtract-1"
                                   : name === "2덧셈뺄셈②"
                                     ? "/arithmetic/grade-2-add-subtract-2"
+                                    : name === "2덧셈뺄셈③"
+                                      ? "/arithmetic/grade-2-add-subtract-3"
+                                      : name === "2묶어세기"
+                                        ? "/arithmetic/group-counting-1"
                         : name === "3분수②"
                           ? "/fraction"
                           : null;

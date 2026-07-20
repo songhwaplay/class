@@ -3,8 +3,37 @@
 
     const data = Array.isArray(window.IDIOM_DATA) ? window.IDIOM_DATA : [];
     const core = window.IdiomCore;
-    const PROGRESS_KEY = "classIdiomsProgressV1";
-    const BEST_SCORE_KEY = "classIdiomsBestScoreV1";
+    const PLAYER_NAME_KEY = "classPlayerName";
+    const LEGACY_PROGRESS_KEY = "classIdiomsProgressV1";
+    const LEGACY_BEST_SCORE_KEY = "classIdiomsBestScoreV1";
+    const playerName = String(localStorage.getItem(PLAYER_NAME_KEY) || "").replace(/[^가-힣]/g, "").slice(0, 6);
+    const playerKeySuffix = playerName ? `:${encodeURIComponent(playerName)}` : "";
+    const PROGRESS_KEY = `${LEGACY_PROGRESS_KEY}${playerKeySuffix}`;
+    const BEST_SCORE_KEY = `${LEGACY_BEST_SCORE_KEY}${playerKeySuffix}`;
+
+    function migrateLegacyStorage() {
+        if (!playerName) return;
+
+        try {
+            if (localStorage.getItem(PROGRESS_KEY) === null) {
+                const legacyProgress = localStorage.getItem(LEGACY_PROGRESS_KEY);
+                if (legacyProgress !== null) {
+                    localStorage.setItem(PROGRESS_KEY, legacyProgress);
+                    localStorage.removeItem(LEGACY_PROGRESS_KEY);
+                }
+            }
+
+            if (localStorage.getItem(BEST_SCORE_KEY) === null) {
+                const legacyBestScore = localStorage.getItem(LEGACY_BEST_SCORE_KEY);
+                if (legacyBestScore !== null) {
+                    localStorage.setItem(BEST_SCORE_KEY, legacyBestScore);
+                    localStorage.removeItem(LEGACY_BEST_SCORE_KEY);
+                }
+            }
+        } catch (_) {}
+    }
+
+    migrateLegacyStorage();
 
     const byId = (id) => document.getElementById(id);
     const elements = {
@@ -460,7 +489,6 @@
             document.body.innerHTML = "<p>학습 데이터를 불러오지 못했습니다.</p>";
             return;
         }
-        const playerName = String(localStorage.getItem("classPlayerName") || "").replace(/[^가-힣]/g, "").slice(0, 6);
         if (playerName) elements.playerGreeting.textContent = `${playerName} 님, 오늘은 어떤 이야기부터 만나 볼까요?`;
         elements.libraryTotal.textContent = data.length;
         buildThemeControls();
