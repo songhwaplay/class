@@ -33,7 +33,7 @@ test("renders the fraction conversion practice product", async () => {
   assert.match(html, /대분수를 가분수로/);
   assert.match(html, /가분수를 대분수로/);
   assert.match(html, /전체 채점/);
-  assert.match(html, /문제지·답지 인쇄/);
+  assert.match(html, />인쇄<\/button>/);
   assert.match(html, /문제지 번호\s*(?:<!-- -->)?20260720/);
   assert.match(html, /aria-label="A4 분수 변환 문제지"/);
   assert.match(html, /aria-label="A4 분수 변환 전체 답지"/);
@@ -85,4 +85,15 @@ test("shows only right or wrong after grading", async () => {
 
   assert.match(pageSource, /result\.correct \? "맞음" : "틀림"/);
   assert.doesNotMatch(pageSource, /function Explanation|풀이 보기|풀이 닫기|result\.message|explain-button/);
+});
+
+test("downloads printable PDFs without relying on the native print dialog", async () => {
+  const pageSource = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(pageSource, /import\("html2canvas"\)/);
+  assert.match(pageSource, /import\("jspdf"\)/);
+  assert.match(pageSource, /문제지만 PDF/);
+  assert.match(pageSource, /답지만 PDF/);
+  assert.match(pageSource, /문제지\+답지 PDF/);
+  assert.doesNotMatch(pageSource, /window\.print\(\)/);
 });

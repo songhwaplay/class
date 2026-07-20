@@ -262,6 +262,56 @@ main {
   gap: 8px;
 }
 
+.print-control {
+  position: relative;
+}
+
+.print-menu {
+  position: absolute;
+  z-index: 100;
+  top: calc(100% + 7px);
+  right: 0;
+  width: 164px;
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+  padding: 6px;
+  box-shadow: 0 12px 30px rgba(24, 35, 59, 0.18);
+}
+
+.print-menu button {
+  min-height: 34px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  padding: 0 10px;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: left;
+  cursor: pointer;
+}
+
+.print-menu button:hover,
+.print-menu button:focus-visible {
+  background: var(--cream-deep);
+}
+
+.print-error {
+  position: absolute;
+  top: calc(100% + 7px);
+  right: 0;
+  width: 220px;
+  border-radius: 9px;
+  background: #fff2f0;
+  padding: 7px 9px;
+  color: var(--red);
+  font-size: 10px;
+  font-weight: 700;
+}
+
 .button,
 .check-button,
 .explain-button {
@@ -430,6 +480,19 @@ main {
   font-size: 0.88em;
   font-weight: 800;
   line-height: 1;
+}
+
+.fraction-display {
+  grid-template-rows: 24px 2px 24px;
+  row-gap: 3px;
+}
+
+.fraction-display .fraction-number {
+  height: 24px;
+  min-height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .fraction-line {
@@ -625,6 +688,10 @@ main {
   }
 
   .print-button {
+    display: none;
+  }
+
+  .print-control {
     display: none;
   }
 
@@ -1428,7 +1495,7 @@ main {
     font-size: 9px;
   }
 
-  .screen-toolbar .button.ghost.print-button {
+  .screen-toolbar .print-control {
     display: none;
   }
 }

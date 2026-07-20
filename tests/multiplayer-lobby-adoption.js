@@ -10,6 +10,7 @@ const expectedMultiplayerGames = [
     "davincicode",
     "fruitbell",
     "janggi",
+    "loveletter",
     "nimgame",
     "omok",
     "setgame",

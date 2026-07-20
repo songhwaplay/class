@@ -4,6 +4,7 @@ const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
 const { WebSocketServer, WebSocket } = require("ws");
+const LoveLetter = require("./loveletter");
 
 const app = express();
 const server = http.createServer(app);
@@ -15,6 +16,7 @@ const MAX_ROOM_PLAYERS = {
   nimgame: 2,
   janggi: 2,
   omok: 2,
+  loveletter: 4,
   avalon: 8
 };
 
@@ -47,6 +49,20 @@ function cleanToken(value, maxLength = 40) {
 
 function roomKey(gameId, roomCode) {
   return `${gameId}:${roomCode}`;
+}
+
+function loveLetterBroadcast(room) {
+  if (!room?.loveletter) return;
+  for (const [id, client] of room.clients) {
+    safeSend(client, {
+      type: "LOVELETTER_STATE",
+      state: LoveLetter.stateFor(room.loveletter, id)
+    });
+  }
+}
+
+function loveLetterError(socket, message) {
+  safeSend(socket, { type: "LOVELETTER_ERROR", message });
 }
 
 const AVALON_TEAM_SIZES = {
@@ -361,6 +377,7 @@ wss.on("connection", socket => {
         existingRoom.clients.set(playerId, socket);
         safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
         if (existingRoom.avalon) avalonBroadcast(existingRoom);
+        if (existingRoom.loveletter) loveLetterBroadcast(existingRoom);
         return;
       }
       if (resumeOnly) {
@@ -386,6 +403,9 @@ wss.on("connection", socket => {
           rejects: 0, results: [], winner: null, assassinId: null
         };
       }
+      if (gameId === "loveletter") {
+        room.loveletter = LoveLetter.createGame(playerId, cleanToken(message.name, 12) || "방장");
+      }
       rooms.set(key, room);
       socket.meta.roomKey = key;
       socket.meta.role = "host";
@@ -398,6 +418,7 @@ wss.on("connection", socket => {
         playerId
       });
       if (room.avalon) avalonBroadcast(room);
+      if (room.loveletter) loveLetterBroadcast(room);
       return;
     }
 
@@ -428,6 +449,7 @@ wss.on("connection", socket => {
         room.clients.set(playerId, socket);
         safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
         if (room.avalon) avalonBroadcast(room);
+        if (room.loveletter) loveLetterBroadcast(room);
         return;
       }
       if (resumeOnly) {
@@ -459,6 +481,16 @@ wss.on("connection", socket => {
           room.avalon.settings = recommendedAvalonSettings(room.avalon.players.length);
         }
       }
+      if (room.loveletter) {
+        if (room.loveletter.phase !== "lobby") {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "이미 시작한 게임입니다." });
+          return;
+        }
+        LoveLetter.addPlayer(room.loveletter, playerId, cleanToken(message.name, 12) || `플레이어 ${room.loveletter.players.length + 1}`);
+      }
 
       safeSend(socket, {
         type: "ROOM_JOINED",
@@ -474,6 +506,56 @@ wss.on("connection", socket => {
         name: cleanToken(message.name, 20)
       });
       if (room.avalon) avalonBroadcast(room);
+      if (room.loveletter) loveLetterBroadcast(room);
+      return;
+    }
+
+    if (type === "LOVELETTER_ACTION") {
+      const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
+      const game = room?.loveletter;
+      const action = cleanToken(message.action, 30);
+      if (!room || !game) {
+        loveLetterError(socket, "러브레터 방에 참가하지 않았습니다.");
+        return;
+      }
+
+      let result = null;
+      if (action === "START") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 게임을 시작할 수 있습니다." };
+        else result = LoveLetter.startMatch(game);
+      } else if (action === "PLAY") {
+        result = LoveLetter.play(game, playerId, message);
+      } else if (action === "NEXT_ROUND") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 다음 라운드를 시작할 수 있습니다." };
+        else result = LoveLetter.nextRound(game);
+      } else if (action === "NEW_GAME") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 새 게임을 시작할 수 있습니다." };
+        else result = LoveLetter.newGame(game);
+      } else if (action === "RETURN_LOBBY") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 대기실로 돌아갈 수 있습니다." };
+        else {
+          LoveLetter.resetToLobby(game);
+          result = { ok: true, reveals: [] };
+        }
+      } else {
+        result = { ok: false, error: "알 수 없는 행동입니다." };
+      }
+
+      if (!result.ok) {
+        loveLetterError(socket, result.error || "행동을 처리하지 못했습니다.");
+        return;
+      }
+      for (const reveal of result.reveals || []) {
+        safeSend(room.clients.get(reveal.playerId), {
+          type: "LOVELETTER_REVEAL",
+          reveal: {
+            title: reveal.title,
+            message: reveal.message,
+            card: reveal.card
+          }
+        });
+      }
+      loveLetterBroadcast(room);
       return;
     }
 
@@ -612,12 +694,20 @@ wss.on("connection", socket => {
           currentRoom.avalon.settings = recommendedAvalonSettings(currentRoom.avalon.players.length);
         }
       }
+      if (currentRoom.loveletter) {
+        const gameWasActive = currentRoom.loveletter.phase !== "lobby";
+        LoveLetter.removePlayer(currentRoom.loveletter, playerId);
+        if (gameWasActive) {
+          LoveLetter.resetToLobby(currentRoom.loveletter, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
+        }
+      }
       safeSend(currentRoom.clients.get(currentRoom.hostId), {
         type: "PLAYER_LEFT",
         playerId
       });
 
       if (currentRoom.avalon) avalonBroadcast(currentRoom);
+      if (currentRoom.loveletter) loveLetterBroadcast(currentRoom);
 
       if (currentRoom.clients.size === 0) rooms.delete(key);
     };
