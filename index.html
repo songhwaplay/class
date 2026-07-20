@@ -331,7 +331,9 @@
     <section class="hub-section worksheet-section" aria-labelledby="worksheet-title">
         <h1 id="worksheet-title" class="section-title">기초학습</h1>
         <div class="worksheet-container">
-            <a href="https://fraction-lab-20260720.stimpack486443.chatgpt.site/arithmetic">
+            <a href="https://fraction-lab-20260720.stimpack486443.chatgpt.site/arithmetic"
+               data-requires-player="true"
+               data-player-handoff="query">
                 <span class="worksheet-copy"><strong>연산</strong></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
@@ -411,14 +413,21 @@
 
             function updatePlayerLearningLinks(name) {
                 playerLearningLinks.forEach((link) => {
-                    if (link.dataset.playerHandoff !== 'fragment') return;
+                    const handoff = link.dataset.playerHandoff;
+                    if (handoff !== 'fragment' && handoff !== 'query') return;
 
-                    const baseHref = link.dataset.baseHref || link.href.split('#')[0];
+                    const baseHref = link.dataset.baseHref || link.href;
                     link.dataset.baseHref = baseHref;
                     const targetUrl = new URL(baseHref, window.location.href);
-                    targetUrl.hash = isValidPlayerName(name)
-                        ? new URLSearchParams({ student: name }).toString()
-                        : '';
+                    if (handoff === 'fragment') {
+                        targetUrl.hash = isValidPlayerName(name)
+                            ? new URLSearchParams({ student: name }).toString()
+                            : '';
+                    } else if (isValidPlayerName(name)) {
+                        targetUrl.searchParams.set('name', name);
+                    } else {
+                        targetUrl.searchParams.delete('name');
+                    }
                     link.href = targetUrl.toString();
                 });
             }
