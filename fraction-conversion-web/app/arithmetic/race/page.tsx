@@ -9,6 +9,12 @@ type JoinState = {
   race: { worksheetName: string; worksheetRoute: string; status: string };
 };
 
+const PLAYER_NAME_KEY = "classPlayerName";
+
+function normalizedPlayerName(value: string | null) {
+  return String(value ?? "").replace(/[^가-힣]/g, "").slice(0, 6);
+}
+
 export default function ArithmeticRaceJoinPage() {
   const [roomCode, setRoomCode] = useState("");
   const [name, setName] = useState("");
@@ -18,6 +24,13 @@ export default function ArithmeticRaceJoinPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    const incomingName = normalizedPlayerName(params.get("name"));
+    const storedName = normalizedPlayerName(window.localStorage.getItem(PLAYER_NAME_KEY));
+    const resolvedName = /^[가-힣]{2,6}$/.test(incomingName) ? incomingName : storedName;
+    if (/^[가-힣]{2,6}$/.test(resolvedName)) {
+      window.localStorage.setItem(PLAYER_NAME_KEY, resolvedName);
+      setName(resolvedName);
+    }
     const room = params.get("room");
     const participantId = params.get("participant");
     const participantToken = params.get("participantToken");

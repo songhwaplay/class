@@ -101,6 +101,12 @@ test("renders student and teacher ranking mode entry screens", async () => {
   assert.match(teacherHtml, /교사 PIN/);
   assert.match(teacherHtml, /방 만들기/);
   assert.match(teacherHtml, /2구구단⑤/);
+
+  const modeSource = await readFile(new URL("../app/arithmetic/page.tsx", import.meta.url), "utf8");
+  const raceSource = await readFile(new URL("../app/arithmetic/race/page.tsx", import.meta.url), "utf8");
+  assert.match(modeSource, /params\.get\("name"\)/);
+  assert.match(modeSource, /localStorage\.setItem\(PLAYER_NAME_KEY, resolvedName\)/);
+  assert.match(raceSource, /setName\(resolvedName\)/);
 });
 
 test("renders the first counting worksheet with interactive and printable answers", async () => {

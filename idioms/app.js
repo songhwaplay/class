@@ -10,6 +10,18 @@
     const playerKeySuffix = playerName ? `:${encodeURIComponent(playerName)}` : "";
     const PROGRESS_KEY = `${LEGACY_PROGRESS_KEY}${playerKeySuffix}`;
     const BEST_SCORE_KEY = `${LEGACY_BEST_SCORE_KEY}${playerKeySuffix}`;
+    const ILLUSTRATIONS = {
+        josammosa: "assets/idioms/josammosa.webp",
+        saeongjima: "assets/idioms/saeongjima.webp",
+        eobujiri: "assets/idioms/eobujiri.webp",
+        samyeonchoga: "assets/idioms/samyeonchoga.webp",
+        samgochoryeo: "assets/idioms/samgochoryeo.webp",
+        hwaryongjeomjeong: "assets/idioms/hwaryongjeomjeong.webp",
+        wasinsangdam: "assets/idioms/wasinsangdam.webp",
+        deungyongmun: "assets/idioms/deungyongmun.webp",
+        mosun: "assets/idioms/mosun.webp",
+        sajok: "assets/idioms/sajok.webp"
+    };
 
     function migrateLegacyStorage() {
         if (!playerName) return;
@@ -46,6 +58,7 @@
         themeBadge: byId("themeBadge"), verificationBadge: byId("verificationBadge"),
         idiomHanja: byId("idiomHanja"), idiomWord: byId("idiomWord"), cardDetails: byId("cardDetails"),
         idiomMeaning: byId("idiomMeaning"), idiomStory: byId("idiomStory"),
+        idiomIllustration: byId("idiomIllustration"), idiomIllustrationImage: byId("idiomIllustrationImage"),
         idiomSource: byId("idiomSource"), sourceNote: byId("sourceNote"), sourceLink: byId("sourceLink"),
         previousCard: byId("previousCard"), nextCard: byId("nextCard"), revealCard: byId("revealCard"),
         memoryActions: byId("memoryActions"), markReview: byId("markReview"), markKnown: byId("markKnown"),
@@ -172,6 +185,15 @@
         elements.idiomWord.textContent = idiom.word;
         elements.idiomMeaning.textContent = idiom.meaning;
         elements.idiomStory.textContent = idiom.story;
+        const illustration = ILLUSTRATIONS[idiom.id] || "";
+        elements.idiomIllustration.hidden = !illustration;
+        if (illustration) {
+            elements.idiomIllustrationImage.src = illustration;
+            elements.idiomIllustrationImage.alt = `${idiom.word} 유래 삽화`;
+        } else {
+            elements.idiomIllustrationImage.removeAttribute("src");
+            elements.idiomIllustrationImage.alt = "";
+        }
         elements.idiomSource.textContent = idiom.source;
         elements.sourceNote.textContent = idiom.sourceNote;
         elements.sourceLink.href = idiom.reference;
