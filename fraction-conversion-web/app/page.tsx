@@ -227,6 +227,7 @@ function AnswerInput({
   if (question.type === "mixed-to-improper") {
     return (
       <Fraction
+        variant="input"
         numerator={
           <NumberInput
             value={answer.numerator}
@@ -254,6 +255,7 @@ function AnswerInput({
         label={`${question.number}번 답의 자연수`}
       />
       <Fraction
+        variant="input"
         numerator={
           <NumberInput
             value={answer.numerator}
@@ -510,6 +512,12 @@ export default function Home() {
         });
         stageClone.querySelectorAll<HTMLInputElement>("input").forEach((input) => {
           input.value = "";
+        });
+        sheetClone.querySelectorAll<HTMLElement>(".fraction-display").forEach((fraction) => {
+          const numbers = fraction.querySelectorAll<HTMLElement>(".fraction-number");
+          if (numbers.length < 2) return;
+          numbers[0].style.transform = "translateY(-6px)";
+          numbers[1].style.transform = "translateY(4px)";
         });
         captureHost.appendChild(stageClone);
         document.body.appendChild(captureHost);
