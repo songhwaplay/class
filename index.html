@@ -356,7 +356,9 @@
         </form>
 
         <form id="joinForm" class="join-form student-join-form" hidden>
-            <input id="schoolCode" class="auth-input join-wide" type="text" maxlength="12" autocomplete="off" placeholder="SCHOOL CODE" aria-label="School code">
+            <select id="schoolId" class="auth-input join-wide" aria-label="School">
+                <option value="">SCHOOL</option>
+            </select>
             <input id="studentGrade" class="auth-input" type="text" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="GRADE" aria-label="Grade">
             <input id="studentClass" class="auth-input" type="text" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="CLASS" aria-label="Class">
             <input id="studentNumber" class="auth-input" type="text" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="NO." aria-label="Student number">
@@ -364,6 +366,7 @@
             <input id="studentPassword" class="auth-input join-wide" type="password" maxlength="6" inputmode="numeric" autocomplete="current-password" placeholder="PASSWORD" aria-label="Student password">
             <button class="auth-button" type="submit">JOIN</button>
         </form>
+        <a id="teacherSetupLink" class="class-tools-link" href="/classtools/roaster.html" hidden>TEACHER PAGE</a>
 
         <div id="signedInArea" hidden>
             <div class="signed-in-row">
@@ -481,7 +484,7 @@
             const guestForm = document.getElementById('guestForm');
             const guestNameInput = document.getElementById('guestName');
             const joinForm = document.getElementById('joinForm');
-            const schoolCodeInput = document.getElementById('schoolCode');
+            const schoolInput = document.getElementById('schoolId');
             const studentGradeInput = document.getElementById('studentGrade');
             const studentClassInput = document.getElementById('studentClass');
             const studentNumberInput = document.getElementById('studentNumber');
@@ -492,6 +495,7 @@
             const classMembership = document.getElementById('classMembership');
             const signOutButton = document.getElementById('signOutButton');
             const classToolsLink = document.getElementById('classToolsLink');
+            const teacherSetupLink = document.getElementById('teacherSetupLink');
             const hubContent = document.getElementById('hubContent');
             const playerLearningLinks = Array.from(document.querySelectorAll('[data-requires-player="true"]'));
             let openAccess = false;
@@ -585,18 +589,28 @@
                 }
             }
 
-            function showJoin(state) {
+            async function loadSchools() {
+                const result = await api('/api/schools');
+                const current = schoolInput.value;
+                schoolInput.replaceChildren(new Option('SCHOOL', ''));
+                result.schools.forEach((school) => schoolInput.add(new Option(school.name, school.id)));
+                schoolInput.value = current;
+            }
+
+            async function showJoin(state) {
                 authTitle.textContent = 'FIRST-TIME SETUP';
                 authMessage.hidden = false;
-                authMessage.textContent = `${state.user.name}, enter your school code and roster details.`;
+                authMessage.textContent = `${state.user.name}, choose your school and enter your roster details.`;
                 googleSignInButton.hidden = true;
                 signedInArea.hidden = false;
                 signedInName.textContent = state.user.name;
                 classMembership.textContent = state.user.email;
                 joinForm.hidden = false;
+                teacherSetupLink.hidden = false;
                 hubContent.hidden = true;
                 setHubLocked(true);
-                schoolCodeInput.focus();
+                await loadSchools();
+                schoolInput.focus();
             }
 
             function routeSignedIn(state) {
@@ -610,7 +624,7 @@
                     return;
                 }
                 if (state.membership) showStudentHome(state);
-                else showJoin(state);
+                else showJoin(state).catch((error) => setStatus(error.message, true));
             }
 
             async function waitForGoogle() {
@@ -654,9 +668,6 @@
                 });
             }
 
-            schoolCodeInput.addEventListener('input', () => {
-                schoolCodeInput.value = schoolCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
-            });
             guestNameInput.addEventListener('input', () => {
                 guestNameInput.value = normalizePlayerName(guestNameInput.value);
             });
@@ -701,7 +712,7 @@
                     await api('/api/student/join', {
                         method: 'POST',
                         body: JSON.stringify({
-                            schoolCode: schoolCodeInput.value,
+                            schoolId: schoolInput.value,
                             grade: Number(studentGradeInput.value),
                             classNumber: Number(studentClassInput.value),
                             studentNumber: studentNumberInput.value,

@@ -19,7 +19,7 @@ assert.match(indexHtml, /accounts\.google\.com\/gsi\/client/,
   "Google Identity Services must be loaded.");
 assert.match(indexHtml, /id="googleSignInButton"/,
   "A single Google sign-in area is required.");
-assert.match(indexHtml, /id="schoolCode"/);
+assert.match(indexHtml, /id="schoolId"/);
 assert.match(indexHtml, /id="studentGrade"/);
 assert.match(indexHtml, /id="studentClass"/);
 assert.match(indexHtml, /id="studentNumber"/);
@@ -31,7 +31,8 @@ assert.match(indexScript, /\/api\/auth\/google/);
 assert.match(indexScript, /\/api\/student\/join/);
 assert.match(indexScript, /password: studentPasswordInput\.value/,
   "The student join request must include the six-digit roster password.");
-assert.match(indexScript, /schoolCode: schoolCodeInput\.value/);
+assert.match(indexScript, /schoolId: schoolInput\.value/);
+assert.match(indexScript, /\/api\/schools/);
 assert.match(indexScript, /grade: Number\(studentGradeInput\.value\)/);
 assert.match(indexScript, /classNumber: Number\(studentClassInput\.value\)/);
 assert.match(indexScript, /name: studentNameInput\.value\.trim\(\)/);
@@ -54,8 +55,8 @@ assert.match(
 );
 assert.match(
   fs.readFileSync(path.join(root, "game-hub-server", "classroom-platform.js"), "utf8"),
-  /ADD COLUMN IF NOT EXISTS school_code TEXT/,
-  "Each school must have a unique code for student setup."
+  /ADD COLUMN IF NOT EXISTS enabled BOOLEAN/,
+  "Only administrator-enabled schools should appear during student setup."
 );
 
 assert.deepEqual(

@@ -9,6 +9,7 @@ const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 const JOIN_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const DEFAULT_STUDENT_PASSWORD = "123456";
 const STUDENT_PASSWORD_PATTERN = /^\d{6}$/;
+const DEFAULT_TEACHER_PASSWORD = "123456";
 
 class HttpError extends Error {
   constructor(status, code, message) {
@@ -213,9 +214,28 @@ function createClassroomPlatform(options = {}) {
       )`,
       `ALTER TABLE classroom_schools
         ADD COLUMN IF NOT EXISTS school_code TEXT`,
+      `ALTER TABLE classroom_schools
+        ADD COLUMN IF NOT EXISTS enabled BOOLEAN NOT NULL DEFAULT TRUE`,
+      `ALTER TABLE classroom_schools
+        ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()`,
       `CREATE UNIQUE INDEX IF NOT EXISTS classroom_schools_code_idx
         ON classroom_schools (UPPER(school_code))
         WHERE school_code IS NOT NULL`,
+      `CREATE TABLE IF NOT EXISTS classroom_teachers (
+        id BIGSERIAL PRIMARY KEY,
+        school_id BIGINT NOT NULL REFERENCES classroom_schools(id),
+        teacher_name TEXT NOT NULL,
+        password_hash TEXT NOT NULL,
+        google_email TEXT,
+        user_id BIGINT UNIQUE REFERENCES classroom_users(id) ON DELETE SET NULL,
+        active BOOLEAN NOT NULL DEFAULT TRUE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        UNIQUE (school_id, teacher_name)
+      )`,
+      `CREATE UNIQUE INDEX IF NOT EXISTS classroom_teachers_email_idx
+        ON classroom_teachers (LOWER(google_email))
+        WHERE google_email IS NOT NULL`,
       `CREATE TABLE IF NOT EXISTS classroom_classes (
         id BIGSERIAL PRIMARY KEY,
         school_id BIGINT NOT NULL REFERENCES classroom_schools(id),
@@ -308,6 +328,16 @@ function createClassroomPlatform(options = {}) {
     if (user.role !== "teacher") {
       throw new HttpError(403, "TEACHER_REQUIRED", "This page is for teachers only.");
     }
+    const registration = await pool.query(
+      `SELECT 1
+       FROM classroom_teachers t
+       JOIN classroom_schools sc ON sc.id = t.school_id
+       WHERE t.user_id = $1 AND t.active = TRUE AND sc.enabled = TRUE`,
+      [user.id]
+    );
+    if (!registration.rows[0]) {
+      throw new HttpError(403, "TEACHER_REGISTRATION_REQUIRED", "Ask the administrator to register this teacher account.");
+    }
     return user;
   }
 
@@ -384,6 +414,17 @@ function createClassroomPlatform(options = {}) {
   router.get("/site/access", asyncRoute(async (req, res) => {
     const mode = await getSiteAccessMode();
     res.json({ mode });
+  }));
+
+  router.get("/schools", asyncRoute(async (req, res) => {
+    requireDatabase();
+    const result = await pool.query(
+      `SELECT id, name
+       FROM classroom_schools
+       WHERE enabled = TRUE
+       ORDER BY name, id`
+    );
+    res.json({ schools: result.rows.map((school) => ({ id: String(school.id), name: school.name })) });
   }));
 
   router.post("/auth/google", asyncRoute(async (req, res) => {
@@ -484,6 +525,225 @@ function createClassroomPlatform(options = {}) {
     res.json({ ok: true, mode });
   }));
 
+  router.get("/admin/schools", asyncRoute(async (req, res) => {
+    await requireAdmin(req);
+    const schoolsResult = await pool.query(
+      `SELECT id, name, google_domain, enabled
+       FROM classroom_schools
+       ORDER BY name, id`
+    );
+    const teachersResult = await pool.query(
+      `SELECT t.id, t.school_id, t.teacher_name, t.google_email, t.active,
+              t.user_id IS NOT NULL AS linked,
+              c.academic_year, c.grade, c.class_number,
+              COUNT(s.id)::INTEGER AS student_count
+       FROM classroom_teachers t
+       LEFT JOIN classroom_classes c ON c.teacher_user_id = t.user_id
+       LEFT JOIN classroom_students s ON s.class_id = c.id
+       GROUP BY t.id, c.id
+       ORDER BY t.teacher_name, t.id`
+    );
+    const teachersBySchool = new Map();
+    for (const teacher of teachersResult.rows) {
+      const schoolId = String(teacher.school_id);
+      if (!teachersBySchool.has(schoolId)) teachersBySchool.set(schoolId, []);
+      teachersBySchool.get(schoolId).push({
+        id: String(teacher.id),
+        name: teacher.teacher_name,
+        email: teacher.google_email || "",
+        active: teacher.active,
+        linked: teacher.linked,
+        classroom: teacher.academic_year ? {
+          academicYear: teacher.academic_year,
+          grade: teacher.grade,
+          classNumber: teacher.class_number,
+          studentCount: teacher.student_count
+        } : null
+      });
+    }
+    res.json({
+      schools: schoolsResult.rows.map((school) => ({
+        id: String(school.id),
+        name: school.name,
+        domain: school.google_domain || "",
+        enabled: school.enabled,
+        teachers: teachersBySchool.get(String(school.id)) || []
+      }))
+    });
+  }));
+
+  router.post("/admin/schools", asyncRoute(async (req, res) => {
+    await requireAdmin(req);
+    const name = String(req.body?.name || "").trim();
+    if (!name || name.length > 80) {
+      throw new HttpError(400, "INVALID_SCHOOL", "Enter a school name.");
+    }
+    const existing = await pool.query(
+      `UPDATE classroom_schools
+       SET enabled = TRUE, updated_at = NOW()
+       WHERE id = (SELECT id FROM classroom_schools WHERE name = $1 ORDER BY id LIMIT 1)
+       RETURNING id, name, enabled`,
+      [name]
+    );
+    const result = existing.rows[0] ? existing : await pool.query(
+      `INSERT INTO classroom_schools (name, google_domain, enabled)
+       VALUES ($1, '', TRUE)
+       RETURNING id, name, enabled`,
+      [name]
+    );
+    res.json({ ok: true, school: { id: String(result.rows[0].id), name: result.rows[0].name, enabled: result.rows[0].enabled } });
+  }));
+
+  router.patch("/admin/schools/:schoolId", asyncRoute(async (req, res) => {
+    await requireAdmin(req);
+    const schoolId = Number(req.params.schoolId);
+    const name = String(req.body?.name || "").trim();
+    const enabled = req.body?.enabled;
+    if (!Number.isInteger(schoolId) || schoolId < 1 || !name || name.length > 80 || typeof enabled !== "boolean") {
+      throw new HttpError(400, "INVALID_SCHOOL", "Check the school name and access setting.");
+    }
+    const result = await pool.query(
+      `UPDATE classroom_schools
+       SET name = $1, enabled = $2
+       WHERE id = $3
+       RETURNING id`,
+      [name, enabled, schoolId]
+    );
+    if (!result.rows[0]) throw new HttpError(404, "SCHOOL_NOT_FOUND", "School not found.");
+    res.json({ ok: true });
+  }));
+
+  router.post("/admin/schools/:schoolId/teachers", asyncRoute(async (req, res) => {
+    await requireAdmin(req);
+    const schoolId = Number(req.params.schoolId);
+    const teacherName = String(req.body?.name || "").normalize("NFC").trim();
+    const password = String(req.body?.password || DEFAULT_TEACHER_PASSWORD).trim();
+    if (!Number.isInteger(schoolId) || schoolId < 1 || !teacherName || teacherName.length > 30) {
+      throw new HttpError(400, "INVALID_TEACHER", "Enter the teacher name.");
+    }
+    if (!STUDENT_PASSWORD_PATTERN.test(password)) {
+      throw new HttpError(400, "INVALID_TEACHER_PASSWORD", "Teacher passwords must contain exactly 6 digits.");
+    }
+    const result = await pool.query(
+      `INSERT INTO classroom_teachers (school_id, teacher_name, password_hash)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (school_id, teacher_name) DO UPDATE SET
+         password_hash = EXCLUDED.password_hash,
+         active = TRUE,
+         updated_at = NOW()
+       RETURNING id`,
+      [schoolId, teacherName, hashStudentPassword(password)]
+    );
+    res.json({ ok: true, teacherId: String(result.rows[0].id) });
+  }));
+
+  router.patch("/admin/teachers/:teacherId", asyncRoute(async (req, res) => {
+    await requireAdmin(req);
+    const teacherId = Number(req.params.teacherId);
+    const teacherName = String(req.body?.name || "").normalize("NFC").trim();
+    const password = String(req.body?.password || "").trim();
+    const active = req.body?.active;
+    if (!Number.isInteger(teacherId) || teacherId < 1 || !teacherName || teacherName.length > 30 || typeof active !== "boolean") {
+      throw new HttpError(400, "INVALID_TEACHER", "Check the teacher information.");
+    }
+    if (password && !STUDENT_PASSWORD_PATTERN.test(password)) {
+      throw new HttpError(400, "INVALID_TEACHER_PASSWORD", "Teacher passwords must contain exactly 6 digits.");
+    }
+    const result = await pool.query(
+      `UPDATE classroom_teachers
+       SET teacher_name = $1,
+           password_hash = CASE WHEN $2 = '' THEN password_hash ELSE $3 END,
+           active = $4,
+           updated_at = NOW()
+       WHERE id = $5
+       RETURNING id`,
+      [teacherName, password, password ? hashStudentPassword(password) : null, active, teacherId]
+    );
+    if (!result.rows[0]) throw new HttpError(404, "TEACHER_NOT_FOUND", "Teacher not found.");
+    res.json({ ok: true });
+  }));
+
+  router.get("/teacher/profile", asyncRoute(async (req, res) => {
+    const user = await requireUser(req);
+    if (user.role === "admin" || user.role === "student") {
+      throw new HttpError(403, "TEACHER_REQUIRED", "This page is for teachers only.");
+    }
+    const result = await pool.query(
+      `SELECT t.id, t.teacher_name, t.active, sc.enabled AS school_enabled,
+              sc.id AS school_id, sc.name AS school_name
+       FROM classroom_teachers t
+       JOIN classroom_schools sc ON sc.id = t.school_id
+       WHERE t.user_id = $1`,
+      [user.id]
+    );
+    const profile = result.rows[0];
+    res.json({
+      registered: Boolean(profile?.active && profile?.school_enabled),
+      profile: profile ? {
+        id: String(profile.id),
+        name: profile.teacher_name,
+        schoolId: String(profile.school_id),
+        schoolName: profile.school_name,
+        active: profile.active
+      } : null
+    });
+  }));
+
+  router.post("/teacher/claim", asyncRoute(async (req, res) => {
+    const user = await requireUser(req);
+    if (user.role === "admin" || user.role === "student") {
+      throw new HttpError(403, "TEACHER_REQUIRED", "This account cannot claim a teacher profile.");
+    }
+    const schoolId = Number(req.body?.schoolId);
+    const teacherName = String(req.body?.name || "").normalize("NFC").trim();
+    const password = String(req.body?.password || "").trim();
+    if (!Number.isInteger(schoolId) || schoolId < 1 || !teacherName || !STUDENT_PASSWORD_PATTERN.test(password)) {
+      throw new HttpError(400, "INVALID_TEACHER_DETAILS", "Check the school, teacher name, and 6-digit password.");
+    }
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const result = await client.query(
+        `SELECT t.*, sc.enabled, sc.google_domain
+         FROM classroom_teachers t
+         JOIN classroom_schools sc ON sc.id = t.school_id
+         WHERE t.school_id = $1 AND t.teacher_name = $2
+         FOR UPDATE`,
+        [schoolId, teacherName]
+      );
+      const teacher = result.rows[0];
+      if (!teacher || !teacher.active || !teacher.enabled || !verifyStudentPassword(password, teacher.password_hash)) {
+        throw new HttpError(403, "INVALID_TEACHER_DETAILS", "Check the school, teacher name, and 6-digit password.");
+      }
+      if (teacher.user_id && String(teacher.user_id) !== String(user.id)) {
+        throw new HttpError(409, "TEACHER_ALREADY_LINKED", "This teacher profile is already linked to another Google account.");
+      }
+      if (teacher.google_domain && teacher.google_domain !== user.google_domain) {
+        throw new HttpError(403, "SCHOOL_ACCOUNT_MISMATCH", "Use the Google account issued by this school.");
+      }
+      await client.query(
+        `UPDATE classroom_schools
+         SET google_domain = CASE WHEN google_domain = '' THEN $1 ELSE google_domain END
+         WHERE id = $2`,
+        [user.google_domain, schoolId]
+      );
+      await client.query(
+        `UPDATE classroom_teachers
+         SET user_id = $1, google_email = $2, updated_at = NOW()
+         WHERE id = $3`,
+        [user.id, user.email, teacher.id]
+      );
+      await client.query("UPDATE classroom_users SET role = 'teacher', updated_at = NOW() WHERE id = $1", [user.id]);
+      await client.query("COMMIT");
+      res.json({ ok: true });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }));
+
   router.get("/teacher/class", asyncRoute(async (req, res) => {
     const teacher = await requireTeacher(req);
     const classResult = await pool.query(
@@ -527,21 +787,26 @@ function createClassroomPlatform(options = {}) {
 
   router.put("/teacher/class", asyncRoute(async (req, res) => {
     const teacher = await requireTeacher(req);
-    const schoolName = String(req.body?.schoolName || "").trim();
-    const schoolCode = String(req.body?.schoolCode || "").trim().toUpperCase();
+    const assignmentResult = await pool.query(
+      `SELECT t.school_id, t.teacher_name, sc.name AS school_name, sc.school_code
+       FROM classroom_teachers t
+       JOIN classroom_schools sc ON sc.id = t.school_id
+       WHERE t.user_id = $1 AND t.active = TRUE AND sc.enabled = TRUE`,
+      [teacher.id]
+    );
+    const assignment = assignmentResult.rows[0];
+    if (!assignment) {
+      throw new HttpError(403, "TEACHER_REGISTRATION_REQUIRED", "Ask the administrator to register this teacher account.");
+    }
+    const schoolName = assignment.school_name;
+    const schoolCode = assignment.school_code || `SCH${assignment.school_id}`;
     const academicYear = Number(req.body?.academicYear);
     const grade = Number(req.body?.grade);
     const classNumber = Number(req.body?.classNumber);
-    const teacherName = String(req.body?.teacherName || "").trim();
+    const teacherName = assignment.teacher_name;
     const students = Array.isArray(req.body?.students) ? req.body.students : [];
     const currentYear = new Date().getFullYear();
 
-    if (!schoolName || schoolName.length > 80) {
-      throw new HttpError(400, "INVALID_SCHOOL", "Enter a school name.");
-    }
-    if (!/^[A-Z0-9]{4,12}$/.test(schoolCode)) {
-      throw new HttpError(400, "INVALID_SCHOOL_CODE", "School code must contain 4 to 12 English letters or digits.");
-    }
     if (![currentYear - 1, currentYear, currentYear + 1].includes(academicYear)) {
       throw new HttpError(400, "INVALID_ACADEMIC_YEAR", "Choose one of the three available school years.");
     }
@@ -550,9 +815,6 @@ function createClassroomPlatform(options = {}) {
     }
     if (!Number.isInteger(classNumber) || classNumber < 1 || classNumber > 30) {
       throw new HttpError(400, "INVALID_CLASS_NUMBER", "Class number must be between 1 and 30.");
-    }
-    if (!teacherName || teacherName.length > 30) {
-      throw new HttpError(400, "INVALID_TEACHER_NAME", "Enter the homeroom teacher name.");
     }
     if (students.length < 1 || students.length > 60) {
       throw new HttpError(400, "INVALID_ROSTER_SIZE", "The roster must contain 1 to 60 students.");
@@ -579,31 +841,13 @@ function createClassroomPlatform(options = {}) {
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      const schoolCodeOwnerResult = await client.query(
-        `SELECT id, name, google_domain
-         FROM classroom_schools
-         WHERE UPPER(school_code) = $1
-         FOR UPDATE`,
-        [schoolCode]
+      const schoolId = assignment.school_id;
+      await client.query(
+        `UPDATE classroom_schools
+         SET school_code = COALESCE(school_code, $1), updated_at = NOW()
+         WHERE id = $2`,
+        [schoolCode, schoolId]
       );
-      const schoolCodeOwner = schoolCodeOwnerResult.rows[0];
-      if (schoolCodeOwner && (
-        schoolCodeOwner.name !== schoolName || schoolCodeOwner.google_domain !== teacher.google_domain
-      )) {
-        throw new HttpError(409, "SCHOOL_CODE_IN_USE", "That school code is already used by another school.");
-      }
-      const schoolResult = await client.query(
-        `INSERT INTO classroom_schools (name, google_domain, school_code)
-         VALUES ($1, $2, $3)
-         ON CONFLICT (name, google_domain) DO UPDATE SET
-           school_code = COALESCE(classroom_schools.school_code, EXCLUDED.school_code)
-         RETURNING id, school_code`,
-        [schoolName, teacher.google_domain, schoolCode]
-      );
-      if (String(schoolResult.rows[0].school_code || "").toUpperCase() !== schoolCode) {
-        throw new HttpError(409, "SCHOOL_CODE_MISMATCH", "This school already uses a different school code.");
-      }
-      const schoolId = schoolResult.rows[0].id;
       const assignedClassResult = await client.query(
         `SELECT 1
          FROM classroom_classes
@@ -699,7 +943,7 @@ function createClassroomPlatform(options = {}) {
     if (user.role === "teacher") {
       throw new HttpError(403, "STUDENT_REQUIRED", "Teacher accounts cannot join a student roster.");
     }
-    const schoolCode = String(req.body?.schoolCode || "").trim().toUpperCase();
+    const schoolId = Number(req.body?.schoolId);
     const grade = Number(req.body?.grade);
     const classNumber = Number(req.body?.classNumber);
     const studentNumber = String(req.body?.studentNumber || "").trim();
@@ -707,14 +951,14 @@ function createClassroomPlatform(options = {}) {
     const password = String(req.body?.password || "").trim();
     const currentYear = new Date().getFullYear();
     if (
-      !/^[A-Z0-9]{4,12}$/.test(schoolCode) ||
+      !Number.isInteger(schoolId) || schoolId < 1 ||
       !Number.isInteger(grade) || grade < 1 || grade > 12 ||
       !Number.isInteger(classNumber) || classNumber < 1 || classNumber > 30 ||
       !/^\d{1,3}$/.test(studentNumber) ||
       !/^[가-힣]{2,6}$/.test(studentName) ||
       !STUDENT_PASSWORD_PATTERN.test(password)
     ) {
-      throw new HttpError(400, "INVALID_JOIN_DETAILS", "Check the school code, grade, class, number, name, and password.");
+      throw new HttpError(400, "INVALID_JOIN_DETAILS", "Check the school, grade, class, number, name, and password.");
     }
 
     const slotResult = await pool.query(
@@ -724,23 +968,23 @@ function createClassroomPlatform(options = {}) {
        FROM classroom_students s
        JOIN classroom_classes c ON c.id = s.class_id
        JOIN classroom_schools sc ON sc.id = c.school_id
-       WHERE UPPER(sc.school_code) = $1
+       WHERE sc.id = $1 AND sc.enabled = TRUE
          AND c.academic_year = $2
          AND c.grade = $3
          AND c.class_number = $4
          AND s.student_number = $5`,
-      [schoolCode, currentYear, grade, classNumber, studentNumber]
+      [schoolId, currentYear, grade, classNumber, studentNumber]
     );
     const slot = slotResult.rows[0];
     if (!slot) throw new HttpError(404, "STUDENT_NOT_FOUND", "No matching student was found in that class.");
     if (!slot.password_hash || !verifyStudentPassword(password, slot.password_hash)) {
-      throw new HttpError(403, "INVALID_STUDENT_PASSWORD", "Check the school code, grade, class, number, name, and password.");
+      throw new HttpError(403, "INVALID_STUDENT_PASSWORD", "Check the school, grade, class, number, name, and password.");
     }
     if (slot.google_domain !== user.google_domain) {
       throw new HttpError(403, "SCHOOL_ACCOUNT_MISMATCH", "Use the Google account issued by this school.");
     }
     if (normalizePersonName(slot.roster_name) !== normalizePersonName(studentName)) {
-      throw new HttpError(403, "NAME_MISMATCH", "Check the school code, grade, class, number, name, and password.");
+      throw new HttpError(403, "NAME_MISMATCH", "Check the school, grade, class, number, name, and password.");
     }
     if (slot.user_id && String(slot.user_id) !== String(user.id)) {
       throw new HttpError(409, "STUDENT_ALREADY_LINKED", "This student number is already linked to another account.");

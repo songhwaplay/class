@@ -170,11 +170,25 @@
         .tool-link strong, .tool-link span { display: block; }
         .tool-link span { margin-top: 4px; color: var(--muted); font-size: 12px; }
         .tool-link b { color: var(--green); font-size: 1.35rem; }
+        .management { margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line); }
+        .management h2 { margin: 0 0 8px; font-size: 1.35rem; }
+        .management-copy { margin: 0 0 16px; color: var(--muted); font-size: 13px; line-height: 1.55; }
+        .form-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin: 12px 0; }
+        .teacher-form { grid-template-columns: 1fr 130px auto; }
+        .control { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--ink); background: #101512; }
+        .action-button { min-height: 44px; border: 1px solid var(--green); border-radius: 10px; padding: 0 16px; color: var(--ink); background: var(--green-dark); font-weight: 800; cursor: pointer; }
+        .school-tools { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 10px; align-items: center; margin-top: 18px; }
+        .check-label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
+        .teacher-list { display: grid; gap: 10px; margin-top: 14px; }
+        .teacher-row { display: grid; grid-template-columns: 1fr 120px auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+        .teacher-class { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
         [hidden] { display: none !important; }
 
         @media (max-width: 560px) {
             body { padding: 32px 14px; }
             .choice-grid { grid-template-columns: 1fr; }
+            .form-row, .teacher-form, .school-tools, .teacher-row { grid-template-columns: 1fr; }
+            .teacher-class { grid-column: auto; }
         }
     </style>
 </head>
@@ -212,6 +226,28 @@
                         <span>Require a school Google Workspace account.</span>
                     </button>
                 </div>
+                <section class="management" aria-labelledby="school-management-title">
+                    <h2 id="school-management-title">School management</h2>
+                    <p class="management-copy">Only enabled schools appear on the student and teacher pages. Select a school to manage its teachers and classes.</p>
+                    <div class="form-row">
+                        <input class="control" id="newSchoolName" maxlength="80" placeholder="School name">
+                        <button class="action-button" id="addSchoolButton" type="button">ADD SCHOOL</button>
+                    </div>
+                    <div class="school-tools">
+                        <select class="control" id="schoolSelect"><option value="">Select school</option></select>
+                        <input class="control" id="schoolNameEditor" maxlength="80" placeholder="School name">
+                        <label class="check-label"><input id="schoolEnabled" type="checkbox"> Enabled</label>
+                        <button class="action-button" id="saveSchoolButton" type="button">SAVE SCHOOL</button>
+                    </div>
+                    <div id="teacherManagement" hidden>
+                        <div class="form-row teacher-form">
+                            <input class="control" id="newTeacherName" maxlength="30" placeholder="Teacher name">
+                            <input class="control" id="newTeacherPassword" type="password" inputmode="numeric" maxlength="6" value="123456" aria-label="Initial teacher password">
+                            <button class="action-button" id="addTeacherButton" type="button">ADD TEACHER</button>
+                        </div>
+                        <div class="teacher-list" id="teacherList"></div>
+                    </div>
+                </section>
                 <a class="tool-link" href="/admin/reading/">
                     <div>
                         <strong>Reading question bank</strong>
@@ -229,7 +265,7 @@
         (() => {
             "use strict";
 
-            const APP_ORIGIN = "https://classroom-game-hub.onrender.com";
+            const APP_ORIGIN = "https://songhwaplay.onrender.com";
             const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
             const loginView = document.querySelector("#loginView");
             const loginMessage = document.querySelector("#loginMessage");
@@ -241,7 +277,19 @@
             const modeDescription = document.querySelector("#modeDescription");
             const status = document.querySelector("#status");
             const modeButtons = Array.from(document.querySelectorAll("[data-mode]"));
+            const newSchoolName = document.querySelector("#newSchoolName");
+            const addSchoolButton = document.querySelector("#addSchoolButton");
+            const schoolSelect = document.querySelector("#schoolSelect");
+            const schoolNameEditor = document.querySelector("#schoolNameEditor");
+            const schoolEnabled = document.querySelector("#schoolEnabled");
+            const saveSchoolButton = document.querySelector("#saveSchoolButton");
+            const teacherManagement = document.querySelector("#teacherManagement");
+            const newTeacherName = document.querySelector("#newTeacherName");
+            const newTeacherPassword = document.querySelector("#newTeacherPassword");
+            const addTeacherButton = document.querySelector("#addTeacherButton");
+            const teacherList = document.querySelector("#teacherList");
             let saving = false;
+            let schools = [];
 
             async function api(path, options = {}) {
                 const response = await fetch(path, {
@@ -269,14 +317,120 @@
                 });
             }
 
+            function selectedSchool() {
+                return schools.find((school) => school.id === schoolSelect.value) || null;
+            }
+
+            function renderTeachers() {
+                const school = selectedSchool();
+                teacherManagement.hidden = !school;
+                teacherList.replaceChildren();
+                schoolNameEditor.value = school?.name || "";
+                schoolNameEditor.disabled = !school;
+                schoolEnabled.disabled = !school;
+                saveSchoolButton.disabled = !school;
+                if (!school) return;
+                schoolEnabled.checked = school.enabled;
+                school.teachers.forEach((teacher) => {
+                    const row = document.createElement("div");
+                    row.className = "teacher-row";
+                    const name = document.createElement("input");
+                    name.className = "control";
+                    name.value = teacher.name;
+                    name.maxLength = 30;
+                    const password = document.createElement("input");
+                    password.className = "control";
+                    password.type = "password";
+                    password.inputMode = "numeric";
+                    password.maxLength = 6;
+                    password.placeholder = "UNCHANGED";
+                    password.addEventListener("input", () => { password.value = password.value.replace(/\D/g, "").slice(0, 6); });
+                    const activeLabel = document.createElement("label");
+                    activeLabel.className = "check-label";
+                    const active = document.createElement("input");
+                    active.type = "checkbox";
+                    active.checked = teacher.active;
+                    activeLabel.append(active, " Active");
+                    const save = document.createElement("button");
+                    save.className = "action-button";
+                    save.type = "button";
+                    save.textContent = "SAVE";
+                    save.addEventListener("click", async () => {
+                        if (password.value && !/^\d{6}$/.test(password.value)) return setStatus("Teacher passwords must contain exactly 6 digits.", true);
+                        try {
+                            await api(`/api/admin/teachers/${teacher.id}`, {
+                                method: "PATCH",
+                                body: JSON.stringify({ name: name.value.trim(), password: password.value, active: active.checked }),
+                            });
+                            await loadSchools(school.id);
+                            setStatus("Teacher information saved.");
+                        } catch (error) { setStatus(error.message, true); }
+                    });
+                    const classInfo = document.createElement("div");
+                    classInfo.className = "teacher-class";
+                    classInfo.textContent = teacher.classroom
+                        ? `${teacher.classroom.academicYear} · Grade ${teacher.classroom.grade} Class ${teacher.classroom.classNumber} · ${teacher.classroom.studentCount} students${teacher.linked ? " · Google linked" : ""}`
+                        : `No class saved${teacher.linked ? " · Google linked" : ""}`;
+                    row.append(name, password, activeLabel, save, classInfo);
+                    teacherList.append(row);
+                });
+            }
+
+            async function loadSchools(preferredId = schoolSelect.value) {
+                const result = await api("/api/admin/schools");
+                schools = result.schools;
+                schoolSelect.replaceChildren(new Option("Select school", ""));
+                schools.forEach((school) => schoolSelect.add(new Option(school.name, school.id)));
+                schoolSelect.value = schools.some((school) => school.id === preferredId) ? preferredId : "";
+                renderTeachers();
+            }
+
             async function showAdmin(user) {
                 loginView.hidden = true;
                 adminView.hidden = false;
                 adminEmail.textContent = user.email;
                 const result = await api("/api/admin/site-access");
                 renderMode(result.mode);
+                await loadSchools();
                 setStatus("");
             }
+
+            newTeacherPassword.addEventListener("input", () => {
+                newTeacherPassword.value = newTeacherPassword.value.replace(/\D/g, "").slice(0, 6);
+            });
+            schoolSelect.addEventListener("change", renderTeachers);
+            addSchoolButton.addEventListener("click", async () => {
+                try {
+                    const result = await api("/api/admin/schools", { method: "POST", body: JSON.stringify({ name: newSchoolName.value.trim() }) });
+                    newSchoolName.value = "";
+                    await loadSchools(result.school.id);
+                    setStatus("School added.");
+                } catch (error) { setStatus(error.message, true); }
+            });
+            saveSchoolButton.addEventListener("click", async () => {
+                const school = selectedSchool();
+                if (!school) return;
+                try {
+                    await api(`/api/admin/schools/${school.id}`, { method: "PATCH", body: JSON.stringify({ name: schoolNameEditor.value.trim(), enabled: schoolEnabled.checked }) });
+                    await loadSchools(school.id);
+                    setStatus("School access saved.");
+                } catch (error) { setStatus(error.message, true); }
+            });
+            addTeacherButton.addEventListener("click", async () => {
+                const school = selectedSchool();
+                if (!school) return;
+                if (!/^\d{6}$/.test(newTeacherPassword.value)) return setStatus("Teacher passwords must contain exactly 6 digits.", true);
+                try {
+                    await api(`/api/admin/schools/${school.id}/teachers`, {
+                        method: "POST",
+                        body: JSON.stringify({ name: newTeacherName.value.trim(), password: newTeacherPassword.value }),
+                    });
+                    newTeacherName.value = "";
+                    newTeacherPassword.value = "123456";
+                    await loadSchools(school.id);
+                    setStatus("Teacher added.");
+                } catch (error) { setStatus(error.message, true); }
+            });
 
             async function waitForGoogle() {
                 for (let attempt = 0; attempt < 80; attempt += 1) {

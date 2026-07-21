@@ -506,7 +506,32 @@
         <h1>Paste your class list.</h1>
         <p class="intro">Copy the number column and name column from Excel, then paste each column below. Use the same Korean names shown on the students’ school Google accounts.</p>
 
-        <section class="roster-card" aria-labelledby="roster-input-title">
+        <section class="roster-card" id="teacher-claim-card" hidden>
+            <div class="profile-head">
+                <h3>Teacher verification</h3>
+                <span class="profile-note">Registered by the site administrator</span>
+            </div>
+            <div class="profile-grid">
+                <div class="profile-field profile-field--school">
+                    <label for="claim-school">School</label>
+                    <select class="profile-control" id="claim-school"><option value="">Select</option></select>
+                </div>
+                <div class="profile-field">
+                    <label for="claim-name">Teacher</label>
+                    <input class="profile-control" id="claim-name" maxlength="30" autocomplete="name" placeholder="Teacher name">
+                </div>
+                <div class="profile-field">
+                    <label for="claim-password">Password</label>
+                    <input class="profile-control" id="claim-password" type="password" maxlength="6" inputmode="numeric" autocomplete="current-password" placeholder="6 digits">
+                </div>
+            </div>
+            <div class="actions">
+                <p class="status" id="claim-status" role="status" aria-live="polite">Use the information registered by the administrator.</p>
+                <button class="save-button" id="claim-button" type="button">VERIFY TEACHER</button>
+            </div>
+        </section>
+
+        <section class="roster-card" id="roster-card" aria-labelledby="roster-input-title" hidden>
             <h2 id="roster-input-title" hidden>Roster input</h2>
             <div class="class-profile">
                 <div class="profile-head">
@@ -518,7 +543,7 @@
                         <label for="school-name">School</label>
                         <input class="profile-control" id="school-name" type="text" autocomplete="organization" maxlength="80" placeholder="School name">
                     </div>
-                    <div class="profile-field">
+                    <div class="profile-field" hidden>
                         <label for="school-code">School code</label>
                         <input class="profile-control" id="school-code" type="text" autocomplete="off" maxlength="12" placeholder="SEN001">
                     </div>
@@ -579,7 +604,7 @@
             </div>
         </section>
 
-        <section class="preview-card" aria-labelledby="preview-title">
+        <section class="preview-card" id="preview-card" aria-labelledby="preview-title" hidden>
             <div class="preview-head">
                 <div>
                     <h2 id="preview-title">Preview</h2>
@@ -614,6 +639,14 @@
             const allowedYears = [currentYear - 1, currentYear, currentYear + 1];
             const teacherAccount = document.querySelector("#teacher-account");
             const signOutButton = document.querySelector("#sign-out-button");
+            const claimCard = document.querySelector("#teacher-claim-card");
+            const claimSchoolInput = document.querySelector("#claim-school");
+            const claimNameInput = document.querySelector("#claim-name");
+            const claimPasswordInput = document.querySelector("#claim-password");
+            const claimStatus = document.querySelector("#claim-status");
+            const claimButton = document.querySelector("#claim-button");
+            const rosterCard = document.querySelector("#roster-card");
+            const previewCard = document.querySelector("#preview-card");
             const schoolInput = document.querySelector("#school-name");
             const schoolCodeInput = document.querySelector("#school-code");
             const schoolYearInput = document.querySelector("#school-year");
@@ -768,7 +801,6 @@
             function isProfileComplete(profile = getProfile()) {
                 return Boolean(
                     profile.schoolName &&
-                    /^[A-Z0-9]{4,12}$/.test(profile.schoolCode) &&
                     allowedYears.includes(Number(profile.schoolYear)) &&
                     ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].includes(profile.grade) &&
                     Number(profile.classNumber) >= 1 && Number(profile.classNumber) <= 30 &&
@@ -920,13 +952,26 @@
             async function start() {
                 try {
                     const session = await api("/api/auth/me");
-                    if (!session.signedIn || session.user?.role !== "teacher") {
+                    if (!session.signedIn || ["admin", "student"].includes(session.user?.role)) {
                         location.replace("/");
                         return;
                     }
-                    authorized = true;
                     teacherAccount.textContent = session.user.email;
-                    if (!teacherInput.value) teacherInput.value = session.user.name;
+                    const teacherProfile = await api("/api/teacher/profile");
+                    if (!teacherProfile.registered) {
+                        const schools = await api("/api/schools");
+                        schools.schools.forEach((school) => claimSchoolInput.add(new Option(school.name, school.id)));
+                        claimNameInput.value = session.user.name || "";
+                        claimCard.hidden = false;
+                        return;
+                    }
+                    authorized = true;
+                    schoolInput.value = teacherProfile.profile.schoolName;
+                    teacherInput.value = teacherProfile.profile.name;
+                    schoolInput.readOnly = true;
+                    teacherInput.readOnly = true;
+                    rosterCard.hidden = false;
+                    previewCard.hidden = false;
                     const result = await api("/api/teacher/class");
                     if (result.classroom) loadClassroom(result.classroom);
                     else profileStatus.textContent = "Not saved yet";
@@ -939,9 +984,26 @@
             }
 
             [schoolInput, classNumberInput, teacherInput].forEach((input) => input.addEventListener("input", markUnsaved));
-            schoolCodeInput.addEventListener("input", () => {
-                schoolCodeInput.value = schoolCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
-                markUnsaved();
+            claimPasswordInput.addEventListener("input", () => {
+                claimPasswordInput.value = claimPasswordInput.value.replace(/\D/g, "").slice(0, 6);
+            });
+            claimButton.addEventListener("click", async () => {
+                claimButton.disabled = true;
+                claimStatus.textContent = "Checking teacher registration…";
+                try {
+                    await api("/api/teacher/claim", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            schoolId: claimSchoolInput.value,
+                            name: claimNameInput.value.trim(),
+                            password: claimPasswordInput.value,
+                        }),
+                    });
+                    location.reload();
+                } catch (error) {
+                    claimStatus.textContent = error.message;
+                    claimButton.disabled = false;
+                }
             });
             [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", markUnsaved));
             numbersInput.addEventListener("input", update);

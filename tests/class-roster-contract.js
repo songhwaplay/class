@@ -16,7 +16,9 @@ for (const id of [
   "grade",
   "class-number",
   "teacher-name",
-  "school-code",
+  "claim-school",
+  "claim-name",
+  "claim-password",
   "numbers",
   "names",
   "sign-out-button"
@@ -26,15 +28,15 @@ for (const id of [
 
 assert.match(html, /const allowedYears = \[currentYear - 1, currentYear, currentYear \+ 1\]/,
   "School year should offer only last, current, and next year.");
-assert.match(html, /schoolCode: schoolCodeInput\.value\.trim\(\)\.toUpperCase\(\)/,
-  "The teacher must save the school's public code with the class profile.");
+assert.match(html, /\/api\/teacher\/claim/,
+  "The teacher must verify the administrator-created profile.");
 assert.doesNotMatch(html, /id=["']join-code["']/,
   "Students should no longer need a separate class code.");
 assert.match(html, /method: "PUT"[\s\S]*\/api\/teacher\/class/,
   "The roster must save through the teacher API.");
 assert.match(html, /\/api\/auth\/me/, "The page must check the signed-in teacher.");
-assert.match(html, /session\.user\?\.role !== "teacher"/,
-  "Non-teacher accounts must be rejected.");
+assert.match(html, /\["admin", "student"\]\.includes\(session\.user\?\.role\)/,
+  "Administrator and student accounts must be rejected.");
 assert.doesNotMatch(html, /localStorage|sessionStorage/,
   "The roster must not use browser storage as its source of truth.");
 assert.match(html, /SAVE ROSTER/, "Teacher controls should use the compact English UI.");
