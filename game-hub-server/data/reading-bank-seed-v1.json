@@ -1,0 +1,1032 @@
+{
+  "schemaVersion": 1,
+  "sourceDocuments": [
+    "수면과_기억_수직샘플_v0.1.md",
+    "평균의_함정_수직샘플_v0.1.md"
+  ],
+  "topics": [
+    {
+      "topicKey": "SCI-SLEEP-MEMORY-001",
+      "title": "수면과 기억",
+      "primaryDomain": "science",
+      "relatedDomains": [
+        "health_life"
+      ],
+      "coreQuestion": "잠은 학습과 기억에 어떤 방식으로 관여하는가?",
+      "coreFacts": [
+        "잠은 학습과 새로운 기억 형성에 필요한 뇌 기능과 관련된다.",
+        "학습 전의 수면 부족은 집중과 새로운 정보의 입력을 어렵게 할 수 있다.",
+        "학습 후의 수면은 새로 형성된 기억을 안정시키고 재구성하는 공고화 과정에 관여한다.",
+        "수면은 학습을 대신하지 않으며 먼저 정보를 학습해야 정리할 기억이 생긴다."
+      ],
+      "misconceptions": [
+        "잠자는 동안 강의를 틀어 놓으면 깨어서 공부하지 않아도 복잡한 내용을 배울 수 있다."
+      ],
+      "practicalUse": "공부 시간과 수면 시간을 단순한 경쟁 관계로 보지 않고 상호보완적인 학습 과정으로 이해한다.",
+      "ageScope": {
+        "lowerElementary": "잠든 동안 뇌가 배운 내용을 정리하는 데 도움을 준다는 구체적 설명",
+        "upperElementary": "학습 전의 집중과 학습 후의 기억 안정",
+        "middleSchool": "부호화·공고화·인출과 수면의 상호보완성",
+        "highSchool": "연구 방법의 한계와 기억 공고화 체계"
+      },
+      "uncertaintyNotes": "수면의 효과는 기억의 종류, 발달 단계, 수면의 질과 시기, 연구 방법에 따라 달라질 수 있다.",
+      "status": "draft",
+      "sources": [
+        {
+          "title": "Understanding Sleep",
+          "publisher": "National Institute of Neurological Disorders and Stroke",
+          "sourceUrl": "https://www.ninds.nih.gov/sites/default/files/2025-05/understanding-sleep.pdf",
+          "sourceKind": "official",
+          "publishedOn": "2025-05-01",
+          "notes": "학습·기억 형성·집중과 수면의 관계에 관한 공식 안내"
+        },
+        {
+          "title": "Sleep and memory in healthy children and adolescents",
+          "publisher": "PubMed",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/20093053/",
+          "sourceKind": "systematic_review",
+          "publishedOn": "2010-06-01",
+          "notes": "아동·청소년의 수면과 기억 연구에 관한 비판적 검토"
+        },
+        {
+          "title": "Recent advances in memory consolidation and information processing during sleep",
+          "publisher": "PubMed",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35403267/",
+          "sourceKind": "systematic_review",
+          "publishedOn": "2022-01-01",
+          "notes": "수면과 기억 공고화의 최근 연구 검토"
+        }
+      ],
+      "items": [
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K1-V1",
+          "track": "ko",
+          "targetLevel": 1,
+          "questionType": "explicit",
+          "passageText": "서준이는 낮에 새 낱말을 배웠습니다. 밤이 되어 잠을 잤습니다. 서준이가 자는 동안 뇌는 낮에 배운 것을 정리했습니다.",
+          "promptText": "자는 동안 서준이의 뇌가 한 일은 무엇입니까?",
+          "choices": [
+            "낮에 배운 것을 정리했습니다.",
+            "배운 것을 모두 지웠습니다.",
+            "밖에 나가서 놀았습니다."
+          ],
+          "correctIndex": 0,
+          "answerEvidence": "마지막 문장에 정답이 직접 제시되어 있다.",
+          "explanation": "마지막 문장에 정답이 직접 제시되어 있다. 2는 내용과 반대이고, 3은 뇌가 한 일이 아니다.",
+          "distractorReasons": [
+            "",
+            "2는 내용과 반대이고, 3은 뇌가 한 일이 아니다.",
+            "2는 내용과 반대이고, 3은 뇌가 한 일이 아니다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K1",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K2-V1",
+          "track": "ko",
+          "targetLevel": 2,
+          "questionType": "inference",
+          "passageText": "지우는 받아쓰기 낱말을 연습했습니다. 더 오래 공부하려고 밤늦게까지 깨어 있고 싶었습니다. 하지만 잠을 자는 동안 뇌가 배운 내용을 정리하는 데 도움을 받는다는 말을 떠올렸습니다. 지우는 낱말을 한 번 더 확인한 뒤 잠자리에 들었습니다.",
+          "promptText": "지우가 잠자리에 든 까닭으로 알맞은 것은 무엇입니까?",
+          "choices": [
+            "연습은 전혀 필요하지 않기 때문입니다.",
+            "잠이 배운 내용을 정리하는 데 도움이 되기 때문입니다.",
+            "자는 동안 처음 보는 낱말을 저절로 배울 수 있기 때문입니다."
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "2는 셋째 문장의 내용을 정확히 옮겼다.",
+          "explanation": "2는 셋째 문장의 내용을 정확히 옮겼다. 1은 지우가 먼저 연습했다는 사실과 맞지 않는다. 3은 지문에 없으며 ‘잠이 학습을 대신한다’는 오해다.",
+          "distractorReasons": [
+            "1은 지우가 먼저 연습했다는 사실과 맞지 않는다.",
+            "",
+            "3은 지문에 없으며 ‘잠이 학습을 대신한다’는 오해다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K2",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K3-V1",
+          "track": "ko",
+          "targetLevel": 3,
+          "questionType": "title",
+          "passageText": "낮에는 새로운 이름, 장소, 규칙 같은 정보가 머릿속으로 들어온다. 잠이 들었다고 해서 뇌가 완전히 일을 멈추는 것은 아니다. 뇌는 자는 동안 낮에 배운 정보를 정리하고, 나중에 그 정보를 떠올리는 데 필요한 기억을 튼튼하게 하는 데 도움을 준다. 그러므로 공부는 정보를 처음 배우는 과정이고, 잠은 배운 것을 기억으로 남기는 데 관련된 과정이라고 할 수 있다.",
+          "promptText": "이 글의 제목으로 가장 알맞은 것은 무엇입니까?",
+          "choices": [
+            "뇌가 쉬지 못하게 하는 공부",
+            "공부를 하지 않고 낱말을 외우는 법",
+            "배운 것을 기억하도록 돕는 잠",
+            "낮에만 움직이는 사람의 뇌"
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "글 전체는 잠이 배운 정보를 정리하고 기억하는 데 도움을 준다는 내용이다.",
+          "explanation": "글 전체는 잠이 배운 정보를 정리하고 기억하는 데 도움을 준다는 내용이다. 1은 글의 관점과 다르고, 2는 잠이 공부를 대신한다고 왜곡한다. 4는 뇌가 잠든 뒤에도 활동한다는 내용과 반대다.",
+          "distractorReasons": [
+            "1은 글의 관점과 다르고, 2는 잠이 공부를 대신한다고 왜곡한다.",
+            "1은 글의 관점과 다르고, 2는 잠이 공부를 대신한다고 왜곡한다.",
+            "",
+            "4는 뇌가 잠든 뒤에도 활동한다는 내용과 반대다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K3",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K4-V1",
+          "track": "ko",
+          "targetLevel": 4,
+          "questionType": "inference",
+          "passageText": "잠은 학습의 앞뒤에서 서로 다른 역할을 한다. 학습 전에 잠이 부족하면 주의를 집중하기 어려워 새로운 정보를 제대로 받아들이지 못할 수 있다. 반대로 무언가를 배운 뒤에 자는 잠은 새 기억이 안정되도록 돕는다. 그렇다고 잠만 자면 공부한 적 없는 내용까지 알게 되는 것은 아니다. 정보가 먼저 머릿속에 들어와야 정리할 기억도 생기기 때문이다.",
+          "promptText": "이 글에서 추론한 내용으로 가장 알맞은 것은 무엇입니까?",
+          "choices": [
+            "잠은 공부를 완전히 대신할 수 있다.",
+            "공부 시간을 늘리려면 잠을 줄이는 것이 언제나 유리하다.",
+            "학습과 잠은 기억을 만드는 과정에서 서로 보완할 수 있다.",
+            "잠을 자면 배우지 않은 정보도 기억에 저장된다."
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "학습 전의 집중과 학습 후의 기억 안정이라는 두 역할을 종합하면 3을 추론할 수 있다.",
+          "explanation": "학습 전의 집중과 학습 후의 기억 안정이라는 두 역할을 종합하면 3을 추론할 수 있다. 1과 4는 마지막 두 문장에 어긋난다. 2는 잠이 부족할 때 생길 수 있는 문제를 무시한다.",
+          "distractorReasons": [
+            "1과 4는 마지막 두 문장에 어긋난다.",
+            "2는 잠이 부족할 때 생길 수 있는 문제를 무시한다.",
+            "",
+            "1과 4는 마지막 두 문장에 어긋난다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K4",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K5-V1",
+          "track": "ko",
+          "targetLevel": 5,
+          "questionType": "main_idea",
+          "passageText": "시험을 앞둔 학생은 잠을 한 시간 줄이면 공부할 시간이 한 시간 늘어난다고 계산하기 쉽다. 이 계산은 깨어 있는 시간만 고려한다는 점에서 불완전하다. 잠이 부족하면 새로운 내용을 배울 때 집중과 정보 처리가 약해질 수 있기 때문이다. 또한 학습 뒤의 수면은 아직 불안정한 기억이 더 오래 유지될 수 있도록 공고화되는 과정에 관여한다. 물론 충분히 잔다고 해서 공부하지 않은 내용이 생기는 것은 아니다. 결국 학습량은 책상 앞에 머문 시간만이 아니라, 깨어 있을 때의 학습 상태와 학습 후 기억이 안정되는 과정까지 함께 고려해야 한다.",
+          "promptText": "윗글의 주장으로 가장 적절한 것은 무엇입니까?",
+          "choices": [
+            "시험 전에는 수면보다 공부 시간을 우선해야 한다.",
+            "기억은 오직 깨어 있는 동안에만 형성된다.",
+            "수면시간을 늘리면 학습하지 않은 내용도 알 수 있다.",
+            "학습 효과를 판단할 때 공부 시간과 수면의 역할을 함께 고려해야 한다.",
+            "수면 부족은 단순한 기억 과제에만 영향을 준다."
+          ],
+          "correctIndex": 3,
+          "answerEvidence": "마지막 문장이 앞선 논의를 종합해 4를 뒷받침한다.",
+          "explanation": "마지막 문장이 앞선 논의를 종합해 4를 뒷받침한다. 1은 글이 비판하는 계산이고, 2는 학습 후 공고화를 부정한다. 3은 명시적으로 부정된 내용이다. 5는 지문에 제시되지 않은 범위 제한이다.",
+          "distractorReasons": [
+            "1은 글이 비판하는 계산이고, 2는 학습 후 공고화를 부정한다.",
+            "1은 글이 비판하는 계산이고, 2는 학습 후 공고화를 부정한다.",
+            "3은 명시적으로 부정된 내용이다.",
+            "",
+            "5는 지문에 제시되지 않은 범위 제한이다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K5",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K6-V1",
+          "track": "ko",
+          "targetLevel": 6,
+          "questionType": "inference",
+          "passageText": "기억 형성은 정보를 받아들이는 부호화, 새 기억을 안정시키는 공고화, 필요할 때 기억을 꺼내는 인출로 구분할 수 있다. 수면은 특히 공고화와 관련되지만, 세 과정은 완전히 독립되어 있지 않다. 잠이 부족해 집중력이 떨어진 상태에서는 부호화할 정보 자체가 빈약해질 수 있다. 반대로 잠을 충분히 자더라도 처음부터 주의를 기울이지 않은 정보가 저절로 완전한 기억이 되지는 않는다. 따라서 공부와 수면 중 어느 하나만을 늘리면 다른 하나는 필요 없다는 생각은 기억 형성의 여러 단계를 지나치게 단순화한다.",
+          "promptText": "윗글을 바탕으로 할 때 가장 적절한 판단은 무엇입니까?",
+          "choices": [
+            "공고화가 일어나면 부호화와 인출은 필요하지 않다.",
+            "잠은 이미 완전해진 기억을 지우는 과정이다.",
+            "주의를 기울이지 않은 정보일수록 수면 중에 더 잘 학습된다.",
+            "학습과 수면은 기억 형성의 서로 다른 단계에 기여할 수 있다.",
+            "기억의 세 과정은 각각 다른 날에만 일어난다."
+          ],
+          "correctIndex": 3,
+          "answerEvidence": "부호화와 공고화에 관한 설명을 종합하면 4가 성립한다.",
+          "explanation": "부호화와 공고화에 관한 설명을 종합하면 4가 성립한다. 1은 세 과정의 필요성을 잘못 부정하고, 2는 공고화의 의미와 반대다. 3은 넷째 문장에 어긋나며, 5는 글에서 말하지 않은 시간 조건을 덧붙였다.",
+          "distractorReasons": [
+            "1은 세 과정의 필요성을 잘못 부정하고, 2는 공고화의 의미와 반대다.",
+            "1은 세 과정의 필요성을 잘못 부정하고, 2는 공고화의 의미와 반대다.",
+            "3은 넷째 문장에 어긋나며, 5는 글에서 말하지 않은 시간 조건을 덧붙였다.",
+            "",
+            "3은 넷째 문장에 어긋나며, 5는 글에서 말하지 않은 시간 조건을 덧붙였다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K6",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K7-V1",
+          "track": "ko",
+          "targetLevel": 7,
+          "questionType": "inference",
+          "passageText": "수면과 학업 성취의 관계를 조사하는 방법은 크게 관찰 연구와 실험 연구로 나눌 수 있다. 관찰 연구에서 수면이 충분한 학생의 성취도가 높게 나타나더라도, 그것만으로 수면이 성취도 상승의 유일한 원인이라고 단정할 수는 없다. 생활 규칙성이나 학습 습관 같은 다른 요인이 두 변수에 함께 영향을 주었을 가능성이 있기 때문이다. 한편 학습 조건을 통제하고 수면 여부를 달리한 실험은 학습 후 수면이 기억 유지에 기여한다는 설명을 더 직접적으로 뒷받침한다. 그러나 그 효과의 크기는 기억 과제, 연령, 수면의 시기와 질 등에 따라 달라질 수 있다. 서로 다른 연구 방식의 결과가 같은 방향을 가리킬 때 설명의 신뢰도는 높아지지만, 적용 조건까지 사라지는 것은 아니다.",
+          "promptText": "윗글의 관점과 가장 가까운 것은 무엇입니까?",
+          "choices": [
+            "관찰 연구에서 상관관계가 나타나면 인과관계도 자동으로 확정된다.",
+            "실험 연구는 모든 연령과 기억 과제에서 동일한 효과를 보장한다.",
+            "수면 외의 요인이 존재하므로 수면과 기억의 관계는 연구할 수 없다.",
+            "여러 연구가 수면의 기여를 지지하더라도 효과의 조건과 범위를 함께 살펴야 한다.",
+            "생활 습관을 조사한 연구는 과학적 근거로 사용할 가치가 없다."
+          ],
+          "correctIndex": 3,
+          "answerEvidence": "글은 서로 다른 연구가 수면의 기여를 지지할 수 있음을 인정하면서도 조건에 따른 차이를 강조한다.",
+          "explanation": "글은 서로 다른 연구가 수면의 기여를 지지할 수 있음을 인정하면서도 조건에 따른 차이를 강조한다. 1은 상관관계를 인과관계로 과장한다. 2는 적용 조건을 삭제하고, 3과 5는 연구의 한계를 연구 불가능이나 무가치로 과도하게 확대한다.",
+          "distractorReasons": [
+            "1은 상관관계를 인과관계로 과장한다.",
+            "2는 적용 조건을 삭제하고, 3과 5는 연구의 한계를 연구 불가능이나 무가치로 과도하게 확대한다.",
+            "2는 적용 조건을 삭제하고, 3과 5는 연구의 한계를 연구 불가능이나 무가치로 과도하게 확대한다.",
+            "",
+            "2는 적용 조건을 삭제하고, 3과 5는 연구의 한계를 연구 불가능이나 무가치로 과도하게 확대한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K7",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-K8-V1",
+          "track": "ko",
+          "targetLevel": 8,
+          "questionType": "inference",
+          "passageText": "기억의 공고화를 설명하는 한 관점에 따르면, 새로 학습한 정보는 처음부터 뇌의 한 장소에 완성된 형태로 고정되는 것이 아니다. 해마는 사건의 여러 요소를 빠르게 묶어 임시적인 연결망을 형성하고, 대뇌피질의 관련 영역들은 더 긴 시간에 걸쳐 그 정보를 기존 지식과 통합한다. 비렘수면 중 나타나는 기억의 재활성화는 이 두 체계 사이의 정보 교환을 촉진하는 과정으로 해석된다. 여기서 재활성화는 학습 내용을 녹음 파일처럼 그대로 재생한다는 뜻이 아니라, 기억의 연결을 선택적으로 강화하고 재구성한다는 뜻에 가깝다. 따라서 수면 중 들은 복잡한 강의를 별도의 학습 없이 습득할 수 있다는 주장은 이 설명에서 곧바로 도출되지 않는다. 수면은 입력되지 않은 내용을 새로 기록하는 장치라기보다, 앞서 부호화된 정보가 장기 기억 체계에 자리 잡도록 돕는 과정으로 이해되어야 한다.",
+          "promptText": "윗글을 바탕으로 할 때, ‘잠자는 동안 강의를 틀면 공부를 대신할 수 있다’는 주장에 대한 비판으로 가장 적절한 것은 무엇입니까?",
+          "choices": [
+            "기억의 재활성화가 수면이 아닌 각성 상태에서만 일어난다고 전제한다.",
+            "기억의 재활성화를 사전에 부호화된 정보의 재구성이 아니라 새로운 정보의 최초 입력으로 오해한다.",
+            "해마가 장기 기억의 모든 내용을 영구적으로 단독 저장한다고 주장한다.",
+            "비렘수면이 기존 기억을 무조건 제거하는 단계라고 해석한다.",
+            "대뇌피질이 학습 직후 모든 기억을 완성한다는 연구 결과를 부정한다."
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "글은 재활성화를 앞서 학습한 정보의 강화·재구성으로 설명하므로, 이를 새로운 복잡한 정보의 최초 학습으로 확대하는 것이 문제다.",
+          "explanation": "글은 재활성화를 앞서 학습한 정보의 강화·재구성으로 설명하므로, 이를 새로운 복잡한 정보의 최초 학습으로 확대하는 것이 문제다. 1과 4는 글의 설명과 반대다. 3과 5는 비판 대상 주장에 포함되지 않은 내용을 임의로 부여한 오답이다.",
+          "distractorReasons": [
+            "1과 4는 글의 설명과 반대다.",
+            "",
+            "3과 5는 비판 대상 주장에 포함되지 않은 내용을 임의로 부여한 오답이다.",
+            "1과 4는 글의 설명과 반대다.",
+            "3과 5는 비판 대상 주장에 포함되지 않은 내용을 임의로 부여한 오답이다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K8",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E1-V1",
+          "track": "en",
+          "targetLevel": 1,
+          "questionType": "explicit",
+          "passageText": "Tom learns three new words. He sleeps at night. Sleep helps his brain keep the words.",
+          "promptText": "What helps Tom keep the new words?",
+          "choices": [
+            "Sleep",
+            "A ball",
+            "A window"
+          ],
+          "correctIndex": 0,
+          "answerEvidence": "마지막 문장에 sleep이 새 단어를 기억하도록 돕는다고 직접 제시되어 있다.",
+          "explanation": "마지막 문장에 sleep이 새 단어를 기억하도록 돕는다고 직접 제시되어 있다. 2와 3은 지문에 없는 사물이다.",
+          "distractorReasons": [
+            "",
+            "2와 3은 지문에 없는 사물이다.",
+            "2와 3은 지문에 없는 사물이다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E1",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E2-V1",
+          "track": "en",
+          "targetLevel": 2,
+          "questionType": "explicit",
+          "passageText": "Mina studies five English words. Then she goes to bed. Her brain does not simply turn off during sleep. It helps organize what she learned. The next day, Mina reviews the words again.",
+          "promptText": "What does Mina's brain do during sleep?",
+          "choices": [
+            "It organizes what she learned.",
+            "It forgets every English word.",
+            "It learns words Mina never studied."
+          ],
+          "correctIndex": 0,
+          "answerEvidence": "넷째 문장이 정답 근거다.",
+          "explanation": "넷째 문장이 정답 근거다. 2는 내용과 반대이며, 3은 수면이 사전 학습을 대신한다고 왜곡한다.",
+          "distractorReasons": [
+            "",
+            "2는 내용과 반대이며, 3은 수면이 사전 학습을 대신한다고 왜곡한다.",
+            "2는 내용과 반대이며, 3은 수면이 사전 학습을 대신한다고 왜곡한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E2",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E3-V1",
+          "track": "en",
+          "targetLevel": 3,
+          "questionType": "main_idea",
+          "passageText": "Learning and sleeping have different jobs. When you study, new information enters your brain. During sleep, your brain helps organize that information. Sleep cannot teach you a lesson that you never studied. However, it can help keep what you learned before bed. Thus, study and sleep work together.",
+          "promptText": "What is the main idea of the passage?",
+          "choices": [
+            "Sleep makes studying unnecessary.",
+            "Study and sleep can work together for memory.",
+            "The brain stops all activity during sleep.",
+            "Students should learn only before bed."
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "첫 문장부터 마지막 문장까지 학습과 수면의 상호보완성을 설명한다.",
+          "explanation": "첫 문장부터 마지막 문장까지 학습과 수면의 상호보완성을 설명한다. 1과 3은 지문이 직접 부정하며, 4는 공부 시점을 불필요하게 제한한다.",
+          "distractorReasons": [
+            "1과 3은 지문이 직접 부정하며, 4는 공부 시점을 불필요하게 제한한다.",
+            "",
+            "1과 3은 지문이 직접 부정하며, 4는 공부 시점을 불필요하게 제한한다.",
+            "1과 3은 지문이 직접 부정하며, 4는 공부 시점을 불필요하게 제한한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E3",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E4-V1",
+          "track": "en",
+          "targetLevel": 4,
+          "questionType": "title",
+          "passageText": "Sleep supports learning at two different times. Before learning, enough sleep can help you stay alert and pay attention. This makes it easier to take in new information. After learning, sleep helps new memories become more stable. Still, sleep is not a magic teacher. If you never pay attention to the information, your brain has little to organize later. Learning first and sleeping afterward are both parts of remembering.",
+          "promptText": "Which is the best title for the passage?",
+          "choices": [
+            "Two Ways Sleep Supports Learning",
+            "How to Learn Without Paying Attention",
+            "Why Sleep Removes New Memories",
+            "The Only Time Students Should Study"
+          ],
+          "correctIndex": 0,
+          "answerEvidence": "글은 학습 전의 주의와 학습 후의 기억 안정이라는 두 역할을 제시한다.",
+          "explanation": "글은 학습 전의 주의와 학습 후의 기억 안정이라는 두 역할을 제시한다. 2는 주의가 필요하다는 설명과 반대이고, 3은 기억을 안정시킨다는 내용과 반대다. 4는 글에 없는 제한이다.",
+          "distractorReasons": [
+            "",
+            "2는 주의가 필요하다는 설명과 반대이고, 3은 기억을 안정시킨다는 내용과 반대다.",
+            "2는 주의가 필요하다는 설명과 반대이고, 3은 기억을 안정시킨다는 내용과 반대다.",
+            "4는 글에 없는 제한이다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E4",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E5-V1",
+          "track": "en",
+          "targetLevel": 5,
+          "questionType": "blank",
+          "passageText": "Before an exam, students may treat study time and sleep time as simple opposites. If they sleep one hour less, they seem to gain one more hour for study. Yet this calculation ignores the quality of learning. A tired student may have trouble focusing on new material. In addition, sleep after studying is related to the process that makes new memories more stable. This does not mean that sleep can create knowledge without study. Rather, effective learning depends on both the attention used to take in information and the later process that helps preserve it. Therefore, ______.",
+          "promptText": "Which best completes the blank?",
+          "choices": [
+            "every hour of sleep produces the same test score",
+            "reducing sleep does not always produce more effective study",
+            "students can learn difficult material while remaining asleep",
+            "memory is formed only while a person is awake",
+            "the total number of study hours is the only useful measure"
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "글은 수면을 줄이면 공부 시간이 늘어난다는 계산이 학습의 질과 기억 안정 과정을 빠뜨린다고 설명한다.",
+          "explanation": "글은 수면을 줄이면 공부 시간이 늘어난다는 계산이 학습의 질과 기억 안정 과정을 빠뜨린다고 설명한다. 1은 근거 없는 수치 관계, 3과 4는 수면의 역할을 각각 과장하거나 부정한 표현이다. 5는 글이 비판하는 관점이다.",
+          "distractorReasons": [
+            "1은 근거 없는 수치 관계, 3과 4는 수면의 역할을 각각 과장하거나 부정한 표현이다.",
+            "",
+            "1은 근거 없는 수치 관계, 3과 4는 수면의 역할을 각각 과장하거나 부정한 표현이다.",
+            "1은 근거 없는 수치 관계, 3과 4는 수면의 역할을 각각 과장하거나 부정한 표현이다.",
+            "5는 글이 비판하는 관점이다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E5",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E6-V1",
+          "track": "en",
+          "targetLevel": 6,
+          "questionType": "order",
+          "passageText": "Sleep can influence learning both before and after a lesson.\n\n(A) After learning, sleep is associated with consolidation, the process through which a new and fragile memory becomes more stable. This process does not create information that was never learned.\n\n(B) Before learning, insufficient sleep may reduce attention. When attention is weak, the brain may not encode, or take in, new information effectively.\n\n(C) Thus, sleep is not merely time taken away from study. It can support the conditions needed to form a memory and the later process that helps maintain it.",
+          "promptText": "What is the most logical order of the paragraphs?",
+          "choices": [
+            "(A) – (B) – (C)",
+            "(A) – (C) – (B)",
+            "(B) – (A) – (C)",
+            "(B) – (C) – (A)",
+            "(C) – (A) – (B)"
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "첫 문장의 ‘before and after’ 순서를 (B)의 학습 전, (A)의 학습 후가 이어받고, (C)가 Thus로 두 역할을 종합한다.",
+          "explanation": "첫 문장의 ‘before and after’ 순서를 (B)의 학습 전, (A)의 학습 후가 이어받고, (C)가 Thus로 두 역할을 종합한다. 나머지 배열은 이 시간 순서나 결론 연결을 깨뜨린다.",
+          "distractorReasons": [
+            "첫 문장의 ‘before and after’ 순서를 (B)의 학습 전, (A)의 학습 후가 이어받고, (C)가 Thus로 두 역할을 종합한다. 나머지 배열은 이 시간 순서나 결론 연결을 깨뜨린다.",
+            "첫 문장의 ‘before and after’ 순서를 (B)의 학습 전, (A)의 학습 후가 이어받고, (C)가 Thus로 두 역할을 종합한다. 나머지 배열은 이 시간 순서나 결론 연결을 깨뜨린다.",
+            "",
+            "첫 문장의 ‘before and after’ 순서를 (B)의 학습 전, (A)의 학습 후가 이어받고, (C)가 Thus로 두 역할을 종합한다. 나머지 배열은 이 시간 순서나 결론 연결을 깨뜨린다.",
+            "첫 문장의 ‘before and after’ 순서를 (B)의 학습 전, (A)의 학습 후가 이어받고, (C)가 Thus로 두 역할을 종합한다. 나머지 배열은 이 시간 순서나 결론 연결을 깨뜨린다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E6",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E7-V1",
+          "track": "en",
+          "targetLevel": 7,
+          "questionType": "inference",
+          "passageText": "Studies on sleep and academic performance do not all provide the same kind of evidence. Observational studies may find that students who sleep more regularly earn higher scores. Such a pattern is informative, but it cannot by itself prove that sleep caused the difference. Regular schedules, stress, or study habits might affect both sleep and performance. Experiments can offer more direct evidence by controlling learning conditions and varying whether sleep follows learning. Many of these studies support a role for sleep in memory consolidation. Nevertheless, the size of the benefit may vary with age, the kind of memory tested, and the timing or quality of sleep. When different methods point in the same direction, confidence in the general explanation grows, but the limits of that explanation should not be ignored.",
+          "promptText": "Which statement is best supported by the passage?",
+          "choices": [
+            "Any correlation between sleep and grades proves a direct causal relationship.",
+            "Experimental findings apply equally to every learner and every memory task.",
+            "Evidence can support a role for sleep while leaving its conditions and effect size open.",
+            "Observational studies are useless whenever other variables may be involved.",
+            "Sleep is the only factor that can influence academic performance."
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "글은 여러 방법의 증거가 수면의 역할을 지지할 수 있지만 효과의 크기와 적용 조건은 달라질 수 있다고 말한다.",
+          "explanation": "글은 여러 방법의 증거가 수면의 역할을 지지할 수 있지만 효과의 크기와 적용 조건은 달라질 수 있다고 말한다. 1과 5는 인과성을 과장하고, 2는 조건 차이를 삭제한다. 4는 관찰 연구의 한계를 ‘무가치’로 과도하게 확대한다.",
+          "distractorReasons": [
+            "1과 5는 인과성을 과장하고, 2는 조건 차이를 삭제한다.",
+            "1과 5는 인과성을 과장하고, 2는 조건 차이를 삭제한다.",
+            "",
+            "4는 관찰 연구의 한계를 ‘무가치’로 과도하게 확대한다.",
+            "1과 5는 인과성을 과장하고, 2는 조건 차이를 삭제한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E7",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "SCI-SLEEP-MEMORY-001-E8-V1",
+          "track": "en",
+          "targetLevel": 8,
+          "questionType": "blank",
+          "passageText": "Students often treat study time and sleep time as if they were competing investments. On this view, every hour spent sleeping is an hour taken from learning. The reasoning appears mathematical, but it assumes that all waking study hours have equal value. When sleep is insufficient, attention during later study may weaken, reducing the quality of initial encoding. Sleep after learning is also associated with consolidation, through which fragile memories become more stable. Yet it would be equally misleading to claim that sleep can replace study. Consolidation requires material that has already been attended to and encoded. The relationship is therefore not a choice between two independent routes to the same result. Study supplies and processes information, whereas sleep helps create conditions in which that learning can be preserved. The simple trade-off model fails because it ______.",
+          "promptText": "Which best completes the blank?",
+          "choices": [
+            "assumes that memories must be encoded before they can be consolidated",
+            "counts added waking time but ignores changes in learning quality and memory stability",
+            "distinguishes the initial learning of information from its later preservation",
+            "claims that studying and sleeping are exactly the same cognitive process",
+            "rejects the assumption that every waking study hour has equal value"
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "단순 교환 모형은 잠을 줄여 얻은 시간만 계산하고, 수면 부족에 따른 주의·부호화의 질과 학습 후 기억 안정의 차이를 계산하지 않으므로 2가 적절하다.",
+          "explanation": "단순 교환 모형은 잠을 줄여 얻은 시간만 계산하고, 수면 부족에 따른 주의·부호화의 질과 학습 후 기억 안정의 차이를 계산하지 않으므로 2가 적절하다. 1과 3은 글이 받아들이는 구분이어서 모형의 오류가 아니다. 4는 모형이 실제로 내세운 주장이 아니며, 5는 모형의 전제를 비판하는 글의 관점이다.",
+          "distractorReasons": [
+            "1과 3은 글이 받아들이는 구분이어서 모형의 오류가 아니다.",
+            "",
+            "1과 3은 글이 받아들이는 구분이어서 모형의 오류가 아니다.",
+            "4는 모형이 실제로 내세운 주장이 아니며, 5는 모형의 전제를 비판하는 글의 관점이다.",
+            "4는 모형이 실제로 내세운 주장이 아니며, 5는 모형의 전제를 비판하는 글의 관점이다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E8",
+            "sourceDocument": "수면과_기억_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        }
+      ]
+    },
+    {
+      "topicKey": "MATH-CENTER-001",
+      "title": "평균의 함정",
+      "primaryDomain": "math_data",
+      "relatedDomains": [
+        "society_economy",
+        "science"
+      ],
+      "coreQuestion": "하나의 평균값은 자료 전체를 얼마나 잘 보여 주는가?",
+      "coreFacts": [
+        "산술평균은 모든 값의 합을 자료 수로 나눈 값이며 모든 관측값을 계산에 사용한다.",
+        "중앙값은 자료를 크기순으로 놓았을 때 가운데에 위치한 값이다.",
+        "극단값은 산술평균을 크게 움직일 수 있지만 중앙값에는 상대적으로 작은 영향을 준다.",
+        "평균과 중앙값 중 어떤 대표값이 적절한지는 자료의 분포와 질문에 달려 있다.",
+        "평균이 같아도 자료의 퍼짐과 모양은 다를 수 있다.",
+        "크기가 다른 집단의 평균을 합칠 때는 자료 수를 반영한 가중평균이 필요하다."
+      ],
+      "misconceptions": [
+        "평균은 언제나 대부분의 사람이 실제로 가진 값을 뜻한다."
+      ],
+      "practicalUse": "소득, 집값, 시험 점수, 이용 시간, 제품 후기에서 대표값과 분포를 함께 확인한다.",
+      "ageScope": {
+        "lowerElementary": "평균을 모두 모아 똑같이 나눈 값으로 이해",
+        "upperElementary": "극단값과 평균·중앙값의 차이",
+        "middleSchool": "대표값과 자료의 퍼짐을 함께 해석",
+        "highSchool": "가중평균과 집단 구성비 변화의 효과"
+      },
+      "uncertaintyNotes": "실제 사회 집단의 수치는 출처와 조사 시점을 확인하고, 설명용 자료는 가상 자료로 구분한다.",
+      "status": "draft",
+      "sources": [
+        {
+          "title": "Histogram Interpretation: Skewed Right",
+          "publisher": "National Institute of Standards and Technology",
+          "sourceUrl": "https://www.itl.nist.gov/div898/handbook/eda/section3/eda33a6.htm",
+          "sourceKind": "official",
+          "notes": "비대칭 분포에서 평균·중앙값·최빈값의 차이에 관한 공식 안내"
+        },
+        {
+          "title": "Statistical Education of Teachers",
+          "publisher": "American Statistical Association",
+          "sourceUrl": "https://www.amstat.org/asa/files/pdfs/edu-set.pdf",
+          "sourceKind": "official",
+          "publishedOn": "2016-01-01",
+          "notes": "분포 형태에 따른 대표값 선택과 이상값에 강한 요약값 설명"
+        },
+        {
+          "title": "Statistics Education Web",
+          "publisher": "American Statistical Association",
+          "sourceUrl": "https://www.amstat.org/education/stew/statistics-education-web-%28stew%29",
+          "sourceKind": "official",
+          "notes": "통계적 질문·자료 수집·분석·맥락 속 해석을 연결하는 교육 자료"
+        }
+      ],
+      "items": [
+        {
+          "itemKey": "MATH-CENTER-001-K1-V1",
+          "track": "ko",
+          "targetLevel": 1,
+          "questionType": "explicit",
+          "passageText": "세 친구에게 사탕이 1개, 2개, 3개 있습니다. 사탕을 모두 모아 똑같이 나누면 한 사람에게 2개씩 돌아갑니다. 이때 2를 세 친구가 가진 사탕 수의 평균이라고 합니다.",
+          "promptText": "사탕을 똑같이 나누면 한 사람에게 몇 개씩 돌아갑니까?",
+          "choices": [
+            "1개",
+            "2개",
+            "3개"
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "둘째 문장에 한 사람에게 2개씩 돌아간다고 직접 제시되어 있다.",
+          "explanation": "둘째 문장에 한 사람에게 2개씩 돌아간다고 직접 제시되어 있다. 1과 3은 처음에 각 친구가 가진 값의 일부일 뿐, 똑같이 나눈 값이 아니다.",
+          "distractorReasons": [
+            "1과 3은 처음에 각 친구가 가진 값의 일부일 뿐, 똑같이 나눈 값이 아니다.",
+            "",
+            "1과 3은 처음에 각 친구가 가진 값의 일부일 뿐, 똑같이 나눈 값이 아니다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K1",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-K2-V1",
+          "track": "ko",
+          "targetLevel": 2,
+          "questionType": "inference",
+          "passageText": "다은, 민호, 수지는 책을 각각 3권, 6권, 9권 읽었습니다. 세 사람이 읽은 책은 모두 18권입니다. 18을 세 사람의 수인 3으로 나누면 6입니다. 따라서 세 사람이 읽은 책 수의 평균은 6권입니다.",
+          "promptText": "평균이 6권인 까닭으로 알맞은 것은 무엇입니까?",
+          "choices": [
+            "가장 많이 읽은 사람이 6권을 읽었기 때문입니다.",
+            "모두 읽은 18권을 세 사람에게 똑같이 나누면 6권이기 때문입니다.",
+            "세 사람 모두 실제로 6권씩 읽었기 때문입니다."
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "평균을 ‘모두 합해 똑같이 나눈 값’으로 설명한 문장을 찾으면 2가 된다.",
+          "explanation": "평균을 ‘모두 합해 똑같이 나눈 값’으로 설명한 문장을 찾으면 2가 된다. 가장 많이 읽은 값은 9권이므로 1은 틀리고, 실제 읽은 양은 3권·6권·9권이므로 3도 틀리다.",
+          "distractorReasons": [
+            "가장 많이 읽은 값은 9권이므로 1은 틀리고, 실제 읽은 양은 3권·6권·9권이므로 3도 틀리다.",
+            "",
+            "평균을 ‘모두 합해 똑같이 나눈 값’으로 설명한 문장을 찾으면 2가 된다. 가장 많이 읽은 값은 9권이므로 1은 틀리고, 실제 읽은 양은 3권·6권·9권이므로 3도 틀리다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K2",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-K3-V1",
+          "track": "ko",
+          "targetLevel": 3,
+          "questionType": "inference",
+          "passageText": "다섯 학생이 줄넘기를 한 횟수는 9회, 10회, 10회, 11회, 40회이다. 평균은 다섯 값을 모두 사용하기 때문에 40회의 영향을 크게 받는다. 한편 자료를 크기순으로 놓았을 때 가운데에 있는 중앙값은 10회이다. 이 자료에서 네 학생은 9회에서 11회 사이에 있으므로, 보통 학생의 모습을 설명할 때는 평균 16회보다 중앙값 10회가 더 알맞을 수 있다.",
+          "promptText": "중앙값이 보통 학생의 모습을 더 잘 보여 주는 까닭은 무엇입니까?",
+          "choices": [
+            "모든 학생이 10회씩 했기 때문입니다.",
+            "40회라는 큰 값이 평균을 높였기 때문입니다.",
+            "평균을 계산할 때 40회를 빼야 하기 때문입니다.",
+            "중앙값은 언제나 평균보다 크기 때문입니다."
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "네 학생의 값은 서로 가깝지만 40회가 평균을 16회까지 끌어올렸으므로 2가 적절하다.",
+          "explanation": "네 학생의 값은 서로 가깝지만 40회가 평균을 16회까지 끌어올렸으므로 2가 적절하다. 1은 실제 값과 다르고, 3은 평균 계산법을 왜곡한다. 4는 자료에 따라 달라지는 관계를 ‘언제나’로 과장한다.",
+          "distractorReasons": [
+            "1은 실제 값과 다르고, 3은 평균 계산법을 왜곡한다.",
+            "",
+            "1은 실제 값과 다르고, 3은 평균 계산법을 왜곡한다.",
+            "4는 자료에 따라 달라지는 관계를 ‘언제나’로 과장한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K3",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-K4-V1",
+          "track": "ko",
+          "targetLevel": 4,
+          "questionType": "inference",
+          "passageText": "한 반 학생 다섯 명이 한 달 동안 읽은 책은 각각 1권, 2권, 2권, 3권, 17권이었다. 이 자료의 평균은 5권이지만, 실제로 5권 이상을 읽은 학생은 한 명뿐이다. 17권이라는 극단적으로 큰 값이 평균을 높였기 때문이다. 반면 중앙값은 크기순으로 놓았을 때 가운데에 있는 2권이다. 따라서 ‘이 반 학생은 보통 몇 권을 읽었는가?’라는 질문에는 평균만 제시하는 것보다 중앙값과 자료의 분포를 함께 보여 주는 편이 낫다.",
+          "promptText": "윗글에서 알 수 있는 내용으로 가장 적절한 것은 무엇입니까?",
+          "choices": [
+            "평균은 자료에 큰 값이 포함되어도 변하지 않는다.",
+            "중앙값은 자료에 있는 가장 큰 값을 뜻한다.",
+            "대표값의 적절성은 자료의 분포와 질문에 따라 달라질 수 있다.",
+            "평균과 중앙값이 다르면 계산이 잘못된 것이다."
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "글은 극단값이 있는 자료에서 질문에 맞게 중앙값과 분포를 함께 보아야 한다고 설명한다.",
+          "explanation": "글은 극단값이 있는 자료에서 질문에 맞게 중앙값과 분포를 함께 보아야 한다고 설명한다. 1은 극단값이 평균을 높였다는 내용과 반대다. 2는 중앙값의 정의와 다르고, 4는 두 값이 정당하게 달라질 수 있음을 무시한다.",
+          "distractorReasons": [
+            "1은 극단값이 평균을 높였다는 내용과 반대다.",
+            "2는 중앙값의 정의와 다르고, 4는 두 값이 정당하게 달라질 수 있음을 무시한다.",
+            "",
+            "2는 중앙값의 정의와 다르고, 4는 두 값이 정당하게 달라질 수 있음을 무시한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K4",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-K5-V1",
+          "track": "ko",
+          "targetLevel": 5,
+          "questionType": "main_idea",
+          "passageText": "어떤 회사 직원 다섯 명의 월급이 250만 원, 260만 원, 270만 원, 280만 원, 1,440만 원이라고 하자. 이들의 평균 월급은 500만 원이지만, 다섯 명 중 네 명은 500만 원보다 훨씬 적게 받는다. 반면 중앙값은 자료를 크기순으로 놓았을 때 가운데 값인 270만 원이다. 평균은 모든 직원의 월급 총액을 자료 수로 나눈 값이므로 회사가 지급한 전체 규모를 계산할 때 유용하다. 그러나 ‘전형적인 직원이 받는 월급’을 묻는다면 극단값의 영향을 덜 받는 중앙값이 더 적절할 수 있다. 결국 같은 자료라도 질문의 목적에 따라 적합한 대표값이 달라진다.",
+          "promptText": "윗글의 요지로 가장 적절한 것은 무엇입니까?",
+          "choices": [
+            "평균은 계산에 가장 큰 값을 사용하지 않는다.",
+            "중앙값은 언제나 전체 금액의 규모를 정확히 보여 준다.",
+            "평균과 중앙값이 다르면 중앙값만 공개해야 한다.",
+            "자료의 목적과 분포를 고려하여 대표값을 선택해야 한다.",
+            "극단값이 있는 자료에서는 어떤 통계도 사용할 수 없다."
+          ],
+          "correctIndex": 3,
+          "answerEvidence": "전체 지급 규모에는 평균, 전형적 직원의 월급에는 중앙값이 유용할 수 있다는 대조가 4로 요약된다.",
+          "explanation": "전체 지급 규모에는 평균, 전형적 직원의 월급에는 중앙값이 유용할 수 있다는 대조가 4로 요약된다. 1은 평균의 정의와 반대이고, 2와 3은 중앙값을 무조건 우월하게 만든다. 5는 대표값을 목적에 맞게 사용할 수 있다는 글의 결론과 다르다.",
+          "distractorReasons": [
+            "1은 평균의 정의와 반대이고, 2와 3은 중앙값을 무조건 우월하게 만든다.",
+            "1은 평균의 정의와 반대이고, 2와 3은 중앙값을 무조건 우월하게 만든다.",
+            "1은 평균의 정의와 반대이고, 2와 3은 중앙값을 무조건 우월하게 만든다.",
+            "",
+            "5는 대표값을 목적에 맞게 사용할 수 있다는 글의 결론과 다르다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K5",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-K6-V1",
+          "track": "ko",
+          "targetLevel": 6,
+          "questionType": "inference",
+          "passageText": "두 학급의 시험 점수가 다음과 같다고 하자. A반은 70점, 70점, 70점, 70점, 70점이고 B반은 50점, 60점, 70점, 80점, 90점이다. 두 반의 평균과 중앙값은 모두 70점이다. 하지만 A반에서는 모든 점수가 대표값과 같고, B반에서는 점수가 50점부터 90점까지 넓게 퍼져 있다. 이처럼 중심을 나타내는 값이 같다고 해서 자료의 전체 모습까지 같아지는 것은 아니다. 집단을 비교하려면 평균이나 중앙값뿐 아니라 범위, 사분위 범위, 표준편차 또는 그래프처럼 자료가 얼마나 퍼져 있는지를 보여 주는 정보도 살펴야 한다.",
+          "promptText": "윗글을 바탕으로 한 판단으로 가장 적절한 것은 무엇입니까?",
+          "choices": [
+            "두 집단의 평균이 같으면 모든 구성원의 값도 같다.",
+            "B반의 중앙값은 점수가 넓게 퍼져 있으므로 90점이다.",
+            "대표값 하나만으로는 자료의 퍼짐 차이를 확인하기 어렵다.",
+            "자료가 넓게 퍼져 있으면 평균을 계산할 수 없다.",
+            "평균이 같을 때는 그래프와 변동성 정보를 볼 필요가 없다."
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "두 반의 평균·중앙값은 같지만 퍼짐은 다르므로 3이 핵심이다.",
+          "explanation": "두 반의 평균·중앙값은 같지만 퍼짐은 다르므로 3이 핵심이다. 1과 5는 예시가 반박하고, 2는 가운데 값의 정의를 잘못 적용했다. 4는 계산 가능성과 자료의 퍼짐을 혼동한다.",
+          "distractorReasons": [
+            "1과 5는 예시가 반박하고, 2는 가운데 값의 정의를 잘못 적용했다.",
+            "1과 5는 예시가 반박하고, 2는 가운데 값의 정의를 잘못 적용했다.",
+            "",
+            "4는 계산 가능성과 자료의 퍼짐을 혼동한다.",
+            "1과 5는 예시가 반박하고, 2는 가운데 값의 정의를 잘못 적용했다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K6",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-K7-V1",
+          "track": "ko",
+          "targetLevel": 7,
+          "questionType": "data_interpretation",
+          "passageText": "규모가 다른 두 집단의 평균을 합칠 때 집단 평균끼리 단순히 다시 평균 내면 전체 평균과 달라질 수 있다. 예를 들어 A과정 수강생 10명의 평균이 90점이고 B과정 수강생 30명의 평균이 70점이라고 하자. 두 평균의 단순 평균은 80점이다. 그러나 실제 전체 평균을 구하려면 A과정의 총점 900점과 B과정의 총점 2,100점을 더한 뒤 전체 수강생 40명으로 나누어야 하므로 결과는 75점이다. 단순 평균 80점은 크기가 작은 A과정에 실제보다 큰 비중을 부여한 셈이다. 집단 평균을 통합할 때에는 각 평균이 몇 개의 자료를 대표하는지 반영해야 한다.",
+          "promptText": "전체 평균을 80점으로 계산한 방식의 문제점으로 가장 적절한 것은 무엇입니까?",
+          "choices": [
+            "두 과정의 평균을 계산할 때 모든 점수를 삭제했다.",
+            "평균이 높은 A과정의 점수를 계산에서 제외했다.",
+            "두 과정의 수강생 수가 다른데도 같은 비중으로 처리했다.",
+            "B과정의 평균을 중앙값으로 잘못 바꾸었다.",
+            "전체 수강생 수가 40명이라는 사실을 두 번 반영했다."
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "단순 평균은 10명과 30명을 각각 동일한 크기의 집단처럼 취급하므로 3이 적절하다.",
+          "explanation": "단순 평균은 10명과 30명을 각각 동일한 크기의 집단처럼 취급하므로 3이 적절하다. 1과 2는 실제 계산 방식과 다르고, 4는 중앙값을 사용하지 않았다. 5는 오히려 자료 수를 제대로 반영하지 않은 것이 문제다.",
+          "distractorReasons": [
+            "1과 2는 실제 계산 방식과 다르고, 4는 중앙값을 사용하지 않았다.",
+            "1과 2는 실제 계산 방식과 다르고, 4는 중앙값을 사용하지 않았다.",
+            "",
+            "1과 2는 실제 계산 방식과 다르고, 4는 중앙값을 사용하지 않았다.",
+            "5는 오히려 자료 수를 제대로 반영하지 않은 것이 문제다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K7",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-K8-V1",
+          "track": "ko",
+          "targetLevel": 8,
+          "questionType": "data_interpretation",
+          "passageText": "집단 전체의 평균 변화는 각 하위 집단의 값 변화뿐 아니라 집단 구성비의 변화에도 영향을 받는다. 가상의 교육기관에서 심화 과정의 첫해 평균은 90점, 기초 과정은 60점이었다. 둘째 해에는 각각 89점과 59점으로 두 과정의 평균이 모두 1점씩 하락했다. 그런데 첫해에는 전체 수강생의 20%만 심화 과정을 들었고, 둘째 해에는 80%가 심화 과정을 들었다. 이에 따라 전체 평균은 첫해 66점에서 둘째 해 83점으로 상승한다. 각 과정의 성취도는 모두 낮아졌지만 원래 평균이 높은 심화 과정의 비중이 크게 늘었기 때문이다. 따라서 전체 평균의 상승만으로 교육 효과가 개선되었다고 결론 내리면, 하위 집단의 변화와 구성비의 변화를 구분하지 못하게 된다.",
+          "promptText": "윗글의 사례에 대한 해석으로 가장 적절한 것은 무엇입니까?",
+          "choices": [
+            "전체 평균이 상승했으므로 두 과정의 평균도 모두 상승했다.",
+            "둘째 해의 교육 방법이 더 효과적이었다는 사실이 전체 평균으로 증명되었다.",
+            "각 과정의 평균 하락보다 전체 평균 상승을 언제나 우선하여 해석해야 한다.",
+            "원래 평균이 높은 집단의 비중 증가가 전체 평균을 높일 수 있다.",
+            "하위 집단의 평균을 알면 집단 구성비는 전체 평균에 영향을 주지 않는다."
+          ],
+          "correctIndex": 3,
+          "answerEvidence": "심화 과정과 기초 과정의 평균은 각각 하락했지만 심화 과정의 비중 증가로 전체 평균이 상승했으므로 4가 정확하다.",
+          "explanation": "심화 과정과 기초 과정의 평균은 각각 하락했지만 심화 과정의 비중 증가로 전체 평균이 상승했으므로 4가 정확하다. 1은 자료와 반대이고, 2는 구성비 효과를 교육 효과로 오인한다. 3은 전체와 하위 집단 중 하나를 무조건 우선시하며, 5는 가중평균에서 구성비가 하는 역할을 부정한다.",
+          "distractorReasons": [
+            "1은 자료와 반대이고, 2는 구성비 효과를 교육 효과로 오인한다.",
+            "1은 자료와 반대이고, 2는 구성비 효과를 교육 효과로 오인한다.",
+            "3은 전체와 하위 집단 중 하나를 무조건 우선시하며, 5는 가중평균에서 구성비가 하는 역할을 부정한다.",
+            "",
+            "3은 전체와 하위 집단 중 하나를 무조건 우선시하며, 5는 가중평균에서 구성비가 하는 역할을 부정한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "K8",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E1-V1",
+          "track": "en",
+          "targetLevel": 1,
+          "questionType": "explicit",
+          "passageText": "Three children have six apples. They share the apples equally. Each child gets two apples.",
+          "promptText": "How many apples does each child get?",
+          "choices": [
+            "One",
+            "Two",
+            "Six"
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "마지막 문장에 각 어린이가 사과 두 개를 받는다고 직접 제시되어 있다.",
+          "explanation": "마지막 문장에 각 어린이가 사과 두 개를 받는다고 직접 제시되어 있다. 1은 지문에 없고, 3은 전체 사과 수다.",
+          "distractorReasons": [
+            "1은 지문에 없고, 3은 전체 사과 수다.",
+            "",
+            "1은 지문에 없고, 3은 전체 사과 수다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E1",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E2-V1",
+          "track": "en",
+          "targetLevel": 2,
+          "questionType": "explicit",
+          "passageText": "Ben reads three books. Amy reads six books. Luis reads nine books. Together, they read eighteen books. If they share that number equally, each person gets six. Their mean is six books.",
+          "promptText": "Why is the mean six?",
+          "choices": [
+            "Six is the largest number.",
+            "Everyone actually read six books.",
+            "Eighteen shared among three people is six."
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "전체 18을 사람 수 3으로 나눈 값이 6이므로 3이 정답이다.",
+          "explanation": "전체 18을 사람 수 3으로 나눈 값이 6이므로 3이 정답이다. 가장 큰 값은 9라서 1이 틀리고, 실제 값은 서로 달라 2도 틀리다.",
+          "distractorReasons": [
+            "가장 큰 값은 9라서 1이 틀리고, 실제 값은 서로 달라 2도 틀리다.",
+            "전체 18을 사람 수 3으로 나눈 값이 6이므로 3이 정답이다. 가장 큰 값은 9라서 1이 틀리고, 실제 값은 서로 달라 2도 틀리다.",
+            ""
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E2",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E3-V1",
+          "track": "en",
+          "targetLevel": 3,
+          "questionType": "inference",
+          "passageText": "Five children wait 9, 10, 10, 11, and 40 minutes for a bus. The mean is 16 minutes because the long wait of 40 minutes pulls it up. The median is 10 minutes, the middle number. For most children in this group, 10 minutes describes the wait better.",
+          "promptText": "Why is the median useful here?",
+          "choices": [
+            "Every child waits ten minutes.",
+            "The long wait changes the mean greatly.",
+            "The mean does not use all five numbers.",
+            "The median is always larger than the mean."
+          ],
+          "correctIndex": 1,
+          "answerEvidence": "40이라는 큰 값이 평균을 높였다는 설명이 2의 근거다.",
+          "explanation": "40이라는 큰 값이 평균을 높였다는 설명이 2의 근거다. 1은 실제 자료와 다르고, 평균은 모든 값을 사용하므로 3도 틀리다. 4는 자료에 따라 달라지는 관계를 과장한다.",
+          "distractorReasons": [
+            "1은 실제 자료와 다르고, 평균은 모든 값을 사용하므로 3도 틀리다.",
+            "",
+            "40이라는 큰 값이 평균을 높였다는 설명이 2의 근거다. 1은 실제 자료와 다르고, 평균은 모든 값을 사용하므로 3도 틀리다. 4는 자료에 따라 달라지는 관계를 과장한다.",
+            "4는 자료에 따라 달라지는 관계를 과장한다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E3",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E4-V1",
+          "track": "en",
+          "targetLevel": 4,
+          "questionType": "title",
+          "passageText": "The mean and the median both describe the center of data, but they do so differently. The mean uses every value. Because of this, one extremely large value can pull the mean upward. The median is the middle value after the numbers are put in order, so it usually changes less when an extreme value is added. Neither measure is always best. The better choice depends on the shape of the data and the question being asked.",
+          "promptText": "What is the best title for the passage?",
+          "choices": [
+            "Choosing Between the Mean and the Median",
+            "Why the Median Is Always Correct",
+            "How to Remove Large Values from Data",
+            "The Only Way to Find the Center"
+          ],
+          "correctIndex": 0,
+          "answerEvidence": "글은 두 대표값의 차이와 선택 기준을 설명하므로 1이 적절하다.",
+          "explanation": "글은 두 대표값의 차이와 선택 기준을 설명하므로 1이 적절하다. 2와 4는 어느 하나가 항상 최선은 아니라는 결론을 왜곡하며, 3은 극단값을 삭제하라고 주장하지 않는다.",
+          "distractorReasons": [
+            "",
+            "2와 4는 어느 하나가 항상 최선은 아니라는 결론을 왜곡하며, 3은 극단값을 삭제하라고 주장하지 않는다.",
+            "2와 4는 어느 하나가 항상 최선은 아니라는 결론을 왜곡하며, 3은 극단값을 삭제하라고 주장하지 않는다.",
+            "2와 4는 어느 하나가 항상 최선은 아니라는 결론을 왜곡하며, 3은 극단값을 삭제하라고 주장하지 않는다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E4",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E5-V1",
+          "track": "en",
+          "targetLevel": 5,
+          "questionType": "blank",
+          "passageText": "Imagine that five workers earn 25, 26, 27, 28, and 144 units of money. Their mean income is 50, but four of the five workers earn far less than 50. The unusually high income pulls the mean upward. The median, which is the middle value, is 27. If we want to know the total amount paid per worker, the mean is useful because it includes every value. If we want to describe a typical worker's income, the median may be more informative. Thus, ______.",
+          "promptText": "Which best completes the blank?",
+          "choices": [
+            "the mean should never be used for income data",
+            "the median always shows the total amount paid",
+            "the purpose of the question helps determine the useful measure",
+            "an extreme value makes all statistics impossible to calculate",
+            "every worker usually earns exactly the mean income"
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "평균과 중앙값의 유용성이 질문 목적에 따라 달라진다는 앞선 대조를 3이 종합한다.",
+          "explanation": "평균과 중앙값의 유용성이 질문 목적에 따라 달라진다는 앞선 대조를 3이 종합한다. 1과 2는 하나의 대표값을 무조건 우월하게 만들고, 4는 계산 가능성을 부정한다. 5는 예시 자체와 맞지 않는다.",
+          "distractorReasons": [
+            "1과 2는 하나의 대표값을 무조건 우월하게 만들고, 4는 계산 가능성을 부정한다.",
+            "1과 2는 하나의 대표값을 무조건 우월하게 만들고, 4는 계산 가능성을 부정한다.",
+            "",
+            "1과 2는 하나의 대표값을 무조건 우월하게 만들고, 4는 계산 가능성을 부정한다.",
+            "5는 예시 자체와 맞지 않는다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E5",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E6-V1",
+          "track": "en",
+          "targetLevel": 6,
+          "questionType": "order",
+          "passageText": "An extreme value can affect measures of center in different ways.\n\n(A) The median is found by ordering the values and locating the middle one. Its position may remain similar even when one value becomes extremely large.\n\n(B) The mean uses the size of every value. Therefore, a single unusually large number can pull it upward.\n\n(C) For this reason, a careful reader should examine the shape of the data and the purpose of the comparison before selecting a measure.",
+          "promptText": "What is the most logical order of the paragraphs?",
+          "choices": [
+            "(A) – (B) – (C)",
+            "(A) – (C) – (B)",
+            "(B) – (A) – (C)",
+            "(B) – (C) – (A)",
+            "(C) – (A) – (B)"
+          ],
+          "correctIndex": 2,
+          "answerEvidence": "첫 문장의 ‘different ways’를 (B)의 평균, (A)의 중앙값이 차례로 구체화하고, (C)의 For this reason이 두 설명을 종합해 선택 기준을 제시한다.",
+          "explanation": "첫 문장의 ‘different ways’를 (B)의 평균, (A)의 중앙값이 차례로 구체화하고, (C)의 For this reason이 두 설명을 종합해 선택 기준을 제시한다. 다른 배열은 결론을 세부 설명보다 앞세우거나 지시 관계를 끊는다.",
+          "distractorReasons": [
+            "첫 문장의 ‘different ways’를 (B)의 평균, (A)의 중앙값이 차례로 구체화하고, (C)의 For this reason이 두 설명을 종합해 선택 기준을 제시한다. 다른 배열은 결론을 세부 설명보다 앞세우거나 지시 관계를 끊는다.",
+            "첫 문장의 ‘different ways’를 (B)의 평균, (A)의 중앙값이 차례로 구체화하고, (C)의 For this reason이 두 설명을 종합해 선택 기준을 제시한다. 다른 배열은 결론을 세부 설명보다 앞세우거나 지시 관계를 끊는다.",
+            "",
+            "첫 문장의 ‘different ways’를 (B)의 평균, (A)의 중앙값이 차례로 구체화하고, (C)의 For this reason이 두 설명을 종합해 선택 기준을 제시한다. 다른 배열은 결론을 세부 설명보다 앞세우거나 지시 관계를 끊는다.",
+            "첫 문장의 ‘different ways’를 (B)의 평균, (A)의 중앙값이 차례로 구체화하고, (C)의 For this reason이 두 설명을 종합해 선택 기준을 제시한다. 다른 배열은 결론을 세부 설명보다 앞세우거나 지시 관계를 끊는다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E6",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E7-V1",
+          "track": "en",
+          "targetLevel": 7,
+          "questionType": "inference",
+          "passageText": "Two data sets can have the same mean while presenting very different patterns. Consider Set A: 70, 70, 70, 70, and 70, and Set B: 50, 60, 70, 80, and 90. Both have a mean of 70, yet the values in Set A are identical while those in Set B are widely spread. If a report gives only the mean, this difference disappears. Measures such as the range, interquartile range, and standard deviation describe variability rather than center. Graphs can also show whether values cluster together, spread out, or form separate groups. A measure of center is therefore a useful summary, but it is not a complete picture of a distribution.",
+          "promptText": "Which statement is best supported by the passage?",
+          "choices": [
+            "Equal means guarantee equal distributions.",
+            "Variability cannot be described with numbers.",
+            "A mean should always be replaced by a graph.",
+            "Data sets with different ranges cannot share a mean.",
+            "Information about spread can reveal differences hidden by the mean."
+          ],
+          "correctIndex": 4,
+          "answerEvidence": "같은 평균을 가진 두 자료의 퍼짐이 다르다는 예시가 5를 직접 뒷받침한다.",
+          "explanation": "같은 평균을 가진 두 자료의 퍼짐이 다르다는 예시가 5를 직접 뒷받침한다. 1과 4는 예시가 반박하고, 2는 여러 변동성 측정값의 존재와 모순된다. 3은 평균을 버리라는 것이 아니라 다른 정보와 함께 보라는 글을 과장한다.",
+          "distractorReasons": [
+            "1과 4는 예시가 반박하고, 2는 여러 변동성 측정값의 존재와 모순된다.",
+            "1과 4는 예시가 반박하고, 2는 여러 변동성 측정값의 존재와 모순된다.",
+            "3은 평균을 버리라는 것이 아니라 다른 정보와 함께 보라는 글을 과장한다.",
+            "1과 4는 예시가 반박하고, 2는 여러 변동성 측정값의 존재와 모순된다.",
+            ""
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E7",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        },
+        {
+          "itemKey": "MATH-CENTER-001-E8-V1",
+          "track": "en",
+          "targetLevel": 8,
+          "questionType": "blank",
+          "passageText": "A city report states that the mean monthly rent in a small neighborhood is 1,600 units. A reader might imagine that most residents pay about that amount. However, four ordinary apartments rent for 900, 950, 1,000, and 1,050 units, while one luxury apartment rents for 4,100. The mean is indeed 1,600, but only the luxury apartment is priced above it. The median, 1,000, is closer to what most residents in this small group pay. This does not make the mean false: it correctly represents the total rent divided equally across the five apartments. The problem begins when a correct calculation is treated as a complete description of a distribution. Before interpreting a reported “average,” readers should therefore ask what measure was used, how the values are distributed, and ______.",
+          "promptText": "Which best completes the blank?",
+          "choices": [
+            "whether the measure answers the particular question being asked",
+            "whether every value can be replaced with the mean",
+            "why extreme values must always be removed from a data set",
+            "whether the median is larger than every individual value",
+            "why all measures of center should produce the same result"
+          ],
+          "correctIndex": 0,
+          "answerEvidence": "글은 평균이 계산상 틀린 것이 아니라 ‘대부분의 전형적 임대료’를 묻는 목적에 충분하지 않을 수 있다고 설명하므로 1이 적절하다.",
+          "explanation": "글은 평균이 계산상 틀린 것이 아니라 ‘대부분의 전형적 임대료’를 묻는 목적에 충분하지 않을 수 있다고 설명하므로 1이 적절하다. 2는 자료의 실제 차이를 없애고, 3은 극단값 삭제를 무조건 요구한다. 4는 중앙값의 정의와 다르며, 5는 대표값들이 달라질 수 있다는 글의 전제와 반대다.",
+          "distractorReasons": [
+            "",
+            "2는 자료의 실제 차이를 없애고, 3은 극단값 삭제를 무조건 요구한다.",
+            "2는 자료의 실제 차이를 없애고, 3은 극단값 삭제를 무조건 요구한다.",
+            "4는 중앙값의 정의와 다르며, 5는 대표값들이 달라질 수 있다는 글의 전제와 반대다.",
+            "4는 중앙값의 정의와 다르며, 5는 대표값들이 달라질 수 있다는 글의 전제와 반대다."
+          ],
+          "difficultyMeta": {
+            "estimatedLevel": "E8",
+            "sourceDocument": "평균의_함정_수직샘플_v0.1.md",
+            "sourceVersion": "v0.1"
+          }
+        }
+      ]
+    }
+  ]
+}
