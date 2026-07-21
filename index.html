@@ -588,11 +588,16 @@
             }
 
             async function loadSchools() {
+                schoolInput.disabled = true;
+                schoolInput.replaceChildren(new Option('LOADING SCHOOLS...', ''));
                 const result = await api('/api/schools');
-                const current = schoolInput.value;
                 schoolInput.replaceChildren(new Option('SCHOOL', ''));
                 result.schools.forEach((school) => schoolInput.add(new Option(school.name, school.id)));
-                schoolInput.value = current;
+                schoolInput.disabled = result.schools.length === 0;
+                if (result.schools.length === 0) {
+                    schoolInput.options[0].textContent = 'NO SCHOOLS AVAILABLE';
+                    throw new Error('No enabled schools are available. Ask the administrator to enable a school.');
+                }
             }
 
             async function showJoin(state) {
@@ -603,10 +608,10 @@
                 signedInArea.hidden = false;
                 signedInName.textContent = state.user.name;
                 classMembership.textContent = state.user.email;
-                joinForm.hidden = false;
                 hubContent.hidden = true;
                 setHubLocked(true);
                 await loadSchools();
+                joinForm.hidden = false;
                 schoolInput.focus();
             }
 
