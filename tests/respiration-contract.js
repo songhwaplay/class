@@ -51,19 +51,21 @@ for (const stage of stages) {
 }
 
 assert.deepEqual(Array.from(stages, (stage) => stage.answer), [
-    "코나 입",
-    "가슴이 넓어지고 공기가 들어온다",
-    "기관",
-    "기관지",
-    "폐포",
-    "주변 혈액",
-    "온몸의 세포",
-    "혈액",
-    "혈액에서 폐포로",
-    "폐 → 기관지 → 기관 → 코나 입"
+    "코가 공기의 먼지를 거르고 데우며 촉촉하게 하기 때문에",
+    "가슴 속 공간이 넓어짐 → 폐가 부풀어 오름 → 공기가 들어옴",
+    "기관은 공기를 폐로, 식도는 음식을 위로 보낸다",
+    "그쪽 폐로 드나드는 공기의 양이 줄어든다",
+    "공기와 주변 혈액이 만나는 전체 면적이 넓어지기 때문에",
+    "산소는 폐포에서 혈액으로, 이산화탄소는 혈액에서 폐포로",
+    "세포가 더 많은 산소를 사용하고 이산화탄소를 더 만들어 내기 때문에",
+    "세포 → 혈액 → 폐 주변 혈관 → 폐포",
+    "혈액은 산소가 늘고, 폐포 공기는 이산화탄소가 늘어난다",
+    "코·입 → 기관 → 기관지 → 폐포 → 혈액 → 세포, 이산화탄소는 반대 길로 이동"
 ]);
 
 const learningText = stages.map((stage) => `${stage.fact} ${stage.question} ${stage.explanation}`).join(" ");
+const choiceText = stages.flatMap((stage) => stage.choices).join(" ");
+assert.doesNotMatch(choiceText, /위나 작은창자|심장이나 혈관|대정맥|큰창자|심실|방광|작은창자 → 입/, "Distractors should use plausible respiratory misconceptions rather than unrelated organs.");
 assert.doesNotMatch(learningText, /헤모글로빈|혈색소|세기관지|늑간근|분압|확산계수/, "Advanced medical terms should stay out of the elementary journey.");
 for (const coreIdea of ["공기가 코나 입", "기관은 목에서 가슴", "두 갈래의 기관지", "작은 공기주머니인 폐포", "산소는 얇은 벽", "혈액에서 폐포", "몸 밖으로 내보냅니다"]) {
     assert.ok(learningText.includes(coreIdea), `Missing elementary respiration idea: ${coreIdea}`);

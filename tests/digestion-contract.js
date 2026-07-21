@@ -50,19 +50,21 @@ for (const stage of stages) {
 }
 
 assert.deepEqual(Array.from(stages, (stage) => stage.answer), [
-    "음식을 잘게 씹는다",
-    "삼키기 쉬워지고 소화가 시작된다",
-    "식도",
-    "식도 벽의 근육이 음식을 밀기 때문에",
-    "음식과 소화액을 섞는다",
-    "간과 이자",
-    "작은창자",
-    "작은창자",
-    "남은 찌꺼기에서 물을 흡수한다",
-    "항문"
+    "잘게 부서져 침·소화액과 닿는 면이 넓어지기 때문에",
+    "침의 작용으로 녹말의 소화가 시작된다",
+    "입과 목 → 식도 → 위",
+    "식도 벽의 근육이 차례로 움직여 음식을 밀기 때문에",
+    "음식을 잠시 담고 움직여 소화액과 섞는다",
+    "작은창자에서 음식물의 소화가 원활하지 않다",
+    "소화액과 충분히 섞이고 영양소가 흡수될 기회가 늘어난다",
+    "혈액을 따라 온몸의 필요한 곳으로 이동한다",
+    "물을 더 많이 포함해 비교적 묽어진다",
+    "입 → 식도 → 위 → 작은창자 → 큰창자 → 항문"
 ]);
 
 const learningText = stages.map((stage) => `${stage.fact} ${stage.question} ${stage.explanation}`).join(" ");
+const choiceText = stages.flatMap((stage) => stage.choices).join(" ");
+assert.doesNotMatch(choiceText, /음식이 바로 피가|음식이 다시 커진다|오줌을 저장한다|심장과 폐|콩팥과 방광/, "Distractors should test nearby concepts instead of using obviously unrelated statements.");
 assert.doesNotMatch(learningText, /아밀레이스|펩신|트립신|공장|회장|십이지장|융털/, "Advanced medical terms should stay out of the elementary journey.");
 for (const coreIdea of ["이는 음식을 잘게", "식도를 지나 위", "음식과 소화액을 섞", "작은창자에서 흡수", "큰창자는", "항문으로 배출"]) {
     assert.ok(learningText.includes(coreIdea), `Missing elementary digestion idea: ${coreIdea}`);
@@ -102,8 +104,18 @@ for (const file of [files.data, files.app, files.teacherApp, files.server]) {
 }
 const app = fs.readFileSync(files.app, "utf8");
 assert.ok(app.includes("config.gameId"), "Shared student app must read the episode game id.");
+assert.ok(app.includes("shuffledChoices(stage.choices)"), "Choice order must be shuffled so the first option is not predictably correct.");
 assert.ok(app.includes('action: "SUBMIT"'), "Student results must be submitted to the server.");
 assert.ok(app.includes("state.missed.push"), "Wrong answers must be collected for review.");
+assert.ok(app.includes("근거를 한 번 더 살펴봐요"), "Retry feedback should guide the learner with neutral, constructive language.");
+assert.doesNotMatch(app, /이 길은 막혀 있어요|막혔던 선택/, "Retry and review copy should avoid discouraging language.");
+assert.ok(app.includes('elements.stageFact.textContent = ""'), "The learning fact must not reveal the answer before submission.");
+assert.ok(app.includes('elements.factCard.classList.add("is-revealed")'), "The learning fact must appear after the correct answer.");
+assert.doesNotMatch(app, /announcer\.textContent = `\$\{stage\.location\}\. \$\{stage\.fact\}/, "Screen-reader announcements must not reveal the fact before submission.");
+
+const sharedStyles = fs.readFileSync(path.join(dir, "styles.css"), "utf8");
+assert.ok(sharedStyles.includes("height: 100dvh"), "Classroom-sized journey screens must fit the viewport height.");
+assert.ok(sharedStyles.includes(".question-card .feedback.hidden"), "Answer feedback space must be reserved before an answer is shown.");
 
 const teacherApp = fs.readFileSync(files.teacherApp, "utf8");
 assert.ok(teacherApp.includes("document.body.dataset.gameId"), "Shared teacher app must read the episode game id.");
