@@ -1,1 +1,0 @@
-ALTER TABLE `arithmetic_race_participants` ADD `mistake_count` integer DEFAULT 0 NOT NULL;

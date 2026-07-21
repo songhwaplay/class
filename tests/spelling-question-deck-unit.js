@@ -9,7 +9,7 @@ const root = path.resolve(__dirname, "..");
 const context = { window: {} };
 vm.createContext(context);
 for (const file of ["questions.js", "questions-extra.js", "question-deck.js"]) {
-    const filePath = path.join(root, "spelling", file);
+    const filePath = path.join(root, "learning", "basics", "spelling", file);
     vm.runInContext(fs.readFileSync(filePath, "utf8"), context, { filename: filePath });
 }
 

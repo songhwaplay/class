@@ -4,7 +4,7 @@ const path = require("path");
 const vm = require("vm");
 
 const root = path.resolve(__dirname, "..");
-const spellingDir = path.join(root, "spelling");
+const spellingDir = path.join(root, "learning", "basics", "spelling");
 const htmlPath = path.join(spellingDir, "index.html");
 const questionsPath = path.join(spellingDir, "questions.js");
 const extraQuestionsPath = path.join(spellingDir, "questions-extra.js");
@@ -85,7 +85,7 @@ assert.ok(html.includes('src="questions.js"'), "Question bank is not linked.");
 assert.ok(html.includes('src="questions-extra.js"'), "Expanded question bank is not linked.");
 assert.ok(html.includes('src="question-deck.js"'), "No-repeat question deck is not linked.");
 assert.ok(html.includes('src="app.js"'), "Quiz app is not linked.");
-assert.ok(html.includes('src="../assets/sound/spelling-bg.mp3"'), "Personal mode background music is not linked.");
+assert.ok(html.includes('src="../../../assets/sound/spelling-bg.mp3"'), "Personal mode background music is not linked.");
 assert.ok(html.includes("loop preload=\"auto\""), "Spelling background music should loop.");
 assert.ok(html.includes("game-network.js"), "Class ranking mode must load the classroom network.");
 assert.ok(html.includes("multiplayer-lobby.js"), "Class ranking mode must load the shared lobby.");
@@ -111,7 +111,7 @@ const teacherHtml = fs.readFileSync(teacherHtmlPath, "utf8");
 for (const requiredId of ["roomCode", "copyBtn", "lobbyPlayers", "teacherStartButton", "teacherRankingList", "resetRaceButton", "spellingBgm", "bgmToggle"]) {
     assert.ok(teacherHtml.includes(`id="${requiredId}"`), `Teacher page is missing #${requiredId}`);
 }
-assert.ok(teacherHtml.includes('src="../assets/sound/spelling-bg.mp3"'), "Teacher ranking page background music is not linked.");
+assert.ok(teacherHtml.includes('src="../../../assets/sound/spelling-bg.mp3"'), "Teacher ranking page background music is not linked.");
 const teacherSource = fs.readFileSync(teacherAppPath, "utf8");
 new vm.Script(teacherSource, { filename: teacherAppPath });
 assert.ok(teacherSource.includes('action: "START"'), "Teacher must be able to start all students together.");
@@ -127,7 +127,7 @@ assert.ok(serverSource.includes("SPELLING_STATE"), "Server is missing spelling r
 assert.ok(serverSource.includes("elapsedMs: Math.max(0, Date.now() - game.startedAt)"), "Completion time must be server-authoritative.");
 
 const hub = fs.readFileSync(hubPath, "utf8");
-assert.ok(hub.includes('href="spelling/index.html"'), "Hub is missing the spelling quiz link.");
+assert.ok(hub.includes('href="learning/basics/spelling/index.html"'), "Hub is missing the spelling quiz link.");
 assert.ok(hub.includes("한글 맞춤법"), "Hub is missing the Korean orthography title.");
 assert.ok(hub.includes("(Korean Spelling)"), "Hub is missing the English subtitle.");
 

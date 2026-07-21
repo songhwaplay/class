@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("node:assert");
-const core = require("../vocabulary/vocabulary-core.js");
+const core = require("../learning/basics/vocabulary/vocabulary-core.js");
 
 const words = [
     { id: 1, globalLevel: 1, order: 2, stageCode: "elementary" },

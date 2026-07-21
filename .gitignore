@@ -10,5 +10,6 @@ __pycache__/
 # Locally generated reports and previews
 /outputs/
 
-# Standalone nested repository (commit/publish it separately)
-/hanguksa-basic/
+# Standalone nested repositories (commit/publish them separately)
+/learning/basics/fraction-conversion-web/
+/learning/basics/hanguksa-basic/
