@@ -80,6 +80,28 @@
 
         h1 { margin-top: 0; }
 
+        .class-tools-link {
+            position: fixed;
+            top: 16px;
+            right: 18px;
+            z-index: 10;
+            padding: 5px 2px;
+            border-bottom: 1px solid rgba(215, 180, 122, 0.46);
+            color: rgba(255, 240, 199, 0.72);
+            font-family: Arial, sans-serif;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-decoration: none;
+        }
+
+        .class-tools-link:hover,
+        .class-tools-link:focus-visible {
+            border-color: var(--gold-bright);
+            color: #fff0c7;
+            outline: none;
+        }
+
         .hub-section {
             width: min(760px, 100%);
             margin: 0 auto 38px;
@@ -253,6 +275,7 @@
 
         @media (max-width: 520px) {
             body { padding-top: 28px; }
+            .class-tools-link { top: 8px; right: 12px; }
             .music-control { gap: 7px; transform: scale(0.93); }
             .music-label { font-size: 14px; }
             .volume-step { width: 20px; }
@@ -271,6 +294,7 @@
     </style>
 </head>
 <body>
+    <a class="class-tools-link" href="classtools/roaster.html">CLASS TOOLS</a>
     <audio id="bgm" src="assets/sound/index.mp3" autoplay loop preload="auto"></audio>
 
 
