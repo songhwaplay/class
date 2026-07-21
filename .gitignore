@@ -11,5 +11,5 @@ __pycache__/
 /outputs/
 
 # Standalone nested repositories (commit/publish them separately)
-/learning/basics/fraction-conversion-web/
+/learning/basics/arithmetics/
 /learning/basics/hanguksa-basic/
