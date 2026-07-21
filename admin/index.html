@@ -153,6 +153,23 @@
         }
 
         .status.error { color: var(--danger); }
+        .tool-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 18px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 16px 18px;
+            color: var(--ink);
+            background: #121814;
+            text-decoration: none;
+        }
+        .tool-link:hover { border-color: var(--green); background: var(--green-dark); }
+        .tool-link strong, .tool-link span { display: block; }
+        .tool-link span { margin-top: 4px; color: var(--muted); font-size: 12px; }
+        .tool-link b { color: var(--green); font-size: 1.35rem; }
         [hidden] { display: none !important; }
 
         @media (max-width: 560px) {
@@ -195,6 +212,13 @@
                         <span>Require a school Google Workspace account.</span>
                     </button>
                 </div>
+                <a class="tool-link" href="/admin/reading/">
+                    <div>
+                        <strong>Reading question bank</strong>
+                        <span>Create knowledge cards, passages, choices, and run automatic checks.</span>
+                    </div>
+                    <b aria-hidden="true">→</b>
+                </a>
             </div>
             <p id="status" class="status" role="status" aria-live="polite"></p>
         </section>
