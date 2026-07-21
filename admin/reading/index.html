@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1511">
+  <title>독해 문제은행 관리자</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="gate" class="gate">
+    <div class="gate-card">
+      <p class="eyebrow">READING BANK</p>
+      <h1>관리자 확인 중</h1>
+      <p id="gateMessage">문제은행에 안전하게 연결하고 있습니다.</p>
+      <a id="adminLoginLink" class="button secondary" href="/admin/" hidden>관리자 로그인으로 이동</a>
+    </div>
+  </div>
+
+  <div id="app" class="app" hidden>
+    <header class="topbar">
+      <div class="brand-block">
+        <p class="eyebrow">READING BANK</p>
+        <h1>독해 문제 제작실</h1>
+      </div>
+      <nav class="view-tabs" aria-label="관리 화면 선택">
+        <button class="view-tab active" type="button" data-view="items">문항</button>
+        <button class="view-tab" type="button" data-view="topics">지식 원본</button>
+      </nav>
+      <div class="account-block">
+        <span id="adminEmail"></span>
+        <a id="pilotLink" href="./pilots.html" hidden>파일럿 운영</a>
+        <button id="reviewersButton" class="text-button compact-link" type="button" hidden>검수자 권한</button>
+        <a href="/admin/">사이트 관리</a>
+      </div>
+    </header>
+
+    <section class="stats" aria-label="문제은행 현황">
+      <div class="stat"><span>초안</span><strong id="statDraft">0</strong></div>
+      <div class="stat"><span>자동검사 완료</span><strong id="statChecked">0</strong></div>
+      <div class="stat"><span>검수 대기</span><strong id="statReview">0</strong></div>
+      <div class="stat"><span>출처 만료</span><strong id="statExpired">0</strong></div>
+      <div class="stat"><span>공개</span><strong id="statPublished">0</strong></div>
+    </section>
+
+    <main class="workbench">
+      <aside class="filter-panel">
+        <div class="panel-heading">
+          <div>
+            <p class="section-kicker">FILTER</p>
+            <h2 id="filterTitle">문항 찾기</h2>
+          </div>
+          <button id="newButton" class="icon-button" type="button" aria-label="새로 만들기">＋</button>
+        </div>
+
+        <label class="field compact">
+          <span>검색</span>
+          <input id="searchInput" type="search" placeholder="주제명 또는 문항 키">
+        </label>
+
+        <div id="itemFilters">
+          <label class="field compact">
+            <span>언어</span>
+            <select id="trackFilter">
+              <option value="">전체</option>
+              <option value="ko">국어</option>
+              <option value="en">영어</option>
+            </select>
+          </label>
+          <label class="field compact">
+            <span>레벨</span>
+            <select id="levelFilter">
+              <option value="">전체</option>
+              <option value="1">1</option><option value="2">2</option>
+              <option value="3">3</option><option value="4">4</option>
+              <option value="5">5</option><option value="6">6</option>
+              <option value="7">7</option><option value="8">8</option>
+            </select>
+          </label>
+          <label class="field compact">
+            <span>상태</span>
+            <select id="statusFilter">
+              <option value="">전체</option>
+              <option value="draft">초안</option>
+              <option value="auto_checked">자동검사 완료</option>
+              <option value="review_pending">검수 대기</option>
+              <option value="published">공개</option>
+            </select>
+          </label>
+          <div class="import-box">
+            <strong>첫 문제 세트</strong>
+            <span>수면과 기억·평균의 함정 32문항</span>
+            <button id="importSampleButton" class="button secondary" type="button">샘플 불러오기</button>
+          </div>
+        </div>
+
+        <label id="domainFilterField" class="field compact" hidden>
+          <span>교과 영역</span>
+          <select id="domainFilter"></select>
+        </label>
+
+        <p id="listCount" class="list-count">0개</p>
+      </aside>
+
+      <section class="record-panel" aria-label="목록">
+        <div id="recordList" class="record-list"></div>
+      </section>
+
+      <section class="editor-panel">
+        <div id="emptyState" class="empty-state">
+          <div class="empty-mark">Aa</div>
+          <h2>편집할 항목을 선택하세요</h2>
+          <p>왼쪽 목록에서 문항이나 지식 원본을 선택하거나 새 항목을 만드세요.</p>
+        </div>
+
+        <section id="topicEditor" hidden>
+          <div class="editor-head">
+            <div>
+              <p class="section-kicker">KNOWLEDGE CARD</p>
+              <h2 id="topicEditorTitle">새 지식 원본</h2>
+            </div>
+            <span id="topicDirtyBadge" class="status-badge" hidden>저장 전</span>
+          </div>
+
+          <form id="topicForm" class="editor-form">
+            <div class="form-grid two">
+              <label class="field">
+                <span>주제 키</span>
+                <input id="topicKey" required maxlength="64" placeholder="SCI-SLEEP-MEMORY-001">
+              </label>
+              <label class="field">
+                <span>상태</span>
+                <select id="topicStatus">
+                  <option value="draft">초안</option>
+                  <option value="active">사용 중</option>
+                  <option value="retired">중단</option>
+                </select>
+              </label>
+            </div>
+            <label class="field">
+              <span>주제명</span>
+              <input id="topicTitle" required maxlength="120" placeholder="수면과 기억">
+            </label>
+            <div class="form-grid two">
+              <label class="field">
+                <span>주교과</span>
+                <select id="primaryDomain"></select>
+              </label>
+              <label class="field">
+                <span>연계 교과</span>
+                <input id="relatedDomains" placeholder="health_life, science">
+                <small>영역 키를 쉼표로 구분</small>
+              </label>
+            </div>
+            <label class="field">
+              <span>핵심 질문</span>
+              <textarea id="coreQuestion" rows="2" required placeholder="잠은 학습과 기억에 어떤 방식으로 관여하는가?"></textarea>
+            </label>
+            <label class="field">
+              <span>검증된 핵심 사실</span>
+              <textarea id="coreFacts" rows="6" required placeholder="한 줄에 하나씩 입력"></textarea>
+            </label>
+            <label class="field">
+              <span>흔한 오해</span>
+              <textarea id="misconceptions" rows="3" placeholder="한 줄에 하나씩 입력"></textarea>
+            </label>
+            <label class="field">
+              <span>실생활 연결</span>
+              <textarea id="practicalUse" rows="3"></textarea>
+            </label>
+            <div class="form-grid two">
+              <label class="field"><span>초등 저학년 범위</span><textarea id="ageLower" rows="2"></textarea></label>
+              <label class="field"><span>초등 고학년 범위</span><textarea id="ageUpper" rows="2"></textarea></label>
+              <label class="field"><span>중등 범위</span><textarea id="ageMiddle" rows="2"></textarea></label>
+              <label class="field"><span>고등 범위</span><textarea id="ageHigh" rows="2"></textarea></label>
+            </div>
+            <label class="field">
+              <span>불확실성·주의사항</span>
+              <textarea id="uncertaintyNotes" rows="3"></textarea>
+            </label>
+            <div class="action-row sticky-actions">
+              <button class="button primary" type="submit">지식 원본 저장</button>
+              <span id="topicSaveStatus" class="save-status" role="status"></span>
+            </div>
+          </form>
+
+          <section id="sourcesSection" class="subsection" hidden>
+            <div class="subsection-head">
+              <div>
+                <p class="section-kicker">SOURCES</p>
+                <h3>근거 출처</h3>
+              </div>
+              <span id="sourceCount" class="count-pill">0개</span>
+            </div>
+            <div id="sourceList" class="source-list"></div>
+            <form id="sourceForm" class="source-form">
+              <input id="sourceId" type="hidden">
+              <div class="form-grid two">
+                <label class="field"><span>출처 제목</span><input id="sourceTitle" required></label>
+                <label class="field"><span>발행 기관</span><input id="sourcePublisher" required></label>
+              </div>
+              <label class="field"><span>URL</span><input id="sourceUrl" type="url" required placeholder="https://..."></label>
+              <div class="form-grid three">
+                <label class="field"><span>출처 유형</span><select id="sourceKind"><option value="official">공식 자료</option><option value="primary">1차 연구</option><option value="systematic_review">체계적 검토</option><option value="secondary">2차 자료</option></select></label>
+                <label class="field"><span>발행일</span><input id="sourcePublishedOn" type="date"></label>
+                <label class="field"><span>재검수일</span><input id="sourceExpiresAt" type="date"></label>
+              </div>
+              <label class="field"><span>메모</span><textarea id="sourceNotes" rows="2"></textarea></label>
+              <div class="action-row">
+                <button id="sourceSaveButton" class="button secondary" type="submit">출처 추가</button>
+                <button id="sourceCancelButton" class="text-button" type="button" hidden>수정 취소</button>
+                <span id="sourceSaveStatus" class="save-status" role="status"></span>
+              </div>
+            </form>
+          </section>
+        </section>
+
+        <section id="itemEditor" hidden>
+          <div class="editor-head">
+            <div>
+              <p id="itemEyebrow" class="section-kicker">NEW ITEM</p>
+              <h2 id="itemEditorTitle">새 문항</h2>
+            </div>
+            <div class="badge-row">
+              <span id="itemStatusBadge" class="status-badge draft">초안</span>
+              <button id="cloneVersionButton" class="button secondary small" type="button" hidden>새 버전</button>
+            </div>
+          </div>
+
+          <div class="item-layout">
+            <form id="itemForm" class="editor-form item-form">
+              <div id="itemIdentityFields">
+                <label class="field">
+                  <span>지식 원본</span>
+                  <select id="itemTopic" required></select>
+                </label>
+                <div class="form-grid three">
+                  <label class="field"><span>언어</span><select id="itemTrack"><option value="ko">국어</option><option value="en">영어</option></select></label>
+                  <label class="field"><span>레벨</span><select id="itemLevel"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
+                  <label class="field"><span>유형</span><select id="questionType"></select></label>
+                </div>
+                <label class="field"><span>문항 키 <small>선택</small></span><input id="itemKey" placeholder="비우면 자동 생성"></label>
+              </div>
+
+              <label class="field">
+                <span>지문</span>
+                <textarea id="passageText" rows="12" required></textarea>
+                <small id="passageMetric">0자</small>
+              </label>
+              <label class="field">
+                <span>발문</span>
+                <textarea id="promptText" rows="2" required></textarea>
+              </label>
+
+              <fieldset class="choices-fieldset">
+                <legend>선지와 이유</legend>
+                <p>정답 왼쪽의 원을 선택하고, 오답에는 틀린 이유를 적으세요.</p>
+                <div id="choiceRows"></div>
+              </fieldset>
+
+              <label id="answerEvidenceField" class="field"><span>정답 근거</span><textarea id="answerEvidence" rows="3"></textarea></label>
+              <label id="explanationField" class="field"><span>학생용 해설</span><textarea id="explanation" rows="4"></textarea></label>
+
+              <div class="action-row sticky-actions">
+                <button id="saveItemButton" class="button primary" type="submit">초안 저장</button>
+                <button id="runCheckButton" class="button accent" type="button" hidden>자동검사</button>
+                <button id="submitForReviewButton" class="button accent" type="button" hidden>검수 제출</button>
+                <span id="itemSaveStatus" class="save-status" role="status"></span>
+              </div>
+            </form>
+
+            <aside class="preview-column">
+              <section class="preview-card">
+                <div class="preview-head">
+                  <span>학생 화면 미리보기</span>
+                  <span id="previewLevel" class="count-pill">K1</span>
+                </div>
+                <div id="previewPassage" class="preview-passage">지문을 입력하면 여기에 표시됩니다.</div>
+                <p id="previewPrompt" class="preview-prompt">발문</p>
+                <div id="previewChoices" class="preview-choices"></div>
+              </section>
+
+              <section class="check-card">
+                <div class="preview-head">
+                  <span>자동검사</span>
+                  <span id="checkState" class="count-pill neutral">실행 전</span>
+                </div>
+                <div id="checkResults" class="check-results">
+                  <p>초안을 저장한 뒤 자동검사를 실행하세요.</p>
+                </div>
+              </section>
+
+              <section id="reviewPanel" class="review-card" hidden>
+                <div class="preview-head">
+                  <span>독립 검수</span>
+                  <span id="reviewCount" class="count-pill neutral">0 / 2</span>
+                </div>
+                <p id="reviewIntro" class="review-intro">정답이라고 판단한 보기를 직접 고른 뒤 기준별 점수를 매겨 주세요.</p>
+                <div id="reviewRubric" class="review-rubric"></div>
+                <label class="field compact">
+                  <span>검수 결정</span>
+                  <select id="reviewDecision">
+                    <option value="pass">통과</option>
+                    <option value="changes_requested">수정 요청</option>
+                  </select>
+                </label>
+                <label class="field compact">
+                  <span>검수 의견</span>
+                  <textarea id="reviewComment" rows="3" placeholder="수정 요청일 때는 이유를 꼭 적어 주세요."></textarea>
+                </label>
+                <button id="submitReviewButton" class="button primary review-submit" type="button">검수 제출</button>
+                <p id="reviewStatus" class="save-status" role="status"></p>
+              </section>
+            </aside>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </div>
+
+  <dialog id="reviewerDialog" class="reviewer-dialog">
+    <div class="dialog-head">
+      <div>
+        <p class="section-kicker">PERMISSIONS</p>
+        <h2>검수자 권한</h2>
+      </div>
+      <button id="closeReviewerDialog" class="icon-button" type="button" aria-label="닫기">×</button>
+    </div>
+    <p class="dialog-copy">한 사람이 출제와 검수를 동시에 맡지 않도록 계정별 역할을 나눠 주세요.</p>
+    <div id="reviewerList" class="reviewer-list"></div>
+  </dialog>
+
+  <script src="./app.js"></script>
+</body>
+</html>

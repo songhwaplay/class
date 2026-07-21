@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d1511">
+  <title>독해 파일럿 운영</title>
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./pilots.css">
+</head>
+<body>
+  <div id="gate" class="gate">
+    <div class="gate-card">
+      <p class="eyebrow">READING PILOT</p>
+      <h1>파일럿 연결 중</h1>
+      <p id="gateMessage">학급과 승인 문항을 확인하고 있습니다.</p>
+      <a id="gateLink" class="button secondary" href="/" hidden>홈으로</a>
+    </div>
+  </div>
+
+  <div id="pilotApp" class="pilot-app" hidden>
+    <header class="pilot-topbar">
+      <div>
+        <p class="eyebrow">READING PILOT</p>
+        <h1>실전 응답 수집</h1>
+      </div>
+      <div class="pilot-nav">
+        <span id="accountEmail"></span>
+        <a href="./">문항 제작실</a>
+      </div>
+    </header>
+
+    <section class="pilot-stats" aria-label="파일럿 현황">
+      <div><span>승인 문항</span><strong id="approvedCount">0</strong></div>
+      <div><span>초안</span><strong id="draftPilotCount">0</strong></div>
+      <div><span>진행 중</span><strong id="openPilotCount">0</strong></div>
+      <div><span>종료</span><strong id="closedPilotCount">0</strong></div>
+    </section>
+
+    <main class="pilot-shell">
+      <section class="pilot-builder">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">NEW PILOT</p>
+            <h2>학급에 문항 배정</h2>
+          </div>
+          <span id="selectedCount" class="count-pill">0개 선택</span>
+        </div>
+        <form id="pilotForm">
+          <label class="field">
+            <span>파일럿 이름</span>
+            <input id="pilotTitle" maxlength="120" required placeholder="예: 2학기 K4 독해 점검">
+          </label>
+          <label class="field">
+            <span>대상 학급</span>
+            <select id="pilotClass" required></select>
+          </label>
+          <div class="pilot-filters">
+            <label class="field compact"><span>언어</span><select id="pilotTrack"><option value="">전체</option><option value="ko">국어</option><option value="en">영어</option></select></label>
+            <label class="field compact"><span>수준</span><select id="pilotLevel"><option value="">전체</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option></select></label>
+          </div>
+          <div id="approvedItemList" class="approved-item-list"></div>
+          <div class="builder-actions">
+            <button id="createPilotButton" class="button primary" type="submit">파일럿 초안 만들기</button>
+            <span id="createStatus" class="save-status" role="status"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="pilot-board">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">PILOT SETS</p>
+            <h2>운영 현황</h2>
+          </div>
+          <button id="refreshPilotsButton" class="button secondary small" type="button">새로고침</button>
+        </div>
+        <div id="pilotList" class="pilot-list"></div>
+      </section>
+
+      <section id="resultsSection" class="pilot-results" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">CALIBRATION DATA</p>
+            <h2 id="resultsTitle">파일럿 결과</h2>
+          </div>
+          <button id="closeResultsButton" class="icon-button" type="button" aria-label="결과 닫기">×</button>
+        </div>
+        <div id="resultsSummary" class="results-summary"></div>
+        <div id="resultsItems" class="results-items"></div>
+      </section>
+    </main>
+
+    <div id="pilotToast" class="toast" role="status" aria-live="polite" hidden></div>
+  </div>
+  <script src="./pilots.js"></script>
+</body>
+</html>
