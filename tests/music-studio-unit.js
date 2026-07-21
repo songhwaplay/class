@@ -67,4 +67,20 @@ assert.equal(partial.missed, 2);
 assert.equal(partial.extra, 1);
 assert.ok(partial.score < perfect.score);
 
+assert.equal(core.RHYTHM_DICTATION_BANK.length, 48);
+assert.equal(new Set(core.RHYTHM_DICTATION_BANK.map((pattern) => pattern.hits.join(","))).size, 48);
+core.RHYTHM_DICTATION_BANK.forEach((pattern) => {
+    assert.ok(["basic", "offbeat", "sixteenth", "mixed"].includes(pattern.level));
+    assert.ok(pattern.hits.length >= 4);
+    pattern.hits.forEach((step) => assert.ok(Number.isInteger(step) && step >= 0 && step < 16));
+});
+
+const exactDictation = core.scoreRhythmDictation([0, 3, 6, 8], [0, 3, 6, 8]);
+assert.deepEqual(exactDictation, { exact: true, score: 100, correct: 4, missed: 0, extra: 0 });
+const missedDictation = core.scoreRhythmDictation([0, 3, 6, 8], [0, 3, 7]);
+assert.equal(missedDictation.exact, false);
+assert.equal(missedDictation.correct, 2);
+assert.equal(missedDictation.missed, 2);
+assert.equal(missedDictation.extra, 1);
+
 console.log("music-studio-unit: ok");

@@ -10,13 +10,17 @@ const hub = fs.readFileSync("index.html", "utf8");
 
 [
     "harmonyLab", "rhythmLab", "progressionSlots", "chordBank", "piano",
-    "minorVariantControl", "minorVariantSelect", "rhythmGrid", "tapButton", "startChallengeButton", "scorePanel"
+    "minorVariantControl", "minorVariantSelect", "rhythmGrid", "tapButton", "startChallengeButton", "scorePanel",
+    "dictationPanel", "performancePanel", "dictationGrid", "dictationListenButton", "checkDictationButton", "newDictationButton"
 ].forEach((id) => assert.match(html, new RegExp(`id=["']${id}["']`)));
 
 assert.match(html, /music-core\.js/);
 assert.match(html, /app\.js/);
 assert.match(html, /aria-selected=/);
 assert.match(app, /scoreRhythm/);
+assert.match(app, /scoreRhythmDictation/);
+assert.match(app, /RHYTHM_DICTATION_BANK/);
+assert.match(app, /data-rhythm-mode/);
 assert.match(app, /AudioContext/);
 assert.match(app, /createConvolver/);
 assert.match(app, /createDynamicsCompressor/);
@@ -30,6 +34,8 @@ assert.match(app, /minorVariant/);
 assert.match(app, /event\.code !== "Space"/);
 assert.match(css, /@media \(max-width: 640px\)/);
 assert.match(css, /prefers-reduced-motion/);
+assert.match(css, /dictation-grid/);
+assert.match(css, /answer-step\.missed/);
 assert.match(hub, /learning\/training\/music-studio\/index\.html/);
 assert.doesNotMatch(hub, /learning\/basics\/music-studio\/index\.html/);
 
