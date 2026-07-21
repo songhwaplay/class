@@ -609,7 +609,6 @@
                 signedInName.textContent = state.user.name;
                 classMembership.textContent = state.user.email;
                 hubContent.hidden = true;
-                setHubLocked(true);
                 await loadSchools();
                 joinForm.hidden = false;
                 schoolInput.focus();

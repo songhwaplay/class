@@ -14,6 +14,8 @@ const indexScript = [...indexHtml.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/scr
 
 assert.ok(indexScript, "The index authentication script is missing.");
 new vm.Script(indexScript, { filename: path.join(root, "index.html") });
+assert.doesNotMatch(indexScript, /setHubLocked\(/,
+  "First-time setup must not call the removed setHubLocked helper.");
 
 assert.match(indexHtml, /accounts\.google\.com\/gsi\/client/,
   "Google Identity Services must be loaded.");
