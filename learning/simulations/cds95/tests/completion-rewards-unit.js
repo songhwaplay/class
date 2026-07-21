@@ -2,9 +2,9 @@
 const assert=require('node:assert/strict');
 const Rewards=require('../lib/completion-rewards.js');
 assert.equal(Rewards.speedMultiplier(0),1);
-assert.equal(Rewards.speedMultiplier(1),10);
-assert.equal(Rewards.speedMultiplier(2),5);
-assert.equal(Rewards.speedMultiplier(3),3);
+assert.equal(Rewards.speedMultiplier(1),1.3);
+assert.equal(Rewards.speedMultiplier(2),1.2);
+assert.equal(Rewards.speedMultiplier(3),1.1);
 assert.equal(Rewards.speedMultiplier(4),1);
 assert.equal(Rewards.speedMultiplier(40),1);
-console.log(JSON.stringify({ok:true,first:10,second:5,third:3,others:1}));
+console.log(JSON.stringify({ok:true,first:1.3,second:1.2,third:1.1,others:1}));

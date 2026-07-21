@@ -1,5 +1,7 @@
 'use strict';
 
+const GeoMotion = require('../public/js/geo-motion.js');
+
 function normalizeLon(lon) {
   let x = Number(lon);
   while (x > 180) x -= 360;
@@ -22,7 +24,7 @@ function pixelToLatLon(x, y, worldPixelWidth, worldPixelHeight) {
 }
 
 function localXY(lat, lon, refLat, refLon) {
-  const cos = Math.max(0.2, Math.cos((refLat * Math.PI) / 180));
+  const cos = Math.max(GeoMotion.MIN_LONGITUDE_SCALE, Math.abs(Math.cos((refLat * Math.PI) / 180)));
   return { x: deltaLon(lon, refLon) * cos, y: lat - refLat };
 }
 
@@ -82,7 +84,14 @@ function containsPlayer(player, resolvedPlace, zone, options) {
     const ll = pixelToLatLon(player.x, player.y, options.worldPixelWidth, options.worldPixelHeight);
     return containsLatLon(zone, ll.lat, ll.lon);
   }
-  return wrappedPixelDistance(player.x, player.y, resolvedPlace.point.x, resolvedPlace.point.y, options.worldPixelWidth)
+  return GeoMotion.greatCircleDistancePixels(
+    player.x,
+    player.y,
+    resolvedPlace.point.x,
+    resolvedPlace.point.y,
+    options.worldPixelWidth,
+    options.worldPixelHeight
+  )
     <= Number(resolvedPlace.arrivalRadiusTiles || 3.2) * Number(options.tile);
 }
 

@@ -12,4 +12,4 @@ assert.match(server,/nowRealMs < action\.endsAtRealMs/);
 assert.match(server,/if \(!roomClockShouldRun\(roomCode\)\) return clock\.baseGameMinutes/);
 assert.doesNotMatch(server,/ownerAlive/);
 assert.match(student,/tr\.durationGameMinutes\|\|tr\.endsAtGameMinutes-tr\.startedAtGameMinutes/);
-console.log(JSON.stringify({ok:true,allPortsSameTransferMinutes:240,realSecondsAt8HoursPerSecond:0.5,serverClockIndependentOfTeacherHeartbeat:true}));
+console.log(JSON.stringify({ok:true,allPortsSameTransferMinutes:240,realSecondsAt30HoursPerSecondWithUiMinimum:0.25,serverClockIndependentOfTeacherHeartbeat:true}));

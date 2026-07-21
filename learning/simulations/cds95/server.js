@@ -8,6 +8,7 @@ const { Server } = require('socket.io');
 const Terrain = require('./public/js/terrain.js');
 const OceanCurrent = require('./public/js/ocean-current.js');
 const MajorWind = require('./public/js/wind.js');
+const GeoMotion = require('./public/js/geo-motion.js');
 const ClassroomStore = require('./lib/classroom-store.js');
 const MissionCatalog = require('./lib/mission-catalog.js');
 const Fatigue = require('./lib/fatigue.js');
@@ -34,7 +35,9 @@ const CURRENT_HEAD_FACTOR = 0.23;
 const CURRENT_CROSS_FACTOR = 0.14;
 const WIND_TAIL_FACTOR = 1.00;
 const WIND_HEAD_FACTOR = 0.65;
-const GAME_HOURS_PER_REAL_SECOND = 8;
+// Keep the on-screen travel pace brisk while expressing movement in believable
+// historical speeds: 30 game-hours pass during one real second.
+const GAME_HOURS_PER_REAL_SECOND = 30;
 // V47: V45의 '시간 2배'를 날짜만이 아니라 전체 시뮬레이션에 동일 적용한다.
 const SIMULATION_RATE = 2;
 const PORT_ENTRY_GAME_MINUTES = 360;
@@ -306,7 +309,7 @@ app.get('/health', (_req, res) => res.json({
   fatigueAffectsSeaAndLandSpeed: true,
   fatigueSlowdownStart: Fatigue.FATIGUE_SLOWDOWN_START,
   fatigueMinSpeedPercent: Math.round(Fatigue.MIN_SPEED_MULTIPLIER * 100),
-  topStatusBar: ['date','latitudeLongitude','fatigue'],
+  topStatusBar: ['date','latitudeLongitude','speed','fatigue'],
   bottomGuideWindow: true,
   suppliesConsumeWithSharedClock: false,
   persistedStudentState: ['selectedStartCity', 'shipPort', 'missionStatus', 'finishRank', 'completionTime'],
@@ -1142,7 +1145,7 @@ function vectorToDir(vx, vy) {
 }
 
 function distanceXY(ax, ay, bx, by) {
-  return Math.hypot(wrapDx(ax, bx), ay - by);
+  return GeoMotion.greatCircleDistancePixels(ax, ay, bx, by, WORLD_PIXEL_W, WORLD_PIXEL_H);
 }
 
 function distance(a, b) {
@@ -1302,6 +1305,7 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     finishRank,
     missionCompleted: raceCompleted,
     speedBoostMultiplier: raceCompleted ? CompletionRewards.speedMultiplier(finishRank) : 1,
+    speedKmh: Math.round((Number(p.speedKmh) || 0) * 10) / 10,
     currentName: p.currentName || '',
     currentStrength: Math.round((Number(p.currentStrength) || 0) * 1000) / 1000,
     currentAssistPercent: Number.isFinite(p.currentAssistPercent) ? p.currentAssistPercent : 0,
@@ -1335,6 +1339,7 @@ function stopPlayer(p) {
   p.input = { up: false, down: false, left: false, right: false };
   p.target = null;
   p.moving = false;
+  p.speedKmh = 0;
 }
 
 function setModeAt(p, mode, point) {
@@ -1354,7 +1359,7 @@ function beginTimedTransition(p, options) {
   const nowRealMs = Date.now();
   const durationGameMinutes = Math.max(1, options.durationGameMinutes);
   // 항구 전환은 항구 데이터나 교사 heartbeat에 따라 달라지지 않도록
-  // 서버 실시간 타이머로 처리한다. 현재 8시간/초 기준 240분 = 0.5초다.
+  // 서버 실시간 타이머로 처리하며, 짧은 전환도 최소 0.25초는 보여 준다.
   const durationRealMs = Math.max(250, durationGameMinutes / (GAME_HOURS_PER_REAL_SECOND * 60) * 1000);
   stopPlayer(p);
   p.transition = {
@@ -1545,6 +1550,7 @@ io.on('connection', (socket) => {
         y: spawn.y,
         dir: 2,
         moving: false,
+        speedKmh: 0,
         mode: 'sea',
         mission: '개인 자유 탐험',
         activeMissionId: null,
@@ -1631,6 +1637,7 @@ io.on('connection', (socket) => {
         y: spawn.y,
         dir: 2,
         moving: false,
+        speedKmh: 0,
         mode: 'sea',
         mission: savedMission ? (activeMission?.phase === 'running' ? savedMission.title : '교사 출발 신호 대기') : activeMission ? '출발 도시 4곳 중 선택 대기 중' : '교사의 미션 대기 중',
         activeMissionId: activeMission?.id || null,
@@ -2251,12 +2258,51 @@ function updateMissionProgress(roomCode, p) {
   }
 }
 
+function moveWithTerrainCollision(p, deltaX, deltaY) {
+  const maxSubstep = TILE * 0.45;
+  const substeps = Math.max(1, Math.ceil(Math.max(Math.abs(deltaX), Math.abs(deltaY)) / maxSubstep));
+  const stepX = deltaX / substeps;
+  const stepY = deltaY / substeps;
+  let moved = false;
+  let blockedTerrain = null;
+
+  for (let i = 0; i < substeps; i += 1) {
+    const ox = p.x;
+    const oy = p.y;
+    const candidates = [[ox + stepX, oy + stepY]];
+    if (Math.abs(stepX) > 0.001 && Math.abs(stepY) > 0.001) {
+      candidates.push([ox + stepX, oy], [ox, oy + stepY]);
+    }
+    let advanced = false;
+    for (const [rawX, rawY] of candidates) {
+      const nx = wrapX(rawX);
+      const ny = Math.max(TILE, Math.min(WORLD_PIXEL_H - TILE, rawY));
+      const nextTerrain = terrainAtPixel(nx, ny);
+      const allowed = p.mode === 'sea' ? nextTerrain.type === 'sea' : nextTerrain.type !== 'sea';
+      if (!allowed) {
+        blockedTerrain = nextTerrain;
+        continue;
+      }
+      p.x = nx;
+      p.y = ny;
+      p.terrain = p.mode === 'sea' ? 'sea' : nextTerrain.type;
+      moved = true;
+      advanced = true;
+      break;
+    }
+    if (!advanced) break;
+  }
+
+  return { moved, blockedTerrain };
+}
+
 function movePlayer(p, dt) {
-  if (store.room(p.roomCode).settings.paused || p.transition) { p.moving = false; return; }
+  if (store.room(p.roomCode).settings.paused || p.transition) { p.moving = false; p.speedKmh = 0; return; }
   const travel = arrivalRaceTravelGate(p);
   if (!travel.ok) { p.moving = false; stopPlayer(p); return; }
   if (p.mode !== 'sea' && p.mode !== 'land') {
     p.moving = false;
+    p.speedKmh = 0;
     return;
   }
 
@@ -2265,22 +2311,24 @@ function movePlayer(p, dt) {
   let targetDistance = Infinity;
 
   if (p.target) {
-    const dx = wrapDx(p.target.x, p.x);
-    const dy = p.target.y - p.y;
-    const dist = Math.hypot(dx, dy);
-    targetDistance = dist;
-    if (dist < 4) {
+    const targetMotion = GeoMotion.initialDirection(
+      p.x, p.y, p.target.x, p.target.y, WORLD_PIXEL_W, WORLD_PIXEL_H
+    );
+    targetDistance = targetMotion.distancePixels;
+    if (targetDistance < 4) {
       p.target = null;
       p.moving = false;
+      p.speedKmh = 0;
       return;
     }
-    vx = dx / dist;
-    vy = dy / dist;
+    vx = targetMotion.x;
+    vy = targetMotion.y;
   }
 
   const len = Math.hypot(vx, vy);
   if (!len) {
     p.moving = false;
+    p.speedKmh = 0;
     p.terrain = p.mode === 'sea' ? 'sea' : terrainAtPixel(p.x, p.y).type;
     return;
   }
@@ -2305,42 +2353,31 @@ function movePlayer(p, dt) {
     p.windAssistPercent = MajorWind.assistPercent(windAlignment, wind.strength, WIND_TAIL_FACTOR, WIND_HEAD_FACTOR);
   }
   const step = Math.min(baseSpeed * multiplier * fatigueMultiplier * completionMultiplier * windMultiplier * dt, targetDistance);
-  let driftX = 0;
-  let driftY = 0;
+  let driftEast = 0;
+  let driftSouth = 0;
   if (p.mode === 'sea') {
     const current = OceanCurrent.currentAtPixel(ox, oy);
     const alignment = vx * current.x + vy * current.y;
     const localTailFactor = Number.isFinite(current.tailFactor) ? current.tailFactor : CURRENT_TAIL_FACTOR;
     const factor = OceanCurrent.movementFactor(alignment, localTailFactor, CURRENT_HEAD_FACTOR, CURRENT_CROSS_FACTOR);
     const driftSpeed = SEA_BASE_SPEED * factor * current.strength * completionMultiplier;
-    driftX = current.x * driftSpeed * dt;
-    driftY = current.y * driftSpeed * dt;
+    driftEast = current.x * driftSpeed * dt;
+    driftSouth = current.y * driftSpeed * dt;
     p.currentName = current.name;
     p.currentStrength = current.strength;
     p.currentAssistPercent = Math.round(factor * current.strength * alignment * 100);
     p.currentCore = current.coreBlend >= 0.5;
   }
-  const candidates = [[ox + vx * step + driftX, oy + vy * step + driftY]];
-  if (Math.abs(vx) > 0.001 && Math.abs(vy) > 0.001) candidates.push([ox + vx * step + driftX, oy + driftY], [ox + driftX, oy + vy * step + driftY]);
-  let moved = false;
-  let blockedTerrain = null;
-
-  for (const [rawX, rawY] of candidates) {
-    const nx = wrapX(rawX);
-    const ny = Math.max(TILE, Math.min(WORLD_PIXEL_H - TILE, rawY));
-    const nextTerrain = terrainAtPixel(nx, ny);
-    const allowed = p.mode === 'sea' ? nextTerrain.type === 'sea' : nextTerrain.type !== 'sea';
-    if (allowed) {
-      p.x = nx;
-      p.y = ny;
-      p.terrain = p.mode === 'sea' ? 'sea' : nextTerrain.type;
-      moved = true;
-      break;
-    }
-    blockedTerrain = nextTerrain;
-  }
+  const mapDelta = GeoMotion.localDeltaToMap(
+    vx * step + driftEast,
+    vy * step + driftSouth,
+    oy,
+    WORLD_PIXEL_H
+  );
+  const { moved, blockedTerrain } = moveWithTerrainCollision(p, mapDelta.x, mapDelta.y);
 
   if (!moved) {
+    p.speedKmh = 0;
     if (p.target) p.target = null;
     if (p.mode === 'land' && blockedTerrain?.type === 'sea') setNotice(p, '탐험대는 바다를 건널 수 없습니다. 항구로 돌아가 배를 이용하세요.');
     else if (p.mode === 'sea' && blockedTerrain?.type !== 'sea') setNotice(p, '육지입니다. 가까운 항구를 통해 입항하세요.');
@@ -2349,7 +2386,15 @@ function movePlayer(p, dt) {
   p.moving = moved;
   if (moved) {
     p.dir = vectorToDir(vx, vy);
-    recordMovement(p, distanceXY(ox, oy, p.x, p.y));
+    const movedPixels = distanceXY(ox, oy, p.x, p.y);
+    const movedKm = GeoMotion.greatCircleDistanceKm(ox, oy, p.x, p.y, WORLD_PIXEL_W, WORLD_PIXEL_H);
+    const elapsedGameHours = (dt / SIMULATION_RATE) * GAME_HOURS_PER_REAL_SECOND;
+    const instantSpeedKmh = movedKm / Math.max(1e-9, elapsedGameHours);
+    const previousSpeedKmh = Number(p.speedKmh) || 0;
+    p.speedKmh = previousSpeedKmh > 0
+      ? previousSpeedKmh * 0.55 + instantSpeedKmh * 0.45
+      : instantSpeedKmh;
+    recordMovement(p, movedPixels);
   }
 }
 
@@ -2390,6 +2435,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v72 · 원작 체감형 항해 BGM·도시 오류 교정: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v75 · 구면 항해·현실 속력 HUD: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });
