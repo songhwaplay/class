@@ -189,31 +189,53 @@
         }
 
 
-        .player-profile {
-            width: min(360px, 100%);
+        .auth-panel {
+            width: min(390px, 100%);
             margin: 0 auto 24px;
-            padding: 14px 16px;
+            padding: 18px;
             border: 2px solid var(--gold-dark);
             outline: 2px solid var(--panel-dark);
             background: rgba(38, 18, 4, 0.88);
             box-shadow: inset 0 0 16px rgba(0,0,0,.35);
+            font-family: Arial, sans-serif;
         }
 
-        .player-profile-title {
-            margin-bottom: 8px;
+        .auth-title {
+            margin-bottom: 7px;
             color: var(--gold);
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
-            letter-spacing: 1px;
+            letter-spacing: 0.16em;
         }
 
-        .player-profile-row {
+        .auth-message,
+        .auth-status,
+        .class-membership {
+            margin: 0;
+            color: #d7c19c;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .google-sign-in {
             display: flex;
-            gap: 8px;
+            justify-content: center;
+            min-height: 44px;
+            margin-top: 14px;
         }
 
-        .player-name-input {
-            flex: 1;
+        .join-form {
+            display: grid;
+            grid-template-columns: 1.4fr 0.8fr auto;
+            gap: 8px;
+            margin-top: 14px;
+        }
+
+        .guest-form {
+            grid-template-columns: 1fr auto;
+        }
+
+        .auth-input {
             min-width: 0;
             height: 42px;
             padding: 8px 10px;
@@ -221,56 +243,71 @@
             background: #1b0d03;
             color: #fff0c7;
             text-align: center;
-            font-family: "Malgun Gothic", sans-serif;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
+            text-transform: uppercase;
             outline: none;
         }
 
-        .player-name-input:focus {
+        .auth-input:focus {
             border-color: var(--gold-bright);
             box-shadow: 0 0 0 2px rgba(255,181,74,.18);
         }
 
-        .save-name-button {
-            min-width: 72px;
+        .auth-input.guest-name {
+            text-transform: none;
+        }
+
+        .auth-button {
+            min-height: 42px;
+            padding: 0 14px;
             border: 2px solid #5d360f;
             background: linear-gradient(#d6a75a, #99631f);
             color: #1d1005;
+            font-family: Arial, sans-serif;
             font-weight: 700;
             cursor: pointer;
         }
 
-        .player-name-status {
-            min-height: 18px;
-            margin-top: 7px;
-            color: #c9ad87;
-            font-family: "Malgun Gothic", sans-serif;
-            font-size: 12px;
-        }
-
-        .player-name-status.error {
-            color: #ff8c84;
-        }
-
-        .saved-player {
-            display: none;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-height: 42px;
-            color: #fff0c7;
-            font-family: "Malgun Gothic", sans-serif;
-            font-weight: 700;
-        }
-
-        .change-name-button {
+        .auth-button.secondary {
+            min-height: auto;
             padding: 5px 9px;
             border: 1px solid #76501e;
             background: #3a210f;
             color: var(--gold);
-            cursor: pointer;
-            font-size: 12px;
+            font-size: 11px;
+        }
+
+        .auth-status {
+            min-height: 18px;
+            margin-top: 9px;
+        }
+
+        .auth-status.error {
+            color: #ff8c84;
+        }
+
+        .signed-in-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 8px;
+            color: #fff0c7;
+        }
+
+        .signed-in-copy {
+            display: grid;
+            gap: 2px;
+            text-align: left;
+        }
+
+        .signed-in-copy strong {
+            font-size: 14px;
+        }
+
+        [hidden] {
+            display: none !important;
         }
 
         @media (max-width: 520px) {
@@ -290,33 +327,44 @@
                 width: 100%;
                 min-height: 72px;
             }
+            .join-form { grid-template-columns: 1fr 0.7fr; }
+            .join-form .auth-button { grid-column: 1 / -1; }
         }
     </style>
 </head>
 <body>
-    <a class="class-tools-link" href="classtools/roaster.html">CLASS TOOLS</a>
+    <a id="classToolsLink" class="class-tools-link" href="classtools/roaster.html" hidden>CLASS TOOLS</a>
     <audio id="bgm" src="assets/sound/index.mp3" autoplay loop preload="auto"></audio>
 
+    <div class="auth-panel" aria-live="polite">
+        <div id="authTitle" class="auth-title">SCHOOL ACCOUNT</div>
+        <p id="authMessage" class="auth-message">Checking sign-in…</p>
+        <div id="googleSignInButton" class="google-sign-in" hidden></div>
 
-    <div class="player-profile">
-        <div class="player-profile-title">PLAYER NAME · 한글 2~6자</div>
+        <form id="guestForm" class="join-form guest-form" hidden>
+            <input id="guestName" class="auth-input guest-name" type="text" maxlength="6" autocomplete="off" placeholder="한글 이름 2~6자" aria-label="Player name">
+            <button class="auth-button" type="submit">ENTER</button>
+        </form>
 
-        <div id="nameEditArea">
-            <div class="player-profile-row">
-                <input id="playerNameInput" class="player-name-input" type="text"
-                       maxlength="6" autocomplete="off" inputmode="text"
-                       placeholder="한/영 키를 눌러 한글로 입력">
-                <button id="saveNameButton" class="save-name-button" type="button">저장</button>
+        <form id="joinForm" class="join-form" hidden>
+            <input id="joinCode" class="auth-input" type="text" maxlength="6" autocomplete="off" placeholder="CLASS CODE" aria-label="Class code">
+            <input id="studentNumber" class="auth-input" type="text" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="NO." aria-label="Student number">
+            <button class="auth-button" type="submit">JOIN</button>
+        </form>
+
+        <div id="signedInArea" hidden>
+            <div class="signed-in-row">
+                <div class="signed-in-copy">
+                    <strong id="signedInName"></strong>
+                    <span id="classMembership" class="class-membership"></span>
+                </div>
+                <button id="signOutButton" class="auth-button secondary" type="button">SIGN OUT</button>
             </div>
-            <div id="playerNameStatus" class="player-name-status"></div>
         </div>
-
-        <div id="savedPlayerArea" class="saved-player">
-            <span><strong id="savedPlayerName"></strong> 님</span>
-            <button id="changeNameButton" class="change-name-button" type="button">이름 변경</button>
-        </div>
+        <p id="authStatus" class="auth-status"></p>
     </div>
 
+    <div id="hubContent" hidden>
     <section class="hub-section worksheet-section" aria-labelledby="worksheet-title">
         <h1 id="worksheet-title" class="section-title">기초학력</h1>
         <div class="worksheet-container">
@@ -347,7 +395,8 @@
             </a>
             <a id="cds95GameLink"
                href="https://world-voyage-classroom.onrender.com/"
-               data-requires-player="true">
+               data-requires-player="true"
+               data-player-handoff="query">
                 <span class="worksheet-copy"><strong>대항해시대</strong><small>(Age of Exploration)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
@@ -362,7 +411,7 @@
         <h2 id="training-title" class="section-title">훈련</h2>
         <div class="worksheet-container">
             <a href="learning/training/music-studio/index.html">
-                <span class="worksheet-copy"><strong>실용화성학·리듬</strong><small>(Harmony &amp; Rhythm)</small></span>
+                <span class="worksheet-copy"><strong>화성학·리듬</strong><small>(Harmony &amp; Rhythm)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
         </div>
@@ -397,21 +446,35 @@
             <a href="learning/games/hanoitower/hanoitower.html"><span class="game-card-copy"><strong>하노이의 탑</strong><small>(Tower of Hanoi)</small></span><span class="worksheet-arrow" aria-hidden="true">→</span></a>
         </div>
     </section>
+    </div>
 
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script>
         (() => {
-            const NAME_STORAGE_KEY = 'classPlayerName';
-            const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
+            'use strict';
 
-            const playerNameInput = document.getElementById('playerNameInput');
-            const saveNameButton = document.getElementById('saveNameButton');
-            const changeNameButton = document.getElementById('changeNameButton');
-            const playerNameStatus = document.getElementById('playerNameStatus');
-            const nameEditArea = document.getElementById('nameEditArea');
-            const savedPlayerArea = document.getElementById('savedPlayerArea');
-            const savedPlayerName = document.getElementById('savedPlayerName');
+            const APP_ORIGIN = 'https://classroom-game-hub.onrender.com';
+            const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
+            const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+            const isRenderApp = location.origin === APP_ORIGIN;
+            const authTitle = document.getElementById('authTitle');
+            const authMessage = document.getElementById('authMessage');
+            const authStatus = document.getElementById('authStatus');
+            const googleSignInButton = document.getElementById('googleSignInButton');
+            const guestForm = document.getElementById('guestForm');
+            const guestNameInput = document.getElementById('guestName');
+            const joinForm = document.getElementById('joinForm');
+            const joinCodeInput = document.getElementById('joinCode');
+            const studentNumberInput = document.getElementById('studentNumber');
+            const signedInArea = document.getElementById('signedInArea');
+            const signedInName = document.getElementById('signedInName');
+            const classMembership = document.getElementById('classMembership');
+            const signOutButton = document.getElementById('signOutButton');
+            const classToolsLink = document.getElementById('classToolsLink');
+            const hubContent = document.getElementById('hubContent');
             const playerLearningLinks = Array.from(document.querySelectorAll('[data-requires-player="true"]'));
-            let nameEditing = false;
+            let openAccess = false;
+            let currentPlayerName = '';
 
             function normalizePlayerName(value) {
                 return String(value || '').replace(/[^가-힣]/g, '').slice(0, 6);
@@ -442,112 +505,218 @@
                 });
             }
 
-            function showSavedPlayer(name) {
-                nameEditing = false;
-                savedPlayerName.textContent = name;
-                nameEditArea.style.display = 'none';
-                savedPlayerArea.style.display = 'flex';
-                updatePlayerLearningLinks(name);
-                const cds95GameLink = document.getElementById('cds95GameLink');
-                if (cds95GameLink) {
-                    const gameUrl = new URL(cds95GameLink.href);
-                    gameUrl.searchParams.set('name', name);
-                    cds95GameLink.href = gameUrl.toString();
-                }
+            async function api(path, options = {}) {
+                const response = await fetch(path, {
+                    ...options,
+                    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+                });
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(payload.message || 'The server could not complete the request.');
+                return payload;
             }
 
-            function showNameEditor(name = '') {
-                nameEditing = true;
-                playerNameInput.value = normalizePlayerName(name);
-                nameEditArea.style.display = 'block';
-                savedPlayerArea.style.display = 'none';
-                playerNameStatus.textContent = '';
-                playerNameStatus.classList.remove('error');
-                setTimeout(() => playerNameInput.focus(), 0);
+            function setStatus(message, error = false) {
+                authStatus.textContent = message;
+                authStatus.classList.toggle('error', error);
             }
 
-            function savePlayerName() {
-                const name = normalizePlayerName(playerNameInput.value);
-                playerNameInput.value = name;
-
-                if (!isValidPlayerName(name)) {
-                    playerNameStatus.textContent = '한글 이름을 2~6자로 입력해야 합니다.';
-                    playerNameStatus.classList.add('error');
-                    playerNameInput.focus();
+            function showStudentHome(state) {
+                const membership = state.membership;
+                const playerName = normalizePlayerName(membership?.name || state.user?.name);
+                if (!isValidPlayerName(playerName)) {
+                    setStatus('The roster name is not valid. Ask your teacher to update it.', true);
                     return;
                 }
-
-                localStorage.setItem(NAME_STORAGE_KEY, name);
-                showSavedPlayer(name);
+                authTitle.textContent = 'STUDENT';
+                authMessage.hidden = true;
+                googleSignInButton.hidden = true;
+                guestForm.hidden = true;
+                joinForm.hidden = true;
+                signedInArea.hidden = false;
+                signedInName.textContent = playerName;
+                classMembership.textContent = `${membership.schoolName} · G${membership.grade}-${membership.classNumber} · No. ${membership.studentNumber}`;
+                hubContent.hidden = false;
+                currentPlayerName = playerName;
+                localStorage.setItem('classPlayerName', playerName);
+                updatePlayerLearningLinks(playerName);
+                setStatus('');
             }
 
-            let composing = false;
+            function showOpenAccess() {
+                openAccess = true;
+                authTitle.textContent = 'DEVELOPMENT ACCESS · OPEN';
+                authMessage.hidden = false;
+                authMessage.textContent = 'Google sign-in is not required while the site is being developed.';
+                googleSignInButton.hidden = true;
+                joinForm.hidden = true;
+                signedInArea.hidden = true;
+                guestForm.hidden = false;
+                hubContent.hidden = false;
 
-            playerNameInput.addEventListener('compositionstart', () => {
-                composing = true;
-            });
-
-            playerNameInput.addEventListener('compositionend', () => {
-                composing = false;
-                playerNameInput.value = normalizePlayerName(playerNameInput.value);
-                playerNameStatus.textContent = '';
-                playerNameStatus.classList.remove('error');
-            });
-
-            playerNameInput.addEventListener('beforeinput', (event) => {
-                if (composing || event.inputType.startsWith('delete')) return;
-
-                const incoming = String(event.data || '');
-                if (incoming && /[A-Za-z0-9\s]/.test(incoming)) {
-                    event.preventDefault();
-                    playerNameStatus.textContent = '키보드를 한글 입력 상태로 전환해 주세요.';
-                    playerNameStatus.classList.add('error');
-                }
-            });
-
-            playerNameInput.addEventListener('input', () => {
-                if (composing) return;
-
-                const normalized = normalizePlayerName(playerNameInput.value);
-                if (playerNameInput.value !== normalized) {
-                    playerNameInput.value = normalized;
-                    playerNameStatus.textContent = '한글 이름만 입력할 수 있습니다.';
-                    playerNameStatus.classList.add('error');
+                const savedName = normalizePlayerName(localStorage.getItem('classPlayerName') || '');
+                guestNameInput.value = savedName;
+                if (isValidPlayerName(savedName)) {
+                    currentPlayerName = savedName;
+                    updatePlayerLearningLinks(savedName);
+                    setStatus(`PLAYER · ${savedName}`);
                 } else {
-                    playerNameStatus.textContent = '';
-                    playerNameStatus.classList.remove('error');
+                    setStatus('Enter a Korean player name before opening a game.');
                 }
-            });
+            }
 
-            playerNameInput.addEventListener('keydown', (event) => {
-                if (event.key === 'Enter' && !composing) savePlayerName();
+            function showJoin(state) {
+                authTitle.textContent = 'FIRST-TIME SETUP';
+                authMessage.hidden = false;
+                authMessage.textContent = `${state.user.name}, enter the class code and your student number.`;
+                googleSignInButton.hidden = true;
+                signedInArea.hidden = false;
+                signedInName.textContent = state.user.name;
+                classMembership.textContent = state.user.email;
+                joinForm.hidden = false;
+                hubContent.hidden = true;
+                joinCodeInput.focus();
+            }
+
+            function routeSignedIn(state) {
+                if (state.user?.role === 'admin') {
+                    location.replace('/admin/');
+                    return;
+                }
+                if (state.user?.role === 'teacher') {
+                    classToolsLink.hidden = false;
+                    location.replace('/classtools/roaster.html');
+                    return;
+                }
+                if (state.membership) showStudentHome(state);
+                else showJoin(state);
+            }
+
+            async function waitForGoogle() {
+                for (let attempt = 0; attempt < 80; attempt += 1) {
+                    if (window.google?.accounts?.id) return true;
+                    await new Promise((resolve) => setTimeout(resolve, 100));
+                }
+                return false;
+            }
+
+            async function renderGoogleButton(clientId) {
+                googleSignInButton.hidden = false;
+                if (!await waitForGoogle()) {
+                    setStatus('Google sign-in did not load. Refresh this page.', true);
+                    return;
+                }
+                window.google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: async ({ credential }) => {
+                        setStatus('Signing in…');
+                        try {
+                            const state = await api('/api/auth/google', {
+                                method: 'POST',
+                                body: JSON.stringify({ credential }),
+                            });
+                            routeSignedIn({ user: state.user, membership: state.membership });
+                        } catch (error) {
+                            setStatus(error.message, true);
+                        }
+                    },
+                    auto_select: false,
+                    cancel_on_tap_outside: false,
+                });
+                window.google.accounts.id.renderButton(googleSignInButton, {
+                    type: 'standard',
+                    theme: 'outline',
+                    size: 'large',
+                    text: 'signin_with',
+                    shape: 'rectangular',
+                    width: Math.min(320, googleSignInButton.clientWidth || 320),
+                });
+            }
+
+            joinCodeInput.addEventListener('input', () => {
+                joinCodeInput.value = joinCodeInput.value.toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0, 6);
             });
-            saveNameButton.addEventListener('click', savePlayerName);
-            changeNameButton.addEventListener('click', () => {
-                showNameEditor(localStorage.getItem(NAME_STORAGE_KEY) || '');
+            guestNameInput.addEventListener('input', () => {
+                guestNameInput.value = normalizePlayerName(guestNameInput.value);
+            });
+            guestForm.addEventListener('submit', (event) => {
+                event.preventDefault();
+                const playerName = normalizePlayerName(guestNameInput.value);
+                if (!isValidPlayerName(playerName)) {
+                    setStatus('Enter a Korean name with 2 to 6 characters.', true);
+                    guestNameInput.focus();
+                    return;
+                }
+                currentPlayerName = playerName;
+                localStorage.setItem('classPlayerName', playerName);
+                updatePlayerLearningLinks(playerName);
+                setStatus(`PLAYER · ${playerName}`);
             });
             playerLearningLinks.forEach((link) => {
                 link.addEventListener('click', (event) => {
-                    const savedName = normalizePlayerName(localStorage.getItem(NAME_STORAGE_KEY) || '');
-                    if (!nameEditing && isValidPlayerName(savedName)) return;
-
+                    if (!openAccess || isValidPlayerName(currentPlayerName)) return;
                     event.preventDefault();
-                    if (!nameEditing) showNameEditor(savedName);
-                    playerNameStatus.textContent = '먼저 학생 이름을 저장해 주세요.';
-                    playerNameStatus.classList.add('error');
-                    playerNameInput.focus();
+                    setStatus('Enter a Korean player name before opening a game.', true);
+                    guestNameInput.focus();
                 });
             });
+            studentNumberInput.addEventListener('input', () => {
+                studentNumberInput.value = studentNumberInput.value.replace(/\D/g, '').slice(0, 3);
+            });
+            joinForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                setStatus('Linking your class…');
+                try {
+                    await api('/api/student/join', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            joinCode: joinCodeInput.value,
+                            studentNumber: studentNumberInput.value,
+                        }),
+                    });
+                    const state = await api('/api/auth/me');
+                    routeSignedIn(state);
+                } catch (error) {
+                    setStatus(error.message, true);
+                }
+            });
+            signOutButton.addEventListener('click', async () => {
+                await api('/api/auth/logout', { method: 'POST', body: '{}' }).catch(() => {});
+                location.reload();
+            });
 
-            const existingName = normalizePlayerName(localStorage.getItem(NAME_STORAGE_KEY) || '');
-            if (isValidPlayerName(existingName)) {
-                localStorage.setItem(NAME_STORAGE_KEY, existingName);
-                showSavedPlayer(existingName);
-            } else {
-                localStorage.removeItem(NAME_STORAGE_KEY);
-                showNameEditor();
+            async function start() {
+                if (!isLocal && !isRenderApp) {
+                    location.replace(`${APP_ORIGIN}/`);
+                    return;
+                }
+                try {
+                    const siteAccess = await api('/api/site/access');
+                    if (siteAccess.mode === 'open') {
+                        showOpenAccess();
+                        return;
+                    }
+                    const config = await api('/api/auth/config');
+                    if (!config.enabled) {
+                        authTitle.textContent = 'LOGIN SETUP REQUIRED';
+                        authMessage.textContent = 'The server is waiting for its Google sign-in settings.';
+                        setStatus(`Missing: ${config.missing.join(', ')}`, true);
+                        return;
+                    }
+                    const state = await api('/api/auth/me');
+                    if (state.signedIn) {
+                        routeSignedIn(state);
+                        return;
+                    }
+                    authMessage.textContent = 'Sign in with the Google Workspace account issued by your school.';
+                    await renderGoogleButton(config.clientId);
+                } catch (error) {
+                    authTitle.textContent = 'SERVER UNAVAILABLE';
+                    authMessage.textContent = 'The classroom server is not ready.';
+                    setStatus(error.message, true);
+                }
             }
 
+            start();
         })();
     </script>
 </body>
