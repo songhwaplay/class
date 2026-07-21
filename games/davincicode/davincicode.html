@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>DAVINCI CODE ONLINE</title>
+<title>숫자 암호 · Number Code</title>
 <link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <style>
 :root{
@@ -54,7 +54,7 @@ input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)
 <div class="shell">
 <section id="missingScreen" class="screen hidden name-missing"><h2>이름이 없습니다</h2><p>메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</p><button class="primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></section>
 <section id="lobby" class="screen hidden mp-lobby-compact" data-multiplayer-lobby>
-  <h1>DAVINCI CODE</h1>
+  <h1>NUMBER CODE</h1>
   <div class="subtitle">ONLINE 2–4 PLAYER · NO JOKERS</div>
   <div class="mp-lobby-tabs">
     <button id="hostTab" class="tab active" type="button">CREATE ROOM</button>
@@ -93,7 +93,7 @@ input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)
   <div id="overlay" class="overlay"><div class="modal"><h2 id="modalTitle"></h2><div id="modalBody"></div><button class="primary" type="button" onclick="location.reload()">처음으로</button></div></div>
 </section>
 </div>
-<div id="rulesOverlay" class="rules-overlay" onclick="closeRulesOnBackdrop(event)"><div class="modal"><h2>DAVINCI CODE RULES</h2><ul class="rules-list"><li>검정과 흰색 숫자 타일은 각각 <strong>0~11</strong> 한 장씩이며 조커는 없습니다.</li><li>자기 타일의 숫자는 볼 수 있지만 상대의 공개되지 않은 숫자는 볼 수 없습니다.</li><li>자기 차례가 시작되면 타일 한 장을 뽑습니다.</li><li>상대 타일 하나를 선택하고 숫자를 추측합니다.</li><li>맞히면 그 타일이 공개되며 계속 추측하거나 멈출 수 있습니다.</li><li>틀리면 이번 차례에 뽑은 자기 타일이 공개되고 차례가 넘어갑니다.</li><li>자기 타일이 모두 공개된 플레이어는 탈락하며 마지막 생존자가 승리합니다.</li><li>같은 숫자는 검정 타일이 흰색 타일보다 앞에 놓입니다.</li></ul><button class="primary" type="button" onclick="closeRules()">확인</button></div></div>
+<div id="rulesOverlay" class="rules-overlay" onclick="closeRulesOnBackdrop(event)"><div class="modal"><h2>NUMBER CODE RULES</h2><ul class="rules-list"><li>검정과 흰색 숫자 타일은 각각 <strong>0~11</strong> 한 장씩이며 조커는 없습니다.</li><li>자기 타일의 숫자는 볼 수 있지만 상대의 공개되지 않은 숫자는 볼 수 없습니다.</li><li>자기 차례가 시작되면 타일 한 장을 뽑습니다.</li><li>상대 타일 하나를 선택하고 숫자를 추측합니다.</li><li>맞히면 그 타일이 공개되며 계속 추측하거나 멈출 수 있습니다.</li><li>틀리면 이번 차례에 뽑은 자기 타일이 공개되고 차례가 넘어갑니다.</li><li>자기 타일이 모두 공개된 플레이어는 탈락하며 마지막 생존자가 승리합니다.</li><li>같은 숫자는 검정 타일이 흰색 타일보다 앞에 놓입니다.</li></ul><button class="primary" type="button" onclick="closeRules()">확인</button></div></div>
 <script>
 "use strict";
 const GAME_ID="davincicode";

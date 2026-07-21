@@ -104,6 +104,11 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   assert.match(catalogHtml, /href="\/arithmetic\/grade-3-division-2"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/grade-3-division-3"[^>]*data-testid="worksheet-choice"/);
   assert.match(catalogHtml, /href="\/arithmetic\/grade-3-fraction-1"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-measurement"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-3-fraction-3"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-4-number-reading"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-4-multiplication"[^>]*data-testid="worksheet-choice"/);
+  assert.match(catalogHtml, /href="\/arithmetic\/grade-4-large-number-multiplication"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /2시계①|2시계②/);
   assert.doesNotMatch(catalogHtml, /난이도|연산 종류/);
 });
@@ -139,7 +144,7 @@ test("keeps every race-ready worksheet connected to grading and score reading", 
   const selectorsBlock = controllerSource.match(/const questionSelectors = \[([\s\S]*?)\n\];/)?.[1] ?? "";
   const selectors = [...selectorsBlock.matchAll(/"(\.[^"]+)"/g)].map((match) => match[1]);
 
-  assert.equal(routes.length, 37);
+  assert.equal(routes.length, 42);
   assert.ok(selectors.includes(".multiplication-five-question"));
   assert.ok(selectors.includes(".clock-question"));
   assert.ok(selectors.includes(".division-story-problem"));
@@ -819,6 +824,148 @@ test("renders the first grade-three fraction worksheet with stable fraction bars
   assert.match(css, /\.grade-three-fraction-value-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
   assert.match(css, /\.grade-three-fraction-value-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(5,/);
   assert.match(css, /\.grade-three-fraction-line\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*2px;/);
+});
+
+test("renders the grade-three weight and capacity worksheet in three by three vertical problems", async () => {
+  const response = await render("/arithmetic/grade-3-measurement");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-measurement/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /무게,들이/);
+  assert.match(html, /aria-label="A4 3학년 무게,들이 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 무게,들이 전체 답지"/);
+  assert.equal((html.match(/data-testid="measurement-question"/g) ?? []).length, 18);
+  assert.equal((html.match(/class="measurement-answer"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="measurement-static-answer"/g) ?? []).length, 9);
+  assert.equal((html.match(/maxLength="2"/g) ?? []).length, 9);
+  assert.equal((html.match(/maxLength="3"/g) ?? []).length, 9);
+  assert.equal((html.match(/class="measurement-rule"/g) ?? []).length, 18);
+  assert.match(source, /minorUnit: majorUnit === "kg" \? "g" : "mL"/);
+  assert.match(source, /answer: \{ major: Math\.floor\(total \/ 1000\), minor: total % 1000 \}/);
+  assert.match(source, /quantity\(next, \[1, 9\], \[1, 666\]\)/);
+  assert.match(source, /quantity\(next, \[5, 9\], \[777, 999\]\)/);
+  assert.match(source, /twoDigitMajor\(next, \[5, 9\], \[1, 4\]\)/);
+  assert.match(source, /expected === 0 \? value === "" \|\| value === "0"/);
+  assert.match(source, /<small>\/9 정답<\/small>/);
+  assert.match(css, /\.measurement-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,/);
+  assert.match(css, /\.measurement-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(3,/);
+});
+
+test("renders the third grade unit fraction worksheet in two columns with fixed fraction rules", async () => {
+  const response = await render("/arithmetic/grade-3-fraction-3");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-3-fraction-3/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /3학년/);
+  assert.match(html, /분수③/);
+  assert.match(html, /aria-label="A4 3학년 분수③ 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 분수③ 전체 답지"/);
+  assert.equal((html.match(/data-testid="unit-fraction-question"/g) ?? []).length, 16);
+  assert.equal((html.match(/class="unit-fraction-input"/g) ?? []).length, 8);
+  assert.equal((html.match(/class="unit-fraction-static-answer"/g) ?? []).length, 8);
+  assert.equal((html.match(/maxLength="4"/g) ?? []).length, 8);
+  assert.equal((html.match(/class="unit-fraction-line"/g) ?? []).length, 16);
+  assert.match(source, /unit: "년", convertedUnit: "개월", factor: 12/);
+  assert.match(source, /unit: "m", convertedUnit: "cm", factor: 100/);
+  assert.match(source, /unit: "L", convertedUnit: "mL", factor: 1000/);
+  assert.match(source, /shuffle\(UNITS, next\)\.slice\(0, 8\)/);
+  assert.match(source, /index < 4[\s\S]*?denominator - 1[\s\S]*?index < 6[\s\S]*?denominator \+ 1, denominator \+ 3/);
+  assert.match(source, /const whole = index < 6 \? 0 : integer\(next, 1, 3\)/);
+  assert.match(source, /<small>\/8 정답<\/small>/);
+  assert.match(css, /\.unit-fraction-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
+  assert.match(css, /\.unit-fraction-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(4,/);
+  assert.match(css, /\.unit-fraction-line\s*\{[\s\S]*?width:\s*100%;[\s\S]*?height:\s*2px;/);
+});
+
+test("renders the fourth grade large-number reading worksheet without unsafe number conversion", async () => {
+  const response = await render("/arithmetic/grade-4-number-reading");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-4-number-reading/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /4학년/);
+  assert.match(html, /숫자읽기/);
+  assert.match(html, /한자어로 쓰기/);
+  assert.match(html, /숫자로 쓰기/);
+  assert.match(html, /aria-label="A4 4학년 숫자읽기 문제지"/);
+  assert.match(html, /aria-label="A4 4학년 숫자읽기 전체 답지"/);
+  assert.equal((html.match(/data-testid="large-number-question"/g) ?? []).length, 20);
+  assert.equal((html.match(/class="large-number-input /g) ?? []).length, 10);
+  assert.equal((html.match(/class="large-number-static-answer /g) ?? []).length, 10);
+  assert.equal((html.match(/maxLength="40"/g) ?? []).length, 5);
+  assert.equal((html.match(/maxLength="20"/g) ?? []).length, 5);
+  assert.match(source, /const WRITE_LENGTH_GROUPS = \[\[15, 16\], \[13, 14\], \[10, 11, 12\], \[7, 8, 9\]\]/);
+  assert.match(source, /const READ_LENGTH_GROUPS = \[\[15, 16\], \[13, 14\], \[10, 11, 12\], \[7, 8, 9\], \[5, 6\]\]/);
+  assert.match(source, /let value = pick\(FIRST_DIGITS, next\)/);
+  assert.match(source, /value \+= pick\(OTHER_DIGITS, next\)/);
+  assert.match(source, /parts\.push\(`\$\{group\}\$\{LARGE_UNITS\[4 - groupCount \+ index\]\}`\)/);
+  assert.doesNotMatch(source, /parseInt|parseFloat|Number\(number\)|BigInt/);
+  assert.match(source, /<small>\/10 정답<\/small>/);
+  assert.match(css, /\.large-number-columns\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
+  assert.match(css, /\.large-number-column\s*\{[\s\S]*?grid-template-rows:\s*58px repeat\(5,/);
+});
+
+test("renders the fourth grade multiplication worksheet with two horizontal and nine vertical problems", async () => {
+  const response = await render("/arithmetic/grade-4-multiplication");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-4-multiplication/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(html, /4학년/);
+  assert.match(html, /곱셈/);
+  assert.match(html, /aria-label="A4 4학년 곱셈 문제지"/);
+  assert.match(html, /aria-label="A4 4학년 곱셈 전체 답지"/);
+  assert.equal((html.match(/data-testid="grade-four-multiplication-question"/g) ?? []).length, 22);
+  assert.equal((html.match(/class="grade-four-multiply-horizontal-expression"/g) ?? []).length, 4);
+  assert.equal((html.match(/class="grade-four-multiply-vertical-operation"/g) ?? []).length, 18);
+  assert.equal((html.match(/class="grade-four-multiply-input"/g) ?? []).length, 11);
+  assert.equal((html.match(/class="grade-four-multiply-static-answer"/g) ?? []).length, 11);
+  assert.equal((html.match(/maxLength="8"/g) ?? []).length, 11);
+  assert.match(source, /tensMultiple\(next, 2, 6, 1, 3\)/);
+  assert.match(source, /tensMultiple\(next, 2, 6, 2, 3\)/);
+  assert.match(source, /integer\(next, 150, 999\), integer\(next, 15, 99\)/);
+  assert.match(source, /integer\(next, 777, 999\), integer\(next, 77, 99\)/);
+  assert.match(source, /integer\(next, 7777, 9999\), integer\(next, 77, 99\)/);
+  assert.match(source, /integer\(next, 4444, 9999\), tensMultiple\(next, 3, 9, 2, 3\)/);
+  assert.match(source, /<small>\/11 정답<\/small>/);
+  assert.match(css, /\.grade-four-multiply-horizontal-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
+  assert.match(css, /\.grade-four-multiply-vertical-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,/);
+  assert.match(css, /\.grade-four-multiply-vertical-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(3,/);
+});
+
+test("renders the fourth grade large-unit multiplication worksheet from all workbook unit pairs", async () => {
+  const response = await render("/arithmetic/grade-4-large-number-multiplication");
+  assert.equal(response.status, 200);
+
+  const html = await response.text();
+  const source = await readFile(new URL("../app/arithmetic/grade-4-large-number-multiplication/page.tsx", import.meta.url), "utf8");
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  const unitPairsBlock = source.match(/const UNIT_PAIRS = \[([\s\S]*?)\n\] as const/)?.[1] ?? "";
+  assert.match(html, /4학년/);
+  assert.match(html, /큰수곱셈/);
+  assert.match(html, /aria-label="A4 4학년 큰수곱셈 문제지"/);
+  assert.match(html, /aria-label="A4 4학년 큰수곱셈 전체 답지"/);
+  assert.equal((html.match(/data-testid="large-unit-multiply-question"/g) ?? []).length, 20);
+  assert.equal((html.match(/class="large-unit-multiply-input"/g) ?? []).length, 10);
+  assert.equal((html.match(/class="large-unit-multiply-static-answer"/g) ?? []).length, 10);
+  assert.equal((html.match(/maxLength="4"/g) ?? []).length, 10);
+  assert.equal((unitPairsBlock.match(/\["/g) ?? []).length, 38);
+  assert.match(source, /shuffle\(UNIT_PAIRS, next\)\.slice\(0, 10\)/);
+  assert.match(source, /const resultExponent = exponent >= 12 \? 12 : exponent >= 8 \? 8 : 4/);
+  assert.match(source, /if \(scale === 1000\)/);
+  assert.match(source, /left === 4 \? 2 : left === 3 \? integer\(next, 2, 3\) : integer\(next, 2, 4\)/);
+  assert.match(source, /leftUnit === "천" && rightUnit === "십억"/);
+  assert.match(source, /answer: left \* right \* scale/);
+  assert.match(source, /<small>\/10 정답<\/small>/);
+  assert.match(css, /\.large-unit-multiply-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(2,/);
+  assert.match(css, /\.large-unit-multiply-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(5,/);
 });
 
 test("renders the third grade-two worksheet with mixed missing terms", async () => {

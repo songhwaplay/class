@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-<title>TRAVERSE ONLINE</title>
+<title>도형 건너기 · Shape Crossing</title>
 <link rel="stylesheet" href="../../assets/network/multiplayer-lobby.css">
 <style>
 :root{--bg:#070b10;--panel:#111923;--gold:#c9a956;--gold2:#f4dc87;--text:#eee7d6;--muted:#9eabba;--line:rgba(201,169,86,.28)}
@@ -44,7 +44,7 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 <audio id="bgm" src="../../assets/sound/traverse.mp3" loop preload="auto"></audio>
 <section id="missingScreen" class="screen hidden"><div class="panel name-missing"><h2>이름이 없습니다</h2><p>메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</p><button class="btn primary" type="button" onclick="location.href='../../index.html'">메인 화면으로</button></div></section>
 <section id="lobbyScreen" class="screen hidden mp-lobby-compact" data-multiplayer-lobby><div class="panel">
-<h1 class="title">TRAVERSE</h1><div class="subtitle">온라인 보드게임 · 2인 또는 4인 · 3인 플레이 금지</div>
+<h1 class="title">SHAPE CROSSING</h1><div class="subtitle">도형 건너기 · 2인 또는 4인 · 3인 플레이 금지</div>
 <div class="mp-lobby-card mp-lobby-player-name">PLAYER <span id="savedName">-</span></div>
 <div class="mp-lobby-tabs"><button id="hostTab" class="tab active" type="button">CREATE ROOM</button><button id="joinTab" class="tab" type="button">JOIN ROOM</button></div>
 <div id="hostPane" class="mp-lobby-card"><div class="mp-lobby-room-code" id="roomCode">----</div><div class="mp-lobby-status" id="hostStatus">방을 만드는 중입니다.</div><div class="mp-lobby-row"><button id="copyBtn" class="btn" type="button">COPY CODE</button></div></div>
@@ -54,8 +54,8 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 <div class="music-control"><strong>MUSIC</strong><button class="btn" type="button" data-mute>MUTE</button><div class="music-bars"><button class="music-segment" type="button" data-level="1"></button><button class="music-segment" type="button" data-level="2"></button><button class="music-segment" type="button" data-level="3"></button><button class="music-segment" type="button" data-level="4"></button><button class="music-segment" type="button" data-level="5"></button></div></div>
 </div></section>
 <section id="gameScreen" class="screen hidden"><div class="game-shell">
-<div class="game-head"><div class="game-title">TRAVERSE</div><div id="turnBox" class="turn-box"><div class="turn-line"><span id="turnText">게임 준비 중</span><span id="turnSeconds" class="turn-seconds">30초</span></div><div class="turn-track"><div id="turnTimerBar" class="turn-bar"></div></div></div><div class="head-actions"><button id="rulesBtnGame" class="btn" type="button">RULES</button> <button id="leaveBtn" class="btn" type="button">나가기</button></div></div>
-<div class="game-layout"><div class="board-area"><div class="board-stage"><div id="labelTop" class="side-label top">-</div><div id="labelRight" class="side-label right">-</div><div id="labelBottom" class="side-label bottom">-</div><div id="labelLeft" class="side-label left">-</div><div id="board" class="board" aria-label="트래버스 게임판"></div></div><div id="message" class="message">게임 준비 중입니다.</div></div>
+<div class="game-head"><div class="game-title">SHAPE CROSSING</div><div id="turnBox" class="turn-box"><div class="turn-line"><span id="turnText">게임 준비 중</span><span id="turnSeconds" class="turn-seconds">30초</span></div><div class="turn-track"><div id="turnTimerBar" class="turn-bar"></div></div></div><div class="head-actions"><button id="rulesBtnGame" class="btn" type="button">RULES</button> <button id="leaveBtn" class="btn" type="button">나가기</button></div></div>
+<div class="game-layout"><div class="board-area"><div class="board-stage"><div id="labelTop" class="side-label top">-</div><div id="labelRight" class="side-label right">-</div><div id="labelBottom" class="side-label bottom">-</div><div id="labelLeft" class="side-label left">-</div><div id="board" class="board" aria-label="도형 건너기 게임판"></div></div><div id="message" class="message">게임 준비 중입니다.</div></div>
 <aside class="side-panel"><div class="info-card"><div class="info-title">PLAYERS</div><div id="playerStatus"></div></div><div class="info-card"><div class="info-title">TURN ACTION</div><div class="chain-actions"><button id="endJumpBtn" class="btn primary" type="button" disabled>점프 종료</button><button id="cancelSelectBtn" class="btn" type="button">선택 취소</button></div></div><div class="info-card"><div class="info-title">GAME LOG</div><div id="gameLog" class="log"></div></div><div class="info-card"><div class="info-title">MUSIC</div><div class="music-control game-music"><button class="btn" type="button" data-mute>MUTE</button><div class="music-bars"><button class="music-segment" type="button" data-level="1" aria-label="음악 볼륨 1"></button><button class="music-segment" type="button" data-level="2" aria-label="음악 볼륨 2"></button><button class="music-segment" type="button" data-level="3" aria-label="음악 볼륨 3"></button><button class="music-segment" type="button" data-level="4" aria-label="음악 볼륨 4"></button><button class="music-segment" type="button" data-level="5" aria-label="음악 볼륨 5"></button></div></div></div></aside></div>
 </div></section>
 <div id="overlay" class="mp-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="mp-modal"><h2 id="modalTitle">RULES</h2><div id="modalBody"></div><button id="modalClose" class="btn primary mp-modal-close" type="button">확인</button></div></div>
@@ -274,7 +274,7 @@ function renderStatus(){
 }
 function renderLog(){$("gameLog").innerHTML=(state.log||[]).slice(0,30).map(x=>`<div>• ${escapeHtml(x)}</div>`).join("")}
 function showRules(){
- $("modalTitle").textContent="TRAVERSE RULES";
+ $("modalTitle").textContent="SHAPE CROSSING RULES";
  $("modalBody").innerHTML=`
  <ol class="rules-list">
    <li><strong>목표:</strong> 내 말 8개를 모두 보드 반대편의 도착 줄로 보내면 승리합니다. 모서리 칸은 도착 칸에 포함되지 않습니다.</li>

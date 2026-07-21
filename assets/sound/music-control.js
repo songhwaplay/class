@@ -4,10 +4,19 @@
     const LEVEL_KEY = "classMusicVolumeLevel";
     const MUTED_KEY = "classMusicMuted";
     const DEFAULT_LEVEL = 3;
+    const currentScript = document.currentScript;
+    if (!window.ClassGameSfx && !document.querySelector("script[data-class-game-sfx]")) {
+        const sfxScript = document.createElement("script");
+        sfxScript.dataset.classGameSfx = "true";
+        sfxScript.src = currentScript
+            ? new URL("game-sfx.js", currentScript.src).href
+            : "../../assets/sound/game-sfx.js";
+        document.head.appendChild(sfxScript);
+    }
+
     const audio = document.getElementById("bgm");
     if (!audio) return;
 
-    const currentScript = document.currentScript;
     if (!document.querySelector('link[data-class-music-style]')) {
         const stylesheet = document.createElement("link");
         stylesheet.rel = "stylesheet";

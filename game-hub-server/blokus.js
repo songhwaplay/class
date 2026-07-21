@@ -98,7 +98,7 @@ function createGame(hostId, hostName) {
 
 function addPlayer(game, playerId, playerName) {
   if (game.phase !== "lobby") return { ok: false, error: "이미 시작한 게임입니다." };
-  if (game.players.length >= 4) return { ok: false, error: "블로커스는 최대 4명까지 참여할 수 있습니다." };
+  if (game.players.length >= 4) return { ok: false, error: "코너 블록은 최대 4명까지 참여할 수 있습니다." };
   const id = String(playerId);
   if (game.players.some(player => player.id === id)) return { ok: true };
   game.players.push({ id, name: cleanName(playerName, `플레이어 ${game.players.length + 1}`) });
@@ -151,7 +151,7 @@ function assignColors(players) {
 function startGame(game) {
   if (game.phase !== "lobby") return { ok: false, error: "이미 시작한 게임입니다." };
   if (![2, 4].includes(game.players.length)) {
-    return { ok: false, error: "블로커스는 2명 또는 4명일 때 시작할 수 있습니다." };
+    return { ok: false, error: "코너 블록은 2명 또는 4명일 때 시작할 수 있습니다." };
   }
   const assignment = assignColors(game.players);
   game.colorOwners = assignment.owners;

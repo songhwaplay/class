@@ -103,7 +103,8 @@
         questionIllustration: byId("questionIllustration"), questionIllustrationImage: byId("questionIllustrationImage"),
         answerFeedback: byId("answerFeedback"), feedbackTitle: byId("feedbackTitle"), feedbackCopy: byId("feedbackCopy"),
         nextQuestion: byId("nextQuestion"), resultTitle: byId("resultTitle"), resultScore: byId("resultScore"),
-        resultMessage: byId("resultMessage"), retryQuiz: byId("retryQuiz"), reviewMistakes: byId("reviewMistakes"),
+        resultMessage: byId("resultMessage"), resultMistakeList: byId("resultMistakeList"),
+        retryQuiz: byId("retryQuiz"), retryMistakes: byId("retryMistakes"), reviewMistakes: byId("reviewMistakes"),
         libraryTotal: byId("libraryTotal"), libraryLevelSelect: byId("libraryLevelSelect"), librarySearch: byId("librarySearch"), themeFilters: byId("themeFilters"),
         libraryGrid: byId("libraryGrid"), libraryEmpty: byId("libraryEmpty"), toast: byId("toast"),
         playerGreeting: byId("playerGreeting")
@@ -124,6 +125,7 @@
     let quizStreak = 0;
     let quizAnswered = false;
     let quizMistakes = [];
+    let quizIsMistakeRetry = false;
     let selectedLibraryTheme = "전체";
     let selectedLibraryLevel = "초급";
     let toastTimer = 0;
@@ -277,7 +279,7 @@
         elements.bestScore.textContent = `${getBestScore()} / 10`;
     }
 
-    function startQuiz() {
+    function startQuiz(mistakeIds = null) {
         const levelPool = data.filter((idiom) => selectedQuizLevel === "전체" || idiom.level === selectedQuizLevel);
         const quizPool = selectedQuizMode === "image"
             ? levelPool.filter((idiom) => Boolean(ILLUSTRATIONS[idiom.id]))
@@ -286,7 +288,15 @@
             showToast("이 단계에는 삽화 문제가 없습니다.");
             return;
         }
-        quiz = core.buildQuiz(quizPool, 10, selectedQuizMode);
+        quizIsMistakeRetry = Array.isArray(mistakeIds);
+        if (quizIsMistakeRetry) {
+            const mistakeSet = new Set(mistakeIds);
+            quiz = core.shuffle(quizPool.filter((idiom) => mistakeSet.has(idiom.id)))
+                .map((idiom) => core.createQuestion(idiom, quizPool, selectedQuizMode));
+            if (!quiz.length) return;
+        } else {
+            quiz = core.buildQuiz(quizPool, 10, selectedQuizMode);
+        }
         quizIndex = 0;
         quizScore = 0;
         quizStreak = 0;
@@ -377,16 +387,34 @@
     function finishQuiz() {
         elements.quizStage.hidden = true;
         elements.quizResult.hidden = false;
-        const best = Math.max(getBestScore(), quizScore);
-        try { localStorage.setItem(BEST_SCORE_KEY, String(best)); } catch (_) {}
+        if (!quizIsMistakeRetry) {
+            const best = Math.max(getBestScore(), quizScore);
+            try { localStorage.setItem(BEST_SCORE_KEY, String(best)); } catch (_) {}
+        }
         renderBestScore();
         elements.resultScore.textContent = `${quizScore} / ${quiz.length}`;
 
-        elements.resultTitle.textContent = "퀴즈 결과";
-        elements.resultMessage.textContent = quizMistakes.length
-            ? `오답 ${quizMistakes.length}개를 복습 목록에 추가했습니다.`
-            : "오답이 없습니다.";
-        elements.reviewMistakes.hidden = quizMistakes.length === 0;
+        const mistakeIds = [...new Set(quizMistakes)];
+        elements.resultTitle.textContent = quizIsMistakeRetry ? "오답 다시 풀기 결과" : "퀴즈 결과";
+        elements.resultMessage.textContent = mistakeIds.length
+            ? `오답 ${mistakeIds.length}개를 복습 목록에 추가했습니다.`
+            : (quizIsMistakeRetry ? "틀렸던 문제를 모두 바로잡았습니다." : "오답이 없습니다.");
+        elements.resultMistakeList.replaceChildren();
+        mistakeIds.forEach((id) => {
+            const idiom = data.find((item) => item.id === id);
+            if (!idiom) return;
+            const item = document.createElement("li");
+            item.textContent = `${idiom.word} · ${idiom.hanja}`;
+            elements.resultMistakeList.append(item);
+        });
+        elements.resultMistakeList.hidden = mistakeIds.length === 0;
+        elements.retryMistakes.hidden = mistakeIds.length === 0;
+        elements.reviewMistakes.hidden = mistakeIds.length === 0;
+    }
+
+    function retryQuizMistakes() {
+        if (!quizMistakes.length) return;
+        startQuiz([...new Set(quizMistakes)]);
     }
 
     function reviewQuizMistakes() {
@@ -538,9 +566,10 @@
     elements.quizLevelSelect.addEventListener("change", () => {
         selectedQuizLevel = elements.quizLevelSelect.value;
     });
-    elements.startQuiz.addEventListener("click", startQuiz);
+    elements.startQuiz.addEventListener("click", () => startQuiz());
     elements.nextQuestion.addEventListener("click", goToNextQuestion);
-    elements.retryQuiz.addEventListener("click", startQuiz);
+    elements.retryQuiz.addEventListener("click", () => startQuiz());
+    elements.retryMistakes.addEventListener("click", retryQuizMistakes);
     elements.reviewMistakes.addEventListener("click", reviewQuizMistakes);
     elements.librarySearch.addEventListener("input", renderLibrary);
     elements.libraryLevelSelect.addEventListener("change", () => {

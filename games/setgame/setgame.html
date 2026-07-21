@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>SET MATCH</title>
+    <title>패턴 3장 · Pattern Trio</title>
 <style>
         :root {
             --bg: #070a10;
@@ -37,7 +37,7 @@
             background:
                 radial-gradient(circle at 50% 12%, rgba(52, 70, 96, 0.20), transparent 42%),
                 linear-gradient(rgba(7, 10, 16, 0.48), rgba(3, 5, 9, 0.72)),
-                url('../../assets/images/setgamebg.png') center / cover fixed no-repeat;
+            url('../../assets/images/pattern3-bg.png') center / cover fixed no-repeat;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1017,13 +1017,13 @@ textarea,
 
 
 <div class="lobby-card hidden" id="missingScreen">
-    <div class="lobby-title">SET MATCH</div>
+                <div class="lobby-title">PATTERN TRIO</div>
     <div class="lobby-subtitle">이름이 없습니다. 이름 변경은 메인 화면에서만 가능합니다.</div>
     <button class="action-btn" type="button" onclick="location.href='../../index.html'">메인 화면으로</button>
 </div>
 
 <div class="lobby-card hidden" id="lobby-card" data-multiplayer-lobby>
-    <div class="lobby-title">SET MATCH</div>
+                <div class="lobby-title">PATTERN TRIO</div>
     <div class="lobby-subtitle">PLAYER · <strong id="savedName">-</strong> · 1~4명 · 혼자 연습 가능</div>
 
     <div class="lobby-mode-tabs">
@@ -1091,13 +1091,13 @@ textarea,
 <div class="game-container" id="game-container">
     
     <div class="setter-timer-overlay" id="timer-overlay">
-        <div class="setter-timer-text" id="timer-text">SET DECLARATION!</div>
+            <div class="setter-timer-text" id="timer-text">PATTERN CALL!</div>
         <div class="setter-timer-text" style="font-size: 50px; margin-top: 10px;" id="timer-countdown">3.0</div>
     </div>
 
     <div class="game-header">
         <div>
-            <div class="game-title">SET MATCH</div>
+                <div class="game-title">PATTERN TRIO</div>
             <div class="target-score-label" id="target-score-label">FIRST TO 3 POINTS</div>
         </div>
     </div>
@@ -1110,7 +1110,7 @@ textarea,
             </div>
 
         <div class="side-panel">
-            <button class="call-set-btn" id="call-set-btn" onclick="declareSet()">SET!</button>
+            <button class="call-set-btn" id="call-set-btn" onclick="declareSet()">찾았다!</button>
             <button class="action-btn" id="rules-btn-game" type="button">RULES</button>
             
             <div class="log-monitor" id="log-monitor">
@@ -1142,10 +1142,10 @@ textarea,
 <script>
     // --- 1. 카드 생성 및 알고리즘 데이터 설계 ---
     // 속성 정의 (각각 0, 1, 2)
-    const SHAPES   = ["diamond", "squiggle", "oval"];
-    const COLORS   = ["red", "green", "purple"];
+    const SHAPES   = ["triangle", "hexagon", "circle"];
+    const COLORS   = ["blue", "orange", "teal"];
     const NUMBERS  = [1, 2, 3];
-    const FILLINGS = ["empty", "striped", "filled"]; // 테두리, 줄무늬, 가득참
+    const FILLINGS = ["empty", "dotted", "filled"]; // 테두리, 점무늬, 가득참
 
     let deck = []; // 81장의 전체 카드 더미
     let boardCards = []; // 현재 바닥에 배치된 12장 이상의 카드 객체들
@@ -1524,16 +1524,16 @@ textarea,
                 svg.setAttribute("class", "shape-svg");
                 svg.setAttribute("viewBox", "0 0 100 40");
 
-                const colorCode = ["#ff4136", "#2ecc40", "#b10dc9"][card.color];
+                const colorCode = ["#3478f6", "#f08a24", "#008d8a"][card.color];
                 const patternId = `stripe-${card.id}-${n}`;
                 let fillVal = "none";
 
-                if (card.filling === 1) { // striped
+                if (card.filling === 1) { // dotted
                     fillVal = `url(#${patternId})`;
                     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
                     defs.innerHTML = `
-                        <pattern id="${patternId}" width="5" height="5" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                            <line x1="0" y1="0" x2="0" y2="5" stroke="${colorCode}" stroke-width="2" />
+                        <pattern id="${patternId}" width="8" height="8" patternUnits="userSpaceOnUse">
+                            <circle cx="2" cy="2" r="1.6" fill="${colorCode}" />
                         </pattern>
                     `;
                     svg.appendChild(defs);
@@ -1542,12 +1542,12 @@ textarea,
                 }
 
                 let shapeNode = "";
-                if (card.shape === 0) { // diamond
-                    shapeNode = `<polygon points="50,3 95,17 50,31 5,17" stroke="${colorCode}" stroke-width="2.7" fill="${fillVal}" stroke-linejoin="round" />`;
-                } else if (card.shape === 1) { // squiggle: 내부 면적이 있는 닫힌 도형
-                    shapeNode = `<path d="M5,24 C13,3 34,1 50,11 C66,21 81,22 96,5 C92,30 70,38 50,27 C33,18 18,19 5,24 Z" stroke="${colorCode}" stroke-width="2.7" fill="${fillVal}" stroke-linejoin="round" />`;
-                } else { // oval
-                    shapeNode = `<rect x="9" y="5" width="82" height="24" rx="12" ry="12" stroke="${colorCode}" stroke-width="2.7" fill="${fillVal}" />`;
+                if (card.shape === 0) { // triangle
+                    shapeNode = `<polygon points="50,3 94,35 6,35" stroke="${colorCode}" stroke-width="2.7" fill="${fillVal}" stroke-linejoin="round" />`;
+                } else if (card.shape === 1) { // hexagon
+                    shapeNode = `<polygon points="20,3 80,3 96,20 80,37 20,37 4,20" stroke="${colorCode}" stroke-width="2.7" fill="${fillVal}" stroke-linejoin="round" />`;
+                } else { // circle
+                    shapeNode = `<ellipse cx="50" cy="20" rx="31" ry="16" stroke="${colorCode}" stroke-width="2.7" fill="${fillVal}" />`;
                 }
 
                 svg.innerHTML += shapeNode;
@@ -1594,7 +1594,7 @@ textarea,
     function declareSet() {
         if (!gameStarted || activeSetter !== null || blockedPlayersThisBoard.has(myId)) {
             if (blockedPlayersThisBoard.has(myId)) {
-                logToMonitor("* 이번 카드판에서는 다시 SET을 선언할 수 없습니다.");
+            logToMonitor("* 이번 카드판에서는 다시 패턴을 선언할 수 없습니다.");
             }
             return;
         }
@@ -1632,7 +1632,7 @@ textarea,
         const timerText = document.getElementById("timer-text");
         const countdownEl = document.getElementById("timer-countdown");
 
-        timerText.innerText = `${players[setterId].name}'s DECLARATION!`;
+        timerText.innerText = `${players[setterId].name} · 패턴 선택!`;
         overlay.style.background = "rgba(0,0,0,0.5)";
         overlay.style.backdropFilter = "blur(2px)";
         overlay.style.display = "flex";
@@ -1745,7 +1745,7 @@ textarea,
         const overlay = document.getElementById("timer-overlay");
         const timerText = document.getElementById("timer-text");
         const countdownEl = document.getElementById("timer-countdown");
-        timerText.textContent = `${players[setterId]?.name || "참가자"} 정답 SET!`;
+        timerText.textContent = `${players[setterId]?.name || "참가자"} 정답 패턴!`;
         countdownEl.textContent = "";
         overlay.style.background = "rgba(0,0,0,0.10)";
         overlay.style.backdropFilter = "none";
@@ -1797,7 +1797,7 @@ textarea,
             isSet(chosenCards[0], chosenCards[1], chosenCards[2])
         ) {
             players[setterId].score += 1; // 정답 +1점
-            logMsg = `* [SET SUCCESS] ${players[setterId].name} scored 1 point!`;
+            logMsg = `* [정답] ${players[setterId].name} +1점`;
 
             const revealedIds = [...uniqueIds];
             broadcastState({
@@ -1873,13 +1873,13 @@ textarea,
                     boardCards,
                     deck,
                     players,
-                    logMsg: "* 정답 SET을 확인했습니다. 다음 카드판입니다."
+                        logMsg: "* 정답 패턴을 확인했습니다. 다음 카드판입니다."
                 });
 
                 releaseSetLockdown();
                 renderBoard();
                 renderScoreboard();
-                logToMonitor("* 정답 SET을 확인했습니다. 다음 카드판입니다.");
+                    logToMonitor("* 정답 패턴을 확인했습니다. 다음 카드판입니다.");
             }, 4000);
 
         } else {
@@ -1887,10 +1887,10 @@ textarea,
             if (players[setterId].score <= 0) {
                 players[setterId].score = 0;
                 blockedPlayersThisBoard.add(setterId);
-                logMsg = `* [SET FAILED] ${players[setterId].name}: 이번 카드판 참여 불가`;
+                logMsg = `* [오답] ${players[setterId].name}: 이번 카드판 참여 불가`;
             } else {
                 players[setterId].score -= 1;
-                logMsg = `* [SET FAILED] ${players[setterId].name} lost 1 point. (-1 pt)`;
+                logMsg = `* [오답] ${players[setterId].name} -1점`;
             }
 
             const allPlayerIds = Object.keys(players);
@@ -2084,25 +2084,12 @@ textarea,
 
     function showRules() {
         const rulesHTML = `
-            <div class="rules-video-wrap">
-                <iframe
-                    src="https://www.youtube.com/embed/uFKi9g6X3ng?rel=0"
-                    title="SET 게임 규칙 설명 영상"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowfullscreen>
-                </iframe>
-            </div>
             <ul class="rules-list">
-                <li>카드의 <strong>모양, 색상, 개수, 음영</strong>을 비교합니다.</li>
-                <li>각 속성이 세 장 모두 같거나, 세 장 모두 다르면 <strong>SET</strong>입니다.</li>
-                <li>SET을 찾으면 먼저 <strong>SET!</strong>을 누르고 4초 안에 카드 3장을 고릅니다.</li>
+                <li>카드의 <strong>모양, 색상, 개수, 채움</strong> 네 가지 속성을 비교합니다.</li>
+                <li>각 속성이 세 장 모두 같거나 세 장 모두 다르면 정답 패턴입니다.</li>
+                <li>패턴을 찾으면 먼저 <strong>찾았다!</strong>를 누르고 4초 안에 카드 3장을 고릅니다.</li>
+                <li>정답이면 1점을 얻고, 오답이면 점수를 잃거나 해당 카드판에서 다시 선언할 수 없습니다.</li>
             </ul>
-            <a class="rules-video-link"
-               href="https://www.youtube.com/watch?v=uFKi9g6X3ng"
-               target="_blank"
-               rel="noopener noreferrer">
-                유튜브에서 크게 보기
-            </a>
         `;
         showModal("HOW TO PLAY", rulesHTML);
     }

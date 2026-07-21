@@ -42,6 +42,11 @@ const readyRoutes: Record<string, string> = {
   "3나눗셈③": "/arithmetic/grade-3-division-3",
   "3분수①": "/arithmetic/grade-3-fraction-1",
   "3분수②": "/fraction",
+  "3무게,들이": "/arithmetic/grade-3-measurement",
+  "3분수③": "/arithmetic/grade-3-fraction-3",
+  "4숫자읽기": "/arithmetic/grade-4-number-reading",
+  "4곱셈": "/arithmetic/grade-4-multiplication",
+  "4큰수곱셈": "/arithmetic/grade-4-large-number-multiplication",
 };
 
 const worksheetNames = [

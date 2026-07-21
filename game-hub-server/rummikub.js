@@ -57,7 +57,7 @@ function createGame(hostId, hostName) {
 
 function addPlayer(game, playerId, playerName) {
   if (game.phase !== "lobby") return { ok: false, error: "이미 시작한 게임입니다." };
-  if (game.players.length >= 4) return { ok: false, error: "루미큐브는 최대 4명까지 참여할 수 있습니다." };
+  if (game.players.length >= 4) return { ok: false, error: "숫자 타일은 최대 4명까지 참여할 수 있습니다." };
   const id = String(playerId);
   if (game.players.some(player => player.id === id)) return { ok: true };
   game.players.push({ id, name: cleanName(playerName, `플레이어 ${game.players.length + 1}`), opened: false });

@@ -26,4 +26,29 @@ assert.strictEqual(core.stageClass("advanced"), "advanced");
 const shuffled = core.shuffleWords([1, 2, 3], () => 0);
 assert.deepStrictEqual(shuffled, [2, 3, 1]);
 
+const pictureWords = [
+    { id: 10, globalLevel: 1, stageCode: "elementary" },
+    { id: 11, globalLevel: 1, stageCode: "elementary" },
+    { id: 12, globalLevel: 1, stageCode: "elementary" },
+    { id: 13, globalLevel: 1, stageCode: "elementary" },
+    { id: 14, globalLevel: 2, stageCode: "elementary" },
+    { id: 15, globalLevel: 1, stageCode: "middle_common" },
+];
+const picturePool = core.pictureGamePool(pictureWords, new Set(["10", "11", "12", "13", "14", "15"]), 1);
+assert.deepStrictEqual(picturePool.map((word) => word.id), [10, 11, 12, 13]);
+const pictureQuestion = core.createPictureQuestion(picturePool, 10, () => 0);
+assert.strictEqual(pictureQuestion.target.id, 11);
+assert.strictEqual(pictureQuestion.choices.length, 4);
+assert.strictEqual(new Set(pictureQuestion.choices.map((word) => word.id)).size, 4);
+assert.ok(pictureQuestion.choices.some((word) => word.id === pictureQuestion.target.id));
+const retryQuestion = core.createPictureQuestion(picturePool, null, () => 0, [picturePool[2]]);
+assert.strictEqual(retryQuestion.target.id, picturePool[2].id);
+assert.strictEqual(retryQuestion.choices.length, 4);
+assert.strictEqual(core.createPictureQuestion(picturePool.slice(0, 3)), null);
+
+assert.strictEqual(core.normalizeSpellingAnswer("  Apple  "), "apple");
+assert.strictEqual(core.normalizeSpellingAnswer("ice   cream"), "ice cream");
+assert.strictEqual(core.spellingHint("apple"), "a _ _ _ _");
+assert.strictEqual(core.spellingHint("apple", false), "_ _ _ _ _");
+
 console.log("vocabulary core unit tests: ok");

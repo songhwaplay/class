@@ -60,11 +60,60 @@
         return "advanced";
     }
 
+    function pictureGamePool(words, imageIds, level = 0) {
+        const validIds = imageIds instanceof Set
+            ? imageIds
+            : new Set(Array.isArray(imageIds) ? imageIds.map(String) : []);
+        const selectedLevel = Number(level);
+        return (Array.isArray(words) ? words : []).filter((word) => (
+            validIds.has(String(word.id))
+            && word.stageCode === "elementary"
+            && (selectedLevel === 0 || Number(word.globalLevel) === selectedLevel)
+        ));
+    }
+
+    function createPictureQuestion(pool, previousId = null, random = Math.random, targetPool = pool) {
+        const safePool = Array.isArray(pool) ? pool : [];
+        if (safePool.length < 4) return null;
+        const validIds = new Set(safePool.map((word) => String(word.id)));
+        const safeTargetPool = (Array.isArray(targetPool) ? targetPool : safePool)
+            .filter((word) => validIds.has(String(word.id)));
+        if (!safeTargetPool.length) return null;
+        const freshTargets = safeTargetPool.filter((word) => String(word.id) !== String(previousId));
+        const candidates = freshTargets.length ? freshTargets : safeTargetPool;
+        const target = candidates[Math.floor(random() * candidates.length)];
+        const distractors = shuffleWords(
+            safePool.filter((word) => String(word.id) !== String(target.id)),
+            random,
+        ).slice(0, 3);
+        return {
+            target,
+            choices: shuffleWords([target, ...distractors], random),
+        };
+    }
+
+    function normalizeSpellingAnswer(value) {
+        return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+    }
+
+    function spellingHint(word, revealFirst = true) {
+        return normalizeSpellingAnswer(word)
+            .split("")
+            .map((letter, index) => (
+                (revealFirst && index === 0) || letter === " " || letter === "-" ? letter : "_"
+            ))
+            .join(" ");
+    }
+
     return {
         normalizeProgress,
         groupByLevel,
         summarizeWords,
         shuffleWords,
         stageClass,
+        pictureGamePool,
+        createPictureQuestion,
+        normalizeSpellingAnswer,
+        spellingHint,
     };
 });

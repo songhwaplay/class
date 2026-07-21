@@ -41,6 +41,30 @@
                 <p><b id="totalStudied">0</b>개 학습 · <b id="totalUnknown">0</b>개 다시 보기</p>
             </div>
 
+            <div class="game-launch-grid">
+                <button id="gameStartButton" class="game-launch-card" type="button" hidden>
+                    <span class="game-launch-mark" aria-hidden="true">4</span>
+                    <span class="game-launch-copy">
+                        <strong>그림 단어 게임</strong>
+                        <span>영어 단어에 맞는 그림 고르기 · <b id="gameWordCount">0</b>개</span>
+                    </span>
+                    <span class="game-launch-action">시작</span>
+                </button>
+
+                <button id="spellingGameStartButton" class="game-launch-card spelling-launch-card" type="button" hidden>
+                    <span class="game-launch-mark" aria-hidden="true">A</span>
+                    <span class="game-launch-copy">
+                        <strong>그림 철자 게임</strong>
+                        <span>그림을 보고 영어 철자 쓰기 · 쉬운 단어 <b id="spellingWordCount">0</b>개</span>
+                    </span>
+                    <span class="game-launch-action">시작</span>
+                </button>
+
+                <button id="spellingReviewButton" class="spelling-review-button" type="button" hidden>
+                    누적 오답 <b id="spellingStoredWrongCount">0</b>개 다시 풀기
+                </button>
+            </div>
+
             <div id="stageGroups" class="stage-groups" aria-live="polite"></div>
         </section>
 
@@ -104,6 +128,127 @@
 
             <button id="reviewUnknownButton" class="review-button" type="button">이 레벨의 모르는 단어만 다시 보기</button>
             <p id="studyMessage" class="study-message" role="status"></p>
+        </section>
+
+        <section id="gameScreen" class="game-screen" hidden aria-labelledby="gameTitle">
+            <div class="game-toolbar">
+                <button id="backFromGame" class="text-button" type="button">← 레벨 선택</button>
+                <div>
+                    <p class="study-stage">초급 그림 게임</p>
+                    <h1 id="gameTitle">단어에 맞는 그림 고르기</h1>
+                </div>
+                <button id="gameResetButton" class="text-button" type="button">점수 초기화</button>
+            </div>
+
+            <div id="gameLevelButtons" class="game-level-buttons" aria-label="게임 레벨 선택">
+                <button type="button" data-level="0" aria-pressed="true">전체</button>
+                <button type="button" data-level="1" aria-pressed="false">초급 1</button>
+                <button type="button" data-level="2" aria-pressed="false">초급 2</button>
+                <button type="button" data-level="3" aria-pressed="false">초급 3</button>
+                <button type="button" data-level="4" aria-pressed="false">초급 4</button>
+            </div>
+
+            <div class="game-stats" aria-live="polite">
+                <div><span>문제</span><strong id="gameQuestionNumber">1</strong></div>
+                <div><span>정답</span><strong id="gameScore">0</strong></div>
+                <div><span>연속</span><strong id="gameStreak">0</strong></div>
+                <div class="game-timer-stat"><span>남은 시간</span><strong><b id="gameTimer">15</b>초</strong></div>
+            </div>
+
+            <div class="game-panel">
+                <div id="gameQuestionPanel">
+                    <p class="game-instruction">알맞은 그림을 고르세요</p>
+                    <div class="game-word-row">
+                        <h2 id="gameWord">word</h2>
+                        <button id="gameSpeakButton" class="game-speak-button" type="button" aria-label="단어 발음 듣기">듣기</button>
+                    </div>
+                    <div class="game-timer-track" aria-hidden="true"><span id="gameTimerBar"></span></div>
+                    <div id="gameChoices" class="game-choices" aria-label="그림 선택지"></div>
+                    <p id="gameFeedback" class="game-feedback" role="status" aria-live="polite">1~4번 그림을 선택하세요.</p>
+                    <button id="gameNextButton" class="game-next-button" type="button" disabled>다음 문제</button>
+                </div>
+
+                <div id="gameResultPanel" class="game-result-panel" hidden>
+                    <p class="game-result-eyebrow">한 판 완료</p>
+                    <h2>게임 결과</h2>
+                    <div class="game-result-stats">
+                        <div><span>정답</span><strong id="gameResultScore">0 / 10</strong></div>
+                        <div><span>정답률</span><strong id="gameResultAccuracy">0%</strong></div>
+                        <div><span>최고 연속</span><strong id="gameResultBestStreak">0</strong></div>
+                    </div>
+                    <div class="game-wrong-section">
+                        <h3>틀린 단어</h3>
+                        <div id="gameWrongList" class="game-wrong-list"></div>
+                    </div>
+                    <div class="game-result-actions">
+                        <button id="gameRetryWrongButton" type="button">틀린 문제 다시 풀기</button>
+                        <button id="gamePlayAgainButton" type="button">새 10문제</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="spellingScreen" class="game-screen spelling-screen" hidden aria-labelledby="spellingTitle">
+            <div class="game-toolbar">
+                <button id="backFromSpelling" class="text-button" type="button">← 레벨 선택</button>
+                <div>
+                    <p id="spellingModeLabel" class="study-stage">초급 철자 게임</p>
+                    <h1 id="spellingTitle">그림 보고 철자 쓰기</h1>
+                </div>
+                <button id="spellingResetButton" class="text-button" type="button">점수 초기화</button>
+            </div>
+
+            <div id="spellingLevelButtons" class="game-level-buttons" aria-label="철자 게임 레벨 선택">
+                <button type="button" data-level="0" aria-pressed="true">전체</button>
+                <button type="button" data-level="1" aria-pressed="false">초급 1</button>
+                <button type="button" data-level="2" aria-pressed="false">초급 2</button>
+                <button type="button" data-level="3" aria-pressed="false">초급 3</button>
+                <button type="button" data-level="4" aria-pressed="false">초급 4</button>
+            </div>
+
+            <div class="game-stats spelling-stats" aria-live="polite">
+                <div><span>문제</span><strong id="spellingQuestionNumber">1</strong></div>
+                <div><span>정답</span><strong id="spellingScore">0</strong></div>
+                <div><span>연속</span><strong id="spellingStreak">0</strong></div>
+            </div>
+
+            <div class="game-panel spelling-panel">
+                <div id="spellingQuestionPanel" class="spelling-question-layout">
+                    <div class="spelling-image-frame">
+                        <img id="spellingImage" alt="" width="420" height="420">
+                    </div>
+                    <div class="spelling-answer-area">
+                        <p class="game-instruction">그림의 영어 이름을 쓰세요</p>
+                        <p id="spellingHint" class="spelling-hint" aria-live="polite">힌트를 누르면 첫 글자를 보여줍니다.</p>
+                        <input id="spellingInput" class="spelling-input" type="text" autocomplete="off" autocapitalize="none" spellcheck="false" maxlength="30" aria-label="영어 철자 입력">
+                        <div class="spelling-actions">
+                            <button id="spellingHintButton" type="button">힌트</button>
+                            <button id="spellingSpeakButton" type="button">듣기</button>
+                            <button id="spellingCheckButton" type="button">정답 확인</button>
+                        </div>
+                        <p id="spellingFeedback" class="game-feedback" role="status" aria-live="polite">철자를 입력하세요.</p>
+                        <button id="spellingNextButton" class="game-next-button" type="button" disabled>다음 문제</button>
+                    </div>
+                </div>
+
+                <div id="spellingResultPanel" class="game-result-panel" hidden>
+                    <p class="game-result-eyebrow">한 판 완료</p>
+                    <h2>철자 게임 결과</h2>
+                    <div class="game-result-stats">
+                        <div><span>정답</span><strong id="spellingResultScore">0 / 10</strong></div>
+                        <div><span>정답률</span><strong id="spellingResultAccuracy">0%</strong></div>
+                        <div><span>최고 연속</span><strong id="spellingResultBestStreak">0</strong></div>
+                    </div>
+                    <div class="game-wrong-section">
+                        <h3>틀린 단어</h3>
+                        <div id="spellingWrongList" class="game-wrong-list"></div>
+                    </div>
+                    <div class="game-result-actions">
+                        <button id="spellingRetryWrongButton" type="button">틀린 문제 다시 풀기</button>
+                        <button id="spellingPlayAgainButton" type="button">새 10문제</button>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 

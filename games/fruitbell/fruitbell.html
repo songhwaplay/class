@@ -175,8 +175,8 @@ input{width:100%;min-height:44px;border:1px solid #987d42;border-radius:8px;back
     <div class="top"><div class="scoreboard" id="scoreboard"></div><div class="small">공개 카드 <span id="potCount">0</span>장</div><button id="rulesBtnGame" class="small" type="button">RULES</button><button id="leaveBtn" class="small" type="button">나가기</button></div>
     <div class="message" id="message">게임 준비 중...</div><div class="turn-timer"><div id="turnTimerBar" class="turn-timer-bar"></div></div>
     <div class="board" id="board"></div>
-    <button id="bellBtn" class="bell" type="button" aria-label="종 치기"><span class="knob"></span><span class="dome"></span><span class="base"></span></button>
-    <button id="flipBtn" class="flip" onclick="requestFlip()">내 카드 뒤집기</button>
+    <button id="bellBtn" class="bell" type="button" data-sfx="none" aria-label="종 치기"><span class="knob"></span><span class="dome"></span><span class="base"></span></button>
+    <button id="flipBtn" class="flip" data-sfx="card" onclick="requestFlip()">내 카드 뒤집기</button>
 
     <div class="music-control">
       <span class="music-label">MUSIC VOLUME</span>
@@ -288,6 +288,7 @@ async function startMusic(){
    musicStarted=true;
    musicMuted=false;
    localStorage.setItem(MUSIC_MUTED_KEY,"false");
+   window.ClassGameSfx?.setMuted(false);
  }catch(e){}
  renderMusicControls();
 }
@@ -296,6 +297,8 @@ function setMusicLevel(level){
  musicMuted=false;
  localStorage.setItem(MUSIC_VOLUME_KEY,String(musicLevel));
  localStorage.setItem(MUSIC_MUTED_KEY,"false");
+ window.ClassGameSfx?.setMuted(false);
+ window.ClassGameSfx?.setVolume(musicLevel/5);
  if(bgm){
    bgm.volume=musicLevel/5;
    bgm.muted=false;
@@ -310,6 +313,7 @@ function toggleMusic(){
    bgm.pause();
    musicMuted=true;
    localStorage.setItem(MUSIC_MUTED_KEY,"true");
+   window.ClassGameSfx?.setMuted(true);
    renderMusicControls();
  }
 }
@@ -327,6 +331,10 @@ window.addEventListener("DOMContentLoaded",()=>{
 document.addEventListener("pointerdown",()=>{
  if(!musicMuted&&!musicStarted)startMusic();
 },{once:true});
+window.addEventListener("classsfxready",()=>{
+ window.ClassGameSfx?.setMuted(musicMuted);
+ window.ClassGameSfx?.setVolume(musicLevel/5);
+});
 
 function setGameMode(mode){
  if(myRole!=="host"||started)return;
@@ -579,7 +587,8 @@ function pressBell(){
  if(myRole==="host")hostBell(myId);
  else send({type:"BELL_REQ"});
 
- queueMicrotask(playBrightBell);
+ if(window.ClassGameSfx)window.ClassGameSfx.play("bell");
+ else playBrightBell();
 }
 function handleBellPointerDown(event){
  if(event.isPrimary===false||event.button>0)return;

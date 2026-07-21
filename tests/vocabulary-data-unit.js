@@ -100,6 +100,30 @@ imageEntries.forEach(([id, image]) => {
     assert.ok(fs.statSync(imagePath).size < 100_000, `${image.word}: image file is too large`);
 });
 
+const spellingGamePath = path.join(__dirname, "..", "assets", "data", "vocabulary-spelling-game-v1.json");
+const spellingGame = JSON.parse(fs.readFileSync(spellingGamePath, "utf8"));
+const spellingIds = new Set(spellingGame.wordIds.map(String));
+assert.strictEqual(spellingGame.version, 1);
+assert.strictEqual(spellingGame.totalWords, 100);
+assert.strictEqual(spellingGame.wordIds.length, spellingGame.totalWords);
+assert.strictEqual(spellingIds.size, spellingGame.totalWords);
+spellingIds.forEach((id) => {
+    const word = payload.words.find((entry) => String(entry.id) === id);
+    assert.ok(word, `spelling id ${id} must match a vocabulary word`);
+    assert.ok(imageManifest.images[id], `${word.word}: spelling word must have an image`);
+    assert.strictEqual(word.stageCode, "elementary");
+    assert.ok(word.globalLevel >= 1 && word.globalLevel <= 4);
+    assert.match(word.word, /^[a-z]{2,10}$/);
+    assert.ok(word.pos.includes("명사"));
+});
+const ambiguousSpellingWords = new Set([
+    "parent", "home", "house", "place", "city", "town", "street", "road",
+    "meat", "beef", "steak", "biscuit", "doughnut", "man", "woman", "boy", "girl", "child",
+]);
+payload.words.forEach((word) => {
+    if (spellingIds.has(String(word.id))) assert.ok(!ambiguousSpellingWords.has(word.word));
+});
+
 const imageCandidatesPath = path.join(__dirname, "..", "assets", "data", "vocabulary-image-candidates-v1.json");
 const imageCandidates = JSON.parse(fs.readFileSync(imageCandidatesPath, "utf8"));
 assert.strictEqual(imageCandidates.elementaryWords, 800);

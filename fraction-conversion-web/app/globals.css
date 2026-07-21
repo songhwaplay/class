@@ -1425,6 +1425,717 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
   }
 }
 
+/* 3무게,들이 */
+.measurement-sheet {
+  padding-bottom: 26px;
+}
+
+.measurement-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+}
+
+.measurement-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 4px;
+  padding: 14px 12px 20px;
+  border-right: 1px dashed #d8d0c5;
+  border-bottom: 1px dashed #d8d0c5;
+  background: white;
+  color: #17233c;
+}
+
+.measurement-question:nth-child(3n) {
+  border-right: 0;
+}
+
+.measurement-question:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.measurement-number {
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.measurement-operation {
+  min-width: 0;
+  align-self: center;
+  display: grid;
+  gap: 8px;
+}
+
+.measurement-operand {
+  min-height: 34px;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+}
+
+.measurement-operand > b {
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.measurement-operand:first-child {
+  padding-left: 22px;
+}
+
+.measurement-quantity,
+.measurement-answer,
+.measurement-static-answer {
+  display: grid;
+  grid-template-columns: 43px 25px 56px 28px;
+  align-items: center;
+  justify-content: end;
+  gap: 2px;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+.measurement-quantity strong,
+.measurement-static-answer strong {
+  font-size: 20px;
+  text-align: right;
+}
+
+.measurement-quantity span,
+.measurement-answer span,
+.measurement-static-answer span {
+  color: #566176;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.measurement-rule {
+  height: 2px;
+  background: #17233c;
+}
+
+.measurement-answer input {
+  width: 42px;
+  height: 37px;
+  border: 1.5px solid #968f85;
+  border-radius: 6px;
+  background: white;
+  color: #17233c;
+  font-size: 18px;
+  font-weight: 850;
+  text-align: center;
+  outline: none;
+}
+
+.measurement-answer input:nth-of-type(2) {
+  width: 55px;
+}
+
+.measurement-answer input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.measurement-static-answer {
+  min-height: 37px;
+}
+
+.measurement-question .counting-result {
+  right: 6px;
+  bottom: 4px;
+  font-size: 9px;
+}
+
+@media print {
+  .measurement-answer input {
+    background: white;
+    color: black;
+  }
+}
+
+/* 3분수③ */
+.unit-fraction-sheet {
+  padding-bottom: 26px;
+}
+
+.unit-fraction-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+}
+
+.unit-fraction-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  padding: 14px 22px 20px;
+  border-right: 1px dashed #d8d0c5;
+  border-bottom: 1px dashed #d8d0c5;
+  background: white;
+  color: #17233c;
+}
+
+.unit-fraction-question:nth-child(2n) {
+  border-right: 0;
+}
+
+.unit-fraction-question:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.unit-fraction-number {
+  align-self: start;
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.unit-fraction-expression {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+.unit-fraction-stack {
+  width: 58px;
+  height: 72px;
+  display: grid;
+  grid-template-rows: 34px 2px 34px;
+  align-items: center;
+  justify-items: stretch;
+}
+
+.unit-fraction-stack strong {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1;
+  text-align: center;
+}
+
+.unit-fraction-line {
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+}
+
+.unit-fraction-whole {
+  font-size: 24px;
+  font-weight: 850;
+}
+
+.unit-fraction-unit,
+.unit-fraction-converted-unit {
+  font-size: 18px;
+  font-weight: 800;
+}
+
+.unit-fraction-input,
+.unit-fraction-static-answer {
+  width: 76px;
+  min-width: 76px;
+  height: 48px;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font-size: 22px;
+  font-weight: 850;
+  line-height: 46px;
+  text-align: center;
+}
+
+.unit-fraction-input {
+  border: 1.5px solid #968f85;
+  outline: none;
+}
+
+.unit-fraction-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.unit-fraction-static-answer {
+  display: inline-block;
+}
+
+.unit-fraction-question .counting-result {
+  right: 8px;
+  bottom: 5px;
+  font-size: 9px;
+}
+
+@media print {
+  .unit-fraction-input {
+    background: white;
+    color: black;
+  }
+}
+
+/* 4숫자읽기 */
+.large-number-sheet {
+  padding-bottom: 26px;
+}
+
+.large-number-columns {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+  background: white;
+}
+
+.large-number-column {
+  min-width: 0;
+  min-height: 0;
+  display: grid;
+  grid-template-rows: 58px repeat(5, minmax(0, 1fr));
+}
+
+.large-number-column + .large-number-column {
+  border-left: 2px solid #aaa196;
+}
+
+.large-number-column h2 {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  border-bottom: 1px solid #ded6cb;
+  padding: 0 20px;
+  background: linear-gradient(125deg, rgba(237, 102, 79, 0.12), transparent 72%);
+  color: #17233c;
+  font-size: 20px;
+  letter-spacing: -0.045em;
+}
+
+.large-number-column.read h2 {
+  background: linear-gradient(125deg, rgba(49, 168, 157, 0.13), transparent 72%);
+}
+
+.large-number-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-rows: minmax(42px, auto) 16px minmax(54px, auto);
+  align-items: center;
+  column-gap: 7px;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 10px 14px 20px 10px;
+  background: white;
+  color: #17233c;
+  text-align: center;
+}
+
+.large-number-question:last-child {
+  border-bottom: 0;
+}
+
+.large-number-index {
+  grid-row: 1 / 4;
+  align-self: start;
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.large-number-prompt {
+  min-width: 0;
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.large-number-prompt.to-korean {
+  font-size: 24px;
+  letter-spacing: 0.025em;
+}
+
+.large-number-prompt.to-number {
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
+}
+
+.large-number-arrow {
+  color: #697386;
+  font-size: 16px;
+  font-weight: 850;
+}
+
+.large-number-input,
+.large-number-static-answer {
+  width: 100%;
+  min-width: 0;
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font-family: inherit;
+  font-weight: 850;
+  text-align: center;
+}
+
+.large-number-input {
+  height: 54px;
+  border: 1.5px solid #968f85;
+  outline: none;
+}
+
+.large-number-input.to-korean,
+.large-number-static-answer.to-korean {
+  font-size: 16px;
+  line-height: 1.35;
+  letter-spacing: -0.045em;
+}
+
+.large-number-input.to-number,
+.large-number-static-answer.to-number {
+  font-size: 21px;
+  letter-spacing: 0.02em;
+}
+
+.large-number-static-answer {
+  padding: 6px 8px;
+  overflow-wrap: anywhere;
+}
+
+.large-number-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.large-number-question .counting-result {
+  right: 7px;
+  bottom: 4px;
+  font-size: 9px;
+}
+
+@media print {
+  .large-number-input {
+    background: white;
+    color: black;
+  }
+}
+
+/* 4곱셈 */
+.grade-four-multiply-sheet {
+  padding-bottom: 26px;
+}
+
+.grade-four-multiply-horizontal-grid {
+  height: 126px;
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+  background: white;
+}
+
+.grade-four-multiply-vertical-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+  background: white;
+}
+
+.grade-four-multiply-question {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  background: white;
+  color: #17233c;
+}
+
+.grade-four-multiply-question.horizontal {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr);
+  align-items: center;
+  border-right: 1px dashed #d8d2ca;
+  padding: 18px 18px 22px;
+}
+
+.grade-four-multiply-question.horizontal:last-child {
+  border-right: 0;
+}
+
+.grade-four-multiply-question.vertical {
+  display: grid;
+  place-items: center;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 14px 12px 22px;
+}
+
+.grade-four-multiply-question.vertical:nth-child(3n) {
+  border-right: 0;
+}
+
+.grade-four-multiply-question.vertical:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.grade-four-multiply-index {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.grade-four-multiply-horizontal-expression {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 24px minmax(0, 1fr) 24px 126px;
+  align-items: center;
+  gap: 5px;
+  font-size: 25px;
+  font-weight: 850;
+  text-align: center;
+}
+
+.grade-four-multiply-horizontal-expression strong {
+  font: inherit;
+}
+
+.grade-four-multiply-vertical-operation {
+  width: 148px;
+  display: grid;
+  justify-items: stretch;
+  font-size: 29px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: right;
+}
+
+.grade-four-multiply-vertical-operation > strong {
+  min-height: 35px;
+  padding-right: 8px;
+  font: inherit;
+}
+
+.grade-four-multiply-vertical-operation > span {
+  min-height: 38px;
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: center;
+}
+
+.grade-four-multiply-vertical-operation > span i {
+  font: inherit;
+  font-style: normal;
+  text-align: left;
+}
+
+.grade-four-multiply-vertical-operation > span strong {
+  padding-right: 8px;
+  font: inherit;
+  text-align: right;
+}
+
+.grade-four-multiply-vertical-operation > b {
+  height: 0;
+  margin-bottom: 9px;
+  border-top: 2px solid #17233c;
+}
+
+.grade-four-multiply-input,
+.grade-four-multiply-static-answer {
+  height: 50px;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font-family: inherit;
+  font-size: 24px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.grade-four-multiply-input {
+  width: 100%;
+  min-width: 0;
+  border: 1.5px solid #968f85;
+  outline: none;
+}
+
+.grade-four-multiply-static-answer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grade-four-multiply-vertical-operation .grade-four-multiply-input,
+.grade-four-multiply-vertical-operation .grade-four-multiply-static-answer {
+  width: 134px;
+  justify-self: end;
+}
+
+.grade-four-multiply-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.grade-four-multiply-question .counting-result {
+  right: 7px;
+  bottom: 4px;
+  font-size: 9px;
+}
+
+@media print {
+  .grade-four-multiply-input {
+    background: white;
+    color: black;
+  }
+}
+
+/* 4큰수곱셈 */
+.large-unit-multiply-sheet {
+  padding-bottom: 26px;
+}
+
+.large-unit-multiply-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+  background: white;
+}
+
+.large-unit-multiply-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr);
+  align-items: center;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 14px 14px 21px 10px;
+  background: white;
+  color: #17233c;
+}
+
+.large-unit-multiply-question:nth-child(2n) {
+  border-right: 0;
+}
+
+.large-unit-multiply-question:nth-last-child(-n + 2) {
+  border-bottom: 0;
+}
+
+.large-unit-multiply-index {
+  align-self: start;
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.large-unit-multiply-expression {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 21px 42px 22px 21px 48px 22px 82px 26px;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: 21px;
+  font-weight: 850;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.large-unit-multiply-expression strong {
+  font: inherit;
+}
+
+.large-unit-name,
+.large-unit-result-unit {
+  color: #445067;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.large-unit-multiply-input,
+.large-unit-multiply-static-answer {
+  width: 82px;
+  height: 48px;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font-family: inherit;
+  font-size: 21px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.large-unit-multiply-input {
+  border: 1.5px solid #968f85;
+  outline: none;
+}
+
+.large-unit-multiply-static-answer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.large-unit-multiply-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.large-unit-multiply-question .counting-result {
+  right: 7px;
+  bottom: 4px;
+  font-size: 9px;
+}
+
+@media print {
+  .large-unit-multiply-input {
+    background: white;
+    color: black;
+  }
+}
+
 /* 2구구단⑤ */
 .multiplication-five-columns {
   grid-template-columns: repeat(5, minmax(0, 1fr));
