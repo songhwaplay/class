@@ -254,14 +254,10 @@
         const context = ensureAudio();
         if (!context || !chord) return;
         const start = when || context.currentTime + .02;
-        const rootMidi = 48 + chord.rootPc;
         const length = duration || .85;
-        playPianoTone(core.midiToFrequency(36 + chord.rootPc), start, length + .12, .035);
-        chord.pitchClasses.forEach(function (pitchClass, index) {
-            const interval = (pitchClass - chord.rootPc + 12) % 12;
-            playPianoTone(core.midiToFrequency(rootMidi + interval), start + index * .012, length, index === 0 ? .052 : .043);
+        core.getClosedPositionMidi(chord, 60).forEach(function (midi) {
+            playPianoTone(core.midiToFrequency(midi), start, length, .052);
         });
-        playPianoTone(core.midiToFrequency(rootMidi + 12), start + .025, length, .027);
     }
 
     function renderHarmony() {

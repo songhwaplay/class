@@ -179,6 +179,14 @@
         return 440 * Math.pow(2, (Number(midi) - 69) / 12);
     }
 
+    function getClosedPositionMidi(chord, baseC) {
+        const cMidi = Number.isFinite(Number(baseC)) ? Number(baseC) : 60;
+        const rootMidi = cMidi + chord.rootPc;
+        return chord.pitchClasses.map(function (pitchClass) {
+            return rootMidi + (pitchClass - chord.rootPc + 12) % 12;
+        });
+    }
+
     function scoreRhythm(expectedTimes, tapTimes, toleranceMs) {
         const tolerance = Math.max(40, Number(toleranceMs) || 150);
         const expected = expectedTimes.slice().sort(function (a, b) { return a - b; });
@@ -235,6 +243,7 @@
         buildDiatonicChords: buildDiatonicChords,
         getProgression: getProgression,
         midiToFrequency: midiToFrequency,
+        getClosedPositionMidi: getClosedPositionMidi,
         scoreRhythm: scoreRhythm,
         getNoteName: getNoteName
     };
