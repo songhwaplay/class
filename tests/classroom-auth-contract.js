@@ -19,13 +19,22 @@ assert.match(indexHtml, /accounts\.google\.com\/gsi\/client/,
   "Google Identity Services must be loaded.");
 assert.match(indexHtml, /id="googleSignInButton"/,
   "A single Google sign-in area is required.");
-assert.match(indexHtml, /id="joinCode"/);
+assert.match(indexHtml, /id="schoolCode"/);
+assert.match(indexHtml, /id="studentGrade"/);
+assert.match(indexHtml, /id="studentClass"/);
 assert.match(indexHtml, /id="studentNumber"/);
+assert.match(indexHtml, /id="studentName"/);
 assert.match(indexHtml, /id="studentPassword"/);
+assert.doesNotMatch(indexHtml, /id="joinCode"/,
+  "The student setup form must not ask for a separate class code.");
 assert.match(indexScript, /\/api\/auth\/google/);
 assert.match(indexScript, /\/api\/student\/join/);
 assert.match(indexScript, /password: studentPasswordInput\.value/,
   "The student join request must include the six-digit roster password.");
+assert.match(indexScript, /schoolCode: schoolCodeInput\.value/);
+assert.match(indexScript, /grade: Number\(studentGradeInput\.value\)/);
+assert.match(indexScript, /classNumber: Number\(studentClassInput\.value\)/);
+assert.match(indexScript, /name: studentNameInput\.value\.trim\(\)/);
 assert.match(indexScript, /user\?\.role === 'teacher'/,
   "Teacher and student routes must be selected from the server role.");
 assert.match(indexScript, /localStorage\.setItem\('classPlayerName'/,
@@ -42,6 +51,11 @@ assert.match(
   fs.readFileSync(path.join(root, "game-hub-server", "classroom-platform.js"), "utf8"),
   /ADD COLUMN IF NOT EXISTS password_hash TEXT/,
   "The student password hash must be persisted in PostgreSQL."
+);
+assert.match(
+  fs.readFileSync(path.join(root, "game-hub-server", "classroom-platform.js"), "utf8"),
+  /ADD COLUMN IF NOT EXISTS school_code TEXT/,
+  "Each school must have a unique code for student setup."
 );
 
 assert.deepEqual(

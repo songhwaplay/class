@@ -118,33 +118,6 @@
             border-bottom: 1px solid var(--line);
         }
 
-        .join-code-panel {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 18px;
-            margin-bottom: 24px;
-            border-radius: 16px;
-            padding: 15px 18px;
-            color: var(--brand-dark);
-            background: var(--brand-soft);
-        }
-
-        .join-code-panel span {
-            display: grid;
-            gap: 2px;
-            text-align: left;
-        }
-
-        .join-code-panel small {
-            color: var(--muted);
-        }
-
-        .join-code-panel strong {
-            font-size: 1.45rem;
-            letter-spacing: 0.16em;
-        }
-
         .profile-head {
             display: flex;
             align-items: baseline;
@@ -165,7 +138,7 @@
 
         .profile-grid {
             display: grid;
-            grid-template-columns: repeat(6, minmax(0, 1fr));
+            grid-template-columns: repeat(7, minmax(0, 1fr));
             gap: 12px;
         }
 
@@ -535,13 +508,6 @@
 
         <section class="roster-card" aria-labelledby="roster-input-title">
             <h2 id="roster-input-title" hidden>Roster input</h2>
-            <div class="join-code-panel" id="join-code-panel" hidden>
-                <span>
-                    <small>Students enter this code with their student number.</small>
-                    <strong id="join-code">—</strong>
-                </span>
-                <small id="join-code-count"></small>
-            </div>
             <div class="class-profile">
                 <div class="profile-head">
                     <h3>Class details</h3>
@@ -551,6 +517,10 @@
                     <div class="profile-field profile-field--school">
                         <label for="school-name">School</label>
                         <input class="profile-control" id="school-name" type="text" autocomplete="organization" maxlength="80" placeholder="School name">
+                    </div>
+                    <div class="profile-field">
+                        <label for="school-code">School code</label>
+                        <input class="profile-control" id="school-code" type="text" autocomplete="off" maxlength="12" placeholder="SEN001">
                     </div>
                     <div class="profile-field">
                         <label for="school-year">School year</label>
@@ -638,10 +608,8 @@
             const allowedYears = [currentYear - 1, currentYear, currentYear + 1];
             const teacherAccount = document.querySelector("#teacher-account");
             const signOutButton = document.querySelector("#sign-out-button");
-            const joinCodePanel = document.querySelector("#join-code-panel");
-            const joinCode = document.querySelector("#join-code");
-            const joinCodeCount = document.querySelector("#join-code-count");
             const schoolInput = document.querySelector("#school-name");
+            const schoolCodeInput = document.querySelector("#school-code");
             const schoolYearInput = document.querySelector("#school-year");
             const gradeInput = document.querySelector("#grade");
             const classNumberInput = document.querySelector("#class-number");
@@ -751,7 +719,8 @@
                         if (nextState.invalidPasswords.length > 0) {
                             setStatus("Each new or changed password must contain exactly 6 digits.", "error");
                         } else if (nextState.isComplete && isProfileComplete()) {
-                            setStatus(`${nextState.numbers.length} students are ready to save.`, "success");
+                            const noun = nextState.numbers.length === 1 ? "student is" : "students are";
+                            setStatus(`${nextState.numbers.length} ${noun} ready to save.`, "success");
                         }
                     });
                     passwordCell.append(passwordInput);
@@ -782,6 +751,7 @@
             function getProfile() {
                 return {
                     schoolName: schoolInput.value.trim(),
+                    schoolCode: schoolCodeInput.value.trim().toUpperCase(),
                     schoolYear: schoolYearInput.value,
                     grade: gradeInput.value,
                     classNumber: classNumberInput.value.trim(),
@@ -792,6 +762,7 @@
             function isProfileComplete(profile = getProfile()) {
                 return Boolean(
                     profile.schoolName &&
+                    /^[A-Z0-9]{4,12}$/.test(profile.schoolCode) &&
                     allowedYears.includes(Number(profile.schoolYear)) &&
                     ["1", "2", "3", "4", "5", "6"].includes(profile.grade) &&
                     Number(profile.classNumber) >= 1 && Number(profile.classNumber) <= 30 &&
@@ -801,13 +772,14 @@
 
             function updateClassSummary(profile) {
                 const school = profile.schoolName;
+                const schoolCode = profile.schoolCode ? `Code ${profile.schoolCode}` : "";
                 const year = profile.schoolYear || "";
                 const gradeAndClass = [
                     profile.grade ? `Grade ${profile.grade}` : "",
                     profile.classNumber ? `Class ${profile.classNumber}` : "",
                 ].filter(Boolean).join(" · ");
                 const teacher = profile.teacherName ? `Teacher ${profile.teacherName}` : "";
-                const summary = [school, year, gradeAndClass, teacher].filter(Boolean);
+                const summary = [school, schoolCode, year, gradeAndClass, teacher].filter(Boolean);
                 classSummary.textContent = summary.join(" · ") || "Enter the class details above.";
             }
 
@@ -817,14 +789,9 @@
                 update();
             }
 
-            function showJoinCode(code, count) {
-                joinCode.textContent = code;
-                joinCodeCount.textContent = `${count} ${count === 1 ? "student" : "students"}`;
-                joinCodePanel.hidden = false;
-            }
-
             function loadClassroom(classroom) {
                 schoolInput.value = classroom.schoolName;
+                schoolCodeInput.value = classroom.schoolCode || "";
                 schoolYearInput.value = String(classroom.academicYear);
                 gradeInput.value = String(classroom.grade);
                 classNumberInput.value = String(classroom.classNumber);
@@ -836,7 +803,6 @@
                 classroom.students.forEach((student) => {
                     if (student.passwordConfigured) savedPasswordNumbers.add(student.number);
                 });
-                showJoinCode(classroom.joinCode, classroom.students.length);
                 profileStatus.textContent = "Saved on the server";
                 updateClassSummary(getProfile());
             }
@@ -904,7 +870,8 @@
                     return;
                 }
 
-                setStatus(`${state.numbers.length} students are ready to save.`, "success");
+                const noun = state.numbers.length === 1 ? "student is" : "students are";
+                setStatus(`${state.numbers.length} ${noun} ready to save.`, "success");
                 renderRoster(createRoster(state.numbers, state.names));
             }
 
@@ -918,10 +885,11 @@
                 saveButton.textContent = "SAVING…";
                 update();
                 try {
-                    const result = await api("/api/teacher/class", {
+        await api("/api/teacher/class", {
                         method: "PUT",
                         body: JSON.stringify({
                             schoolName: profile.schoolName,
+                            schoolCode: profile.schoolCode,
                             academicYear: Number(profile.schoolYear),
                             grade: Number(profile.grade),
                             classNumber: Number(profile.classNumber),
@@ -933,7 +901,6 @@
                     savedPasswordNumbers.clear();
                     roster.forEach((student) => savedPasswordNumbers.add(student.number));
                     passwordDrafts.clear();
-                    showJoinCode(result.joinCode, result.studentCount);
                     setStatus(`${roster.length} students saved.`, "success");
                 } catch (error) {
                     setStatus(error.message, "error");
@@ -966,6 +933,10 @@
             }
 
             [schoolInput, classNumberInput, teacherInput].forEach((input) => input.addEventListener("input", markUnsaved));
+            schoolCodeInput.addEventListener("input", () => {
+                schoolCodeInput.value = schoolCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
+                markUnsaved();
+            });
             [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", markUnsaved));
             numbersInput.addEventListener("input", update);
             namesInput.addEventListener("input", update);

@@ -16,9 +16,9 @@ for (const id of [
   "grade",
   "class-number",
   "teacher-name",
+  "school-code",
   "numbers",
   "names",
-  "join-code",
   "sign-out-button"
 ]) {
   assert.match(html, new RegExp(`id=["']${id}["']`), `${id} is missing.`);
@@ -26,6 +26,10 @@ for (const id of [
 
 assert.match(html, /const allowedYears = \[currentYear - 1, currentYear, currentYear \+ 1\]/,
   "School year should offer only last, current, and next year.");
+assert.match(html, /schoolCode: schoolCodeInput\.value\.trim\(\)\.toUpperCase\(\)/,
+  "The teacher must save the school's public code with the class profile.");
+assert.doesNotMatch(html, /id=["']join-code["']/,
+  "Students should no longer need a separate class code.");
 assert.match(html, /method: "PUT"[\s\S]*\/api\/teacher\/class/,
   "The roster must save through the teacher API.");
 assert.match(html, /\/api\/auth\/me/, "The page must check the signed-in teacher.");
