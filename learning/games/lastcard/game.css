@@ -1,15 +1,15 @@
 :root {
-    --panel: rgba(17, 24, 39, 0.94);
-    --panel-soft: rgba(23, 32, 51, 0.88);
+    --panel: rgba(11, 18, 32, 0.91);
+    --panel-soft: rgba(18, 30, 49, 0.88);
 }
 
 body {
     min-height: 100vh;
     padding: 20px;
     background:
-        radial-gradient(circle at 78% 8%, rgba(37, 141, 204, 0.18), transparent 28rem),
-        radial-gradient(circle at 14% 25%, rgba(240, 82, 82, 0.14), transparent 26rem),
-        linear-gradient(145deg, #070a12, #0b1120 56%, #080b14);
+        linear-gradient(rgba(3, 8, 19, 0.64), rgba(3, 8, 19, 0.78)),
+        url("../../../assets/images/lastcard-cover.png") center / cover fixed,
+        #071020;
 }
 
 .hidden { display: none !important; }
@@ -25,6 +25,12 @@ body {
     border: 1px solid var(--line);
     background: var(--panel);
     box-shadow: 0 18px 55px rgba(0, 0, 0, 0.34);
+}
+
+.game-board {
+    background:
+        linear-gradient(rgba(7, 12, 25, 0.86), rgba(7, 12, 25, 0.9)),
+        url("../../../assets/images/lastcard-cover.png") center / cover;
 }
 
 .screen-panel {
@@ -48,8 +54,8 @@ body {
     align-items: end;
     gap: 36px;
     background:
-        linear-gradient(110deg, rgba(10, 14, 25, 0.98), rgba(18, 28, 49, 0.91)),
-        var(--panel);
+        linear-gradient(110deg, rgba(7, 12, 26, 0.94), rgba(7, 12, 26, 0.68)),
+        url("../../../assets/images/lastcard-cover.png") center / cover;
 }
 
 .lobby-hero h1,
