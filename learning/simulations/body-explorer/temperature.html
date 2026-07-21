@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#10182b">
-    <title>인체 탐험 · 뼈와 근육 편</title>
-    <meta name="description" content="관절을 움직이고 근육의 수축과 이완, 힘줄의 힘 전달을 직접 조절하며 몸이 움직이는 원리를 배우는 교실용 학습 시뮬레이션">
+    <meta name="theme-color" content="#0a2038">
+    <title>인체 탐험 · 체온 조절 편</title>
+    <meta name="description" content="더울 때와 추울 때 피부 혈관, 땀, 근육이 체온을 조절하는 과정을 직접 바꾸어 보는 교실용 학습 시뮬레이션">
     <link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="nervous.css">
-    <link rel="stylesheet" href="movement.css">
+    <link rel="stylesheet" href="temperature.css">
     <script src="../../../assets/network/game-network.js" defer></script>
     <script src="../../../assets/network/multiplayer-lobby.js" defer></script>
     <script src="../../../assets/sound/game-sfx.js" defer></script>
-    <script src="movement-data.js" defer></script>
+    <script src="temperature-data.js" defer></script>
     <script src="app.js" defer></script>
 </head>
-<body class="nervous-page movement-page">
+<body class="nervous-page temperature-page">
     <div class="ambient-cells" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="page-shell">
         <header class="topbar">
@@ -26,30 +26,30 @@
 
         <main>
             <section id="modeScreen" class="screen hero-screen" aria-labelledby="mainTitle">
-                <div class="hero-art" role="img" aria-label="팔을 굽히며 뼈와 서로 반대쪽 근육이 함께 작용하는 모습"></div>
+                <div class="hero-art" role="img" aria-label="더울 때와 추울 때 체온 변화를 관찰하는 인체 탐험대"></div>
                 <div class="hero-shade"></div>
                 <div class="hero-copy">
-                    <p class="series-kicker">HUMAN BODY EXPLORER · EPISODE 06</p>
-                    <h1 id="mainTitle"><span>인체 탐험</span>뼈와 근육 편</h1>
-                    <p id="playerGreeting" class="hero-lead">관절을 움직이고 두 근육의 수축과 이완을 조절해 몸이 움직이는 원리를 확인해 보세요.</p>
+                    <p class="series-kicker">HUMAN BODY EXPLORER · EPISODE 08</p>
+                    <h1 id="mainTitle"><span>인체 탐험</span>체온 조절 편</h1>
+                    <p id="playerGreeting" class="hero-lead">피부 혈관, 땀, 근육이 함께 몸의 온도를 알맞게 유지하는 과정을 직접 확인해 보세요.</p>
                     <nav class="episode-switcher" aria-label="인체 탐험 편 선택">
                         <a href="index.html"><b>01</b><span>혈액순환<small>온몸을 도는 피</small></span></a>
                         <a href="digestion.html"><b>02</b><span>소화<small>음식의 긴 여행</small></span></a>
                         <a href="respiration.html"><b>03</b><span>호흡<small>공기와 기체교환</small></span></a>
                         <a href="nervous.html"><b>04</b><span>신경<small>자극과 몸의 반응</small></span></a>
                         <a href="immune.html"><b>05</b><span>면역<small>몸의 방어 작전</small></span></a>
-                        <a class="active" href="movement.html" aria-current="page"><b>06</b><span>뼈·근육<small>몸이 움직이는 원리</small></span></a>
+                        <a href="movement.html"><b>06</b><span>뼈·근육<small>몸이 움직이는 원리</small></span></a>
                         <a href="excretion.html"><b>07</b><span>배설<small>소변이 만들어지는 과정</small></span></a>
-                        <a href="temperature.html"><b>08</b><span>체온 조절<small>열을 내보내고 지키기</small></span></a>
+                        <a class="active" href="temperature.html" aria-current="page"><b>08</b><span>체온 조절<small>열을 내보내고 지키기</small></span></a>
                     </nav>
                     <div class="hero-facts" aria-label="학습 내용">
                         <span><b>10</b>개 관문</span>
-                        <span><b>3</b>가지 핵심 구조</span>
+                        <span><b>4</b>가지 몸의 반응</span>
                         <span><b>5</b>가지 조작 실험</span>
                     </div>
                     <div class="mode-grid">
                         <button id="personalModeButton" class="mode-card" type="button">
-                            <span class="mode-icon movement-mode-icon" aria-hidden="true">💪</span>
+                            <span class="mode-icon temperature-mode-icon" aria-hidden="true">🌡️</span>
                             <span><strong>개인 탐험</strong><small>내 속도로 배우고 오답노트 확인</small></span><b>PERSONAL</b>
                         </button>
                         <button id="classModeButton" class="mode-card" type="button">
@@ -57,27 +57,27 @@
                             <span><strong>학급 순위 탐험</strong><small>같이 출발해 정확도와 시간으로 순위 결정</small></span><b>CLASS</b>
                         </button>
                     </div>
-                    <a class="teacher-link" href="movement-teacher.html">교사용 학급 만들기·실시간 순위판 →</a>
+                    <a class="teacher-link" href="temperature-teacher.html">교사용 학급 만들기·실시간 순위판 →</a>
                 </div>
             </section>
 
             <section id="personalScreen" class="screen briefing-screen hidden" aria-labelledby="briefingTitle">
-                <div class="briefing-art movement-briefing-art">
-                    <img src="../../../assets/images/body-explorer/movement-explorer.png" alt="뼈와 근육 탐험대 캐릭터">
-                    <span class="oxygen-orb movement-orb orb-one" aria-hidden="true">관절</span>
-                    <span class="oxygen-orb movement-orb muscle-orb orb-two" aria-hidden="true">근육</span>
+                <div class="briefing-art temperature-briefing-art">
+                    <img src="../../../assets/images/body-explorer/temperature-explorer.png" alt="체온 조절 탐험대 캐릭터">
+                    <span class="oxygen-orb temperature-orb hot-orb orb-one" aria-hidden="true">더울 때</span>
+                    <span class="oxygen-orb temperature-orb cold-orb orb-two" aria-hidden="true">추울 때</span>
                 </div>
                 <div class="briefing-copy">
                     <p class="section-kicker">MISSION BRIEFING</p>
-                    <h2 id="briefingTitle">몸을 움직이는 다섯 실험을 완수하라</h2>
-                    <p>팔꿈치 관절을 중심으로 앞쪽과 뒤쪽 근육을 번갈아 움직이고, 힘줄이 근육의 힘을 뼈에 전달하는 과정을 관찰하세요.</p>
-                    <ol class="route-preview" aria-label="주요 움직임 원리">
-                        <li><span>1</span>관절에서 연결된 뼈의 각도가 달라져요</li>
-                        <li><span>2</span>반대쪽 근육이 번갈아 수축하고 이완해요</li>
-                        <li><span>3</span>힘줄이 근육의 당기는 힘을 뼈에 전해요</li>
+                    <h2 id="briefingTitle">몸의 온도를 지키는 다섯 실험을 완수하라</h2>
+                    <p>온도 변화 감지부터 피부 혈관, 땀, 근육의 반응까지 직접 조절하며 몸이 열의 이동을 바꾸는 원리를 관찰하세요.</p>
+                    <ol class="route-preview" aria-label="주요 체온 조절 원리">
+                        <li><span>1</span>뇌가 온도 정보를 받아 필요한 반응을 정해요</li>
+                        <li><span>2</span>더울 때는 피부 혈관과 땀이 열을 내보내요</li>
+                        <li><span>3</span>추울 때는 열을 지키고 근육 떨림으로 더 만들어요</li>
                     </ol>
-                    <div class="science-note"><strong>핵심!</strong> 근육이 짧아지며 만든 당기는 힘이 힘줄을 거쳐 뼈에 전달될 때, 뼈가 관절을 중심으로 움직입니다.</div>
-                    <button id="personalStartButton" class="primary-button" type="button">움직임 탐험 시작</button>
+                    <div class="science-note"><strong>핵심!</strong> 몸은 날씨와 활동이 달라져도 열을 내보내는 양과 만드는 양을 조절해 체온을 평소 상태에 가깝게 유지합니다.</div>
+                    <button id="personalStartButton" class="primary-button" type="button">체온 조절 탐험 시작</button>
                     <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
                 </div>
             </section>
@@ -92,7 +92,7 @@
 
             <section id="lobbyScreen" class="screen compact-screen class-lobby hidden" aria-labelledby="classLobbyTitle">
                 <p class="section-kicker">CLASS EXPEDITION</p>
-                <h2 id="classLobbyTitle">학급 코드로 움직임 탐험에 참가하세요</h2>
+                <h2 id="classLobbyTitle">학급 코드로 체온 조절 탐험에 참가하세요</h2>
                 <p><strong id="savedName"></strong> 탐험가로 참가합니다. 교사가 알려 준 숫자 4자리를 입력하세요.</p>
                 <div id="joinPane" class="join-pane">
                     <label for="joinCode">학급 코드</label>
@@ -111,75 +111,84 @@
                 <button id="leaveClassButton" class="text-button" type="button">← 탐험대에서 나가기</button>
             </section>
 
-            <section id="journeyScreen" class="journey-screen hidden" aria-label="뼈와 근육 조작 실험과 확인 문제">
+            <section id="journeyScreen" class="journey-screen hidden" aria-label="체온 조절 실험과 확인 문제">
                 <div class="journey-status">
                     <div><span id="journeyModeLabel">개인 탐험</span><strong><span id="stageNumber">1</span>/10 관문</strong></div>
-                    <div class="oxygen-meter"><span id="oxygenDot"></span><b id="oxygenLabel">관절 구조 실험</b></div>
+                    <div class="oxygen-meter"><span id="oxygenDot"></span><b id="oxygenLabel">온도 변화 감지 실험</b></div>
                     <div class="score-meter"><span>첫 도전 정답</span><b><span id="currentScore">0</span>/10</b></div>
                 </div>
-                <div class="route-strip" aria-label="뼈와 근육 실험 경로"><ol id="routeMap" class="route-map"></ol></div>
+                <div class="route-strip" aria-label="체온 조절 실험 경로"><ol id="routeMap" class="route-map"></ol></div>
 
-                <article id="scenePanel" class="scene-panel" data-scene="joint">
+                <article id="scenePanel" class="scene-panel" data-scene="sense">
                     <div class="scene-image" aria-hidden="true"></div>
                     <div class="scene-overlay" aria-hidden="true"></div>
-                    <div id="motionVisual" class="motion-live-visual hidden" role="img" aria-label="근육의 수축 세기에 따라 아래팔뼈가 팔꿈치 관절을 중심으로 움직이는 모형">
-                        <svg viewBox="0 0 320 220" aria-hidden="true">
-                            <path class="motion-guide" d="M136 130 A112 112 0 0 0 69 28"></path>
-                            <line class="motion-bone" x1="42" y1="125" x2="132" y2="125"></line>
-                            <line class="motion-bone bone-lower" x1="42" y1="137" x2="132" y2="137"></line>
-                            <line id="motionFrontMuscle" class="motion-muscle muscle-front" x1="54" y1="103" x2="114" y2="116"></line>
-                            <line id="motionBackMuscle" class="motion-muscle muscle-back" x1="54" y1="159" x2="116" y2="145"></line>
-                            <line id="motionFrontTendon" class="motion-tendon tendon-front" x1="112" y1="116" x2="137" y2="126"></line>
-                            <line id="motionBackTendon" class="motion-tendon tendon-back" x1="114" y1="145" x2="137" y2="136"></line>
-                            <circle class="motion-joint" cx="136" cy="131" r="16"></circle>
-                            <g id="motionForearm" transform="rotate(-38 136 130)">
-                                <line class="motion-bone" x1="141" y1="125" x2="277" y2="125"></line>
-                                <line class="motion-bone bone-lower" x1="141" y1="137" x2="277" y2="137"></line>
-                                <circle class="motion-hand" cx="289" cy="131" r="17"></circle>
-                                <g id="motionLoad" hidden>
-                                    <path class="motion-load-handle" d="M274 145 Q289 126 304 145"></path>
-                                    <rect class="motion-load" x="267" y="144" width="44" height="38" rx="8"></rect>
-                                </g>
+                    <div id="temperatureVisual" class="temperature-live-visual hidden" role="img" aria-label="조절값에 따라 체온계, 피부 혈관, 땀, 열의 이동, 근육 떨림이 달라지는 모형">
+                        <svg viewBox="0 0 360 210" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="temperatureFill" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#62d5ed"></stop><stop offset="0.55" stop-color="#f5b34d"></stop><stop offset="1" stop-color="#ef6658"></stop></linearGradient>
+                                <clipPath id="temperatureTube"><rect x="28" y="28" width="22" height="125" rx="11"></rect></clipPath>
+                            </defs>
+                            <rect class="skin-layer" x="90" y="57" width="245" height="108" rx="42"></rect>
+                            <path class="skin-surface" d="M98 82 C133 64 162 91 198 77 C236 62 278 91 327 72"></path>
+                            <g class="thermometer-shell">
+                                <rect x="23" y="18" width="32" height="145" rx="16"></rect><circle cx="39" cy="166" r="24"></circle>
+                                <rect id="temperatureColumn" x="28" y="92" width="22" height="68" fill="url(#temperatureFill)" clip-path="url(#temperatureTube)"></rect><circle cx="39" cy="166" r="16" fill="#ef785b"></circle>
+                            </g>
+                            <g id="brainSignal" class="brain-signal">
+                                <circle cx="182" cy="42" r="20"></circle><path d="M168 42 C173 31 180 50 186 36 C192 49 198 35 201 43"></path>
+                                <path class="signal-line" d="M182 62 C180 88 211 92 217 111"></path>
+                            </g>
+                            <path id="skinVessel" class="skin-vessel" d="M105 120 C137 101 163 139 195 117 C225 96 253 139 286 116 C302 104 316 106 327 112"></path>
+                            <g id="sweatDrops" class="sweat-drops">
+                                <path d="M132 74 C122 88 126 98 136 98 C146 98 150 88 132 74 Z"></path>
+                                <path d="M238 66 C228 81 232 91 242 91 C252 91 256 80 238 66 Z"></path>
+                                <path d="M300 83 C292 95 295 104 304 104 C313 104 316 95 300 83 Z"></path>
+                            </g>
+                            <g id="heatArrows" class="heat-arrows">
+                                <path d="M124 145 Q109 129 113 108"></path><path d="M217 148 Q215 127 227 109"></path><path d="M302 144 Q319 127 316 105"></path>
+                            </g>
+                            <g id="muscleShiver" class="muscle-shiver">
+                                <path d="M127 166 q8 8 16 0 t16 0 t16 0"></path><path d="M246 166 q8 8 16 0 t16 0 t16 0"></path>
                             </g>
                         </svg>
-                        <div class="motion-readout">
-                            <span>팔꿈치 각도 <strong id="motionAngle">120°</strong></span>
-                            <span class="front-readout">앞쪽 근육 <b id="motionFrontState">수축 준비</b></span>
-                            <span class="back-readout">뒤쪽 근육 <b id="motionBackState">이완</b></span>
+                        <div class="temperature-readout">
+                            <span>몸의 온도 <strong id="temperatureState">36.5℃</strong></span>
+                            <span>피부 혈관 <b id="vesselState">변화 준비</b></span>
+                            <span>주요 반응 <b id="responseState">신호 확인 중</b></span>
                         </div>
                     </div>
-                    <img id="cellExplorer" class="cell-explorer signal-explorer movement-explorer" src="../../../assets/images/body-explorer/movement-explorer.png" alt="움직임 현장을 탐험하는 뼈와 근육 탐험대">
+                    <img id="cellExplorer" class="cell-explorer signal-explorer temperature-explorer" src="../../../assets/images/body-explorer/temperature-explorer.png" alt="체온 조절 현장을 탐험하는 탐험대">
                     <div class="location-card">
-                        <p id="chapterLabel" class="chapter-label">실험 1 · 뼈가 만나는 곳</p>
-                        <h2 id="stageLocation">팔꿈치 관절</h2>
+                        <p id="chapterLabel" class="chapter-label">실험 1 · 온도 변화를 알아차리기</p>
+                        <h2 id="stageLocation">뇌의 체온 조절 중추</h2>
                         <p id="stageMission" class="stage-mission"></p>
                     </div>
                     <div class="fact-card" aria-hidden="true"><span>실험 뒤 핵심 정리</span><p id="stageFact"></p></div>
                 </article>
 
                 <article id="simulationCard" class="simulation-card hidden" aria-labelledby="simulationTitle">
-                    <div class="simulation-heading"><p class="question-kicker">직접 조작 실험</p><h2 id="simulationTitle">근육의 힘과 움직임 과정을 조절하세요.</h2></div>
+                    <div class="simulation-heading"><p class="question-kicker">직접 조작 실험</p><h2 id="simulationTitle">체온 변화와 몸의 반응을 조절하세요.</h2></div>
                     <div class="stimulus-console">
-                        <div class="stimulus-identity"><span id="stimulusIcon" class="stimulus-icon" aria-hidden="true">🦴</span><span><small>현재 상황</small><strong id="stimulusName">팔꿈치 관절</strong></span></div>
+                        <div class="stimulus-identity"><span id="stimulusIcon" class="stimulus-icon" aria-hidden="true">🌡️</span><span><small>현재 상황</small><strong id="stimulusName">운동 뒤 올라간 체온</strong></span></div>
                         <label class="intensity-control" for="stimulusIntensity">
-                            <span><b>움직임 조건</b><output id="stimulusValue" for="stimulusIntensity">50</output></span>
+                            <span><b>몸의 반응 세기</b><output id="stimulusValue" for="stimulusIntensity">50</output></span>
                             <input id="stimulusIntensity" type="range" min="0" max="100" value="50">
-                            <small id="stimulusThreshold">목표 세기를 확인해 보세요.</small>
+                            <small id="stimulusThreshold">반응 기준을 확인해 보세요.</small>
                         </label>
                     </div>
                     <div class="path-builder">
-                        <div class="path-heading"><strong>힘과 움직임의 과정</strong><span>아래 단계를 일어나는 순서대로 누르세요</span></div>
-                        <ol id="signalPath" class="signal-path" aria-label="조립한 뼈와 근육 움직임 과정"></ol>
-                        <div id="componentBank" class="component-bank" aria-label="사용할 움직임 단계"></div>
+                        <div class="path-heading"><strong>체온 조절 과정</strong><span>아래 단계를 일어나는 순서대로 누르세요</span></div>
+                        <ol id="signalPath" class="signal-path" aria-label="조립한 체온 조절 과정"></ol>
+                        <div id="componentBank" class="component-bank" aria-label="사용할 체온 조절 단계"></div>
                     </div>
                     <div class="simulation-actions">
                         <button id="undoPathButton" class="sim-secondary-button" type="button">하나 지우기</button>
                         <button id="clearPathButton" class="sim-secondary-button" type="button">과정 초기화</button>
-                        <button id="runSimulationButton" class="primary-button" type="button">움직임 실행</button>
+                        <button id="runSimulationButton" class="primary-button" type="button">체온 조절 실행</button>
                     </div>
                     <div id="simulationFeedback" class="simulation-feedback" data-state="idle" aria-live="polite">
-                        <strong id="simulationFeedbackTitle">근육의 힘과 움직임 과정을 조절하세요</strong>
-                        <p id="simulationFeedbackText">조절 막대를 움직이면 팔꿈치 각도와 두 근육의 상태가 먼저 달라집니다.</p>
+                        <strong id="simulationFeedbackTitle">온도 조건과 몸의 반응을 조절하세요</strong>
+                        <p id="simulationFeedbackText">조절 막대를 움직이면 체온계, 피부 혈관, 땀, 근육의 상태가 바로 달라집니다.</p>
                         <button id="simulationNextButton" class="primary-button hidden" type="button">관찰 확인 문제로</button>
                     </div>
                 </article>
@@ -196,16 +205,16 @@
             </section>
 
             <section id="resultScreen" class="screen result-screen hidden" aria-labelledby="resultTitle">
-                <p class="section-kicker">MOVEMENT MISSION COMPLETE</p>
-                <h2 id="resultTitle">몸의 움직임 탐험 완수!</h2>
+                <p class="section-kicker">TEMPERATURE MISSION COMPLETE</p>
+                <h2 id="resultTitle">체온 조절 탐험 완수!</h2>
                 <div class="result-hero">
-                    <img src="../../../assets/images/body-explorer/movement-explorer.png" alt="완주한 뼈와 근육 탐험대">
+                    <img src="../../../assets/images/body-explorer/temperature-explorer.png" alt="완주한 체온 조절 탐험대">
                     <div class="score-orbit"><strong id="finalScore">0</strong><span>/10</span></div>
                 </div>
                 <p id="resultMessage" class="result-message"></p><p id="bestMessage" class="best-message"></p>
-                <div class="circulation-summary nervous-summary movement-summary">
-                    <div><span>움직임의 중심</span><strong>뼈 → 관절 → 각도 변화</strong><small>단단한 뼈들이 관절에서 연결되어 서로 다른 각도를 만듭니다.</small></div>
-                    <div><span>힘의 전달</span><strong>근육 수축 → 힘줄 → 뼈</strong><small>반대쪽 근육이 번갈아 수축하고 이완하며 관절을 움직입니다.</small></div>
+                <div class="circulation-summary nervous-summary temperature-summary">
+                    <div><span>더울 때</span><strong>피부 혈관 넓어짐 + 땀 증발</strong><small>따뜻한 피의 열을 피부로 보내고 땀이 증발하며 열을 몸 밖으로 내보냅니다.</small></div>
+                    <div><span>추울 때</span><strong>피부 혈관 좁아짐 + 근육 떨림</strong><small>피부를 통한 열 손실을 줄이고 근육 활동으로 열을 더 만듭니다.</small></div>
                 </div>
                 <div id="classRankArea" class="class-rank-area hidden">
                     <div id="myRankCard" class="my-rank-card">순위를 집계하고 있어요.</div><h3>학급 실시간 순위</h3>
@@ -227,16 +236,16 @@
                     <a class="episode available" href="respiration.html"><b>03</b>호흡<small>탐험 가능</small></a>
                     <a class="episode available" href="nervous.html"><b>04</b>신경<small>탐험 가능</small></a>
                     <a class="episode available" href="immune.html"><b>05</b>면역<small>탐험 가능</small></a>
-                    <a class="episode active" href="movement.html" aria-current="page"><b>06</b>뼈·근육<small>탐험 가능</small></a>
+                    <a class="episode available" href="movement.html"><b>06</b>뼈·근육<small>탐험 가능</small></a>
                     <a class="episode available" href="excretion.html"><b>07</b>배설<small>탐험 가능</small></a>
-                    <a class="episode available" href="temperature.html"><b>08</b>체온 조절<small>탐험 가능</small></a>
+                    <a class="episode active" href="temperature.html" aria-current="page"><b>08</b>체온 조절<small>탐험 가능</small></a>
                 </div>
             </section>
         </main>
         <footer>
-            초등 과학의 우리 몸의 구조와 운동 범위에서 구성했으며,
-            <a href="https://www.niams.nih.gov/health-topics/educational-resources/health-lesson-learning-about-joints" target="_blank" rel="noopener noreferrer">미국 국립관절염·근골격·피부질환연구소의 관절 학습 자료</a>와
-            <a href="https://www.ncbi.nlm.nih.gov/books/NBK613072/table/ch10msa.T.muscle_actions/?report=objectonly" target="_blank" rel="noopener noreferrer">미국 국립의학도서관의 근육 움직임 자료</a>를 참고했습니다.
+            초등 과학의 우리 몸과 환경 변화 범위에서 구성했으며,
+            <a href="https://www.ncbi.nlm.nih.gov/books/NBK507838/" target="_blank" rel="noopener noreferrer">미국 국립의학도서관의 체온 조절 자료</a>와
+            <a href="https://www.ncbi.nlm.nih.gov/books/NBK541107/" target="_blank" rel="noopener noreferrer">피부를 통한 열 손실 자료</a>를 참고했습니다.
         </footer>
     </div>
     <p id="announcer" class="visually-hidden" aria-live="assertive"></p>

@@ -24,7 +24,8 @@
     const HAS_INTERACTIVE_SIMULATION = config.experienceType === "nervous-simulation"
         || config.experienceType === "immune-simulation"
         || config.experienceType === "movement-simulation"
-        || config.experienceType === "excretion-simulation";
+        || config.experienceType === "excretion-simulation"
+        || config.experienceType === "temperature-simulation";
     const simulationCopy = {
         thresholdWord: "감지 기준",
         slotLabel: "경로",
@@ -126,6 +127,16 @@
         filterState: document.getElementById("filterState"),
         urineState: document.getElementById("urineState"),
         bladderState: document.getElementById("bladderState"),
+        temperatureVisual: document.getElementById("temperatureVisual"),
+        temperatureColumn: document.getElementById("temperatureColumn"),
+        brainSignal: document.getElementById("brainSignal"),
+        skinVessel: document.getElementById("skinVessel"),
+        sweatDrops: document.getElementById("sweatDrops"),
+        heatArrows: document.getElementById("heatArrows"),
+        muscleShiver: document.getElementById("muscleShiver"),
+        temperatureState: document.getElementById("temperatureState"),
+        vesselState: document.getElementById("vesselState"),
+        responseState: document.getElementById("responseState"),
         finalScore: document.getElementById("finalScore"),
         resultMessage: document.getElementById("resultMessage"),
         bestMessage: document.getElementById("bestMessage"),
@@ -393,6 +404,7 @@
         elements.stimulusIntensity.style.setProperty("--stimulus-level", `${intensity}%`);
         updateMovementVisual(stage, intensity);
         updateExcretionVisual(stage, intensity);
+        updateTemperatureVisual(stage, intensity);
     }
 
     function updateMovementVisual(stage, intensity) {
@@ -462,6 +474,73 @@
             elements.urineState.textContent = "요관으로 이동";
             elements.bladderState.textContent = intensity >= stage.scenario.threshold ? "비울 신호 전달" : `${Math.round(fillPercent)}% 참`;
         }
+    }
+
+    function updateTemperatureVisual(stage, intensity) {
+        const visual = stage?.scenario?.visual;
+        if (!elements.temperatureVisual || !visual) return;
+
+        const progress = Math.max(0, Math.min(1, intensity / 100));
+        const process = visual.process || "sense";
+        const temperature = visual.startTemp + (visual.endTemp - visual.startTemp) * progress;
+        const temperatureRatio = Math.max(0, Math.min(1, (temperature - 35.5) / 3));
+        const columnHeight = 28 + temperatureRatio * 97;
+        let vesselWidth = 7;
+        let sweatLevel = 0.08;
+        let heatLevel = 0.2;
+        let shiverLevel = 0.05;
+        let brainLevel = 0.35 + progress * 0.65;
+        let vesselText = "반응 준비";
+        let responseText = `온도 신호 ${Math.round(progress * 100)}%`;
+        let vesselColor = "#ed7262";
+        let heatColor = "#f4a64a";
+
+        if (process === "cool") {
+            vesselWidth = 5 + progress * 11;
+            sweatLevel = 0.08 + progress * 0.92;
+            heatLevel = 0.15 + progress * 0.85;
+            vesselText = `넓어짐 ${Math.round(progress * 100)}%`;
+            responseText = `땀 증발 ${Math.round(progress * 100)}%`;
+        } else if (process === "conserve") {
+            vesselWidth = 13 - progress * 9;
+            sweatLevel = 0.02;
+            heatLevel = 0.68 - progress * 0.56;
+            vesselColor = "#769bd0";
+            heatColor = "#87c9ea";
+            vesselText = `좁아짐 ${Math.round(progress * 100)}%`;
+            responseText = `열 손실 감소 ${Math.round(progress * 100)}%`;
+        } else if (process === "shiver") {
+            vesselWidth = 5 - progress * 2;
+            sweatLevel = 0.02;
+            heatLevel = 0.18 + progress * 0.52;
+            shiverLevel = 0.08 + progress * 0.92;
+            vesselColor = "#769bd0";
+            vesselText = "좁아져 열 지킴";
+            responseText = `근육 떨림 ${Math.round(progress * 100)}%`;
+        } else if (process === "balance") {
+            vesselWidth = 15 - progress * 8;
+            sweatLevel = 1 - progress * 0.72;
+            heatLevel = 1 - progress * 0.7;
+            brainLevel = 0.95 - progress * 0.38;
+            vesselText = "평소 폭으로 회복";
+            responseText = `냉각 반응 감소 ${Math.round(progress * 100)}%`;
+        }
+
+        elements.temperatureVisual.dataset.process = process;
+        elements.temperatureVisual.classList.remove("is-success");
+        elements.temperatureVisual.style.setProperty("--brain-level", String(brainLevel));
+        elements.temperatureVisual.style.setProperty("--vessel-width", `${vesselWidth}px`);
+        elements.temperatureVisual.style.setProperty("--vessel-color", vesselColor);
+        elements.temperatureVisual.style.setProperty("--sweat-level", String(sweatLevel));
+        elements.temperatureVisual.style.setProperty("--sweat-shift", `${Math.max(0, (1 - sweatLevel) * 8)}px`);
+        elements.temperatureVisual.style.setProperty("--heat-level", String(heatLevel));
+        elements.temperatureVisual.style.setProperty("--heat-color", heatColor);
+        elements.temperatureVisual.style.setProperty("--shiver-level", String(shiverLevel));
+        elements.temperatureColumn?.setAttribute("y", String(153 - columnHeight));
+        elements.temperatureColumn?.setAttribute("height", String(columnHeight));
+        if (elements.temperatureState) elements.temperatureState.textContent = `${temperature.toFixed(1)}℃`;
+        if (elements.vesselState) elements.vesselState.textContent = vesselText;
+        if (elements.responseState) elements.responseState.textContent = responseText;
     }
 
     function renderExperimentPath(stage, mismatchIndex = -1, animate = false) {
@@ -561,6 +640,7 @@
         elements.runSimulationButton.textContent = simulationCopy.runLabel;
         elements.motionVisual?.classList.remove("hidden", "is-success");
         elements.excretionVisual?.classList.remove("hidden", "is-success");
+        elements.temperatureVisual?.classList.remove("hidden", "is-success");
         state.experimentPath = [];
         state.componentOrder = shuffledChoices(stage.scenario.components);
         updateStimulusReadout();
@@ -625,6 +705,7 @@
         elements.scenePanel.classList.add("simulation-reacting");
         elements.motionVisual?.classList.add("is-success");
         elements.excretionVisual?.classList.add("is-success");
+        elements.temperatureVisual?.classList.add("is-success");
         setTimeout(() => elements.scenePanel.classList.remove("simulation-reacting"), 900);
         elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent} ${elements.simulationFeedbackText.textContent}`;
         window.ClassGameSfx?.play("success");
@@ -644,6 +725,7 @@
         elements.scenePanel.classList.remove("simulation-reacting");
         elements.motionVisual?.classList.toggle("hidden", !isExperimentStage(stage));
         elements.excretionVisual?.classList.toggle("hidden", !isExperimentStage(stage));
+        elements.temperatureVisual?.classList.toggle("hidden", !isExperimentStage(stage));
         hideFact();
         elements.oxygenLabel.textContent = stateText(stage.oxygen);
         elements.oxygenMeter.dataset.state = stage.oxygen;
