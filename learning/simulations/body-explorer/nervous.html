@@ -111,7 +111,7 @@
                 <button id="leaveClassButton" class="text-button" type="button">← 탐험대에서 나가기</button>
             </section>
 
-            <section id="journeyScreen" class="journey-screen hidden" aria-labelledby="stageQuestion">
+            <section id="journeyScreen" class="journey-screen hidden" aria-label="신경계 조작 실험과 확인 문제">
                 <div class="journey-status">
                     <div><span id="journeyModeLabel">개인 탐험</span><strong><span id="stageNumber">1</span>/10 관문</strong></div>
                     <div class="oxygen-meter"><span id="oxygenDot"></span><b id="oxygenLabel">자극을 느끼는 중</b></div>
@@ -132,13 +132,50 @@
                         <p id="stageMission" class="stage-mission"></p>
                     </div>
                     <div class="fact-card">
-                        <span>꼭 알아둘 사실</span>
+                        <span>풀이 뒤 핵심 정리</span>
                         <p id="stageFact"></p>
                     </div>
                 </article>
 
+                <article id="simulationCard" class="simulation-card hidden" aria-labelledby="simulationTitle">
+                    <div class="simulation-heading">
+                        <p class="question-kicker">직접 조작 실험</p>
+                        <h2 id="simulationTitle">자극과 신경 경로를 조절하세요</h2>
+                    </div>
+
+                    <div class="stimulus-console">
+                        <div class="stimulus-identity">
+                            <span id="stimulusIcon" class="stimulus-icon" aria-hidden="true">☀️</span>
+                            <span><small>현재 자극</small><strong id="stimulusName">밝은 빛</strong></span>
+                        </div>
+                        <label class="intensity-control" for="stimulusIntensity">
+                            <span><b>자극 세기</b><output id="stimulusValue" for="stimulusIntensity">50</output></span>
+                            <input id="stimulusIntensity" type="range" min="0" max="100" value="50">
+                            <small id="stimulusThreshold">감지 기준을 넘겨 보세요</small>
+                        </label>
+                    </div>
+
+                    <div class="path-builder">
+                        <div class="path-heading"><strong>신호 경로</strong><span>아래 기관을 이동 순서대로 누르세요</span></div>
+                        <ol id="signalPath" class="signal-path" aria-label="조립한 신경 신호 경로"></ol>
+                        <div id="componentBank" class="component-bank" aria-label="사용할 기관과 신경"></div>
+                    </div>
+
+                    <div class="simulation-actions">
+                        <button id="undoPathButton" class="sim-secondary-button" type="button">하나 지우기</button>
+                        <button id="clearPathButton" class="sim-secondary-button" type="button">경로 초기화</button>
+                        <button id="runSimulationButton" class="primary-button" type="button">신호 보내기</button>
+                    </div>
+
+                    <div id="simulationFeedback" class="simulation-feedback" data-state="idle" aria-live="polite">
+                        <strong id="simulationFeedbackTitle">먼저 자극 세기와 신호 경로를 조절하세요</strong>
+                        <p id="simulationFeedbackText">실행하면 구성한 경로에 따라 몸의 반응이 달라집니다.</p>
+                        <button id="simulationNextButton" class="primary-button hidden" type="button">관찰 확인 문제로</button>
+                    </div>
+                </article>
+
                 <article class="question-card">
-                    <p class="question-kicker">신호가 갈 길을 선택하세요</p>
+                    <p class="question-kicker">실험 뒤 확인 문제</p>
                     <h2 id="stageQuestion"></h2>
                     <div id="choiceList" class="choice-list"></div>
                     <div id="feedback" class="feedback hidden" aria-live="polite">
@@ -173,7 +210,7 @@
 
                 <div class="review-area">
                     <h3>나의 오답노트</h3>
-                    <p id="perfectReview" class="perfect-review hidden">막힘 경로 없이 한 번에 완주했어요!</p>
+                    <p id="perfectReview" class="perfect-review hidden">모든 관문을 첫 선택으로 통과했어요!</p>
                     <ol id="missedList" class="missed-list"></ol>
                 </div>
 

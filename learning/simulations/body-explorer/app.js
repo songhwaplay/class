@@ -5,6 +5,7 @@
         gameId: "circulation",
         messagePrefix: "CIRCULATION",
         bestScoreKey: "circulationBestScore",
+        experienceType: "quiz",
         namedGreeting: "{name} 탐험가, 인체 탐험을 출발해 볼까요?",
         guestGreeting: "우리 몸속을 직접 여행하며 배워 보세요.",
         resetAnnouncement: "새 인체 탐험을 기다립니다.",
@@ -20,6 +21,7 @@
         ? window.BODY_EXPLORER_STAGES
         : Array.isArray(window.CIRCULATION_STAGES) ? window.CIRCULATION_STAGES : [];
     const TOTAL_STAGES = stages.length;
+    const HAS_NERVOUS_SIMULATION = config.experienceType === "nervous-simulation";
 
     const elements = {
         modeScreen: document.getElementById("modeScreen"),
@@ -52,13 +54,31 @@
         chapterLabel: document.getElementById("chapterLabel"),
         stageLocation: document.getElementById("stageLocation"),
         stageMission: document.getElementById("stageMission"),
+        factCard: document.querySelector(".fact-card"),
         stageFact: document.getElementById("stageFact"),
+        questionCard: document.querySelector(".question-card"),
         stageQuestion: document.getElementById("stageQuestion"),
         choiceList: document.getElementById("choiceList"),
         feedback: document.getElementById("feedback"),
         feedbackTitle: document.getElementById("feedbackTitle"),
         feedbackText: document.getElementById("feedbackText"),
         nextStageButton: document.getElementById("nextStageButton"),
+        simulationCard: document.getElementById("simulationCard"),
+        simulationTitle: document.getElementById("simulationTitle"),
+        stimulusIcon: document.getElementById("stimulusIcon"),
+        stimulusName: document.getElementById("stimulusName"),
+        stimulusIntensity: document.getElementById("stimulusIntensity"),
+        stimulusValue: document.getElementById("stimulusValue"),
+        stimulusThreshold: document.getElementById("stimulusThreshold"),
+        signalPath: document.getElementById("signalPath"),
+        componentBank: document.getElementById("componentBank"),
+        undoPathButton: document.getElementById("undoPathButton"),
+        clearPathButton: document.getElementById("clearPathButton"),
+        runSimulationButton: document.getElementById("runSimulationButton"),
+        simulationFeedback: document.getElementById("simulationFeedback"),
+        simulationFeedbackTitle: document.getElementById("simulationFeedbackTitle"),
+        simulationFeedbackText: document.getElementById("simulationFeedbackText"),
+        simulationNextButton: document.getElementById("simulationNextButton"),
         finalScore: document.getElementById("finalScore"),
         resultMessage: document.getElementById("resultMessage"),
         bestMessage: document.getElementById("bestMessage"),
@@ -86,6 +106,8 @@
         score: 0,
         attempts: 0,
         stageSolved: false,
+        experimentPath: [],
+        componentOrder: [],
         missed: [],
         startedAt: 0,
         classSessionId: "",
@@ -122,6 +144,15 @@
     function getBestScore() {
         const value = Number.parseInt(readStored(BEST_SCORE_KEY), 10);
         return Number.isInteger(value) ? Math.max(0, Math.min(TOTAL_STAGES, value)) : 0;
+    }
+
+    function shuffledChoices(choices) {
+        const result = [...choices];
+        for (let index = result.length - 1; index > 0; index -= 1) {
+            const swapIndex = Math.floor(Math.random() * (index + 1));
+            [result[index], result[swapIndex]] = [result[swapIndex], result[index]];
+        }
+        return result;
     }
 
     function setScreen(activeScreen) {
@@ -246,6 +277,8 @@
         state.score = 0;
         state.attempts = 0;
         state.stageSolved = false;
+        state.experimentPath = [];
+        state.componentOrder = [];
         state.missed = [];
         state.startedAt = performance.now();
         state.classResultSubmitted = false;
@@ -280,6 +313,202 @@
         return config.stateLabels[stateName] || stateName;
     }
 
+    function isExperimentStage(stage) {
+        return Boolean(HAS_NERVOUS_SIMULATION && stage?.kind === "experiment" && elements.simulationCard);
+    }
+
+    function hideFact() {
+        elements.stageFact.textContent = "";
+        elements.factCard.classList.remove("is-revealed");
+        elements.factCard.setAttribute("aria-hidden", "true");
+    }
+
+    function revealFact(stage) {
+        elements.stageFact.textContent = stage.fact;
+        elements.factCard.classList.add("is-revealed");
+        elements.factCard.removeAttribute("aria-hidden");
+    }
+
+    function setSimulationFeedback(stateName, title, message, showNext = false) {
+        if (!elements.simulationFeedback) return;
+        elements.simulationFeedback.dataset.state = stateName;
+        elements.simulationFeedbackTitle.textContent = title;
+        elements.simulationFeedbackText.textContent = message;
+        elements.simulationNextButton.classList.toggle("hidden", !showNext);
+    }
+
+    function updateStimulusReadout() {
+        const stage = stages[state.currentIndex];
+        if (!isExperimentStage(stage)) return;
+        const intensity = Number(elements.stimulusIntensity.value);
+        elements.stimulusValue.textContent = String(intensity);
+        elements.stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · 감지 기준 ${stage.scenario.threshold}`;
+        elements.stimulusIntensity.style.setProperty("--stimulus-level", `${intensity}%`);
+    }
+
+    function renderExperimentPath(stage, mismatchIndex = -1, animate = false) {
+        elements.signalPath.replaceChildren();
+        stage.scenario.correctPath.forEach((_, index) => {
+            const item = document.createElement("li");
+            const component = state.experimentPath[index];
+            item.className = "signal-path-step";
+            item.style.setProperty("--signal-delay", `${index * 110}ms`);
+            item.classList.toggle("is-filled", Boolean(component));
+            item.classList.toggle("is-mismatch", index === mismatchIndex);
+            item.classList.toggle("is-signal", animate && Boolean(component));
+
+            if (component) {
+                const button = document.createElement("button");
+                button.type = "button";
+                button.dataset.sfx = "none";
+                button.textContent = component;
+                button.title = `${component}부터 경로 다시 만들기`;
+                button.disabled = state.stageSolved;
+                button.addEventListener("click", () => removeExperimentComponent(index));
+                item.append(button);
+            } else {
+                const placeholder = document.createElement("span");
+                placeholder.innerHTML = `<b>${index + 1}</b><small>경로</small>`;
+                item.append(placeholder);
+            }
+            elements.signalPath.append(item);
+        });
+    }
+
+    function renderComponentBank(stage) {
+        elements.componentBank.replaceChildren();
+        state.componentOrder.forEach((component) => {
+            const button = document.createElement("button");
+            const isSelected = state.experimentPath.includes(component);
+            button.type = "button";
+            button.className = "component-button";
+            button.dataset.sfx = "none";
+            button.textContent = component;
+            button.classList.toggle("is-selected", isSelected);
+            button.disabled = isSelected || state.experimentPath.length >= stage.scenario.correctPath.length || state.stageSolved;
+            button.addEventListener("click", () => addExperimentComponent(component));
+            elements.componentBank.append(button);
+        });
+    }
+
+    function addExperimentComponent(component) {
+        const stage = stages[state.currentIndex];
+        if (!isExperimentStage(stage) || state.stageSolved || state.experimentPath.includes(component)) return;
+        if (state.experimentPath.length >= stage.scenario.correctPath.length) return;
+        state.experimentPath.push(component);
+        renderExperimentPath(stage);
+        renderComponentBank(stage);
+        setSimulationFeedback("idle", "경로를 조립하고 있어요", `${state.experimentPath.length}/${stage.scenario.correctPath.length}칸을 연결했습니다. 경로가 완성되면 신호를 보내 보세요.`);
+        window.ClassGameSfx?.play("click");
+    }
+
+    function removeExperimentComponent(index) {
+        const stage = stages[state.currentIndex];
+        if (!isExperimentStage(stage) || state.stageSolved) return;
+        state.experimentPath.splice(index);
+        renderExperimentPath(stage);
+        renderComponentBank(stage);
+        setSimulationFeedback("idle", "경로를 다시 연결해 보세요", `${index + 1}번째 칸부터 비웠습니다.`);
+    }
+
+    function undoExperimentPath() {
+        const stage = stages[state.currentIndex];
+        if (!isExperimentStage(stage) || state.stageSolved || state.experimentPath.length === 0) return;
+        state.experimentPath.pop();
+        renderExperimentPath(stage);
+        renderComponentBank(stage);
+        setSimulationFeedback("idle", "마지막 연결을 지웠어요", "기관을 이동 순서대로 다시 선택하세요.");
+    }
+
+    function clearExperimentPath() {
+        const stage = stages[state.currentIndex];
+        if (!isExperimentStage(stage) || state.stageSolved) return;
+        state.experimentPath = [];
+        renderExperimentPath(stage);
+        renderComponentBank(stage);
+        setSimulationFeedback("idle", "경로를 비웠어요", "자극을 받아들이는 곳부터 다시 연결하세요.");
+    }
+
+    function renderExperimentStage(stage) {
+        elements.questionCard.classList.add("hidden");
+        elements.simulationCard.classList.remove("hidden");
+        elements.simulationTitle.textContent = stage.question;
+        elements.stimulusIcon.textContent = stage.scenario.icon;
+        elements.stimulusName.textContent = stage.scenario.stimulus;
+        elements.stimulusIntensity.value = String(Math.max(10, Math.min(90, stage.scenario.threshold - 20)));
+        elements.stimulusIntensity.disabled = false;
+        elements.undoPathButton.disabled = false;
+        elements.clearPathButton.disabled = false;
+        elements.runSimulationButton.disabled = false;
+        elements.runSimulationButton.textContent = "신호 보내기";
+        state.experimentPath = [];
+        state.componentOrder = shuffledChoices(stage.scenario.components);
+        updateStimulusReadout();
+        renderExperimentPath(stage);
+        renderComponentBank(stage);
+        setSimulationFeedback("idle", "먼저 자극 세기와 신호 경로를 조절하세요", "실행하면 구성한 경로에 따라 몸의 반응이 달라집니다.");
+        updateRouteMap();
+        elements.stimulusIntensity.focus({ preventScroll: true });
+        elements.announcer.textContent = `${stage.location}. ${stage.mission}`;
+    }
+
+    function runNervousExperiment() {
+        const stage = stages[state.currentIndex];
+        if (!isExperimentStage(stage) || state.stageSolved) return;
+        const scenario = stage.scenario;
+        const intensity = Number(elements.stimulusIntensity.value);
+
+        if (state.experimentPath.length < scenario.correctPath.length) {
+            setSimulationFeedback("correcting", "신호 경로가 아직 이어지지 않았어요", `빈칸 ${scenario.correctPath.length - state.experimentPath.length}개를 연결한 뒤 다시 실행하세요.`);
+            elements.announcer.textContent = elements.simulationFeedbackText.textContent;
+            return;
+        }
+
+        if (intensity < scenario.threshold) {
+            setSimulationFeedback("observing", "자극은 도착했지만 반응이 시작되지 않았어요", `${scenario.lowMessage} 자극 세기를 높여 다시 관찰해 보세요.`);
+            elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent}. ${elements.simulationFeedbackText.textContent}`;
+            window.ClassGameSfx?.play("click");
+            elements.stimulusIntensity.focus({ preventScroll: true });
+            return;
+        }
+
+        const mismatchIndex = state.experimentPath.findIndex((component, index) => component !== scenario.correctPath[index]);
+        if (mismatchIndex !== -1) {
+            if (state.attempts === 0) {
+                state.missed.push({ stage, chosen: state.experimentPath.join(" → ") });
+            }
+            state.attempts += 1;
+            renderExperimentPath(stage, mismatchIndex);
+            setSimulationFeedback("correcting", `${mismatchIndex + 1}번째 연결에서 신호가 멈췄어요`, scenario.hints[mismatchIndex]);
+            elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent}. ${elements.simulationFeedbackText.textContent}`;
+            window.ClassGameSfx?.play("error");
+            elements.signalPath.children[mismatchIndex]?.querySelector("button")?.focus({ preventScroll: true });
+            return;
+        }
+
+        state.stageSolved = true;
+        if (state.attempts === 0) {
+            state.score += 1;
+            elements.currentScore.textContent = String(state.score);
+        }
+        revealFact(stage);
+        renderExperimentPath(stage, -1, true);
+        renderComponentBank(stage);
+        elements.stimulusIntensity.disabled = true;
+        elements.undoPathButton.disabled = true;
+        elements.clearPathButton.disabled = true;
+        elements.runSimulationButton.disabled = true;
+        elements.runSimulationButton.textContent = "실험 완료";
+        setSimulationFeedback("success", "신호가 끝까지 전달됐어요!", `${scenario.response} ${stage.explanation}`, true);
+        elements.simulationNextButton.textContent = "관찰 확인 문제로";
+        elements.scenePanel.classList.add("simulation-reacting");
+        setTimeout(() => elements.scenePanel.classList.remove("simulation-reacting"), 900);
+        elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent} ${elements.simulationFeedbackText.textContent}`;
+        window.ClassGameSfx?.play("success");
+        updateRouteMap();
+        elements.simulationNextButton.focus({ preventScroll: true });
+    }
+
     function renderStage() {
         const stage = stages[state.currentIndex];
         state.attempts = 0;
@@ -289,8 +518,8 @@
         elements.chapterLabel.textContent = stage.chapter;
         elements.stageLocation.textContent = stage.location;
         elements.stageMission.textContent = stage.mission;
-        elements.stageFact.textContent = stage.fact;
-        elements.stageQuestion.textContent = stage.question;
+        elements.scenePanel.classList.remove("simulation-reacting");
+        hideFact();
         elements.oxygenLabel.textContent = stateText(stage.oxygen);
         elements.oxygenMeter.dataset.state = stage.oxygen;
         elements.oxygenMeter.classList.toggle("rich", stage.oxygen === "rich");
@@ -299,7 +528,16 @@
         elements.nextStageButton.classList.add("hidden");
         elements.choiceList.replaceChildren();
 
-        stage.choices.forEach((choice, index) => {
+        if (isExperimentStage(stage)) {
+            renderExperimentStage(stage);
+            return;
+        }
+
+        elements.simulationCard?.classList.add("hidden");
+        elements.questionCard.classList.remove("hidden");
+        elements.stageQuestion.textContent = stage.question;
+
+        shuffledChoices(stage.choices).forEach((choice, index) => {
             const button = document.createElement("button");
             const number = document.createElement("span");
             button.type = "button";
@@ -317,7 +555,7 @@
 
         updateRouteMap();
         elements.choiceList.querySelector("button")?.focus({ preventScroll: true });
-        elements.announcer.textContent = `${stage.location}. ${stage.fact} ${stage.question}`;
+        elements.announcer.textContent = `${stage.location}. ${stage.mission} ${stage.question}`;
     }
 
     function selectRoute(choice, button) {
@@ -333,8 +571,8 @@
             button.disabled = true;
             button.classList.add("is-wrong");
             elements.feedback.className = "feedback is-wrong";
-            elements.feedbackTitle.textContent = "이 길은 막혀 있어요";
-            elements.feedbackText.textContent = `${stage.hint} 다시 선택해 보세요.`;
+            elements.feedbackTitle.textContent = "근거를 한 번 더 살펴봐요";
+            elements.feedbackText.textContent = `${stage.hint} 다른 선택지와 비교해 보세요.`;
             elements.announcer.textContent = `${elements.feedbackTitle.textContent}. ${elements.feedbackText.textContent}`;
             window.ClassGameSfx?.play("error");
             elements.choiceList.querySelector("button:not(:disabled)")?.focus({ preventScroll: true });
@@ -350,8 +588,9 @@
             choiceButton.disabled = true;
             if (choiceButton.dataset.choice === stage.answer) choiceButton.classList.add("is-correct");
         });
+        revealFact(stage);
         elements.feedback.className = "feedback";
-        elements.feedbackTitle.textContent = state.attempts === 0 ? "정확한 경로예요!" : "경로를 찾았어요!";
+        elements.feedbackTitle.textContent = state.attempts === 0 ? "정확한 경로예요!" : "근거를 찾아냈어요!";
         elements.feedbackText.textContent = stage.explanation;
         elements.nextStageButton.textContent = state.currentIndex === TOTAL_STAGES - 1 ? "완주 결과 보기" : "다음 장소로 이동";
         elements.nextStageButton.classList.remove("hidden");
@@ -399,9 +638,9 @@
             question.className = "review-question";
             question.textContent = stage.question;
             selected.className = "review-chosen";
-            selected.textContent = `막혔던 선택: ${chosen}`;
+            selected.textContent = stage.kind === "experiment" ? `처음 실행한 경로: ${chosen}` : `처음 선택: ${chosen}`;
             answer.className = "review-answer";
-            answer.textContent = `바른 경로: ${stage.answer}`;
+            answer.textContent = `확인한 정답: ${stage.answer}`;
             explanation.className = "review-explanation";
             explanation.textContent = stage.explanation;
             item.append(location, question, selected, answer, explanation);
@@ -496,7 +735,8 @@
 
     function handleKeyboard(event) {
         if (elements.journeyScreen.classList.contains("hidden")) return;
-        if (!state.stageSolved && /^[1-3]$/.test(event.key)) {
+        const stage = stages[state.currentIndex];
+        if (!isExperimentStage(stage) && !state.stageSolved && /^[1-3]$/.test(event.key)) {
             const choice = elements.choiceList.querySelectorAll("button")[Number(event.key) - 1];
             if (choice && !choice.disabled) {
                 event.preventDefault();
@@ -504,7 +744,7 @@
             }
             return;
         }
-        if (state.stageSolved && event.key === "Enter" && document.activeElement !== elements.nextStageButton) {
+        if (state.stageSolved && event.key === "Enter" && document.activeElement !== elements.nextStageButton && document.activeElement !== elements.simulationNextButton) {
             event.preventDefault();
             goToNextStage();
         }
@@ -516,6 +756,11 @@
     elements.restartButton.addEventListener("click", startJourney);
     elements.resultModeButton.addEventListener("click", showModeScreen);
     elements.nextStageButton.addEventListener("click", goToNextStage);
+    elements.stimulusIntensity?.addEventListener("input", updateStimulusReadout);
+    elements.undoPathButton?.addEventListener("click", undoExperimentPath);
+    elements.clearPathButton?.addEventListener("click", clearExperimentPath);
+    elements.runSimulationButton?.addEventListener("click", runNervousExperiment);
+    elements.simulationNextButton?.addEventListener("click", goToNextStage);
     document.querySelectorAll(".mode-back-button").forEach((button) => button.addEventListener("click", showModeScreen));
     document.addEventListener("keydown", handleKeyboard);
 

@@ -838,6 +838,16 @@ button {
     border-radius: 14px;
     background: rgba(25, 7, 27, 0.75);
     backdrop-filter: blur(12px);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 180ms ease, transform 180ms ease, visibility 180ms ease;
+}
+
+.fact-card.is-revealed {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
 }
 
 .fact-card span {
@@ -939,12 +949,21 @@ button {
 
 .feedback {
     max-width: 820px;
+    height: 134px;
+    box-sizing: border-box;
     margin: 20px auto 0;
     padding: 15px 18px;
     border: 1px solid #b7d9c6;
     border-radius: 14px;
     background: #e9f7ef;
     color: #1e6245;
+    overflow: auto;
+}
+
+.question-card .feedback.hidden {
+    display: block !important;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 .feedback.is-wrong {
@@ -1472,5 +1491,142 @@ footer a {
         scroll-behavior: auto !important;
         animation: none !important;
         transition: none !important;
+    }
+}
+
+/* Keep the entire question state stable in one viewport on classroom-sized devices. */
+@media (min-width: 740px) {
+    body.journey-active {
+        overflow: hidden;
+    }
+
+    body.journey-active .page-shell {
+        display: flex;
+        height: 100dvh;
+        padding-top: 8px;
+        padding-bottom: 8px;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    body.journey-active .topbar {
+        flex: 0 0 auto;
+        margin-bottom: 8px;
+    }
+
+    body.journey-active .back-link,
+    body.journey-active .record {
+        min-height: 38px;
+        padding-top: 6px;
+        padding-bottom: 6px;
+    }
+
+    body.journey-active main {
+        display: flex;
+        min-height: 0;
+        flex: 1;
+    }
+
+    body.journey-active .episode-shelf,
+    body.journey-active footer {
+        display: none;
+    }
+
+    .journey-screen:not(.hidden) {
+        display: grid;
+        width: 100%;
+        min-height: 0;
+        grid-template-columns: minmax(260px, 0.82fr) minmax(390px, 1.18fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .journey-screen:not(.hidden) .journey-status,
+    .journey-screen:not(.hidden) .route-strip {
+        grid-column: 1 / -1;
+        margin-bottom: 0;
+    }
+
+    .journey-screen:not(.hidden) .route-map {
+        padding-top: 5px;
+        padding-bottom: 7px;
+    }
+
+    .journey-screen:not(.hidden) .scene-panel,
+    .journey-screen:not(.hidden) .question-card {
+        min-height: 0;
+        border-radius: 20px;
+    }
+
+    .journey-screen:not(.hidden) .scene-panel {
+        grid-column: 1;
+        grid-row: 3;
+    }
+
+    .journey-screen:not(.hidden) .question-card {
+        display: flex;
+        padding: clamp(16px, 2vw, 25px);
+        grid-column: 2;
+        grid-row: 3;
+        flex-direction: column;
+        overflow: auto;
+    }
+
+    .journey-screen:not(.hidden) .question-card h2 {
+        margin: 5px auto 12px;
+        font-size: clamp(19px, 2vw, 26px);
+        line-height: 1.35;
+    }
+
+    .journey-screen:not(.hidden) .choice-list {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .journey-screen:not(.hidden) .choice-button {
+        min-height: 62px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.4;
+    }
+
+    .journey-screen:not(.hidden) .feedback {
+        width: 100%;
+        margin-top: 10px;
+        flex: 0 0 134px;
+    }
+
+    .journey-screen:not(.hidden) .location-card {
+        top: clamp(20px, 3vw, 38px);
+        left: clamp(18px, 3vw, 34px);
+        width: min(470px, calc(100% - 36px));
+    }
+
+    .journey-screen:not(.hidden) .location-card h2 {
+        font-size: clamp(25px, 3vw, 38px);
+    }
+
+    .journey-screen:not(.hidden) .stage-mission {
+        font-size: 14px;
+        line-height: 1.5;
+    }
+
+    .journey-screen:not(.hidden) .fact-card {
+        bottom: 16px;
+        left: 18px;
+        width: calc(100% - 36px);
+        padding: 11px 13px;
+    }
+
+    .journey-screen:not(.hidden) .fact-card p {
+        font-size: 13px;
+        line-height: 1.45;
+    }
+
+    .journey-screen:not(.hidden) .cell-explorer {
+        right: 8px;
+        bottom: 18px;
+        width: min(26vw, 235px);
     }
 }
