@@ -226,13 +226,18 @@
 
         .join-form {
             display: grid;
-            grid-template-columns: 1.4fr 0.8fr auto;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
             margin-top: 14px;
         }
 
         .guest-form {
             grid-template-columns: 1fr auto;
+        }
+
+        .student-join-form .join-wide,
+        .student-join-form .auth-button {
+            grid-column: 1 / -1;
         }
 
         .auth-input {
@@ -255,6 +260,10 @@
         }
 
         .auth-input.guest-name {
+            text-transform: none;
+        }
+
+        .auth-input.student-name {
             text-transform: none;
         }
 
@@ -327,8 +336,8 @@
                 width: 100%;
                 min-height: 72px;
             }
-            .join-form { grid-template-columns: 1fr 0.7fr; }
-            .join-form .auth-button { grid-column: 1 / -1; }
+            .join-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .student-join-form .auth-button { grid-column: 1 / -1; }
         }
     </style>
 </head>
@@ -346,9 +355,13 @@
             <button class="auth-button" type="submit">ENTER</button>
         </form>
 
-        <form id="joinForm" class="join-form" hidden>
-            <input id="joinCode" class="auth-input" type="text" maxlength="6" autocomplete="off" placeholder="CLASS CODE" aria-label="Class code">
+        <form id="joinForm" class="join-form student-join-form" hidden>
+            <input id="schoolCode" class="auth-input join-wide" type="text" maxlength="12" autocomplete="off" placeholder="SCHOOL CODE" aria-label="School code">
+            <input id="studentGrade" class="auth-input" type="text" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="GRADE" aria-label="Grade">
+            <input id="studentClass" class="auth-input" type="text" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="CLASS" aria-label="Class">
             <input id="studentNumber" class="auth-input" type="text" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="NO." aria-label="Student number">
+            <input id="studentName" class="auth-input student-name" type="text" maxlength="6" autocomplete="name" placeholder="NAME" aria-label="Student name">
+            <input id="studentPassword" class="auth-input join-wide" type="password" maxlength="6" inputmode="numeric" autocomplete="current-password" placeholder="PASSWORD" aria-label="Student password">
             <button class="auth-button" type="submit">JOIN</button>
         </form>
 
@@ -457,7 +470,7 @@
         (() => {
             'use strict';
 
-            const APP_ORIGIN = 'https://classroom-game-hub.onrender.com';
+            const APP_ORIGIN = 'https://songhwaplay.onrender.com';
             const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
             const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
             const isRenderApp = location.origin === APP_ORIGIN;
@@ -468,8 +481,12 @@
             const guestForm = document.getElementById('guestForm');
             const guestNameInput = document.getElementById('guestName');
             const joinForm = document.getElementById('joinForm');
-            const joinCodeInput = document.getElementById('joinCode');
+            const schoolCodeInput = document.getElementById('schoolCode');
+            const studentGradeInput = document.getElementById('studentGrade');
+            const studentClassInput = document.getElementById('studentClass');
             const studentNumberInput = document.getElementById('studentNumber');
+            const studentNameInput = document.getElementById('studentName');
+            const studentPasswordInput = document.getElementById('studentPassword');
             const signedInArea = document.getElementById('signedInArea');
             const signedInName = document.getElementById('signedInName');
             const classMembership = document.getElementById('classMembership');
@@ -571,14 +588,15 @@
             function showJoin(state) {
                 authTitle.textContent = 'FIRST-TIME SETUP';
                 authMessage.hidden = false;
-                authMessage.textContent = `${state.user.name}, enter the class code and your student number.`;
+                authMessage.textContent = `${state.user.name}, enter your school code and roster details.`;
                 googleSignInButton.hidden = true;
                 signedInArea.hidden = false;
                 signedInName.textContent = state.user.name;
                 classMembership.textContent = state.user.email;
                 joinForm.hidden = false;
                 hubContent.hidden = true;
-                joinCodeInput.focus();
+                setHubLocked(true);
+                schoolCodeInput.focus();
             }
 
             function routeSignedIn(state) {
@@ -636,8 +654,8 @@
                 });
             }
 
-            joinCodeInput.addEventListener('input', () => {
-                joinCodeInput.value = joinCodeInput.value.toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0, 6);
+            schoolCodeInput.addEventListener('input', () => {
+                schoolCodeInput.value = schoolCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
             });
             guestNameInput.addEventListener('input', () => {
                 guestNameInput.value = normalizePlayerName(guestNameInput.value);
@@ -666,6 +684,16 @@
             studentNumberInput.addEventListener('input', () => {
                 studentNumberInput.value = studentNumberInput.value.replace(/\D/g, '').slice(0, 3);
             });
+            studentGradeInput.addEventListener('input', () => {
+                const digits = studentGradeInput.value.replace(/\D/g, '').slice(0, 2);
+                studentGradeInput.value = Number(digits) >= 1 && Number(digits) <= 12 ? digits : digits.slice(0, 1);
+            });
+            studentClassInput.addEventListener('input', () => {
+                studentClassInput.value = studentClassInput.value.replace(/\D/g, '').slice(0, 2);
+            });
+            studentPasswordInput.addEventListener('input', () => {
+                studentPasswordInput.value = studentPasswordInput.value.replace(/\D/g, '').slice(0, 6);
+            });
             joinForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 setStatus('Linking your class…');
@@ -673,8 +701,12 @@
                     await api('/api/student/join', {
                         method: 'POST',
                         body: JSON.stringify({
-                            joinCode: joinCodeInput.value,
+                            schoolCode: schoolCodeInput.value,
+                            grade: Number(studentGradeInput.value),
+                            classNumber: Number(studentClassInput.value),
                             studentNumber: studentNumberInput.value,
+                            name: studentNameInput.value.trim(),
+                            password: studentPasswordInput.value,
                         }),
                     });
                     const state = await api('/api/auth/me');
