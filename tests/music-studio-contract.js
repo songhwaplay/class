@@ -21,6 +21,7 @@ assert.match(app, /AudioContext/);
 assert.match(app, /createConvolver/);
 assert.match(app, /createDynamicsCompressor/);
 assert.match(app, /playPianoTone/);
+assert.match(app, /getClosedPositionMidi/);
 assert.match(app, /playNoiseTransient/);
 assert.match(app, /data-mode/);
 assert.match(app, /minorVariant/);
