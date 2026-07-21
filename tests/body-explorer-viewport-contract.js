@@ -10,7 +10,8 @@ const app = fs.readFileSync(path.join(dir, "app.js"), "utf8");
 const styles = fs.readFileSync(path.join(dir, "styles.css"), "utf8");
 const nervousStyles = fs.readFileSync(path.join(dir, "nervous.css"), "utf8");
 const immuneStyles = fs.readFileSync(path.join(dir, "immune.css"), "utf8");
-const pages = ["index.html", "digestion.html", "respiration.html", "nervous.html", "immune.html"]
+const movementStyles = fs.readFileSync(path.join(dir, "movement.css"), "utf8");
+const pages = ["index.html", "digestion.html", "respiration.html", "nervous.html", "immune.html", "movement.html"]
     .map((file) => fs.readFileSync(path.join(dir, file), "utf8"));
 
 assert.ok(app.includes('elements.stageFact.textContent = ""'), "Facts must start empty before a learner answers.");
@@ -37,5 +38,7 @@ assert.match(styles, /\.fact-card\.is-revealed \{[\s\S]*?visibility:\s*visible/,
 assert.match(nervousStyles, /@media \(min-width: 740px\)[\s\S]*?\.simulation-card[\s\S]*?grid-row:\s*3/, "The nervous simulator must occupy the stable question-panel slot.");
 assert.match(nervousStyles, /\.simulation-feedback \{[\s\S]*?min-height:\s*93px/, "Simulation feedback must reserve space before and after execution.");
 assert.ok(immuneStyles.includes(".immune-page .simulation-card"), "The immune simulator must inherit the stable simulation panel layout.");
+assert.ok(movementStyles.includes(".movement-page .simulation-card"), "The movement simulator must inherit the stable simulation panel layout.");
+assert.ok(movementStyles.includes(".motion-live-visual"), "The movement simulator must show the live joint model beside the controls.");
 
 console.log("body-explorer-viewport-contract: answer privacy and stable quiz/simulation viewport layout ok");

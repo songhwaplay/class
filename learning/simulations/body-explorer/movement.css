@@ -1,0 +1,240 @@
+:root {
+    --night: #0b1428;
+    --night-soft: #26344e;
+    --panel: #fffdf8;
+    --panel-soft: #f7f0e5;
+    --ink: #273247;
+    --muted: #6d7280;
+    --line: #d8cbb9;
+    --red: #d7654b;
+    --red-deep: #9f3e32;
+    --coral: #ef8f45;
+    --blue: #4c83bd;
+    --cyan: #8fc6cf;
+    --cream: #ffe3a4;
+    --green: #3b8d68;
+    --danger: #b04d5c;
+}
+
+body.movement-page {
+    background:
+        radial-gradient(circle at 14% 18%, rgba(216, 103, 72, 0.24), transparent 27rem),
+        radial-gradient(circle at 86% 48%, rgba(73, 131, 189, 0.22), transparent 31rem),
+        linear-gradient(145deg, #081121, #17243b 56%, #0b162a);
+}
+
+.movement-page .ambient-cells i {
+    border-color: rgba(255, 212, 151, 0.14);
+    border-radius: 38% 62% 42% 58%;
+    box-shadow: inset 0 0 22px rgba(255, 177, 94, 0.06), 0 0 26px rgba(81, 145, 198, 0.1);
+}
+
+.movement-page .hero-copy { width: min(820px, 100%); }
+.movement-page .hero-art {
+    background-image: url("../../../assets/images/body-explorer/movement-hero.webp");
+    background-position: center;
+}
+
+.movement-page .hero-shade {
+    background:
+        linear-gradient(90deg, rgba(5, 12, 26, 0.98) 0%, rgba(12, 28, 51, 0.82) 49%, rgba(13, 29, 48, 0.05) 80%),
+        linear-gradient(0deg, rgba(7, 15, 29, 0.94), transparent 58%);
+}
+
+.movement-page .hero-copy h1 span,
+.movement-page .hero-lead { color: #fff2dc; }
+.movement-page .episode-switcher { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.movement-page .episode-switcher a.active { background: rgba(174, 74, 50, 0.92); }
+
+.movement-page .mode-card:hover,
+.movement-page .mode-card:focus-visible {
+    border-color: #ffd69a;
+    background: rgba(75, 44, 48, 0.94);
+}
+
+.movement-page .mode-icon,
+.movement-page .primary-button { background: linear-gradient(145deg, #ef9a47, #4d79af); }
+.movement-page .movement-mode-icon {
+    color: #fff2d7;
+    box-shadow: inset 0 0 0 8px #b9503e, 0 0 0 3px rgba(255, 216, 159, 0.42);
+}
+
+.movement-briefing-art {
+    background:
+        linear-gradient(155deg, rgba(11, 24, 45, 0.08), rgba(12, 28, 52, 0.68)),
+        url("../../../assets/images/body-explorer/movement-hero.webp") center / cover;
+}
+.movement-briefing-art img { width: min(64%, 325px); }
+.movement-page .movement-orb {
+    border-color: rgba(255, 210, 146, 0.8);
+    background: rgba(185, 82, 59, 0.78);
+    box-shadow: 0 0 23px rgba(235, 126, 79, 0.46);
+}
+.movement-page .movement-orb.muscle-orb {
+    border-color: rgba(145, 196, 234, 0.82);
+    background: rgba(61, 112, 164, 0.8);
+    box-shadow: 0 0 23px rgba(85, 152, 209, 0.48);
+}
+
+.movement-page .oxygen-meter #oxygenDot { background: #ef9a48; box-shadow: 0 0 15px rgba(239, 154, 72, 0.82); }
+.movement-page .oxygen-meter[data-state="flexion"] #oxygenDot { background: #df654d; }
+.movement-page .oxygen-meter[data-state="extension"] #oxygenDot { background: #548fc4; }
+.movement-page .oxygen-meter[data-state="tendon"] #oxygenDot { background: #edbd5e; }
+.movement-page .oxygen-meter[data-state="load"] #oxygenDot { background: #a87bd1; }
+
+.movement-page .route-node.passed::before,
+.movement-page .route-node.passed:not(:last-child)::after { border-color: #e8ad57; background: #b95743; }
+
+.movement-page .scene-panel[data-scene="joint"] .scene-image,
+.movement-page .scene-panel[data-scene="flexion"] .scene-image,
+.movement-page .scene-panel[data-scene="extension"] .scene-image,
+.movement-page .scene-panel[data-scene="tendon"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/movement-joint.webp");
+}
+.movement-page .scene-panel[data-scene="joint"] .scene-image { background-position: 52% center; }
+.movement-page .scene-panel[data-scene="flexion"] .scene-image { background-position: 60% center; }
+.movement-page .scene-panel[data-scene="extension"] .scene-image { background-position: 42% center; transform: scaleX(-1); }
+.movement-page .scene-panel[data-scene="tendon"] .scene-image { background-position: 68% center; }
+.movement-page .scene-panel[data-scene="load"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/movement-load.webp");
+    background-position: 56% center;
+}
+.movement-page .scene-overlay {
+    background:
+        linear-gradient(90deg, rgba(8, 15, 31, 0.95), rgba(28, 32, 52, 0.18) 60%, rgba(14, 24, 42, 0.48)),
+        linear-gradient(0deg, rgba(8, 16, 31, 0.96), transparent 62%);
+}
+
+.movement-page .movement-explorer,
+.movement-page .signal-explorer {
+    right: 8px;
+    bottom: 14px;
+    width: clamp(92px, 13vw, 148px);
+    filter: drop-shadow(0 15px 20px rgba(3, 8, 20, 0.68));
+}
+
+.motion-live-visual {
+    position: absolute;
+    z-index: 4;
+    top: clamp(170px, 31%, 205px);
+    left: 7%;
+    width: 86%;
+    padding: 6px 9px 8px;
+    box-sizing: border-box;
+    border: 1px solid rgba(255, 221, 174, 0.42);
+    border-radius: 18px;
+    background: rgba(7, 17, 34, 0.72);
+    box-shadow: 0 14px 28px rgba(2, 6, 16, 0.34);
+    backdrop-filter: blur(8px);
+}
+.motion-live-visual.hidden { display: none; }
+.motion-live-visual svg { display: block; width: 100%; height: 142px; overflow: visible; }
+.motion-guide { fill: none; stroke: rgba(255, 230, 190, 0.22); stroke-width: 2; stroke-dasharray: 5 7; }
+.motion-bone { stroke: #ffe2aa; stroke-width: 10; stroke-linecap: round; filter: drop-shadow(0 0 5px rgba(255, 196, 108, 0.44)); }
+.motion-bone.bone-lower { stroke: #f1cc8d; stroke-width: 8; }
+.motion-joint { fill: #f7d18f; stroke: #fff0c7; stroke-width: 4; }
+.motion-muscle { stroke-linecap: round; transition: stroke-width 180ms ease; }
+.muscle-front { stroke: #ec7658; }
+.muscle-back { stroke: #5794ce; }
+.motion-tendon { stroke: rgba(255, 235, 192, 0.55); stroke-width: 4; stroke-linecap: round; transition: stroke 160ms ease, stroke-width 160ms ease; }
+.motion-tendon.is-active { stroke: #ffd06f; stroke-width: 7; filter: drop-shadow(0 0 5px rgba(255, 199, 81, 0.65)); }
+#motionForearm { transition: transform 160ms ease; transform-box: view-box; }
+.motion-hand { fill: #f4d394; stroke: #fff0c9; stroke-width: 4; }
+.motion-load-handle { fill: none; stroke: #f0a756; stroke-width: 5; }
+.motion-load { fill: #365b89; stroke: #f1a650; stroke-width: 3; }
+
+.motion-readout {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    color: #fff1d7;
+    font-size: 10px;
+    font-weight: 800;
+    text-align: center;
+}
+.motion-readout span { padding: 4px 5px; border-radius: 8px; background: rgba(255, 255, 255, 0.08); }
+.motion-readout strong { color: #ffd07a; }
+.motion-readout .front-readout b { color: #ff987f; }
+.motion-readout .back-readout b { color: #8fc8f5; }
+.motion-live-visual.is-success { border-color: rgba(255, 207, 110, 0.86); animation: movement-success 800ms ease; }
+@keyframes movement-success {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.025); box-shadow: 0 0 30px rgba(242, 156, 74, 0.48); }
+}
+
+.movement-page .question-card,
+.movement-page .simulation-card { border-color: rgba(174, 99, 74, 0.34); }
+.movement-page .choice-button:hover,
+.movement-page .choice-button:focus-visible { border-color: #c65f48; }
+.movement-page .episode.active { background: #a64839; }
+.movement-page .episode.available:hover,
+.movement-page .episode.available:focus-visible { background: rgba(91, 55, 66, 0.86); }
+
+.movement-page .teacher-hero {
+    background:
+        linear-gradient(90deg, rgba(7, 14, 29, 0.98), rgba(83, 48, 54, 0.74), rgba(198, 103, 57, 0.16)),
+        url("../../../assets/images/body-explorer/movement-hero.webp") center / cover no-repeat;
+}
+.movement-page .teacher-hero p:last-child { color: #fff0dc; }
+.movement-page .teacher-room-card { border-color: #dfba98; background: #fff5e8; }
+.movement-page .teacher-room-card > span,
+.movement-page .teacher-room-card > strong { color: #a54938; }
+
+.movement-page .stimulus-console { border-color: #e1cdb9; background: #fbf3e9; }
+.movement-page .stimulus-icon { background: linear-gradient(145deg, #ffe2a9, #d9e7f0); box-shadow: inset 0 0 0 1px rgba(144, 69, 51, 0.15); }
+.movement-page .intensity-control output { background: #af513e; }
+.movement-page .intensity-control input {
+    accent-color: #bd5942;
+    background: linear-gradient(90deg, #c75f45 var(--stimulus-level, 50%), #d9d5cf var(--stimulus-level, 50%));
+}
+.movement-page .signal-path-step > button { border-color: #c4826d; background: #fff0e9; color: #7d3b31; }
+.movement-page .signal-path-step > button:hover:not(:disabled),
+.movement-page .signal-path-step > button:focus-visible:not(:disabled) { border-color: #4d80b5; background: #eaf4fc; }
+.movement-page .signal-path-step.is-signal > button { border-color: #c48a21; background: #fff0b1; }
+.movement-page .component-button { border-color: #d7c4b5; color: #65483f; }
+.movement-page .component-button:hover:not(:disabled),
+.movement-page .component-button:focus-visible:not(:disabled) { border-color: #c35e47; background: #fff0e9; }
+.movement-page .sim-secondary-button { border-color: #c5a894; color: #69493f; }
+.movement-page .sim-secondary-button:hover:not(:disabled),
+.movement-page .sim-secondary-button:focus-visible:not(:disabled) { background: #fff2e9; }
+.movement-page .simulation-feedback { border-color: #ddcaba; background: #fbf4ec; color: #654d43; }
+
+@media (min-width: 740px) and (max-height: 820px) {
+    .movement-page .journey-screen:not(.hidden) .simulation-card { padding: 11px 16px; overflow: hidden; }
+    .movement-page .simulation-heading h2 { margin: 2px 0 7px; font-size: clamp(18px, 1.75vw, 22px); line-height: 1.22; }
+    .movement-page .stimulus-console { padding: 7px 10px; }
+    .movement-page .stimulus-icon { width: 38px; height: 38px; flex-basis: 38px; font-size: 21px; }
+    .movement-page .path-builder { margin-top: 7px; }
+    .movement-page .signal-path-step > button,
+    .movement-page .signal-path-step > span { min-height: 42px; }
+    .movement-page .component-bank { margin-top: 6px; gap: 4px; }
+    .movement-page .component-button { min-height: 28px; padding: 3px 6px; font-size: 10px; }
+    .movement-page .simulation-actions { margin-top: 7px; }
+    .movement-page .simulation-actions button { min-height: 34px; padding-top: 5px; padding-bottom: 5px; }
+    .movement-page .simulation-feedback { min-height: 76px; margin-top: 7px; padding: 8px 11px; overflow: hidden; }
+    .movement-page .simulation-feedback p { margin-top: 2px; font-size: 11px; }
+    .movement-page .location-card h2 { font-size: clamp(22px, 2.5vw, 32px); }
+    .movement-page .motion-live-visual { top: 148px; }
+    .movement-page .motion-live-visual svg { height: 126px; }
+}
+
+@media (max-width: 800px) {
+    .movement-page .hero-copy { width: min(700px, 100%); }
+    .movement-page .episode-switcher { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+    .movement-page .hero-art { background-position: 68% center; }
+    .movement-page .episode-switcher { grid-template-columns: 1fr; }
+    .movement-page .movement-explorer,
+    .movement-page .signal-explorer { bottom: 144px; width: min(31vw, 125px); }
+    .motion-live-visual { top: 205px; left: 4%; width: 92%; }
+    .motion-live-visual svg { height: 132px; }
+    .motion-readout { grid-template-columns: 1fr; font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    #motionForearm,
+    .motion-muscle,
+    .motion-tendon { transition: none; }
+}

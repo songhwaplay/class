@@ -22,7 +22,8 @@
         : Array.isArray(window.CIRCULATION_STAGES) ? window.CIRCULATION_STAGES : [];
     const TOTAL_STAGES = stages.length;
     const HAS_INTERACTIVE_SIMULATION = config.experienceType === "nervous-simulation"
-        || config.experienceType === "immune-simulation";
+        || config.experienceType === "immune-simulation"
+        || config.experienceType === "movement-simulation";
     const simulationCopy = {
         thresholdWord: "감지 기준",
         slotLabel: "경로",
@@ -104,6 +105,16 @@
         simulationFeedbackTitle: document.getElementById("simulationFeedbackTitle"),
         simulationFeedbackText: document.getElementById("simulationFeedbackText"),
         simulationNextButton: document.getElementById("simulationNextButton"),
+        motionVisual: document.getElementById("motionVisual"),
+        motionForearm: document.getElementById("motionForearm"),
+        motionFrontMuscle: document.getElementById("motionFrontMuscle"),
+        motionBackMuscle: document.getElementById("motionBackMuscle"),
+        motionFrontTendon: document.getElementById("motionFrontTendon"),
+        motionBackTendon: document.getElementById("motionBackTendon"),
+        motionLoad: document.getElementById("motionLoad"),
+        motionAngle: document.getElementById("motionAngle"),
+        motionFrontState: document.getElementById("motionFrontState"),
+        motionBackState: document.getElementById("motionBackState"),
         finalScore: document.getElementById("finalScore"),
         resultMessage: document.getElementById("resultMessage"),
         bestMessage: document.getElementById("bestMessage"),
@@ -369,6 +380,31 @@
         elements.stimulusValue.textContent = String(intensity);
         elements.stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · ${simulationCopy.thresholdWord} ${stage.scenario.threshold}`;
         elements.stimulusIntensity.style.setProperty("--stimulus-level", `${intensity}%`);
+        updateMovementVisual(stage, intensity);
+    }
+
+    function updateMovementVisual(stage, intensity) {
+        const visual = stage?.scenario?.visual;
+        if (!elements.motionVisual || !visual) return;
+        const progress = Math.max(0, Math.min(1, intensity / 100));
+        const angle = Math.round(visual.startAngle + (visual.endAngle - visual.startAngle) * progress);
+        const rotation = angle - 180;
+        const activeFront = visual.activeMuscle !== "back";
+        const activeWidth = 12 + progress * 13;
+        const relaxedWidth = 18 - progress * 7;
+
+        elements.motionVisual.dataset.motion = visual.motion || "flex";
+        elements.motionVisual.classList.toggle("has-load", Boolean(visual.load));
+        elements.motionVisual.classList.remove("is-success");
+        elements.motionForearm?.setAttribute("transform", `rotate(${rotation} 136 130)`);
+        elements.motionFrontMuscle?.setAttribute("stroke-width", String(activeFront ? activeWidth : relaxedWidth));
+        elements.motionBackMuscle?.setAttribute("stroke-width", String(activeFront ? relaxedWidth : activeWidth));
+        elements.motionFrontTendon?.classList.toggle("is-active", activeFront);
+        elements.motionBackTendon?.classList.toggle("is-active", !activeFront);
+        if (elements.motionLoad) elements.motionLoad.hidden = !visual.load;
+        if (elements.motionAngle) elements.motionAngle.textContent = `${angle}°`;
+        if (elements.motionFrontState) elements.motionFrontState.textContent = activeFront ? (intensity >= stage.scenario.threshold ? "수축" : "수축 준비") : "이완";
+        if (elements.motionBackState) elements.motionBackState.textContent = !activeFront ? (intensity >= stage.scenario.threshold ? "수축" : "수축 준비") : "이완";
     }
 
     function renderExperimentPath(stage, mismatchIndex = -1, animate = false) {
@@ -466,6 +502,7 @@
         elements.clearPathButton.disabled = false;
         elements.runSimulationButton.disabled = false;
         elements.runSimulationButton.textContent = simulationCopy.runLabel;
+        elements.motionVisual?.classList.remove("hidden", "is-success");
         state.experimentPath = [];
         state.componentOrder = shuffledChoices(stage.scenario.components);
         updateStimulusReadout();
@@ -528,6 +565,7 @@
         setSimulationFeedback("success", simulationCopy.successTitle, `${scenario.response} ${stage.explanation}`, true);
         elements.simulationNextButton.textContent = simulationCopy.nextLabel;
         elements.scenePanel.classList.add("simulation-reacting");
+        elements.motionVisual?.classList.add("is-success");
         setTimeout(() => elements.scenePanel.classList.remove("simulation-reacting"), 900);
         elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent} ${elements.simulationFeedbackText.textContent}`;
         window.ClassGameSfx?.play("success");
@@ -545,6 +583,7 @@
         elements.stageLocation.textContent = stage.location;
         elements.stageMission.textContent = stage.mission;
         elements.scenePanel.classList.remove("simulation-reacting");
+        elements.motionVisual?.classList.toggle("hidden", !isExperimentStage(stage));
         hideFact();
         elements.oxygenLabel.textContent = stateText(stage.oxygen);
         elements.oxygenMeter.dataset.state = stage.oxygen;
