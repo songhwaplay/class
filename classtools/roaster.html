@@ -118,6 +118,33 @@
             border-bottom: 1px solid var(--line);
         }
 
+        .join-code-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+            border-radius: 16px;
+            padding: 15px 18px;
+            color: var(--brand-dark);
+            background: var(--brand-soft);
+        }
+
+        .join-code-panel span {
+            display: grid;
+            gap: 2px;
+            text-align: left;
+        }
+
+        .join-code-panel small {
+            color: var(--muted);
+        }
+
+        .join-code-panel strong {
+            font-size: 1.45rem;
+            letter-spacing: 0.16em;
+        }
+
         .profile-head {
             display: flex;
             align-items: baseline;
@@ -138,7 +165,7 @@
 
         .profile-grid {
             display: grid;
-            grid-template-columns: repeat(7, minmax(0, 1fr));
+            grid-template-columns: repeat(6, minmax(0, 1fr));
             gap: 12px;
         }
 
@@ -375,45 +402,8 @@
 
         td:first-child,
         th:first-child {
-            width: 22%;
+            width: 35%;
             font-variant-numeric: tabular-nums;
-        }
-
-        td:nth-child(2),
-        th:nth-child(2) {
-            width: 38%;
-        }
-
-        .student-password {
-            width: 100%;
-            min-width: 128px;
-            border: 1px solid var(--line);
-            border-radius: 9px;
-            padding: 9px 11px;
-            color: var(--ink);
-            background: #fffdf9;
-            font: inherit;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 0.14em;
-        }
-
-        .student-password:focus {
-            border-color: var(--brand);
-            outline: 3px solid var(--brand-soft);
-        }
-
-        .student-password[aria-invalid="true"] {
-            border-color: var(--danger);
-        }
-
-        .password-note {
-            margin: 0;
-            padding: 14px 26px;
-            border-top: 1px solid #ebe6dc;
-            color: var(--muted);
-            background: #faf7f0;
-            font-size: 0.82rem;
-            line-height: 1.5;
         }
 
         tbody tr:last-child td {
@@ -508,6 +498,13 @@
 
         <section class="roster-card" aria-labelledby="roster-input-title">
             <h2 id="roster-input-title" hidden>Roster input</h2>
+            <div class="join-code-panel" id="join-code-panel" hidden>
+                <span>
+                    <small>Students enter this code with their student number.</small>
+                    <strong id="join-code">—</strong>
+                </span>
+                <small id="join-code-count"></small>
+            </div>
             <div class="class-profile">
                 <div class="profile-head">
                     <h3>Class details</h3>
@@ -517,10 +514,6 @@
                     <div class="profile-field profile-field--school">
                         <label for="school-name">School</label>
                         <input class="profile-control" id="school-name" type="text" autocomplete="organization" maxlength="80" placeholder="School name">
-                    </div>
-                    <div class="profile-field">
-                        <label for="school-code">School code</label>
-                        <input class="profile-control" id="school-code" type="text" autocomplete="off" maxlength="12" placeholder="SEN001">
                     </div>
                     <div class="profile-field">
                         <label for="school-year">School year</label>
@@ -536,6 +529,12 @@
                             <option value="4">Grade 4</option>
                             <option value="5">Grade 5</option>
                             <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
                         </select>
                     </div>
                     <div class="profile-field">
@@ -588,13 +587,11 @@
                         <tr>
                             <th scope="col">NUMBER</th>
                             <th scope="col">NAME</th>
-                            <th scope="col">PASSWORD</th>
                         </tr>
                     </thead>
                     <tbody id="roster-body"></tbody>
                 </table>
             </div>
-            <p class="password-note">New students start with 123456. Leave a saved student's password blank to keep it unchanged.</p>
         </section>
     </main>
 
@@ -602,14 +599,14 @@
         (() => {
             "use strict";
 
-            const DEFAULT_STUDENT_PASSWORD = "123456";
-            const STUDENT_PASSWORD_PATTERN = /^\d{6}$/;
             const currentYear = new Date().getFullYear();
             const allowedYears = [currentYear - 1, currentYear, currentYear + 1];
             const teacherAccount = document.querySelector("#teacher-account");
             const signOutButton = document.querySelector("#sign-out-button");
+            const joinCodePanel = document.querySelector("#join-code-panel");
+            const joinCode = document.querySelector("#join-code");
+            const joinCodeCount = document.querySelector("#join-code-count");
             const schoolInput = document.querySelector("#school-name");
-            const schoolCodeInput = document.querySelector("#school-code");
             const schoolYearInput = document.querySelector("#school-year");
             const gradeInput = document.querySelector("#grade");
             const classNumberInput = document.querySelector("#class-number");
@@ -626,8 +623,6 @@
             const tableWrap = document.querySelector("#table-wrap");
             const emptyPreview = document.querySelector("#empty-preview");
             const studentTotal = document.querySelector("#student-total");
-            const savedPasswordNumbers = new Set();
-            const passwordDrafts = new Map();
             let authorized = false;
             let saving = false;
 
@@ -658,73 +653,30 @@
                 const duplicateNumbers = numbers.filter((value, index) => value && numbers.indexOf(value) !== index);
                 const invalidNumbers = numbers.filter((value) => value && !/^\d{1,3}$/.test(value));
                 const invalidNames = names.filter((value) => value && !/^[가-힣]{2,6}$/.test(value));
-                const invalidPasswords = numbers.filter((number) => {
-                    const password = getStudentPassword(number);
-                    return password ? !STUDENT_PASSWORD_PATTERN.test(password) : !savedPasswordNumbers.has(number);
-                });
                 const isComplete = numbers.length > 0 &&
                     numbers.length === names.length &&
                     !hasBlank &&
                     duplicateNumbers.length === 0 &&
                     invalidNumbers.length === 0 &&
-                    invalidNames.length === 0 &&
-                    invalidPasswords.length === 0;
+                    invalidNames.length === 0;
 
-                return { numbers, names, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidPasswords, isComplete };
-            }
-
-            function getStudentPassword(number) {
-                if (passwordDrafts.has(number)) return passwordDrafts.get(number);
-                return savedPasswordNumbers.has(number) ? "" : DEFAULT_STUDENT_PASSWORD;
+                return { numbers, names, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, isComplete };
             }
 
             function createRoster(numbers, names) {
-                return numbers.map((number, index) => ({
-                    number,
-                    name: names[index],
-                    password: getStudentPassword(number),
-                }));
+                return numbers.map((number, index) => ({ number, name: names[index] }));
             }
 
             function renderRoster(roster) {
                 rosterBody.replaceChildren();
 
-                roster.forEach(({ number, name, password }) => {
+                roster.forEach(({ number, name }) => {
                     const row = document.createElement("tr");
                     const numberCell = document.createElement("td");
                     const nameCell = document.createElement("td");
-                    const passwordCell = document.createElement("td");
-                    const passwordInput = document.createElement("input");
                     numberCell.textContent = number;
                     nameCell.textContent = name;
-                    passwordInput.className = "student-password";
-                    passwordInput.type = "password";
-                    passwordInput.inputMode = "numeric";
-                    passwordInput.autocomplete = "new-password";
-                    passwordInput.maxLength = 6;
-                    passwordInput.value = password;
-                    passwordInput.placeholder = savedPasswordNumbers.has(number) && !password ? "UNCHANGED" : "";
-                    passwordInput.setAttribute("aria-label", `Password for ${number} ${name}`);
-                    passwordInput.setAttribute("aria-invalid", String(Boolean(password) && !STUDENT_PASSWORD_PATTERN.test(password)));
-                    passwordInput.addEventListener("input", () => {
-                        const cleanPassword = passwordInput.value.replace(/\D/g, "").slice(0, 6);
-                        if (passwordInput.value !== cleanPassword) passwordInput.value = cleanPassword;
-                        passwordDrafts.set(number, cleanPassword);
-                        passwordInput.setAttribute("aria-invalid", String(
-                            cleanPassword ? !STUDENT_PASSWORD_PATTERN.test(cleanPassword) : !savedPasswordNumbers.has(number)
-                        ));
-                        profileStatus.textContent = "Unsaved changes";
-                        const nextState = getRosterState();
-                        saveButton.disabled = saving || !authorized || !nextState.isComplete || !isProfileComplete();
-                        if (nextState.invalidPasswords.length > 0) {
-                            setStatus("Each new or changed password must contain exactly 6 digits.", "error");
-                        } else if (nextState.isComplete && isProfileComplete()) {
-                            const noun = nextState.numbers.length === 1 ? "student is" : "students are";
-                            setStatus(`${nextState.numbers.length} ${noun} ready to save.`, "success");
-                        }
-                    });
-                    passwordCell.append(passwordInput);
-                    row.append(numberCell, nameCell, passwordCell);
+                    row.append(numberCell, nameCell);
                     rosterBody.append(row);
                 });
 
@@ -751,7 +703,6 @@
             function getProfile() {
                 return {
                     schoolName: schoolInput.value.trim(),
-                    schoolCode: schoolCodeInput.value.trim().toUpperCase(),
                     schoolYear: schoolYearInput.value,
                     grade: gradeInput.value,
                     classNumber: classNumberInput.value.trim(),
@@ -762,9 +713,8 @@
             function isProfileComplete(profile = getProfile()) {
                 return Boolean(
                     profile.schoolName &&
-                    /^[A-Z0-9]{4,12}$/.test(profile.schoolCode) &&
                     allowedYears.includes(Number(profile.schoolYear)) &&
-                    ["1", "2", "3", "4", "5", "6"].includes(profile.grade) &&
+                    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"].includes(profile.grade) &&
                     Number(profile.classNumber) >= 1 && Number(profile.classNumber) <= 30 &&
                     profile.teacherName
                 );
@@ -772,14 +722,13 @@
 
             function updateClassSummary(profile) {
                 const school = profile.schoolName;
-                const schoolCode = profile.schoolCode ? `Code ${profile.schoolCode}` : "";
                 const year = profile.schoolYear || "";
                 const gradeAndClass = [
                     profile.grade ? `Grade ${profile.grade}` : "",
                     profile.classNumber ? `Class ${profile.classNumber}` : "",
                 ].filter(Boolean).join(" · ");
                 const teacher = profile.teacherName ? `Teacher ${profile.teacherName}` : "";
-                const summary = [school, schoolCode, year, gradeAndClass, teacher].filter(Boolean);
+                const summary = [school, year, gradeAndClass, teacher].filter(Boolean);
                 classSummary.textContent = summary.join(" · ") || "Enter the class details above.";
             }
 
@@ -789,20 +738,21 @@
                 update();
             }
 
+            function showJoinCode(code, count) {
+                joinCode.textContent = code;
+                joinCodeCount.textContent = `${count} ${count === 1 ? "student" : "students"}`;
+                joinCodePanel.hidden = false;
+            }
+
             function loadClassroom(classroom) {
                 schoolInput.value = classroom.schoolName;
-                schoolCodeInput.value = classroom.schoolCode || "";
                 schoolYearInput.value = String(classroom.academicYear);
                 gradeInput.value = String(classroom.grade);
                 classNumberInput.value = String(classroom.classNumber);
                 teacherInput.value = classroom.teacherName;
                 numbersInput.value = classroom.students.map((student) => student.number).join("\n");
                 namesInput.value = classroom.students.map((student) => student.name).join("\n");
-                savedPasswordNumbers.clear();
-                passwordDrafts.clear();
-                classroom.students.forEach((student) => {
-                    if (student.passwordConfigured) savedPasswordNumbers.add(student.number);
-                });
+                showJoinCode(classroom.joinCode, classroom.students.length);
                 profileStatus.textContent = "Saved on the server";
                 updateClassSummary(getProfile());
             }
@@ -858,20 +808,13 @@
                     return;
                 }
 
-                if (state.invalidPasswords.length > 0) {
-                    setStatus("Each new or changed password must contain exactly 6 digits.", "error");
-                    renderRoster(createRoster(state.numbers, state.names));
-                    return;
-                }
-
                 if (!isProfileComplete()) {
                     setStatus("Complete every class detail before saving.", "error");
                     renderRoster(createRoster(state.numbers, state.names));
                     return;
                 }
 
-                const noun = state.numbers.length === 1 ? "student is" : "students are";
-                setStatus(`${state.numbers.length} ${noun} ready to save.`, "success");
+                setStatus(`${state.numbers.length} students are ready to save.`, "success");
                 renderRoster(createRoster(state.numbers, state.names));
             }
 
@@ -885,11 +828,10 @@
                 saveButton.textContent = "SAVING…";
                 update();
                 try {
-        await api("/api/teacher/class", {
+                    const result = await api("/api/teacher/class", {
                         method: "PUT",
                         body: JSON.stringify({
                             schoolName: profile.schoolName,
-                            schoolCode: profile.schoolCode,
                             academicYear: Number(profile.schoolYear),
                             grade: Number(profile.grade),
                             classNumber: Number(profile.classNumber),
@@ -898,9 +840,7 @@
                         }),
                     });
                     profileStatus.textContent = "Saved on the server";
-                    savedPasswordNumbers.clear();
-                    roster.forEach((student) => savedPasswordNumbers.add(student.number));
-                    passwordDrafts.clear();
+                    showJoinCode(result.joinCode, result.studentCount);
                     setStatus(`${roster.length} students saved.`, "success");
                 } catch (error) {
                     setStatus(error.message, "error");
@@ -933,10 +873,6 @@
             }
 
             [schoolInput, classNumberInput, teacherInput].forEach((input) => input.addEventListener("input", markUnsaved));
-            schoolCodeInput.addEventListener("input", () => {
-                schoolCodeInput.value = schoolCodeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 12);
-                markUnsaved();
-            });
             [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", markUnsaved));
             numbersInput.addEventListener("input", update);
             namesInput.addEventListener("input", update);
