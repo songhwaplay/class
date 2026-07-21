@@ -131,7 +131,7 @@ const app = fs.readFileSync(files.app, "utf8");
 assert.ok(app.includes("config.gameId"), "Shared student app must read the episode game id.");
 assert.ok(app.includes('action: "SUBMIT"'), "Student results must be submitted to the server.");
 assert.ok(app.includes("state.missed.push"), "Wrong answers must be collected for review.");
-assert.ok(app.includes("function runNervousExperiment()"), "The nervous episode must execute learner-built experiments.");
+assert.ok(app.includes("function runInteractiveExperiment()"), "The nervous episode must execute learner-built experiments.");
 assert.ok(app.includes("intensity < scenario.threshold"), "Experiments must respond differently below the detection threshold.");
 assert.ok(app.includes("state.experimentPath.findIndex"), "Experiments must evaluate the learner-built signal route.");
 assert.ok(app.includes('state.experimentPath.join(" → ")'), "An incorrect experiment route must be recorded for review.");

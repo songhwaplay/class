@@ -1,0 +1,351 @@
+:root {
+    --night: #051e25;
+    --night-soft: #123e48;
+    --panel: #fbfffd;
+    --panel-soft: #eaf8f4;
+    --ink: #153a3c;
+    --muted: #5b7473;
+    --line: #b8d9cf;
+    --red: #1f9b8f;
+    --red-deep: #126a65;
+    --coral: #f0b447;
+    --blue: #41c6c5;
+    --cyan: #83e6d1;
+    --cream: #fff0a9;
+    --green: #258b65;
+    --danger: #ad4d62;
+}
+
+body.immune-page {
+    background:
+        radial-gradient(circle at 12% 16%, rgba(45, 174, 151, 0.3), transparent 27rem),
+        radial-gradient(circle at 86% 46%, rgba(216, 159, 50, 0.2), transparent 31rem),
+        linear-gradient(145deg, #03181f, #0b3842 55%, #061f32);
+}
+
+.immune-page .ambient-cells i {
+    border-color: rgba(133, 232, 209, 0.16);
+    border-radius: 44% 56% 51% 49%;
+    box-shadow: inset 0 0 20px rgba(255, 221, 105, 0.07), 0 0 25px rgba(59, 211, 184, 0.12);
+}
+
+.immune-page .hero-copy {
+    width: min(760px, 100%);
+}
+
+.immune-page .hero-art {
+    background-image: url("../../../assets/images/body-explorer/immune-hero.webp");
+    background-position: center;
+}
+
+.immune-page .hero-shade {
+    background:
+        linear-gradient(90deg, rgba(2, 19, 26, 0.98) 0%, rgba(4, 42, 50, 0.82) 47%, rgba(5, 56, 65, 0.06) 79%),
+        linear-gradient(0deg, rgba(3, 24, 31, 0.95), transparent 58%);
+}
+
+.immune-page .hero-copy h1 span,
+.immune-page .hero-lead {
+    color: #e9fff8;
+}
+
+.immune-page .episode-switcher a.active {
+    background: rgba(18, 113, 105, 0.92);
+}
+
+.immune-page .mode-card:hover,
+.immune-page .mode-card:focus-visible {
+    border-color: #ffe58b;
+    background: rgba(8, 78, 78, 0.94);
+}
+
+.immune-page .mode-icon,
+.immune-page .primary-button {
+    background: linear-gradient(145deg, #f4bd4c, #168f83);
+}
+
+.immune-page .immune-mode-icon {
+    color: #fff4b8;
+    box-shadow: inset 0 0 0 8px #178b82, 0 0 0 3px rgba(255, 224, 131, 0.45);
+}
+
+.immune-briefing-art {
+    background:
+        linear-gradient(155deg, rgba(3, 42, 49, 0.1), rgba(2, 35, 47, 0.7)),
+        url("../../../assets/images/body-explorer/immune-hero.webp") center / cover;
+}
+
+.immune-briefing-art img {
+    width: min(67%, 340px);
+}
+
+.immune-page .immune-orb {
+    border-color: rgba(123, 235, 210, 0.82);
+    background: rgba(19, 142, 128, 0.76);
+    box-shadow: 0 0 23px rgba(71, 221, 190, 0.48);
+}
+
+.immune-page .immune-orb.antibody-orb {
+    border-color: rgba(255, 221, 104, 0.82);
+    background: rgba(213, 148, 35, 0.78);
+    box-shadow: 0 0 23px rgba(255, 194, 65, 0.48);
+}
+
+.immune-page .oxygen-meter #oxygenDot {
+    background: #48d1ae;
+    box-shadow: 0 0 15px rgba(72, 209, 174, 0.8);
+}
+
+.immune-page .oxygen-meter[data-state="alert"] #oxygenDot {
+    background: #f09a55;
+    box-shadow: 0 0 15px rgba(240, 154, 85, 0.78);
+}
+
+.immune-page .oxygen-meter[data-state="innate"] #oxygenDot {
+    background: #73d5d2;
+}
+
+.immune-page .oxygen-meter[data-state="antibody"] #oxygenDot {
+    background: #f2c64f;
+    box-shadow: 0 0 15px rgba(242, 198, 79, 0.82);
+}
+
+.immune-page .oxygen-meter[data-state="memory"] #oxygenDot {
+    background: #b598e3;
+    box-shadow: 0 0 15px rgba(181, 152, 227, 0.8);
+}
+
+.immune-page .route-node.passed::before,
+.immune-page .route-node.passed:not(:last-child)::after {
+    border-color: #e1b848;
+    background: #148b7d;
+}
+
+.immune-page .scene-panel[data-scene="barrier"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/immune-barrier.webp");
+    background-position: 52% center;
+}
+
+.immune-page .scene-panel[data-scene="defense"] .scene-image,
+.immune-page .scene-panel[data-scene="antibody"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/immune-defense.webp");
+}
+
+.immune-page .scene-panel[data-scene="defense"] .scene-image {
+    background-position: 38% center;
+}
+
+.immune-page .scene-panel[data-scene="antibody"] .scene-image {
+    background-position: 67% center;
+}
+
+.immune-page .scene-panel[data-scene="memory"] .scene-image,
+.immune-page .scene-panel[data-scene="vaccine"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/immune-hero.webp");
+}
+
+.immune-page .scene-panel[data-scene="memory"] .scene-image {
+    background-position: 74% center;
+}
+
+.immune-page .scene-panel[data-scene="vaccine"] .scene-image {
+    background-position: 86% center;
+}
+
+.immune-page .scene-overlay {
+    background:
+        linear-gradient(90deg, rgba(3, 31, 38, 0.94), rgba(8, 75, 79, 0.15) 60%, rgba(4, 37, 45, 0.48)),
+        linear-gradient(0deg, rgba(3, 30, 38, 0.96), transparent 60%);
+}
+
+.immune-page .immune-explorer,
+.immune-page .signal-explorer {
+    width: clamp(145px, 23vw, 270px);
+    filter: drop-shadow(0 18px 25px rgba(2, 23, 31, 0.7));
+}
+
+.immune-page .question-card,
+.immune-page .simulation-card {
+    border-color: rgba(43, 143, 127, 0.35);
+}
+
+.immune-page .choice-button:hover,
+.immune-page .choice-button:focus-visible {
+    border-color: #269b89;
+}
+
+.immune-page .episode.active {
+    background: #11796f;
+}
+
+.immune-page .episode.available:hover,
+.immune-page .episode.available:focus-visible {
+    background: rgba(13, 89, 87, 0.86);
+}
+
+.immune-page .teacher-hero {
+    background:
+        linear-gradient(90deg, rgba(2, 27, 34, 0.98), rgba(16, 111, 104, 0.7), rgba(212, 160, 50, 0.2)),
+        url("../../../assets/images/body-explorer/immune-hero.webp") center / cover no-repeat;
+}
+
+.immune-page .teacher-hero p:last-child {
+    color: #e8fff6;
+}
+
+.immune-page .teacher-room-card {
+    border-color: #9bcfc2;
+    background: #edf9f5;
+}
+
+.immune-page .teacher-room-card > span,
+.immune-page .teacher-room-card > strong {
+    color: #146c65;
+}
+
+.immune-page .stimulus-console {
+    border-color: #c4e1d8;
+    background: #edf9f5;
+}
+
+.immune-page .stimulus-icon {
+    background: linear-gradient(145deg, #fff0a6, #c8f0e5);
+    box-shadow: inset 0 0 0 1px rgba(20, 108, 101, 0.16);
+}
+
+.immune-page .intensity-control output {
+    background: #147a71;
+}
+
+.immune-page .intensity-control input {
+    accent-color: #168d80;
+    background: linear-gradient(90deg, #168d80 var(--stimulus-level, 50%), #cedfd9 var(--stimulus-level, 50%));
+}
+
+.immune-page .signal-path-step > button {
+    border-color: #5ba99b;
+    background: #e8f7f2;
+    color: #185f59;
+}
+
+.immune-page .signal-path-step > button:hover:not(:disabled),
+.immune-page .signal-path-step > button:focus-visible:not(:disabled) {
+    border-color: #d9a52f;
+    background: #fff5cf;
+}
+
+.immune-page .signal-path-step.is-signal > button {
+    border-color: #b98718;
+    background: #fff0a7;
+}
+
+.immune-page .component-button {
+    border-color: #b7d8cf;
+    color: #235d58;
+}
+
+.immune-page .component-button:hover:not(:disabled),
+.immune-page .component-button:focus-visible:not(:disabled) {
+    border-color: #218f80;
+    background: #eaf8f3;
+}
+
+.immune-page .sim-secondary-button {
+    border-color: #8fbfb4;
+    color: #245e59;
+}
+
+.immune-page .sim-secondary-button:hover:not(:disabled),
+.immune-page .sim-secondary-button:focus-visible:not(:disabled) {
+    background: #e9f7f2;
+}
+
+.immune-page .simulation-feedback {
+    border-color: #bcd9d1;
+    background: #eef8f5;
+    color: #315e5a;
+}
+
+@media (max-width: 800px) {
+    .immune-page .hero-copy {
+        width: min(680px, 100%);
+    }
+}
+
+@media (min-width: 740px) and (max-height: 820px) {
+    .immune-page .journey-screen:not(.hidden) .simulation-card {
+        padding: 11px 16px;
+        overflow: hidden;
+    }
+
+    .immune-page .simulation-heading h2 {
+        margin: 2px 0 7px;
+        font-size: clamp(18px, 1.8vw, 23px);
+        line-height: 1.24;
+    }
+
+    .immune-page .stimulus-console {
+        padding: 7px 10px;
+    }
+
+    .immune-page .stimulus-icon {
+        width: 38px;
+        height: 38px;
+        flex-basis: 38px;
+        font-size: 21px;
+    }
+
+    .immune-page .path-builder {
+        margin-top: 7px;
+    }
+
+    .immune-page .signal-path-step > button,
+    .immune-page .signal-path-step > span {
+        min-height: 42px;
+    }
+
+    .immune-page .component-bank {
+        margin-top: 6px;
+        gap: 4px;
+    }
+
+    .immune-page .component-button {
+        min-height: 28px;
+        padding: 3px 6px;
+        font-size: 10px;
+    }
+
+    .immune-page .simulation-actions {
+        margin-top: 7px;
+    }
+
+    .immune-page .simulation-actions button {
+        min-height: 34px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+    }
+
+    .immune-page .simulation-feedback {
+        min-height: 76px;
+        margin-top: 7px;
+        padding: 8px 11px;
+        overflow: hidden;
+    }
+
+    .immune-page .simulation-feedback p {
+        margin-top: 2px;
+        font-size: 11px;
+    }
+}
+
+@media (max-width: 560px) {
+    .immune-page .hero-art {
+        background-position: 69% center;
+    }
+
+    .immune-page .immune-explorer,
+    .immune-page .signal-explorer {
+        bottom: 148px;
+        width: min(48vw, 194px);
+    }
+}

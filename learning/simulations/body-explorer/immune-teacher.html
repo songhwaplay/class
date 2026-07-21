@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#090d2b">
+    <title>인체 탐험 면역 편 · 교사용 순위판</title>
+    <link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="teacher.css">
+    <link rel="stylesheet" href="nervous.css">
+    <link rel="stylesheet" href="immune.css">
+    <script src="../../../assets/network/game-network.js" defer></script>
+    <script src="../../../assets/network/multiplayer-lobby.js" defer></script>
+    <script src="../../../assets/sound/game-sfx.js" defer></script>
+    <script src="teacher.js" defer></script>
+</head>
+<body class="nervous-page immune-page" data-game-id="immune" data-message-prefix="IMMUNE">
+    <div class="ambient-cells" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="page-shell teacher-shell">
+        <header class="topbar">
+            <div class="teacher-top-links">
+                <a class="back-link" href="immune.html">← 학생 화면</a>
+                <a class="back-link" href="../../../index.html">메인</a>
+            </div>
+            <div class="teacher-brand">HUMAN BODY EXPLORER</div>
+        </header>
+
+        <main>
+            <section class="teacher-hero">
+                <div>
+                    <p class="series-kicker">TEACHER EXPEDITION BOARD</p>
+                    <h1>면역 편</h1>
+                    <p>모든 학생이 같은 10개 방어 관문을 동시에 출발합니다.</p>
+                </div>
+                <img src="../../../assets/images/body-explorer/immune-explorer.png" alt="백혈구 면역 탐험대">
+            </section>
+
+            <section id="missingScreen" class="hidden"></section>
+            <section id="lobbyScreen" class="teacher-panel hidden" aria-labelledby="teacherLobbyTitle">
+                <p class="section-kicker">CLASS EXPEDITION READY</p>
+                <h2 id="teacherLobbyTitle">학생들에게 학급 코드를 알려 주세요</h2>
+                <p class="teacher-guide">학생이 모두 참가하면 ‘전원 출발’을 누르세요. 장벽에서 면역 기억까지 같은 방어 관문이 동시에 열립니다.</p>
+                <span id="savedName" class="hidden">교사</span>
+
+                <div id="hostPane" class="teacher-room-card">
+                    <span>학급 코드</span>
+                    <strong id="roomCode">----</strong>
+                    <button id="copyBtn" class="secondary-button" type="button">코드 복사</button>
+                    <p id="hostStatus" class="lobby-status">탐험대를 만드는 중입니다.</p>
+                </div>
+
+                <div class="teacher-counts">
+                    <div><span>참가 학생</span><strong id="lobbyStudentCount">0명</strong></div>
+                    <div><span>학습 관문</span><strong>10곳</strong></div>
+                    <div><span>순위 기준</span><strong>첫 정답 · 시간</strong></div>
+                </div>
+
+                <div id="lobbyPlayers" class="mp-lobby-players teacher-player-list" aria-label="참가 학생"></div>
+                <p id="lobbyGuide" class="lobby-status">학생 참가를 기다리는 중입니다.</p>
+                <button id="teacherStartButton" class="primary-button teacher-main-button" type="button" disabled>학생 참가 대기</button>
+                <p id="teacherNotice" class="teacher-notice" role="status" aria-live="polite"></p>
+            </section>
+
+            <section id="teacherRacePanel" class="teacher-panel hidden" aria-labelledby="raceTitle">
+                <div class="race-heading">
+                    <div>
+                        <p class="section-kicker">학급 코드 <strong id="raceRoomCode">----</strong></p>
+                        <h2 id="raceTitle">면역 방어 실시간 순위</h2>
+                    </div>
+                    <span id="racePhaseBadge" class="phase-badge">탐험 중</span>
+                </div>
+
+                <div class="teacher-counts">
+                    <div><span>전체 탐험가</span><strong id="raceTotalCount">0명</strong></div>
+                    <div><span>완주</span><strong id="raceFinishedCount">0명</strong></div>
+                    <div><span>탐험 중</span><strong id="racePlayingCount">0명</strong></div>
+                </div>
+
+                <div class="ranking-head" aria-hidden="true"><span>순위</span><span>탐험가</span><span>첫 정답</span><span>완주 시간</span></div>
+                <ol id="teacherRankingList" class="teacher-ranking-list" aria-label="학급 순위"></ol>
+                <p id="emptyRanking" class="empty-ranking">아직 완주한 학생이 없습니다.</p>
+
+                <div class="teacher-actions">
+                    <button id="resetRaceButton" class="secondary-button" type="button">새 탐험 준비</button>
+                </div>
+                <p id="raceNotice" class="teacher-notice" role="status" aria-live="polite"></p>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

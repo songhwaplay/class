@@ -21,7 +21,32 @@
         ? window.BODY_EXPLORER_STAGES
         : Array.isArray(window.CIRCULATION_STAGES) ? window.CIRCULATION_STAGES : [];
     const TOTAL_STAGES = stages.length;
-    const HAS_NERVOUS_SIMULATION = config.experienceType === "nervous-simulation";
+    const HAS_INTERACTIVE_SIMULATION = config.experienceType === "nervous-simulation"
+        || config.experienceType === "immune-simulation";
+    const simulationCopy = {
+        thresholdWord: "감지 기준",
+        slotLabel: "경로",
+        selectedTitle: "경로를 조립하고 있어요",
+        selectedText: "경로가 완성되면 신호를 보내 보세요.",
+        removeTitle: "경로를 다시 연결해 보세요",
+        undoTitle: "마지막 연결을 지웠어요",
+        undoText: "기관을 이동 순서대로 다시 선택하세요.",
+        clearTitle: "경로를 비웠어요",
+        clearText: "자극을 받아들이는 곳부터 다시 연결하세요.",
+        runLabel: "신호 보내기",
+        idleTitle: "먼저 자극 세기와 신호 경로를 조절하세요",
+        idleText: "실행하면 구성한 경로에 따라 몸의 반응이 달라집니다.",
+        incompleteTitle: "신호 경로가 아직 이어지지 않았어요",
+        incompleteText: "빈칸 {count}개를 연결한 뒤 다시 실행하세요.",
+        lowTitle: "자극은 도착했지만 반응이 시작되지 않았어요",
+        lowText: "{message} 자극 세기를 높여 다시 관찰해 보세요.",
+        mismatchTitle: "{index}번째 연결에서 신호가 멈췄어요",
+        successTitle: "신호가 끝까지 전달됐어요!",
+        completeLabel: "실험 완료",
+        nextLabel: "관찰 확인 문제로",
+        reviewLabel: "처음 실행한 경로",
+        ...config.simulationCopy
+    };
 
     const elements = {
         modeScreen: document.getElementById("modeScreen"),
@@ -314,7 +339,7 @@
     }
 
     function isExperimentStage(stage) {
-        return Boolean(HAS_NERVOUS_SIMULATION && stage?.kind === "experiment" && elements.simulationCard);
+        return Boolean(HAS_INTERACTIVE_SIMULATION && stage?.kind === "experiment" && elements.simulationCard);
     }
 
     function hideFact() {
@@ -342,7 +367,7 @@
         if (!isExperimentStage(stage)) return;
         const intensity = Number(elements.stimulusIntensity.value);
         elements.stimulusValue.textContent = String(intensity);
-        elements.stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · 감지 기준 ${stage.scenario.threshold}`;
+        elements.stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · ${simulationCopy.thresholdWord} ${stage.scenario.threshold}`;
         elements.stimulusIntensity.style.setProperty("--stimulus-level", `${intensity}%`);
     }
 
@@ -368,7 +393,7 @@
                 item.append(button);
             } else {
                 const placeholder = document.createElement("span");
-                placeholder.innerHTML = `<b>${index + 1}</b><small>경로</small>`;
+                placeholder.innerHTML = `<b>${index + 1}</b><small>${simulationCopy.slotLabel}</small>`;
                 item.append(placeholder);
             }
             elements.signalPath.append(item);
@@ -398,7 +423,7 @@
         state.experimentPath.push(component);
         renderExperimentPath(stage);
         renderComponentBank(stage);
-        setSimulationFeedback("idle", "경로를 조립하고 있어요", `${state.experimentPath.length}/${stage.scenario.correctPath.length}칸을 연결했습니다. 경로가 완성되면 신호를 보내 보세요.`);
+        setSimulationFeedback("idle", simulationCopy.selectedTitle, `${state.experimentPath.length}/${stage.scenario.correctPath.length}칸을 연결했습니다. ${simulationCopy.selectedText}`);
         window.ClassGameSfx?.play("click");
     }
 
@@ -408,7 +433,7 @@
         state.experimentPath.splice(index);
         renderExperimentPath(stage);
         renderComponentBank(stage);
-        setSimulationFeedback("idle", "경로를 다시 연결해 보세요", `${index + 1}번째 칸부터 비웠습니다.`);
+        setSimulationFeedback("idle", simulationCopy.removeTitle, `${index + 1}번째 칸부터 비웠습니다.`);
     }
 
     function undoExperimentPath() {
@@ -417,7 +442,7 @@
         state.experimentPath.pop();
         renderExperimentPath(stage);
         renderComponentBank(stage);
-        setSimulationFeedback("idle", "마지막 연결을 지웠어요", "기관을 이동 순서대로 다시 선택하세요.");
+        setSimulationFeedback("idle", simulationCopy.undoTitle, simulationCopy.undoText);
     }
 
     function clearExperimentPath() {
@@ -426,7 +451,7 @@
         state.experimentPath = [];
         renderExperimentPath(stage);
         renderComponentBank(stage);
-        setSimulationFeedback("idle", "경로를 비웠어요", "자극을 받아들이는 곳부터 다시 연결하세요.");
+        setSimulationFeedback("idle", simulationCopy.clearTitle, simulationCopy.clearText);
     }
 
     function renderExperimentStage(stage) {
@@ -440,32 +465,33 @@
         elements.undoPathButton.disabled = false;
         elements.clearPathButton.disabled = false;
         elements.runSimulationButton.disabled = false;
-        elements.runSimulationButton.textContent = "신호 보내기";
+        elements.runSimulationButton.textContent = simulationCopy.runLabel;
         state.experimentPath = [];
         state.componentOrder = shuffledChoices(stage.scenario.components);
         updateStimulusReadout();
         renderExperimentPath(stage);
         renderComponentBank(stage);
-        setSimulationFeedback("idle", "먼저 자극 세기와 신호 경로를 조절하세요", "실행하면 구성한 경로에 따라 몸의 반응이 달라집니다.");
+        setSimulationFeedback("idle", simulationCopy.idleTitle, simulationCopy.idleText);
         updateRouteMap();
         elements.stimulusIntensity.focus({ preventScroll: true });
         elements.announcer.textContent = `${stage.location}. ${stage.mission}`;
     }
 
-    function runNervousExperiment() {
+    function runInteractiveExperiment() {
         const stage = stages[state.currentIndex];
         if (!isExperimentStage(stage) || state.stageSolved) return;
         const scenario = stage.scenario;
         const intensity = Number(elements.stimulusIntensity.value);
 
         if (state.experimentPath.length < scenario.correctPath.length) {
-            setSimulationFeedback("correcting", "신호 경로가 아직 이어지지 않았어요", `빈칸 ${scenario.correctPath.length - state.experimentPath.length}개를 연결한 뒤 다시 실행하세요.`);
+            const emptyCount = scenario.correctPath.length - state.experimentPath.length;
+            setSimulationFeedback("correcting", simulationCopy.incompleteTitle, simulationCopy.incompleteText.replace("{count}", String(emptyCount)));
             elements.announcer.textContent = elements.simulationFeedbackText.textContent;
             return;
         }
 
         if (intensity < scenario.threshold) {
-            setSimulationFeedback("observing", "자극은 도착했지만 반응이 시작되지 않았어요", `${scenario.lowMessage} 자극 세기를 높여 다시 관찰해 보세요.`);
+            setSimulationFeedback("observing", simulationCopy.lowTitle, simulationCopy.lowText.replace("{message}", scenario.lowMessage));
             elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent}. ${elements.simulationFeedbackText.textContent}`;
             window.ClassGameSfx?.play("click");
             elements.stimulusIntensity.focus({ preventScroll: true });
@@ -479,7 +505,7 @@
             }
             state.attempts += 1;
             renderExperimentPath(stage, mismatchIndex);
-            setSimulationFeedback("correcting", `${mismatchIndex + 1}번째 연결에서 신호가 멈췄어요`, scenario.hints[mismatchIndex]);
+            setSimulationFeedback("correcting", simulationCopy.mismatchTitle.replace("{index}", String(mismatchIndex + 1)), scenario.hints[mismatchIndex]);
             elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent}. ${elements.simulationFeedbackText.textContent}`;
             window.ClassGameSfx?.play("error");
             elements.signalPath.children[mismatchIndex]?.querySelector("button")?.focus({ preventScroll: true });
@@ -498,9 +524,9 @@
         elements.undoPathButton.disabled = true;
         elements.clearPathButton.disabled = true;
         elements.runSimulationButton.disabled = true;
-        elements.runSimulationButton.textContent = "실험 완료";
-        setSimulationFeedback("success", "신호가 끝까지 전달됐어요!", `${scenario.response} ${stage.explanation}`, true);
-        elements.simulationNextButton.textContent = "관찰 확인 문제로";
+        elements.runSimulationButton.textContent = simulationCopy.completeLabel;
+        setSimulationFeedback("success", simulationCopy.successTitle, `${scenario.response} ${stage.explanation}`, true);
+        elements.simulationNextButton.textContent = simulationCopy.nextLabel;
         elements.scenePanel.classList.add("simulation-reacting");
         setTimeout(() => elements.scenePanel.classList.remove("simulation-reacting"), 900);
         elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent} ${elements.simulationFeedbackText.textContent}`;
@@ -638,7 +664,7 @@
             question.className = "review-question";
             question.textContent = stage.question;
             selected.className = "review-chosen";
-            selected.textContent = stage.kind === "experiment" ? `처음 실행한 경로: ${chosen}` : `처음 선택: ${chosen}`;
+            selected.textContent = stage.kind === "experiment" ? `${simulationCopy.reviewLabel}: ${chosen}` : `처음 선택: ${chosen}`;
             answer.className = "review-answer";
             answer.textContent = `확인한 정답: ${stage.answer}`;
             explanation.className = "review-explanation";
@@ -759,7 +785,7 @@
     elements.stimulusIntensity?.addEventListener("input", updateStimulusReadout);
     elements.undoPathButton?.addEventListener("click", undoExperimentPath);
     elements.clearPathButton?.addEventListener("click", clearExperimentPath);
-    elements.runSimulationButton?.addEventListener("click", runNervousExperiment);
+    elements.runSimulationButton?.addEventListener("click", runInteractiveExperiment);
     elements.simulationNextButton?.addEventListener("click", goToNextStage);
     document.querySelectorAll(".mode-back-button").forEach((button) => button.addEventListener("click", showModeScreen));
     document.addEventListener("keydown", handleKeyboard);

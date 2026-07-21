@@ -9,7 +9,8 @@ const dir = path.join(root, "learning", "simulations", "body-explorer");
 const app = fs.readFileSync(path.join(dir, "app.js"), "utf8");
 const styles = fs.readFileSync(path.join(dir, "styles.css"), "utf8");
 const nervousStyles = fs.readFileSync(path.join(dir, "nervous.css"), "utf8");
-const pages = ["index.html", "digestion.html", "respiration.html", "nervous.html"]
+const immuneStyles = fs.readFileSync(path.join(dir, "immune.css"), "utf8");
+const pages = ["index.html", "digestion.html", "respiration.html", "nervous.html", "immune.html"]
     .map((file) => fs.readFileSync(path.join(dir, file), "utf8"));
 
 assert.ok(app.includes('elements.stageFact.textContent = ""'), "Facts must start empty before a learner answers.");
@@ -17,12 +18,12 @@ assert.ok(app.includes('elements.factCard.setAttribute("aria-hidden", "true")'),
 assert.ok(app.includes('elements.factCard.classList.add("is-revealed")'), "Facts must be revealed after solving.");
 const selectRouteSource = app.slice(app.indexOf("function selectRoute"), app.indexOf("function goToNextStage"));
 assert.ok(selectRouteSource.indexOf("revealFact(stage)") > selectRouteSource.indexOf("if (!isCorrect)"), "Quiz facts must only be revealed in the correct-answer path.");
-const experimentSource = app.slice(app.indexOf("function runNervousExperiment"), app.indexOf("function renderStage"));
+const experimentSource = app.slice(app.indexOf("function runInteractiveExperiment"), app.indexOf("function renderStage"));
 assert.ok(experimentSource.indexOf("revealFact(stage)") > experimentSource.indexOf("mismatchIndex !== -1"), "Experiment facts must only be revealed after a successful run.");
 assert.doesNotMatch(app, /announcer\.textContent = `[^`]*stage\.fact/, "Announcements must not reveal facts before answering.");
 
-for (const html of pages) {
-    assert.ok(html.includes("풀이 뒤 핵심 정리"), "Every episode must label the fact as post-answer learning.");
+for (const [index, html] of pages.entries()) {
+    assert.ok(/(?:풀이|실험) 뒤 핵심 정리/.test(html), `Episode ${index + 1} must label the fact as post-answer learning.`);
 }
 
 assert.ok(styles.includes("@media (min-width: 740px)"), "Tablet and larger viewports need the one-screen layout.");
@@ -35,5 +36,6 @@ assert.match(styles, /\.fact-card \{[\s\S]*?visibility:\s*hidden/, "Facts must b
 assert.match(styles, /\.fact-card\.is-revealed \{[\s\S]*?visibility:\s*visible/, "Facts must become visible after solving.");
 assert.match(nervousStyles, /@media \(min-width: 740px\)[\s\S]*?\.simulation-card[\s\S]*?grid-row:\s*3/, "The nervous simulator must occupy the stable question-panel slot.");
 assert.match(nervousStyles, /\.simulation-feedback \{[\s\S]*?min-height:\s*93px/, "Simulation feedback must reserve space before and after execution.");
+assert.ok(immuneStyles.includes(".immune-page .simulation-card"), "The immune simulator must inherit the stable simulation panel layout.");
 
 console.log("body-explorer-viewport-contract: answer privacy and stable quiz/simulation viewport layout ok");

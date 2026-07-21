@@ -3,18 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="theme-color" content="#170b20">
-    <title>인체 탐험 · 혈액순환 편</title>
-    <meta name="description" content="적혈구가 되어 온몸, 심장, 폐를 한 바퀴 돌며 혈액순환을 배우는 교실용 학습 시뮬레이션">
+    <meta name="theme-color" content="#090d2b">
+    <title>인체 탐험 · 면역 편</title>
+    <meta name="description" content="피부와 점막의 장벽부터 백혈구, 항체, 기억 세포와 백신까지 몸의 방어 과정을 직접 조절하는 교실용 학습 시뮬레이션">
     <link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nervous.css">
+    <link rel="stylesheet" href="immune.css">
     <script src="../../../assets/network/game-network.js" defer></script>
     <script src="../../../assets/network/multiplayer-lobby.js" defer></script>
     <script src="../../../assets/sound/game-sfx.js" defer></script>
-    <script src="journey-data.js" defer></script>
+    <script src="immune-data.js" defer></script>
     <script src="app.js" defer></script>
 </head>
-<body>
+<body class="nervous-page immune-page">
     <div class="ambient-cells" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="page-shell">
         <header class="topbar">
@@ -27,57 +29,57 @@
 
         <main>
             <section id="modeScreen" class="screen hero-screen" aria-labelledby="mainTitle">
-                <div class="hero-art" role="img" aria-label="혈관 속을 흐르는 적혈구와 심장으로 이어지는 길"></div>
+                <div class="hero-art" role="img" aria-label="피부 장벽을 통과한 병원체에 백혈구와 항체가 대응하는 모습"></div>
                 <div class="hero-shade"></div>
                 <div class="hero-copy">
-                    <p class="series-kicker">HUMAN BODY EXPLORER · EPISODE 01</p>
-                    <h1 id="mainTitle"><span>인체 탐험</span>혈액순환 편</h1>
-                    <p id="playerGreeting" class="hero-lead">적혈구가 되어 심장과 폐, 온몸을 직접 한 바퀴 돌아보세요.</p>
+                    <p class="series-kicker">HUMAN BODY EXPLORER · EPISODE 05</p>
+                    <h1 id="mainTitle"><span>인체 탐험</span>면역 편</h1>
+                    <p id="playerGreeting" class="hero-lead">면역 탐험대와 함께 병원체의 침입부터 항체와 기억 세포의 맞춤 방어까지 직접 실험해 보세요.</p>
                     <nav class="episode-switcher" aria-label="인체 탐험 편 선택">
-                        <a class="active" href="index.html" aria-current="page"><b>01</b><span>혈액순환<small>적혈구의 한 바퀴</small></span></a>
+                        <a href="index.html"><b>01</b><span>혈액순환<small>온몸을 도는 피</small></span></a>
                         <a href="digestion.html"><b>02</b><span>소화<small>음식의 긴 여행</small></span></a>
                         <a href="respiration.html"><b>03</b><span>호흡<small>공기와 기체교환</small></span></a>
                         <a href="nervous.html"><b>04</b><span>신경<small>자극과 몸의 반응</small></span></a>
-                        <a href="immune.html"><b>05</b><span>면역<small>몸의 방어 작전</small></span></a>
+                        <a class="active" href="immune.html" aria-current="page"><b>05</b><span>면역<small>몸의 방어 작전</small></span></a>
                     </nav>
                     <div class="hero-facts" aria-label="학습 내용">
                         <span><b>10</b>개 관문</span>
-                        <span><b>2</b>가지 순환</span>
-                        <span><b>1</b>바퀴 완주</span>
+                        <span><b>4</b>가지 방어</span>
+                        <span><b>5</b>가지 조작 실험</span>
                     </div>
                     <div class="mode-grid">
                         <button id="personalModeButton" class="mode-card" type="button">
-                            <span class="mode-icon" aria-hidden="true">●</span>
+                            <span class="mode-icon immune-mode-icon" aria-hidden="true">🛡️</span>
                             <span><strong>개인 탐험</strong><small>내 속도로 배우고 오답노트 확인</small></span>
                             <b>PERSONAL</b>
                         </button>
                         <button id="classModeButton" class="mode-card" type="button">
-                            <span class="mode-icon class-icon" aria-hidden="true">●●</span>
+                            <span class="mode-icon class-icon" aria-hidden="true">🏫</span>
                             <span><strong>학급 순위 탐험</strong><small>같이 출발해 정확도와 시간으로 순위 결정</small></span>
                             <b>CLASS</b>
                         </button>
                     </div>
-                    <a class="teacher-link" href="teacher.html">교사용 학급 만들기·실시간 순위판 →</a>
+                    <a class="teacher-link" href="immune-teacher.html">교사용 학급 만들기·실시간 순위판 →</a>
                 </div>
             </section>
 
             <section id="personalScreen" class="screen briefing-screen hidden" aria-labelledby="briefingTitle">
-                <div class="briefing-art">
-                    <img src="../../../assets/images/body-explorer/red-cell-explorer.png" alt="탐험 장비를 갖춘 적혈구 캐릭터">
-                    <span class="oxygen-orb orb-one" aria-hidden="true">O₂</span>
-                    <span class="oxygen-orb orb-two" aria-hidden="true">CO₂</span>
+                <div class="briefing-art immune-briefing-art">
+                    <img src="../../../assets/images/body-explorer/immune-explorer.png" alt="백혈구 면역 탐험대 캐릭터">
+                    <span class="oxygen-orb immune-orb orb-one" aria-hidden="true">장벽</span>
+                    <span class="oxygen-orb immune-orb antibody-orb orb-two" aria-hidden="true">항체</span>
                 </div>
                 <div class="briefing-copy">
                     <p class="section-kicker">MISSION BRIEFING</p>
-                    <h2 id="briefingTitle">혈액순환 한 바퀴를 완주하라</h2>
-                    <p>각 장소의 핵심 지식을 읽고 다음 경로를 선택하세요. 틀린 길은 막히며, 원리를 확인한 뒤 다시 선택해야 이동할 수 있습니다.</p>
-                    <ol class="route-preview" aria-label="주요 순환 경로">
-                        <li><span>1</span>온몸에서 심장 오른쪽으로</li>
-                        <li><span>2</span>폐에서 산소 교환</li>
-                        <li><span>3</span>심장 왼쪽에서 온몸으로</li>
+                    <h2 id="briefingTitle">몸의 다섯 방어 작전을 완수하라</h2>
+                    <p>병원체가 몸에 닿는 순간부터 장벽의 차단, 백혈구의 빠른 방어, 항체의 맞춤 방어와 면역 기억까지 이어지는 과정을 조절하세요.</p>
+                    <ol class="route-preview" aria-label="주요 면역 방어">
+                        <li><span>1</span>피부와 점막이 침입을 먼저 막아요</li>
+                        <li><span>2</span>백혈구와 항체가 들어온 병원체를 처리해요</li>
+                        <li><span>3</span>기억 세포가 다음 침입을 더 빨리 막아요</li>
                     </ol>
-                    <div class="science-note"><strong>중요!</strong> 산소가 적은 혈액도 실제로는 파란색이 아니라 짙은 붉은색입니다.</div>
-                    <button id="personalStartButton" class="primary-button" type="button">탐험 시작</button>
+                    <div class="science-note"><strong>핵심!</strong> 면역계는 무조건 공격하는 것이 아니라 장벽·빠른 기본 방어·병원체에 맞춘 방어가 서로 이어져 작동합니다.</div>
+                    <button id="personalStartButton" class="primary-button" type="button">면역 탐험 시작</button>
                     <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
                 </div>
             </section>
@@ -92,7 +94,7 @@
 
             <section id="lobbyScreen" class="screen compact-screen class-lobby hidden" aria-labelledby="classLobbyTitle">
                 <p class="section-kicker">CLASS EXPEDITION</p>
-                <h2 id="classLobbyTitle">학급 코드로 탐험대에 참가하세요</h2>
+                <h2 id="classLobbyTitle">학급 코드로 면역 탐험에 참가하세요</h2>
                 <p><strong id="savedName"></strong> 탐험가로 참가합니다. 교사가 알려 준 숫자 4자리를 입력하세요.</p>
                 <div id="joinPane" class="join-pane">
                     <label for="joinCode">학급 코드</label>
@@ -111,34 +113,71 @@
                 <button id="leaveClassButton" class="text-button" type="button">← 탐험대에서 나가기</button>
             </section>
 
-            <section id="journeyScreen" class="journey-screen hidden" aria-labelledby="stageQuestion">
+            <section id="journeyScreen" class="journey-screen hidden" aria-label="면역 방어 조작 실험과 확인 문제">
                 <div class="journey-status">
                     <div><span id="journeyModeLabel">개인 탐험</span><strong><span id="stageNumber">1</span>/10 관문</strong></div>
-                    <div class="oxygen-meter"><span id="oxygenDot"></span><b id="oxygenLabel">산소 적음</b></div>
+                    <div class="oxygen-meter"><span id="oxygenDot"></span><b id="oxygenLabel">1차 방어 실험</b></div>
                     <div class="score-meter"><span>첫 도전 정답</span><b><span id="currentScore">0</span>/10</b></div>
                 </div>
 
-                <div class="route-strip" aria-label="혈액순환 이동 경로">
+                <div class="route-strip" aria-label="면역 방어 실험 경로">
                     <ol id="routeMap" class="route-map"></ol>
                 </div>
 
-                <article id="scenePanel" class="scene-panel" data-scene="body">
+                <article id="scenePanel" class="scene-panel" data-scene="sense">
                     <div class="scene-image" aria-hidden="true"></div>
                     <div class="scene-overlay" aria-hidden="true"></div>
-                    <img id="cellExplorer" class="cell-explorer" src="../../../assets/images/body-explorer/red-cell-explorer.png" alt="혈관을 이동하는 적혈구 탐험가">
+                    <img id="cellExplorer" class="cell-explorer signal-explorer immune-explorer" src="../../../assets/images/body-explorer/immune-explorer.png" alt="방어 현장을 이동하는 백혈구 탐험대">
                     <div class="location-card">
-                        <p id="chapterLabel" class="chapter-label">온몸 → 심장</p>
-                        <h2 id="stageLocation">온몸의 모세혈관</h2>
+                        <p id="chapterLabel" class="chapter-label">자극 발견</p>
+                        <h2 id="stageLocation">손끝의 피부</h2>
                         <p id="stageMission" class="stage-mission"></p>
                     </div>
                     <div class="fact-card">
-                        <span>풀이 뒤 핵심 정리</span>
+                        <span>실험 뒤 핵심 정리</span>
                         <p id="stageFact"></p>
                     </div>
                 </article>
 
+                <article id="simulationCard" class="simulation-card hidden" aria-labelledby="simulationTitle">
+                    <div class="simulation-heading">
+                        <p class="question-kicker">직접 조작 실험</p>
+                        <h2 id="simulationTitle">방어 조건과 과정을 조절하세요</h2>
+                    </div>
+
+                    <div class="stimulus-console">
+                        <div class="stimulus-identity">
+                            <span id="stimulusIcon" class="stimulus-icon" aria-hidden="true">☀️</span>
+                            <span><small>현재 상황</small><strong id="stimulusName">공기 속 병원체</strong></span>
+                        </div>
+                        <label class="intensity-control" for="stimulusIntensity">
+                            <span><b>방어 조건</b><output id="stimulusValue" for="stimulusIntensity">50</output></span>
+                            <input id="stimulusIntensity" type="range" min="0" max="100" value="50">
+                            <small id="stimulusThreshold">작동 기준을 넘겨 보세요</small>
+                        </label>
+                    </div>
+
+                    <div class="path-builder">
+                        <div class="path-heading"><strong>방어 과정</strong><span>아래 단계를 일어나는 순서대로 누르세요</span></div>
+                        <ol id="signalPath" class="signal-path" aria-label="조립한 면역 방어 과정"></ol>
+                        <div id="componentBank" class="component-bank" aria-label="사용할 면역 방어 단계"></div>
+                    </div>
+
+                    <div class="simulation-actions">
+                        <button id="undoPathButton" class="sim-secondary-button" type="button">하나 지우기</button>
+                        <button id="clearPathButton" class="sim-secondary-button" type="button">과정 초기화</button>
+                        <button id="runSimulationButton" class="primary-button" type="button">방어 실행</button>
+                    </div>
+
+                    <div id="simulationFeedback" class="simulation-feedback" data-state="idle" aria-live="polite">
+                        <strong id="simulationFeedbackTitle">방어 조건과 과정을 조절하세요</strong>
+                        <p id="simulationFeedbackText">실행하면 준비 정도와 구성한 순서에 따라 방어 결과가 달라집니다.</p>
+                        <button id="simulationNextButton" class="primary-button hidden" type="button">관찰 확인 문제로</button>
+                    </div>
+                </article>
+
                 <article class="question-card">
-                    <p class="question-kicker">다음 경로를 선택하세요</p>
+                    <p class="question-kicker">관찰 뒤 확인 문제</p>
                     <h2 id="stageQuestion"></h2>
                     <div id="choiceList" class="choice-list"></div>
                     <div id="feedback" class="feedback hidden" aria-live="polite">
@@ -150,22 +189,22 @@
             </section>
 
             <section id="resultScreen" class="screen result-screen hidden" aria-labelledby="resultTitle">
-                <p class="section-kicker">CIRCULATION COMPLETE</p>
-                <h2 id="resultTitle">혈액순환 한 바퀴 완주!</h2>
+                <p class="section-kicker">IMMUNE DEFENSE COMPLETE</p>
+                <h2 id="resultTitle">몸의 방어 작전 완수!</h2>
                 <div class="result-hero">
-                    <img src="../../../assets/images/body-explorer/red-cell-explorer.png" alt="완주한 적혈구 탐험가">
+                    <img src="../../../assets/images/body-explorer/immune-explorer.png" alt="완주한 백혈구 면역 탐험대">
                     <div class="score-orbit"><strong id="finalScore">0</strong><span>/10</span></div>
                 </div>
                 <p id="resultMessage" class="result-message"></p>
                 <p id="bestMessage" class="best-message"></p>
 
-                <div class="circulation-summary">
-                    <div><span>폐순환</span><strong>우심실 → 폐 → 좌심방</strong><small>폐에서 산소를 얻는 길</small></div>
-                    <div><span>온몸순환</span><strong>좌심실 → 온몸 → 우심방</strong><small>온몸에 산소를 전달하는 길</small></div>
+                <div class="circulation-summary nervous-summary immune-summary">
+                    <div><span>빠른 기본 방어</span><strong>피부·점막 → 경보 → 백혈구</strong><small>침입을 먼저 막고 들어온 병원체를 빠르게 처리하는 방어</small></div>
+                    <div><span>맞춤·기억 방어</span><strong>병원체 특징 → 항체 → 기억 세포</strong><small>특정 병원체에 맞춰 반응하고 다음 침입에 대비하는 방어</small></div>
                 </div>
 
                 <div id="classRankArea" class="class-rank-area hidden">
-                    <div id="myRankCard" class="my-rank-card">순위를 집계하고 있어요.</div>
+                    <div id="myRankCard" class="my-rank-card">순위를 집계하고 있어요</div>
                     <h3>학급 실시간 순위</h3>
                     <ol id="classRankingList" class="ranking-list"></ol>
                     <p id="rankingWaiting" class="ranking-waiting"></p>
@@ -178,7 +217,7 @@
                 </div>
 
                 <div class="result-actions">
-                    <button id="restartButton" class="primary-button" type="button">다시 한 바퀴</button>
+                    <button id="restartButton" class="primary-button" type="button">다시 탐험하기</button>
                     <button id="resultModeButton" class="secondary-button" type="button">방식 다시 선택</button>
                     <a class="secondary-button link-button" href="../../../index.html">메인으로</a>
                 </div>
@@ -187,19 +226,19 @@
             <section class="episode-shelf" aria-labelledby="seriesTitle">
                 <div><p class="section-kicker">HUMAN BODY EXPLORER</p><h2 id="seriesTitle">인체 탐험 시리즈</h2></div>
                 <div class="episode-list">
-                    <a class="episode active" href="index.html" aria-current="page"><b>01</b>혈액순환<small>탐험 가능</small></a>
+                    <a class="episode available" href="index.html"><b>01</b>혈액순환<small>탐험 가능</small></a>
                     <a class="episode available" href="digestion.html"><b>02</b>소화<small>탐험 가능</small></a>
                     <a class="episode available" href="respiration.html"><b>03</b>호흡<small>탐험 가능</small></a>
                     <a class="episode available" href="nervous.html"><b>04</b>신경<small>탐험 가능</small></a>
-                    <a class="episode available" href="immune.html"><b>05</b>면역<small>탐험 가능</small></a>
+                    <a class="episode active" href="immune.html" aria-current="page"><b>05</b>면역<small>탐험 가능</small></a>
                 </div>
             </section>
         </main>
 
         <footer>
-            학습 내용은
-            <a href="https://www.nhlbi.nih.gov/health/heart/blood-flow" target="_blank" rel="noopener noreferrer">미국 국립 심폐혈액연구소의 혈류 설명</a>과
-            <a href="https://openstax.org/books/anatomy-and-physiology-2e/pages/20-5-circulatory-pathways" target="_blank" rel="noopener noreferrer">OpenStax 순환 경로 자료</a>를 바탕으로 구성했습니다.
+            초등 과학의 감염병 예방과 우리 몸의 방어 범위에서 구성했으며,
+            <a href="https://nigms.nih.gov/biobeat/2023/12/what-is-the-immune-system" target="_blank" rel="noopener noreferrer">미국 국립일반의학연구소의 면역계 설명</a>과
+            <a href="https://www.cdc.gov/vaccines/basics/explaining-how-vaccines-work.html" target="_blank" rel="noopener noreferrer">미국 질병통제예방센터의 백신 설명</a>을 참고했습니다.
         </footer>
     </div>
     <p id="announcer" class="visually-hidden" aria-live="assertive"></p>
