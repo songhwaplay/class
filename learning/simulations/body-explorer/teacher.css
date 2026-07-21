@@ -1,0 +1,307 @@
+.teacher-shell {
+    width: min(1100px, calc(100% - 32px));
+}
+
+.teacher-top-links {
+    display: flex;
+    gap: 8px;
+}
+
+.teacher-brand {
+    color: #e7c4d0;
+    font-family: Georgia, serif;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.14em;
+}
+
+.teacher-hero {
+    position: relative;
+    display: flex;
+    min-height: 220px;
+    align-items: center;
+    justify-content: space-between;
+    overflow: hidden;
+    margin-bottom: 14px;
+    padding: 30px clamp(24px, 6vw, 58px);
+    border: 1px solid rgba(255, 225, 202, 0.28);
+    border-radius: 24px;
+    background:
+        linear-gradient(90deg, rgba(24, 5, 25, 0.94), rgba(80, 12, 42, 0.66), rgba(13, 22, 51, 0.38)),
+        url("../../../assets/images/body-explorer/circulation-hero.webp") center / cover no-repeat;
+    color: white;
+    box-shadow: var(--shadow);
+}
+
+.teacher-hero h1 {
+    margin: 8px 0;
+    font-family: Georgia, "Nanum Myeongjo", serif;
+    font-size: clamp(38px, 7vw, 64px);
+    letter-spacing: -0.05em;
+}
+
+.teacher-hero p:last-child {
+    margin: 0;
+    color: #f3d9df;
+    font-weight: 800;
+}
+
+.teacher-hero img {
+    width: 190px;
+    margin-bottom: -65px;
+    filter: drop-shadow(0 16px 18px rgba(0, 0, 0, 0.46));
+}
+
+.teacher-panel {
+    padding: clamp(28px, 5vw, 48px);
+    border: 1px solid rgba(255, 225, 202, 0.26);
+    border-radius: 24px;
+    background: var(--panel);
+    box-shadow: var(--shadow);
+    text-align: center;
+}
+
+.teacher-panel h2 {
+    margin: 8px 0;
+    font-family: Georgia, "Nanum Myeongjo", serif;
+    font-size: clamp(28px, 5vw, 40px);
+}
+
+.teacher-guide {
+    max-width: 720px;
+    margin: 10px auto 24px;
+    color: var(--muted);
+    line-height: 1.7;
+}
+
+.teacher-room-card {
+    display: grid;
+    max-width: 600px;
+    margin: 0 auto 22px;
+    grid-template-columns: auto 1fr auto;
+    gap: 14px;
+    align-items: center;
+    padding: 18px 20px;
+    border: 2px solid #be8090;
+    border-radius: 17px;
+    background: #fff0eb;
+}
+
+.teacher-room-card > span {
+    color: #744557;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.teacher-room-card > strong {
+    color: #42192d;
+    font-family: Georgia, serif;
+    font-size: 40px;
+    letter-spacing: 0.14em;
+}
+
+.teacher-room-card .lobby-status {
+    grid-column: 1 / -1;
+    margin: 0;
+}
+
+.teacher-counts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 22px 0;
+}
+
+.teacher-counts > div {
+    display: grid;
+    gap: 7px;
+    padding: 17px 12px;
+    border: 1px solid #d7bbc1;
+    border-radius: 14px;
+    background: white;
+}
+
+.teacher-counts span {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.teacher-counts strong {
+    font-size: 18px;
+}
+
+.teacher-player-list .mp-lobby-player.me {
+    display: none;
+}
+
+.teacher-main-button {
+    min-width: 230px;
+    margin-top: 16px;
+}
+
+.teacher-notice {
+    min-height: 22px;
+    margin: 14px 0 0;
+    color: #972f40;
+    font-weight: 900;
+}
+
+.race-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    text-align: left;
+}
+
+.phase-badge {
+    flex: 0 0 auto;
+    padding: 8px 13px;
+    border-radius: 999px;
+    background: #e3f2e8;
+    color: #216647;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.phase-badge.ended {
+    background: #f9e3d8;
+    color: #8a3543;
+}
+
+.ranking-head,
+.teacher-rank-row {
+    display: grid;
+    grid-template-columns: 70px minmax(0, 1fr) 110px 120px;
+    gap: 12px;
+    align-items: center;
+}
+
+.ranking-head {
+    padding: 0 16px 8px;
+    color: var(--muted);
+    font-size: 11px;
+    font-weight: 900;
+    text-align: left;
+}
+
+.ranking-head span:nth-child(n+3) {
+    text-align: right;
+}
+
+.teacher-ranking-list {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.teacher-rank-row {
+    min-height: 60px;
+    padding: 10px 16px;
+    border: 1px solid #dcc3c7;
+    border-radius: 13px;
+    background: white;
+    text-align: left;
+}
+
+.teacher-rank-row:first-child {
+    border-color: #bd6b7b;
+    background: #fff0ec;
+}
+
+.teacher-rank-row.is-playing {
+    border-style: dashed;
+    background: #f4eff0;
+    color: #7c6b72;
+}
+
+.teacher-rank-number {
+    color: var(--red);
+    font-family: Georgia, serif;
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.teacher-rank-name {
+    min-width: 0;
+    overflow: hidden;
+    font-size: 17px;
+    font-weight: 900;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.teacher-rank-score,
+.teacher-rank-time {
+    font-weight: 900;
+    text-align: right;
+}
+
+.teacher-rank-time {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.empty-ranking {
+    margin: 20px 0;
+    padding: 24px;
+    border: 1px dashed #c99fa8;
+    border-radius: 14px;
+    color: var(--muted);
+}
+
+.teacher-actions {
+    display: flex;
+    justify-content: center;
+    margin-top: 26px;
+}
+
+@media (max-width: 680px) {
+    .teacher-shell {
+        width: min(100% - 18px, 1100px);
+    }
+
+    .teacher-brand {
+        display: none;
+    }
+
+    .teacher-hero {
+        min-height: 190px;
+        padding: 24px 20px;
+    }
+
+    .teacher-hero img {
+        width: 130px;
+        margin-right: -36px;
+    }
+
+    .teacher-room-card,
+    .teacher-counts {
+        grid-template-columns: 1fr;
+    }
+
+    .teacher-room-card .lobby-status {
+        grid-column: auto;
+    }
+
+    .race-heading {
+        flex-direction: column;
+    }
+
+    .ranking-head {
+        display: none;
+    }
+
+    .teacher-rank-row {
+        grid-template-columns: 48px minmax(0, 1fr) auto;
+    }
+
+    .teacher-rank-time {
+        grid-column: 2 / -1;
+        text-align: left;
+    }
+}

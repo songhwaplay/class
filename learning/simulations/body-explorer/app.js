@@ -1,0 +1,525 @@
+(() => {
+    "use strict";
+
+    const config = {
+        gameId: "circulation",
+        messagePrefix: "CIRCULATION",
+        bestScoreKey: "circulationBestScore",
+        namedGreeting: "{name} 탐험가, 인체 탐험을 출발해 볼까요?",
+        guestGreeting: "우리 몸속을 직접 여행하며 배워 보세요.",
+        resetAnnouncement: "새 인체 탐험을 기다립니다.",
+        stateLabels: {},
+        resultMessages: {},
+        ...window.BODY_EXPLORER_CONFIG
+    };
+    const GAME_ID = config.gameId;
+    const MESSAGE_PREFIX = config.messagePrefix;
+    const PLAYER_NAME_KEY = "classPlayerName";
+    const BEST_SCORE_KEY = config.bestScoreKey;
+    const stages = Array.isArray(window.BODY_EXPLORER_STAGES)
+        ? window.BODY_EXPLORER_STAGES
+        : Array.isArray(window.CIRCULATION_STAGES) ? window.CIRCULATION_STAGES : [];
+    const TOTAL_STAGES = stages.length;
+
+    const elements = {
+        modeScreen: document.getElementById("modeScreen"),
+        personalScreen: document.getElementById("personalScreen"),
+        missingScreen: document.getElementById("missingScreen"),
+        lobbyScreen: document.getElementById("lobbyScreen"),
+        journeyScreen: document.getElementById("journeyScreen"),
+        resultScreen: document.getElementById("resultScreen"),
+        personalModeButton: document.getElementById("personalModeButton"),
+        classModeButton: document.getElementById("classModeButton"),
+        personalStartButton: document.getElementById("personalStartButton"),
+        restartButton: document.getElementById("restartButton"),
+        resultModeButton: document.getElementById("resultModeButton"),
+        playerGreeting: document.getElementById("playerGreeting"),
+        headerBestScore: document.getElementById("headerBestScore"),
+        savedName: document.getElementById("savedName"),
+        joinPane: document.getElementById("joinPane"),
+        classWaitingPanel: document.getElementById("classWaitingPanel"),
+        studentRoomCode: document.getElementById("studentRoomCode"),
+        joinStatus: document.getElementById("joinStatus"),
+        lobbyGuide: document.getElementById("lobbyGuide"),
+        journeyModeLabel: document.getElementById("journeyModeLabel"),
+        stageNumber: document.getElementById("stageNumber"),
+        currentScore: document.getElementById("currentScore"),
+        oxygenMeter: document.querySelector(".oxygen-meter"),
+        oxygenLabel: document.getElementById("oxygenLabel"),
+        routeMap: document.getElementById("routeMap"),
+        scenePanel: document.getElementById("scenePanel"),
+        cellExplorer: document.getElementById("cellExplorer"),
+        chapterLabel: document.getElementById("chapterLabel"),
+        stageLocation: document.getElementById("stageLocation"),
+        stageMission: document.getElementById("stageMission"),
+        stageFact: document.getElementById("stageFact"),
+        stageQuestion: document.getElementById("stageQuestion"),
+        choiceList: document.getElementById("choiceList"),
+        feedback: document.getElementById("feedback"),
+        feedbackTitle: document.getElementById("feedbackTitle"),
+        feedbackText: document.getElementById("feedbackText"),
+        nextStageButton: document.getElementById("nextStageButton"),
+        finalScore: document.getElementById("finalScore"),
+        resultMessage: document.getElementById("resultMessage"),
+        bestMessage: document.getElementById("bestMessage"),
+        classRankArea: document.getElementById("classRankArea"),
+        myRankCard: document.getElementById("myRankCard"),
+        classRankingList: document.getElementById("classRankingList"),
+        rankingWaiting: document.getElementById("rankingWaiting"),
+        perfectReview: document.getElementById("perfectReview"),
+        missedList: document.getElementById("missedList"),
+        announcer: document.getElementById("announcer")
+    };
+
+    const screens = [
+        elements.modeScreen,
+        elements.personalScreen,
+        elements.missingScreen,
+        elements.lobbyScreen,
+        elements.journeyScreen,
+        elements.resultScreen
+    ];
+
+    const state = {
+        mode: "",
+        currentIndex: 0,
+        score: 0,
+        attempts: 0,
+        stageSolved: false,
+        missed: [],
+        startedAt: 0,
+        classSessionId: "",
+        classResultSubmitted: false,
+        classState: null
+    };
+
+    let lobby = null;
+
+    function readStored(key) {
+        try {
+            return localStorage.getItem(key) || "";
+        } catch (_) {
+            return "";
+        }
+    }
+
+    function writeStored(key, value) {
+        try {
+            localStorage.setItem(key, String(value));
+        } catch (_) {
+            // Local records are optional; the journey still works without storage.
+        }
+    }
+
+    function getPlayerName() {
+        return readStored(PLAYER_NAME_KEY).trim();
+    }
+
+    function hasValidPlayerName() {
+        return /^[가-힣]{2,6}$/.test(getPlayerName());
+    }
+
+    function getBestScore() {
+        const value = Number.parseInt(readStored(BEST_SCORE_KEY), 10);
+        return Number.isInteger(value) ? Math.max(0, Math.min(TOTAL_STAGES, value)) : 0;
+    }
+
+    function setScreen(activeScreen) {
+        screens.forEach((screen) => screen?.classList.toggle("hidden", screen !== activeScreen));
+        document.body.classList.toggle("journey-active", activeScreen === elements.journeyScreen);
+    }
+
+    function setGreeting() {
+        const name = getPlayerName();
+        elements.playerGreeting.textContent = name
+            ? config.namedGreeting.replace("{name}", name)
+            : config.guestGreeting;
+        elements.savedName.textContent = name;
+    }
+
+    function updateBestScore() {
+        elements.headerBestScore.textContent = `${getBestScore()}/${TOTAL_STAGES}`;
+    }
+
+    function showModeScreen() {
+        const activeLobby = lobby;
+        lobby = null;
+        activeLobby?.destroy();
+        state.mode = "";
+        state.classSessionId = "";
+        state.classState = null;
+        setScreen(elements.modeScreen);
+        elements.personalModeButton.focus({ preventScroll: true });
+    }
+
+    function selectPersonalMode() {
+        state.mode = "personal";
+        setScreen(elements.personalScreen);
+        elements.personalStartButton.focus({ preventScroll: true });
+    }
+
+    function selectClassMode() {
+        state.mode = "class";
+        if (!hasValidPlayerName()) {
+            setScreen(elements.missingScreen);
+            return;
+        }
+        setScreen(elements.lobbyScreen);
+        initializeClassLobby();
+    }
+
+    function initializeClassLobby() {
+        if (lobby) return;
+        if (!window.ClassroomMultiplayerLobby || !window.ClassroomNetwork) {
+            elements.joinStatus.textContent = "학급 서버를 불러오지 못했습니다. 잠시 후 다시 시도하세요.";
+            return;
+        }
+
+        lobby = window.ClassroomMultiplayerLobby.create({
+            gameId: GAME_ID,
+            getPlayerName,
+            initialMode: "guest",
+            minPlayers: 2,
+            maxPlayers: 61,
+            ids: { startButton: "studentStartButtonUnused" },
+            leaveButtonIds: ["leaveClassButton"],
+            onLeave: showModeScreen,
+            onStateChange: syncClassLobby,
+            onServerMessage: handleClassServerMessage,
+            onAbort: ({ message }) => {
+                elements.joinStatus.textContent = message || "학급 연결이 종료되었습니다.";
+                elements.announcer.textContent = elements.joinStatus.textContent;
+                setScreen(elements.lobbyScreen);
+            },
+            getLobbyPresentation: ({ count }) => ({
+                canStart: false,
+                startText: "교사 출발 대기",
+                guideText: `현재 ${Math.max(1, count)}명 접속 · 교사가 출발시키면 동시에 첫 관문이 열립니다.`
+            })
+        }).mount();
+    }
+
+    function syncClassLobby(snapshot) {
+        if (!snapshot) return;
+        const connected = Boolean(snapshot.connected && snapshot.roomCode);
+        elements.joinPane.classList.toggle("hidden", connected);
+        elements.classWaitingPanel.classList.toggle("hidden", !connected);
+        if (connected) {
+            elements.studentRoomCode.textContent = snapshot.roomCode;
+            elements.lobbyGuide.textContent = `현재 ${Object.keys(snapshot.players || {}).length}명 접속 · 교사의 출발 신호를 기다리세요.`;
+        }
+    }
+
+    function handleClassServerMessage(message, snapshot) {
+        if (message.type === `${MESSAGE_PREFIX}_ERROR`) {
+            elements.joinStatus.textContent = message.message || "학급 탐험 요청을 처리하지 못했습니다.";
+            elements.announcer.textContent = elements.joinStatus.textContent;
+            return;
+        }
+        if (message.type !== `${MESSAGE_PREFIX}_STATE` || !message.state) return;
+
+        const previousSessionId = state.classSessionId;
+        state.classState = message.state;
+        renderClassRanking(message.state, snapshot?.myId || lobby?.snapshot().myId);
+
+        if (message.state.phase === "running" && message.state.sessionId && message.state.sessionId !== previousSessionId) {
+            state.classSessionId = message.state.sessionId;
+            startJourney();
+            return;
+        }
+
+        if (message.state.phase === "lobby" && previousSessionId) {
+            state.classSessionId = "";
+            state.classResultSubmitted = false;
+            setScreen(elements.lobbyScreen);
+            syncClassLobby(lobby.snapshot());
+            elements.announcer.textContent = config.resetAnnouncement;
+        }
+    }
+
+    function startJourney() {
+        if (TOTAL_STAGES !== 10) {
+            elements.announcer.textContent = "탐험 관문을 불러오지 못했습니다.";
+            return;
+        }
+        state.currentIndex = 0;
+        state.score = 0;
+        state.attempts = 0;
+        state.stageSolved = false;
+        state.missed = [];
+        state.startedAt = performance.now();
+        state.classResultSubmitted = false;
+        elements.currentScore.textContent = "0";
+        elements.journeyModeLabel.textContent = state.mode === "class" ? "학급 순위 탐험" : "개인 탐험";
+        buildRouteMap();
+        setScreen(elements.journeyScreen);
+        renderStage();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function buildRouteMap() {
+        elements.routeMap.replaceChildren();
+        stages.forEach((stage, index) => {
+            const node = document.createElement("li");
+            node.className = "route-node";
+            node.dataset.number = String(index + 1);
+            node.textContent = stage.shortLabel;
+            elements.routeMap.append(node);
+        });
+    }
+
+    function updateRouteMap() {
+        [...elements.routeMap.children].forEach((node, index) => {
+            node.classList.toggle("passed", index < state.currentIndex || (index === state.currentIndex && state.stageSolved));
+            node.classList.toggle("current", index === state.currentIndex && !state.stageSolved);
+        });
+        elements.routeMap.children[state.currentIndex]?.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" });
+    }
+
+    function stateText(stateName) {
+        return config.stateLabels[stateName] || stateName;
+    }
+
+    function renderStage() {
+        const stage = stages[state.currentIndex];
+        state.attempts = 0;
+        state.stageSolved = false;
+        elements.stageNumber.textContent = String(state.currentIndex + 1);
+        elements.scenePanel.dataset.scene = stage.scene;
+        elements.chapterLabel.textContent = stage.chapter;
+        elements.stageLocation.textContent = stage.location;
+        elements.stageMission.textContent = stage.mission;
+        elements.stageFact.textContent = stage.fact;
+        elements.stageQuestion.textContent = stage.question;
+        elements.oxygenLabel.textContent = stateText(stage.oxygen);
+        elements.oxygenMeter.dataset.state = stage.oxygen;
+        elements.oxygenMeter.classList.toggle("rich", stage.oxygen === "rich");
+        elements.oxygenMeter.classList.toggle("exchange", stage.oxygen === "exchange");
+        elements.feedback.className = "feedback hidden";
+        elements.nextStageButton.classList.add("hidden");
+        elements.choiceList.replaceChildren();
+
+        stage.choices.forEach((choice, index) => {
+            const button = document.createElement("button");
+            const number = document.createElement("span");
+            button.type = "button";
+            button.className = "choice-button";
+            button.dataset.choice = choice;
+            button.dataset.sfx = "none";
+            button.append(document.createTextNode(choice));
+            number.className = "choice-number";
+            number.setAttribute("aria-hidden", "true");
+            number.textContent = String(index + 1);
+            button.append(number);
+            button.addEventListener("click", () => selectRoute(choice, button));
+            elements.choiceList.append(button);
+        });
+
+        updateRouteMap();
+        elements.choiceList.querySelector("button")?.focus({ preventScroll: true });
+        elements.announcer.textContent = `${stage.location}. ${stage.fact} ${stage.question}`;
+    }
+
+    function selectRoute(choice, button) {
+        if (state.stageSolved || button.disabled) return;
+        const stage = stages[state.currentIndex];
+        const isCorrect = choice === stage.answer;
+
+        if (!isCorrect) {
+            if (state.attempts === 0) {
+                state.missed.push({ stage, chosen: choice });
+            }
+            state.attempts += 1;
+            button.disabled = true;
+            button.classList.add("is-wrong");
+            elements.feedback.className = "feedback is-wrong";
+            elements.feedbackTitle.textContent = "이 길은 막혀 있어요";
+            elements.feedbackText.textContent = `${stage.hint} 다시 선택해 보세요.`;
+            elements.announcer.textContent = `${elements.feedbackTitle.textContent}. ${elements.feedbackText.textContent}`;
+            window.ClassGameSfx?.play("error");
+            elements.choiceList.querySelector("button:not(:disabled)")?.focus({ preventScroll: true });
+            return;
+        }
+
+        state.stageSolved = true;
+        if (state.attempts === 0) {
+            state.score += 1;
+            elements.currentScore.textContent = String(state.score);
+        }
+        [...elements.choiceList.querySelectorAll("button")].forEach((choiceButton) => {
+            choiceButton.disabled = true;
+            if (choiceButton.dataset.choice === stage.answer) choiceButton.classList.add("is-correct");
+        });
+        elements.feedback.className = "feedback";
+        elements.feedbackTitle.textContent = state.attempts === 0 ? "정확한 경로예요!" : "경로를 찾았어요!";
+        elements.feedbackText.textContent = stage.explanation;
+        elements.nextStageButton.textContent = state.currentIndex === TOTAL_STAGES - 1 ? "완주 결과 보기" : "다음 장소로 이동";
+        elements.nextStageButton.classList.remove("hidden");
+        elements.announcer.textContent = `${elements.feedbackTitle.textContent} ${stage.explanation}`;
+        elements.cellExplorer.classList.add("moving");
+        setTimeout(() => elements.cellExplorer.classList.remove("moving"), 320);
+        window.ClassGameSfx?.play("success");
+        updateRouteMap();
+        elements.nextStageButton.focus({ preventScroll: true });
+    }
+
+    function goToNextStage() {
+        if (!state.stageSolved) return;
+        if (state.currentIndex >= TOTAL_STAGES - 1) {
+            showResults();
+            return;
+        }
+        state.currentIndex += 1;
+        renderStage();
+        elements.scenePanel.scrollIntoView({ block: "start", behavior: "smooth" });
+    }
+
+    function resultMessage(score) {
+        const name = getPlayerName();
+        const subject = name ? `${name} 탐험가, ` : "";
+        if (score === TOTAL_STAGES) return `${subject}${config.resultMessages.perfect}`;
+        if (score >= 8) return `${subject}${config.resultMessages.great}`;
+        if (score >= 6) return `${subject}${config.resultMessages.good}`;
+        return `${subject}${config.resultMessages.retry}`;
+    }
+
+    function renderReview() {
+        elements.missedList.replaceChildren();
+        elements.perfectReview.classList.toggle("hidden", state.missed.length !== 0);
+        elements.missedList.classList.toggle("hidden", state.missed.length === 0);
+        state.missed.forEach(({ stage, chosen }) => {
+            const item = document.createElement("li");
+            const location = document.createElement("span");
+            const question = document.createElement("span");
+            const selected = document.createElement("span");
+            const answer = document.createElement("span");
+            const explanation = document.createElement("span");
+            location.className = "review-location";
+            location.textContent = stage.location;
+            question.className = "review-question";
+            question.textContent = stage.question;
+            selected.className = "review-chosen";
+            selected.textContent = `막혔던 선택: ${chosen}`;
+            answer.className = "review-answer";
+            answer.textContent = `바른 경로: ${stage.answer}`;
+            explanation.className = "review-explanation";
+            explanation.textContent = stage.explanation;
+            item.append(location, question, selected, answer, explanation);
+            elements.missedList.append(item);
+        });
+    }
+
+    function showResults() {
+        const elapsedMs = Math.max(0, performance.now() - state.startedAt);
+        elements.finalScore.textContent = String(state.score);
+        elements.resultMessage.textContent = resultMessage(state.score);
+        renderReview();
+
+        if (state.mode === "personal") {
+            const previousBest = getBestScore();
+            const isNewBest = state.score > previousBest;
+            const best = Math.max(previousBest, state.score);
+            if (isNewBest) writeStored(BEST_SCORE_KEY, state.score);
+            elements.bestMessage.textContent = isNewBest
+                ? `새 개인 최고 기록 ${best}/${TOTAL_STAGES} · ${formatElapsed(elapsedMs)}`
+                : `개인 최고 기록 ${best}/${TOTAL_STAGES} · 이번 탐험 ${formatElapsed(elapsedMs)}`;
+            elements.classRankArea.classList.add("hidden");
+            elements.restartButton.classList.remove("hidden");
+            updateBestScore();
+        } else {
+            elements.bestMessage.textContent = "첫 도전 정답 수가 같으면 먼저 완주한 탐험가가 앞서요.";
+            elements.classRankArea.classList.remove("hidden");
+            elements.restartButton.classList.add("hidden");
+            if (!state.classResultSubmitted && lobby) {
+                state.classResultSubmitted = true;
+                lobby.sendServer({
+                    type: `${MESSAGE_PREFIX}_ACTION`,
+                    action: "SUBMIT",
+                    sessionId: state.classSessionId,
+                    score: state.score
+                });
+            }
+            renderClassRanking(state.classState, lobby?.snapshot().myId);
+        }
+
+        setScreen(elements.resultScreen);
+        window.ClassGameSfx?.play("success");
+        elements.resultModeButton.focus({ preventScroll: true });
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function formatElapsed(milliseconds) {
+        const totalTenths = Math.max(0, Math.round(Number(milliseconds || 0) / 100));
+        const minutes = Math.floor(totalTenths / 600);
+        const seconds = ((totalTenths % 600) / 10).toFixed(1);
+        return minutes > 0 ? `${minutes}분 ${seconds.padStart(4, "0")}초` : `${seconds}초`;
+    }
+
+    function renderClassRanking(classState, myId) {
+        if (!classState) return;
+        const rankings = Array.isArray(classState.rankings) ? classState.rankings : [];
+        const participants = Array.isArray(classState.participants) ? classState.participants : [];
+        const mine = rankings.find((entry) => String(entry.id) === String(myId));
+
+        elements.myRankCard.textContent = mine
+            ? `나의 순위 ${mine.rank}위 · ${mine.score}/${TOTAL_STAGES} · ${formatElapsed(mine.elapsedMs)}`
+            : state.classResultSubmitted ? "결과를 집계하고 있어요." : "한 바퀴를 완주하면 내 순위가 표시됩니다.";
+        elements.classRankingList.replaceChildren();
+
+        rankings.forEach((entry) => {
+            const row = document.createElement("li");
+            const rank = document.createElement("span");
+            const name = document.createElement("span");
+            const score = document.createElement("span");
+            const time = document.createElement("span");
+            row.className = "ranking-row";
+            row.classList.toggle("is-me", String(entry.id) === String(myId));
+            rank.className = "rank-number";
+            rank.textContent = `${entry.rank}위`;
+            name.className = "rank-name";
+            name.textContent = entry.name;
+            score.className = "rank-score";
+            score.textContent = `${entry.score}/${TOTAL_STAGES}`;
+            time.className = "rank-time";
+            time.textContent = formatElapsed(entry.elapsedMs);
+            row.append(rank, name, score, time);
+            elements.classRankingList.append(row);
+        });
+
+        const waitingCount = Math.max(0, participants.length - rankings.length);
+        elements.rankingWaiting.textContent = classState.phase === "ended"
+            ? `최종 순위 · ${participants.length}명 모두 완주`
+            : waitingCount > 0
+                ? `${rankings.length}명 완주 · ${waitingCount}명 탐험 중`
+                : "첫 완주자를 기다리고 있어요.";
+    }
+
+    function handleKeyboard(event) {
+        if (elements.journeyScreen.classList.contains("hidden")) return;
+        if (!state.stageSolved && /^[1-3]$/.test(event.key)) {
+            const choice = elements.choiceList.querySelectorAll("button")[Number(event.key) - 1];
+            if (choice && !choice.disabled) {
+                event.preventDefault();
+                choice.click();
+            }
+            return;
+        }
+        if (state.stageSolved && event.key === "Enter" && document.activeElement !== elements.nextStageButton) {
+            event.preventDefault();
+            goToNextStage();
+        }
+    }
+
+    elements.personalModeButton.addEventListener("click", selectPersonalMode);
+    elements.classModeButton.addEventListener("click", selectClassMode);
+    elements.personalStartButton.addEventListener("click", startJourney);
+    elements.restartButton.addEventListener("click", startJourney);
+    elements.resultModeButton.addEventListener("click", showModeScreen);
+    elements.nextStageButton.addEventListener("click", goToNextStage);
+    document.querySelectorAll(".mode-back-button").forEach((button) => button.addEventListener("click", showModeScreen));
+    document.addEventListener("keydown", handleKeyboard);
+
+    setGreeting();
+    updateBestScore();
+    setScreen(elements.modeScreen);
+})();

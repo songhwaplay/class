@@ -1,73 +1,748 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>학교 통합 명단 관리</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f6f3ec">
+    <title>우리 반 명단</title>
     <style>
-        body { font-family: 'Pretendard', sans-serif; padding: 20px; background-color: #f9f9f9; }
-        h1 { color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        th, td { border: 1px solid #ddd; padding: 12px; text-align: center; }
-        th { background-color: #2c3e50; color: white; }
-        tr:nth-child(even) { background-color: #f2f2f2; }
-        .loading { color: #555; font-weight: bold; font-size: 1.2em; }
-    </style>
-</head>
-<body>
-
-    <h1 id="school-title">명단 로딩 중...</h1>
-    <div id="roster-container">
-        <p class="loading">데이터를 불러오는 중입니다. 잠시만 기다려 주세요...</p>
-    </div>
-
-    <script>
-        // 1. 배포한 웹 앱 URL을 여기에 붙여넣으세요!
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxEUCT34py7mQTZRDyQ5wdiWwXvxo6TJN9lbfvcaHUHuPxWZpvqtrKKP9gx_A4PSmjS4g/exec";
-
-        // 2. URL 파라미터에서 학교 이름 읽기
-        function getSchoolName() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('school') || "계상초"; 
+        :root {
+            color-scheme: light;
+            --ink: #18211d;
+            --muted: #647069;
+            --paper: #fffdf8;
+            --canvas: #f3efe7;
+            --line: #d8d2c6;
+            --brand: #246b55;
+            --brand-dark: #18503f;
+            --brand-soft: #dfeee8;
+            --danger: #b43c36;
+            --danger-soft: #fff0ee;
+            --shadow: 0 18px 50px rgba(41, 50, 45, 0.10);
         }
 
-        // 3. 데이터 불러오고 화면에 뿌리기
-        async function loadRoster() {
-            const schoolName = getSchoolName();
-            const container = document.getElementById('roster-container');
-            const title = document.getElementById('school-title');
-            
-            title.innerText = schoolName + " 통합 명단";
+        * {
+            box-sizing: border-box;
+        }
 
-            try {
-                // school 정보를 쿼리스트링으로 전달
-                const response = await fetch(`${SCRIPT_URL}?school=${encodeURIComponent(schoolName)}`);
-                const data = await response.json();
-                
-                if (!Array.isArray(data)) {
-                    container.innerHTML = `<p style="color:red;">오류: ${data}</p>`;
-                    return;
-                }
+        body {
+            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(255, 255, 255, 0.9), transparent 34rem),
+                var(--canvas);
+            font-family: Pretendard, "Noto Sans KR", "Apple SD Gothic Neo", system-ui, sans-serif;
+        }
 
-                // 테이블 생성
-                let html = '<table><thead><tr>';
-                data[0].forEach(header => html += `<th>${header}</th>`);
-                html += '</tr></thead><tbody>';
+        button,
+        input,
+        textarea {
+            font: inherit;
+        }
 
-                for (let i = 1; i < data.length; i++) {
-                    html += '<tr>';
-                    data[i].forEach(cell => html += `<td>${cell}</td>`);
-                    html += '</tr>';
-                }
-                html += '</tbody></table>';
-                container.innerHTML = html;
+        main {
+            width: min(100% - 32px, 980px);
+            margin: 0 auto;
+            padding: 72px 0 88px;
+        }
 
-            } catch (error) {
-                container.innerHTML = "데이터 로딩 오류: " + error;
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--brand);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.13em;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2rem, 6vw, 3.7rem);
+            line-height: 1.08;
+            letter-spacing: -0.055em;
+        }
+
+        .intro {
+            max-width: 580px;
+            margin: 16px 0 30px;
+            color: var(--muted);
+            font-size: 1.05rem;
+            line-height: 1.7;
+            word-break: keep-all;
+        }
+
+        .roster-card,
+        .preview-card {
+            border: 1px solid rgba(216, 210, 198, 0.85);
+            border-radius: 24px;
+            background: rgba(255, 253, 248, 0.93);
+            box-shadow: var(--shadow);
+        }
+
+        .roster-card {
+            padding: clamp(20px, 4vw, 34px);
+        }
+
+        .class-profile {
+            margin-bottom: 26px;
+            padding-bottom: 26px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .profile-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 14px;
+            margin: 0 2px 14px;
+        }
+
+        .profile-head h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .profile-note {
+            color: var(--muted);
+            font-size: 0.78rem;
+        }
+
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(6, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .profile-field {
+            min-width: 0;
+        }
+
+        .profile-field--school {
+            grid-column: span 2;
+        }
+
+        .profile-field label {
+            display: block;
+            margin: 0 2px 8px;
+            font-size: 0.84rem;
+            font-weight: 800;
+        }
+
+        .profile-control {
+            display: block;
+            width: 100%;
+            min-height: 50px;
+            border: 1.5px solid var(--line);
+            border-radius: 14px;
+            outline: none;
+            padding: 0 16px;
+            color: var(--ink);
+            background: #fffefa;
+            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        select.profile-control {
+            cursor: pointer;
+            padding-right: 8px;
+        }
+
+        .profile-control::placeholder {
+            color: #a39f96;
+        }
+
+        .profile-control:hover {
+            border-color: #aaa397;
+        }
+
+        .profile-control:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px var(--brand-soft);
+            background: #fff;
+        }
+
+        .paste-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+            gap: 14px;
+        }
+
+        .field {
+            min-width: 0;
+        }
+
+        .field-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            margin: 0 2px 9px;
+        }
+
+        label {
+            font-weight: 800;
+        }
+
+        .line-count {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-variant-numeric: tabular-nums;
+        }
+
+        textarea {
+            display: block;
+            width: 100%;
+            min-height: 280px;
+            resize: vertical;
+            border: 1.5px solid var(--line);
+            border-radius: 15px;
+            outline: none;
+            padding: 16px 18px;
+            color: var(--ink);
+            background: #fffefa;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            font-variant-numeric: tabular-nums;
+            transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+        }
+
+        textarea::placeholder {
+            color: #a39f96;
+        }
+
+        textarea:hover {
+            border-color: #aaa397;
+        }
+
+        textarea:focus {
+            border-color: var(--brand);
+            box-shadow: 0 0 0 4px var(--brand-soft);
+            background: #fff;
+        }
+
+        textarea[aria-invalid="true"] {
+            border-color: var(--danger);
+            background: var(--danger-soft);
+        }
+
+        .actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-top: 20px;
+        }
+
+        .status {
+            min-height: 1.5em;
+            margin: 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .status[data-tone="error"] {
+            color: var(--danger);
+            font-weight: 700;
+        }
+
+        .status[data-tone="success"] {
+            color: var(--brand-dark);
+            font-weight: 700;
+        }
+
+        .save-button {
+            flex: 0 0 auto;
+            min-height: 50px;
+            border: 0;
+            border-radius: 14px;
+            padding: 0 24px;
+            color: #fff;
+            background: var(--brand);
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(36, 107, 85, 0.22);
+            transition: transform 150ms ease, background 150ms ease, box-shadow 150ms ease;
+        }
+
+        .save-button:hover {
+            transform: translateY(-1px);
+            background: var(--brand-dark);
+            box-shadow: 0 10px 24px rgba(36, 107, 85, 0.28);
+        }
+
+        .save-button:active {
+            transform: translateY(0);
+        }
+
+        .save-button:focus-visible {
+            outline: 3px solid #91c5b4;
+            outline-offset: 3px;
+        }
+
+        .save-button:disabled {
+            cursor: not-allowed;
+            transform: none;
+            color: #898b87;
+            background: #deded8;
+            box-shadow: none;
+        }
+
+        .preview-card {
+            margin-top: 22px;
+            overflow: hidden;
+        }
+
+        .preview-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 22px 26px 18px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .preview-head h2 {
+            margin: 0;
+            font-size: 1.13rem;
+            letter-spacing: -0.02em;
+        }
+
+        .class-summary {
+            margin: 5px 0 0;
+            color: var(--muted);
+            font-size: 0.84rem;
+        }
+
+        .student-total {
+            border-radius: 999px;
+            padding: 6px 11px;
+            color: var(--brand-dark);
+            background: var(--brand-soft);
+            font-size: 0.82rem;
+            font-weight: 800;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 15px 26px;
+            border-bottom: 1px solid #ebe6dc;
+            text-align: left;
+        }
+
+        th {
+            color: var(--muted);
+            background: #faf7f0;
+            font-size: 0.78rem;
+            letter-spacing: 0.06em;
+        }
+
+        td:first-child,
+        th:first-child {
+            width: 35%;
+            font-variant-numeric: tabular-nums;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .empty-preview {
+            margin: 0;
+            padding: 38px 26px;
+            color: var(--muted);
+            text-align: center;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
+        @media (max-width: 640px) {
+            main {
+                width: min(100% - 22px, 980px);
+                padding: 44px 0 60px;
+            }
+
+            .intro {
+                margin-bottom: 24px;
+                font-size: 0.98rem;
+            }
+
+            .roster-card {
+                border-radius: 19px;
+            }
+
+            .profile-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 11px 9px;
+            }
+
+            .profile-field--school {
+                grid-column: span 2;
+            }
+
+            .paste-grid {
+                grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+                gap: 9px;
+            }
+
+            textarea {
+                min-height: 245px;
+                padding: 13px 12px;
+                font-size: 1rem;
+            }
+
+            .actions {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .save-button {
+                width: 100%;
+            }
+
+            .preview-head,
+            th,
+            td {
+                padding-left: 18px;
+                padding-right: 18px;
             }
         }
 
-        window.onload = loadRoster;
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <p class="eyebrow">CLASS ROSTER</p>
+        <h1>우리 반 명단</h1>
+        <p class="intro">엑셀에서 번호 열과 이름 열을 각각 복사해 붙여넣으세요. 같은 줄의 번호와 이름이 한 명으로 연결됩니다.</p>
+
+        <section class="roster-card" aria-labelledby="roster-input-title">
+            <h2 id="roster-input-title" hidden>학생 명단 입력</h2>
+            <div class="class-profile">
+                <div class="profile-head">
+                    <h3>학급 기본정보</h3>
+                    <span class="profile-note" id="profile-status" role="status" aria-live="polite">이 기기에 자동 저장</span>
+                </div>
+                <div class="profile-grid">
+                    <div class="profile-field profile-field--school">
+                        <label for="school-name">학교명</label>
+                        <input class="profile-control" id="school-name" type="text" autocomplete="organization" maxlength="50" placeholder="예: 계상초등학교">
+                    </div>
+                    <div class="profile-field">
+                        <label for="school-year">학년도</label>
+                        <select class="profile-control" id="school-year"></select>
+                    </div>
+                    <div class="profile-field">
+                        <label for="grade">학년</label>
+                        <select class="profile-control" id="grade">
+                            <option value="">선택</option>
+                            <option value="1">1학년</option>
+                            <option value="2">2학년</option>
+                            <option value="3">3학년</option>
+                            <option value="4">4학년</option>
+                            <option value="5">5학년</option>
+                            <option value="6">6학년</option>
+                        </select>
+                    </div>
+                    <div class="profile-field">
+                        <label for="class-number">반</label>
+                        <input class="profile-control" id="class-number" type="number" inputmode="numeric" min="1" max="30" placeholder="1">
+                    </div>
+                    <div class="profile-field">
+                        <label for="teacher-name">담임명</label>
+                        <input class="profile-control" id="teacher-name" type="text" autocomplete="name" maxlength="30" placeholder="예: 김선생">
+                    </div>
+                </div>
+            </div>
+
+            <div class="paste-grid">
+                <div class="field">
+                    <div class="field-head">
+                        <label for="numbers">번호</label>
+                        <span class="line-count" id="number-count">0줄</span>
+                    </div>
+                    <textarea id="numbers" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="1&#10;2&#10;3&#10;4" aria-describedby="input-status"></textarea>
+                </div>
+
+                <div class="field">
+                    <div class="field-head">
+                        <label for="names">이름</label>
+                        <span class="line-count" id="name-count">0줄</span>
+                    </div>
+                    <textarea id="names" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="김민준&#10;이서연&#10;박지우&#10;최하늘" aria-describedby="input-status"></textarea>
+                </div>
+            </div>
+
+            <div class="actions">
+                <p class="status" id="input-status" role="status" aria-live="polite">번호와 이름을 붙여넣어 주세요.</p>
+                <button class="save-button" id="save-button" type="button" disabled>명단 저장</button>
+            </div>
+        </section>
+
+        <section class="preview-card" aria-labelledby="preview-title">
+            <div class="preview-head">
+                <div>
+                    <h2 id="preview-title">명단 미리보기</h2>
+                    <p class="class-summary" id="class-summary"></p>
+                </div>
+                <span class="student-total" id="student-total">0명</span>
+            </div>
+            <p class="empty-preview" id="empty-preview">입력한 명단이 여기에 표시됩니다.</p>
+            <div class="table-wrap" id="table-wrap" hidden>
+                <table>
+                    <thead>
+                        <tr>
+                            <th scope="col">번호</th>
+                            <th scope="col">이름</th>
+                        </tr>
+                    </thead>
+                    <tbody id="roster-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            "use strict";
+
+            const STORAGE_KEY = "class-roster-v1";
+            const PROFILE_STORAGE_KEY = "class-profile-v1";
+            const LEGACY_TEACHER_STORAGE_KEY = "class-teacher-v1";
+            const currentYear = new Date().getFullYear();
+            const allowedYears = [currentYear - 1, currentYear, currentYear + 1];
+            const schoolInput = document.querySelector("#school-name");
+            const schoolYearInput = document.querySelector("#school-year");
+            const gradeInput = document.querySelector("#grade");
+            const classNumberInput = document.querySelector("#class-number");
+            const teacherInput = document.querySelector("#teacher-name");
+            const profileStatus = document.querySelector("#profile-status");
+            const classSummary = document.querySelector("#class-summary");
+            const numbersInput = document.querySelector("#numbers");
+            const namesInput = document.querySelector("#names");
+            const numberCount = document.querySelector("#number-count");
+            const nameCount = document.querySelector("#name-count");
+            const status = document.querySelector("#input-status");
+            const saveButton = document.querySelector("#save-button");
+            const rosterBody = document.querySelector("#roster-body");
+            const tableWrap = document.querySelector("#table-wrap");
+            const emptyPreview = document.querySelector("#empty-preview");
+            const studentTotal = document.querySelector("#student-total");
+
+            function splitLines(value) {
+                const normalized = value.replace(/\r\n?/g, "\n");
+                if (!normalized.trim()) return [];
+
+                const lines = normalized.split("\n");
+                while (lines.length && !lines[0].trim()) lines.shift();
+                while (lines.length && !lines[lines.length - 1].trim()) lines.pop();
+                return lines.map((line) => line.trim());
+            }
+
+            function getRosterState() {
+                const numbers = splitLines(numbersInput.value);
+                const names = splitLines(namesInput.value);
+                const hasBlank = numbers.some((value) => !value) || names.some((value) => !value);
+                const duplicateNumbers = numbers.filter((value, index) => value && numbers.indexOf(value) !== index);
+                const isComplete = numbers.length > 0 && numbers.length === names.length && !hasBlank && duplicateNumbers.length === 0;
+
+                return { numbers, names, hasBlank, duplicateNumbers, isComplete };
+            }
+
+            function createRoster(numbers, names) {
+                return numbers.map((number, index) => ({ number, name: names[index] }));
+            }
+
+            function renderRoster(roster) {
+                rosterBody.replaceChildren();
+
+                roster.forEach(({ number, name }) => {
+                    const row = document.createElement("tr");
+                    const numberCell = document.createElement("td");
+                    const nameCell = document.createElement("td");
+                    numberCell.textContent = number;
+                    nameCell.textContent = name;
+                    row.append(numberCell, nameCell);
+                    rosterBody.append(row);
+                });
+
+                const hasRoster = roster.length > 0;
+                tableWrap.hidden = !hasRoster;
+                emptyPreview.hidden = hasRoster;
+                studentTotal.textContent = `${roster.length}명`;
+            }
+
+            function setStatus(message, tone = "neutral") {
+                status.textContent = message;
+                status.dataset.tone = tone;
+            }
+
+            function populateYearOptions() {
+                allowedYears.forEach((year) => {
+                    const option = document.createElement("option");
+                    option.value = String(year);
+                    option.textContent = `${year}학년도`;
+                    schoolYearInput.append(option);
+                });
+            }
+
+            function getProfile() {
+                return {
+                    schoolName: schoolInput.value.trim(),
+                    schoolYear: schoolYearInput.value,
+                    grade: gradeInput.value,
+                    classNumber: classNumberInput.value.trim(),
+                    teacherName: teacherInput.value.trim(),
+                };
+            }
+
+            function updateClassSummary(profile) {
+                const school = profile.schoolName;
+                const year = profile.schoolYear ? `${profile.schoolYear}학년도` : "";
+                const gradeAndClass = [
+                    profile.grade ? `${profile.grade}학년` : "",
+                    profile.classNumber ? `${profile.classNumber}반` : "",
+                ].filter(Boolean).join(" ");
+                const teacher = profile.teacherName ? `담임 ${profile.teacherName}` : "";
+                const summary = [school, year, gradeAndClass, teacher].filter(Boolean);
+                classSummary.textContent = summary.join(" · ") || "학급 정보를 입력해 주세요.";
+            }
+
+            function saveProfile() {
+                const profile = getProfile();
+
+                try {
+                    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
+                    profileStatus.textContent = "자동 저장됨";
+                } catch {
+                    profileStatus.textContent = "저장하지 못함";
+                }
+
+                updateClassSummary(profile);
+            }
+
+            function loadProfile() {
+                let saved = {};
+
+                try {
+                    saved = JSON.parse(localStorage.getItem(PROFILE_STORAGE_KEY) || "{}");
+                    if (!saved || typeof saved !== "object" || Array.isArray(saved)) saved = {};
+                    if (!saved.teacherName) {
+                        saved.teacherName = localStorage.getItem(LEGACY_TEACHER_STORAGE_KEY) || "";
+                    }
+                } catch {
+                    saved = {};
+                }
+
+                schoolInput.value = typeof saved.schoolName === "string" ? saved.schoolName : "";
+                const savedYear = Number(saved.schoolYear);
+                schoolYearInput.value = String(allowedYears.includes(savedYear) ? savedYear : currentYear);
+                gradeInput.value = ["1", "2", "3", "4", "5", "6"].includes(String(saved.grade)) ? String(saved.grade) : "";
+                classNumberInput.value = typeof saved.classNumber === "string" ? saved.classNumber : "";
+                teacherInput.value = typeof saved.teacherName === "string" ? saved.teacherName : "";
+                updateClassSummary(getProfile());
+            }
+
+            function update() {
+                const state = getRosterState();
+                numberCount.textContent = `${state.numbers.length}줄`;
+                nameCount.textContent = `${state.names.length}줄`;
+
+                const hasAnyInput = state.numbers.length > 0 || state.names.length > 0;
+                const hasMismatchedCounts = hasAnyInput && state.numbers.length !== state.names.length;
+
+                numbersInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.duplicateNumbers.length > 0));
+                namesInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank));
+                saveButton.disabled = !state.isComplete;
+
+                if (!hasAnyInput) {
+                    setStatus("번호와 이름을 붙여넣어 주세요.");
+                    renderRoster([]);
+                    return;
+                }
+
+                if (hasMismatchedCounts) {
+                    const difference = Math.abs(state.numbers.length - state.names.length);
+                    const shorterSide = state.numbers.length < state.names.length ? "번호" : "이름";
+                    setStatus(`${shorterSide}가 ${difference}줄 부족해요. 두 칸의 줄 수를 맞춰 주세요.`, "error");
+                    renderRoster([]);
+                    return;
+                }
+
+                if (state.hasBlank) {
+                    setStatus("중간에 빈 줄이 있어요. 빈 줄을 지우거나 내용을 입력해 주세요.", "error");
+                    renderRoster([]);
+                    return;
+                }
+
+                if (state.duplicateNumbers.length > 0) {
+                    const duplicated = [...new Set(state.duplicateNumbers)].join(", ");
+                    setStatus(`중복된 번호가 있어요: ${duplicated}`, "error");
+                    renderRoster([]);
+                    return;
+                }
+
+                setStatus(`${state.numbers.length}명의 번호와 이름이 잘 맞습니다.`, "success");
+                renderRoster(createRoster(state.numbers, state.names));
+            }
+
+            function saveRoster() {
+                const state = getRosterState();
+                if (!state.isComplete) return;
+
+                const roster = createRoster(state.numbers, state.names);
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(roster));
+                    setStatus(`${roster.length}명의 명단을 이 기기에 저장했어요.`, "success");
+                } catch {
+                    setStatus("미리보기는 만들었지만 이 기기에 저장하지 못했어요.", "error");
+                }
+            }
+
+            function loadRoster() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+                    if (!Array.isArray(saved) || !saved.length) return;
+
+                    const validRows = saved.filter((row) => row && typeof row.number === "string" && typeof row.name === "string");
+                    if (!validRows.length) return;
+
+                    numbersInput.value = validRows.map((row) => row.number).join("\n");
+                    namesInput.value = validRows.map((row) => row.name).join("\n");
+                } catch {
+                    // 저장 공간을 사용할 수 없는 환경이어도 입력 기능은 그대로 유지한다.
+                }
+            }
+
+            [schoolInput, classNumberInput, teacherInput].forEach((input) => input.addEventListener("input", saveProfile));
+            [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", saveProfile));
+            numbersInput.addEventListener("input", update);
+            namesInput.addEventListener("input", update);
+            saveButton.addEventListener("click", saveRoster);
+
+            populateYearOptions();
+            loadProfile();
+            loadRoster();
+            update();
+        })();
     </script>
 </body>
 </html>

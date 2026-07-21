@@ -1,0 +1,200 @@
+:root {
+    --night: #07152c;
+    --night-soft: #102a50;
+    --panel: #f5fbff;
+    --panel-soft: #e7f4fb;
+    --ink: #12253c;
+    --muted: #536b7d;
+    --line: #b4d2df;
+    --red: #337fc4;
+    --red-deep: #174c87;
+    --coral: #ef7cab;
+    --blue: #29bfe7;
+    --cyan: #65def2;
+    --cream: #dff8ff;
+    --green: #2e9d79;
+    --danger: #b54161;
+}
+
+body.respiration-page {
+    background:
+        radial-gradient(circle at 13% 19%, rgba(33, 151, 220, 0.29), transparent 28rem),
+        radial-gradient(circle at 87% 37%, rgba(184, 91, 199, 0.24), transparent 31rem),
+        linear-gradient(145deg, #050e22, #102957 52%, #170d35);
+}
+
+.respiration-page .ambient-cells i {
+    aspect-ratio: 1;
+    border-color: rgba(104, 220, 244, 0.13);
+    border-radius: 50%;
+    box-shadow: inset 0 0 20px rgba(126, 224, 255, 0.08), 0 0 24px rgba(67, 168, 238, 0.08);
+}
+
+.respiration-page .hero-art {
+    background-image: url("../../../assets/images/body-explorer/respiration-hero.webp");
+    background-position: center;
+}
+
+.respiration-page .hero-shade {
+    background:
+        linear-gradient(90deg, rgba(4, 13, 37, 0.97) 0%, rgba(8, 28, 66, 0.8) 44%, rgba(18, 29, 79, 0.08) 78%),
+        linear-gradient(0deg, rgba(5, 12, 37, 0.95), transparent 55%);
+}
+
+.respiration-page .hero-copy h1 span,
+.respiration-page .hero-lead {
+    color: #e4f8ff;
+}
+
+.respiration-page .episode-switcher a.active {
+    background: rgba(24, 103, 161, 0.9);
+}
+
+.respiration-page .mode-card:hover,
+.respiration-page .mode-card:focus-visible {
+    border-color: #88e7f7;
+    background: rgba(13, 59, 102, 0.92);
+}
+
+.respiration-page .mode-icon,
+.respiration-page .primary-button {
+    background: linear-gradient(145deg, #49d7ef, #3477c6);
+}
+
+.respiration-page .oxygen-mode-icon {
+    color: #a8f5ff;
+    box-shadow: inset 0 0 0 8px #35c9e8, 0 0 0 3px rgba(168, 245, 255, 0.5);
+}
+
+.respiration-briefing-art {
+    background:
+        linear-gradient(155deg, rgba(4, 24, 60, 0.08), rgba(8, 33, 76, 0.72)),
+        url("../../../assets/images/body-explorer/respiration-hero.webp") center / cover;
+}
+
+.respiration-briefing-art img {
+    width: min(70%, 360px);
+}
+
+.respiration-page .carbon-orb {
+    border-color: rgba(225, 187, 255, 0.75);
+    background: rgba(128, 77, 193, 0.72);
+    box-shadow: 0 0 22px rgba(173, 118, 234, 0.5);
+}
+
+.respiration-page .oxygen-meter #oxygenDot {
+    background: #55d9ee;
+    box-shadow: 0 0 15px rgba(85, 217, 238, 0.78);
+}
+
+.respiration-page .oxygen-meter[data-state="moving"] #oxygenDot {
+    background: #389ddc;
+}
+
+.respiration-page .oxygen-meter[data-state="exchanging"] #oxygenDot {
+    background: linear-gradient(90deg, #55d9ee, #cf82e9);
+}
+
+.respiration-page .oxygen-meter[data-state="delivering"] #oxygenDot {
+    background: #ef6c8f;
+    box-shadow: 0 0 15px rgba(239, 108, 143, 0.75);
+}
+
+.respiration-page .oxygen-meter[data-state="returning"] #oxygenDot {
+    background: #9a6fd1;
+    box-shadow: 0 0 15px rgba(154, 111, 209, 0.72);
+}
+
+.respiration-page .oxygen-meter[data-state="exhaling"] #oxygenDot {
+    background: #7f82c8;
+}
+
+.respiration-page .route-node.passed::before,
+.respiration-page .route-node.passed:not(:last-child)::after {
+    border-color: #3bc6e5;
+    background: #287aba;
+}
+
+.respiration-page .scene-panel[data-scene="nose"] .scene-image,
+.respiration-page .scene-panel[data-scene="lungs"] .scene-image,
+.respiration-page .scene-panel[data-scene="body"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/respiration-hero.webp");
+}
+
+.respiration-page .scene-panel[data-scene="airway"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/respiration-airway.webp");
+}
+
+.respiration-page .scene-panel[data-scene="alveoli"] .scene-image,
+.respiration-page .scene-panel[data-scene="exchange"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/respiration-alveoli.webp");
+}
+
+.respiration-page .scene-panel[data-scene="body"] .scene-image {
+    background-position: 75% center;
+    filter: saturate(0.82) brightness(0.8);
+}
+
+.respiration-page .scene-overlay {
+    background:
+        linear-gradient(90deg, rgba(4, 17, 47, 0.91), rgba(5, 38, 85, 0.18) 58%, rgba(18, 13, 65, 0.5)),
+        linear-gradient(0deg, rgba(4, 14, 42, 0.94), transparent 56%);
+}
+
+.respiration-page .oxygen-explorer {
+    width: clamp(145px, 24vw, 280px);
+    filter: drop-shadow(0 20px 24px rgba(1, 10, 39, 0.65));
+}
+
+.respiration-page .question-card {
+    border-color: rgba(63, 166, 220, 0.34);
+}
+
+.respiration-page .choice-button:hover,
+.respiration-page .choice-button:focus-visible {
+    border-color: #42aedc;
+}
+
+.respiration-page .episode.active {
+    background: #216ca8;
+}
+
+.respiration-page .episode.available:hover,
+.respiration-page .episode.available:focus-visible {
+    background: rgba(20, 73, 128, 0.83);
+}
+
+.respiration-page .teacher-hero {
+    background:
+        linear-gradient(90deg, rgba(4, 15, 43, 0.97), rgba(17, 74, 135, 0.66), rgba(82, 39, 116, 0.26)),
+        url("../../../assets/images/body-explorer/respiration-hero.webp") center / cover no-repeat;
+}
+
+.respiration-page .teacher-hero p:last-child {
+    color: #dff8ff;
+}
+
+.respiration-page .teacher-room-card {
+    border-color: #77bbdb;
+    background: #eaf8ff;
+}
+
+.respiration-page .teacher-room-card > span,
+.respiration-page .teacher-room-card > strong {
+    color: #174b76;
+}
+
+@media (max-width: 560px) {
+    .respiration-page .hero-screen {
+        min-height: 980px;
+    }
+
+    .respiration-page .hero-art {
+        background-position: 67% center;
+    }
+
+    .respiration-page .oxygen-explorer {
+        bottom: 154px;
+        width: min(48vw, 194px);
+    }
+}

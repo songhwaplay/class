@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#090d2b">
+    <title>인체 탐험 · 신경 편</title>
+    <meta name="description" content="감각기관에서 뇌와 척수, 운동 신경과 근육까지 신경 신호의 길을 따라가며 배우는 교실용 학습 시뮬레이션">
+    <link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="nervous.css">
+    <script src="../../../assets/network/game-network.js" defer></script>
+    <script src="../../../assets/network/multiplayer-lobby.js" defer></script>
+    <script src="../../../assets/sound/game-sfx.js" defer></script>
+    <script src="nervous-data.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body class="nervous-page">
+    <div class="ambient-cells" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+    <div class="page-shell">
+        <header class="topbar">
+            <a class="back-link" href="../../../index.html" aria-label="메인 화면으로 돌아가기">← 메인</a>
+            <div class="record" aria-label="개인 모드 최고 기록">
+                <span>최고 기록</span>
+                <strong id="headerBestScore">0/10</strong>
+            </div>
+        </header>
+
+        <main>
+            <section id="modeScreen" class="screen hero-screen" aria-labelledby="mainTitle">
+                <div class="hero-art" role="img" aria-label="손끝에서 뇌와 척수로 들어간 신경 신호가 근육으로 다시 전달되는 모습"></div>
+                <div class="hero-shade"></div>
+                <div class="hero-copy">
+                    <p class="series-kicker">HUMAN BODY EXPLORER · EPISODE 04</p>
+                    <h1 id="mainTitle"><span>인체 탐험</span>신경 편</h1>
+                    <p id="playerGreeting" class="hero-lead">신호 탐험대와 함께 감각기관에서 뇌와 척수, 근육까지 이어지는 신경의 길을 살펴보세요.</p>
+                    <nav class="episode-switcher" aria-label="인체 탐험 편 선택">
+                        <a href="index.html"><b>01</b><span>혈액순환<small>온몸을 도는 피</small></span></a>
+                        <a href="digestion.html"><b>02</b><span>소화<small>음식의 긴 여행</small></span></a>
+                        <a href="respiration.html"><b>03</b><span>호흡<small>공기와 기체교환</small></span></a>
+                        <a class="active" href="nervous.html" aria-current="page"><b>04</b><span>신경<small>자극과 몸의 반응</small></span></a>
+                    </nav>
+                    <div class="hero-facts" aria-label="학습 내용">
+                        <span><b>10</b>개 관문</span>
+                        <span><b>2</b>가지 신경</span>
+                        <span><b>1</b>개의 반응 경로</span>
+                    </div>
+                    <div class="mode-grid">
+                        <button id="personalModeButton" class="mode-card" type="button">
+                            <span class="mode-icon signal-mode-icon" aria-hidden="true">⚡</span>
+                            <span><strong>개인 탐험</strong><small>내 속도로 배우고 오답노트 확인</small></span>
+                            <b>PERSONAL</b>
+                        </button>
+                        <button id="classModeButton" class="mode-card" type="button">
+                            <span class="mode-icon class-icon" aria-hidden="true">🏫</span>
+                            <span><strong>학급 순위 탐험</strong><small>같이 출발해 정확도와 시간으로 순위 결정</small></span>
+                            <b>CLASS</b>
+                        </button>
+                    </div>
+                    <a class="teacher-link" href="nervous-teacher.html">교사용 학급 만들기·실시간 순위판 →</a>
+                </div>
+            </section>
+
+            <section id="personalScreen" class="screen briefing-screen hidden" aria-labelledby="briefingTitle">
+                <div class="briefing-art nervous-briefing-art">
+                    <img src="../../../assets/images/body-explorer/signal-explorer.png" alt="신경 신호 탐험대 캐릭터">
+                    <span class="oxygen-orb signal-orb orb-one" aria-hidden="true">감각</span>
+                    <span class="oxygen-orb signal-orb outgoing-orb orb-two" aria-hidden="true">명령</span>
+                </div>
+                <div class="briefing-copy">
+                    <p class="section-kicker">MISSION BRIEFING</p>
+                    <h2 id="briefingTitle">신경 신호의 왕복 여행을 완주하라</h2>
+                    <p>피부가 자극을 느끼는 순간부터 뇌와 척수가 판단하고 근육이 반응하기까지, 신호가 오가는 길을 따라가세요. 초등 과학에서 배우는 핵심 내용만 다룹니다.</p>
+                    <ol class="route-preview" aria-label="주요 신경 경로">
+                        <li><span>1</span>감각기관이 자극을 받아들여요</li>
+                        <li><span>2</span>감각 신경이 정보를 뇌와 척수로 전해요</li>
+                        <li><span>3</span>운동 신경이 명령을 근육으로 전해요</li>
+                    </ol>
+                    <div class="science-note"><strong>핵심!</strong> 정보는 감각기관에서 뇌·척수 쪽으로, 움직임 명령은 뇌·척수에서 근육 쪽으로 이동합니다.</div>
+                    <button id="personalStartButton" class="primary-button" type="button">신경 탐험 시작</button>
+                    <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
+                </div>
+            </section>
+
+            <section id="missingScreen" class="screen compact-screen hidden" aria-labelledby="missingTitle">
+                <p class="section-kicker">PLAYER NAME REQUIRED</p>
+                <h2 id="missingTitle">이름을 먼저 저장해 주세요</h2>
+                <p>학급 순위에는 메인 화면에서 저장한 한글 이름이 표시됩니다.</p>
+                <a class="primary-button link-button" href="../../../index.html">메인에서 이름 저장</a>
+                <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
+            </section>
+
+            <section id="lobbyScreen" class="screen compact-screen class-lobby hidden" aria-labelledby="classLobbyTitle">
+                <p class="section-kicker">CLASS EXPEDITION</p>
+                <h2 id="classLobbyTitle">학급 코드로 신경 탐험에 참가하세요</h2>
+                <p><strong id="savedName"></strong> 탐험가로 참가합니다. 교사가 알려 준 숫자 4자리를 입력하세요.</p>
+                <div id="joinPane" class="join-pane">
+                    <label for="joinCode">학급 코드</label>
+                    <div class="join-row">
+                        <input id="joinCode" class="room-code-input" inputmode="numeric" maxlength="4" autocomplete="one-time-code" placeholder="0000">
+                        <button id="joinBtn" class="primary-button" type="button">탐험대 참가</button>
+                    </div>
+                    <p id="joinStatus" class="lobby-status" role="status">교사가 만든 학급 코드를 입력하세요.</p>
+                </div>
+                <div id="classWaitingPanel" class="waiting-panel hidden">
+                    <div class="room-badge">학급 코드 <strong id="studentRoomCode">----</strong></div>
+                    <h3>교사의 출발 신호를 기다리고 있어요</h3>
+                    <div id="lobbyPlayers" class="mp-lobby-players" aria-label="참가 학생"></div>
+                    <p id="lobbyGuide" class="lobby-status">학급에 연결하는 중입니다.</p>
+                </div>
+                <button id="leaveClassButton" class="text-button" type="button">← 탐험대에서 나가기</button>
+            </section>
+
+            <section id="journeyScreen" class="journey-screen hidden" aria-labelledby="stageQuestion">
+                <div class="journey-status">
+                    <div><span id="journeyModeLabel">개인 탐험</span><strong><span id="stageNumber">1</span>/10 관문</strong></div>
+                    <div class="oxygen-meter"><span id="oxygenDot"></span><b id="oxygenLabel">자극을 느끼는 중</b></div>
+                    <div class="score-meter"><span>첫 도전 정답</span><b><span id="currentScore">0</span>/10</b></div>
+                </div>
+
+                <div class="route-strip" aria-label="신경 신호 이동 경로">
+                    <ol id="routeMap" class="route-map"></ol>
+                </div>
+
+                <article id="scenePanel" class="scene-panel" data-scene="sense">
+                    <div class="scene-image" aria-hidden="true"></div>
+                    <div class="scene-overlay" aria-hidden="true"></div>
+                    <img id="cellExplorer" class="cell-explorer signal-explorer" src="../../../assets/images/body-explorer/signal-explorer.png" alt="신경 길을 이동하는 신호 탐험대">
+                    <div class="location-card">
+                        <p id="chapterLabel" class="chapter-label">자극 발견</p>
+                        <h2 id="stageLocation">손끝의 피부</h2>
+                        <p id="stageMission" class="stage-mission"></p>
+                    </div>
+                    <div class="fact-card">
+                        <span>꼭 알아둘 사실</span>
+                        <p id="stageFact"></p>
+                    </div>
+                </article>
+
+                <article class="question-card">
+                    <p class="question-kicker">신호가 갈 길을 선택하세요</p>
+                    <h2 id="stageQuestion"></h2>
+                    <div id="choiceList" class="choice-list"></div>
+                    <div id="feedback" class="feedback hidden" aria-live="polite">
+                        <strong id="feedbackTitle"></strong>
+                        <p id="feedbackText"></p>
+                        <button id="nextStageButton" class="primary-button hidden" type="button">다음 장소로 이동</button>
+                    </div>
+                </article>
+            </section>
+
+            <section id="resultScreen" class="screen result-screen hidden" aria-labelledby="resultTitle">
+                <p class="section-kicker">NERVOUS SYSTEM COMPLETE</p>
+                <h2 id="resultTitle">신경 신호 왕복 여행 완주!</h2>
+                <div class="result-hero">
+                    <img src="../../../assets/images/body-explorer/signal-explorer.png" alt="완주한 신호 탐험대">
+                    <div class="score-orbit"><strong id="finalScore">0</strong><span>/10</span></div>
+                </div>
+                <p id="resultMessage" class="result-message"></p>
+                <p id="bestMessage" class="best-message"></p>
+
+                <div class="circulation-summary nervous-summary">
+                    <div><span>들어가는 정보</span><strong>감각기관 → 감각 신경 → 뇌·척수</strong><small>몸에서 받아들인 자극의 정보가 전달되는 길</small></div>
+                    <div><span>나가는 명령</span><strong>뇌·척수 → 운동 신경 → 근육</strong><small>판단한 움직임 명령이 몸의 반응으로 이어지는 길</small></div>
+                </div>
+
+                <div id="classRankArea" class="class-rank-area hidden">
+                    <div id="myRankCard" class="my-rank-card">순위를 집계하고 있어요</div>
+                    <h3>학급 실시간 순위</h3>
+                    <ol id="classRankingList" class="ranking-list"></ol>
+                    <p id="rankingWaiting" class="ranking-waiting"></p>
+                </div>
+
+                <div class="review-area">
+                    <h3>나의 오답노트</h3>
+                    <p id="perfectReview" class="perfect-review hidden">막힘 경로 없이 한 번에 완주했어요!</p>
+                    <ol id="missedList" class="missed-list"></ol>
+                </div>
+
+                <div class="result-actions">
+                    <button id="restartButton" class="primary-button" type="button">다시 탐험하기</button>
+                    <button id="resultModeButton" class="secondary-button" type="button">방식 다시 선택</button>
+                    <a class="secondary-button link-button" href="../../../index.html">메인으로</a>
+                </div>
+            </section>
+
+            <section class="episode-shelf" aria-labelledby="seriesTitle">
+                <div><p class="section-kicker">HUMAN BODY EXPLORER</p><h2 id="seriesTitle">인체 탐험 시리즈</h2></div>
+                <div class="episode-list">
+                    <a class="episode available" href="index.html"><b>01</b>혈액순환<small>탐험 가능</small></a>
+                    <a class="episode available" href="digestion.html"><b>02</b>소화<small>탐험 가능</small></a>
+                    <a class="episode available" href="respiration.html"><b>03</b>호흡<small>탐험 가능</small></a>
+                    <a class="episode active" href="nervous.html" aria-current="page"><b>04</b>신경<small>탐험 가능</small></a>
+                    <span class="episode"><b>05</b>면역<small>준비 중</small></span>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            초등 과학의 자극과 반응 범위에서 구성했으며,
+            <a href="https://www.nichd.nih.gov/health/topics/neuro/conditioninfo/Pages/parts.aspx" target="_blank" rel="noopener noreferrer">미국 국립아동보건인간발달연구소의 신경계 설명</a>을 참고했습니다.
+        </footer>
+    </div>
+    <p id="announcer" class="visually-hidden" aria-live="assertive"></p>
+</body>
+</html>

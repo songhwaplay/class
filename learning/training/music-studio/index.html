@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#100f19">
+    <title>실용화성학·리듬 트레이닝</title>
+    <meta name="description" content="실용화성학과 리듬 트레이닝 웹 학습 도구">
+    <link rel="stylesheet" href="styles.css">
+    <script src="music-core.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="noise" aria-hidden="true"></div>
+    <div class="app-shell">
+        <header class="topbar">
+            <a class="back-link" href="../../../index.html" aria-label="메인 화면으로 돌아가기"><span aria-hidden="true">←</span> 메인</a>
+            <a class="brand" href="#top" aria-label="뮤직 랩 처음으로">
+                <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span><b>음악 학습</b><small>실용화성학 · 리듬</small></span>
+            </a>
+            <div class="streak" title="오늘 완료한 훈련">
+                <span>오늘의 연습</span><strong id="practiceCount">0</strong>
+            </div>
+        </header>
+
+        <main id="top">
+            <section class="hero" aria-labelledby="pageTitle">
+                <div class="hero-copy">
+                    <h1 id="pageTitle">실용화성학<br><em>리듬 트레이닝</em></h1>
+                    <p>코드 진행과 리듬 타이밍을 연습합니다.</p>
+                </div>
+            </section>
+
+            <nav class="lab-tabs" aria-label="훈련 영역 선택">
+                <button class="lab-tab active" type="button" data-tab="harmony" aria-controls="harmonyLab" aria-selected="true">
+                    <span class="tab-number">01</span>
+                    <span><b>실용화성학</b><small>코드의 기능과 진행</small></span>
+                </button>
+                <button class="lab-tab" type="button" data-tab="rhythm" aria-controls="rhythmLab" aria-selected="false">
+                    <span class="tab-number">02</span>
+                    <span><b>리듬 트레이닝</b><small>듣고 따라치는 타이밍</small></span>
+                </button>
+            </nav>
+
+            <section id="harmonyLab" class="lab-panel" aria-labelledby="harmonyTitle">
+                <header class="section-heading">
+                    <div>
+                        <p class="section-kicker">실용화성학</p>
+                        <h2 id="harmonyTitle">코드 진행 연습</h2>
+                        <p>조성과 화음 유형을 선택하고 코드의 기능과 진행을 들어봅니다.</p>
+                    </div>
+                    <div class="harmony-controls" aria-label="화성 설정">
+                        <div class="control-stack">
+                            <span>종류</span>
+                            <div class="segmented" aria-label="장조 또는 단조">
+                                <button class="active" type="button" data-mode="major">장조</button>
+                                <button type="button" data-mode="minor">단조</button>
+                            </div>
+                        </div>
+                        <label>조성
+                            <select id="keySelect">
+                                <option value="C">C 장조</option><option value="G">G 장조</option>
+                                <option value="D">D 장조</option><option value="A">A 장조</option>
+                                <option value="E">E 장조</option><option value="F">F 장조</option>
+                                <option value="Bb">B♭ 장조</option><option value="Eb">E♭ 장조</option>
+                            </select>
+                        </label>
+                        <label id="minorVariantControl" class="hidden">단음계
+                            <select id="minorVariantSelect">
+                                <option value="natural">자연</option>
+                                <option value="harmonic">화성</option>
+                                <option value="melodic">가락</option>
+                            </select>
+                        </label>
+                        <div class="control-stack">
+                            <span>화음</span>
+                            <div class="segmented" aria-label="화음 유형">
+                                <button class="active" type="button" data-voicing="triad">3화음</button>
+                                <button type="button" data-voicing="seventh">7화음</button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <div class="harmony-layout">
+                    <article class="progression-card">
+                        <div class="card-topline">
+                            <div><span>코드 진행</span><h3 id="progressionName">팝 진행</h3></div>
+                            <button id="playProgressionButton" class="round-play" type="button" aria-label="코드 진행 듣기"><span>▶</span></button>
+                        </div>
+                        <div id="progressionSlots" class="progression-slots" aria-label="현재 코드 진행"></div>
+                        <div class="progression-line"><i></i><span id="progressionHint">안정 → 긴장 → 여운 → 확장</span></div>
+                        <div class="preset-row" aria-label="코드 진행 프리셋">
+                            <button class="active" type="button" data-progression="pop">I–V–vi–IV</button>
+                            <button type="button" data-progression="jazz">ii–V–I–I</button>
+                            <button type="button" data-progression="turnaround">I–vi–ii–V</button>
+                            <button type="button" data-progression="anthem">vi–IV–I–V</button>
+                        </div>
+                    </article>
+
+                    <aside class="function-card">
+                        <span class="mini-label">화음 기능</span>
+                        <h3>화음의 역할</h3>
+                        <div class="function-flow" aria-label="토닉 서브도미넌트 도미넌트 기능 흐름">
+                            <button type="button" data-function="토닉"><i class="tonic-dot"></i><b>토닉</b><small>집 · 안정</small></button>
+                            <span>→</span>
+                            <button type="button" data-function="서브도미넌트"><i class="sub-dot"></i><b>서브도미넌트</b><small>출발 · 확장</small></button>
+                            <span>→</span>
+                            <button type="button" data-function="도미넌트"><i class="dom-dot"></i><b>도미넌트</b><small>긴장 · 해결</small></button>
+                        </div>
+                        <p id="functionExplanation"><strong>토닉(T)</strong>은 조성의 중심이며 시작과 종지에 사용합니다.</p>
+                    </aside>
+                </div>
+
+                <article class="chord-bank-card">
+                    <div class="card-heading-inline">
+                        <div><span class="mini-label">다이어토닉 코드</span><h3 id="chordBankTitle">C 장조의 다이어토닉 코드</h3></div>
+                        <p>코드를 눌러 듣고 선택한 마디를 바꿔보세요.</p>
+                    </div>
+                    <div id="chordBank" class="chord-bank"></div>
+                    <div id="piano" class="piano" aria-label="선택한 코드 음을 보여주는 피아노 건반"></div>
+                    <p id="chordReadout" class="chord-readout" aria-live="polite">I · C Major · 토닉</p>
+                </article>
+
+                <article class="ear-quiz-card">
+                    <div class="quiz-copy">
+                        <span class="mini-label">코드 듣기</span>
+                        <h3>들은 코드의 로마 숫자를 고르세요</h3>
+                        <p id="quizPrompt">재생 버튼을 누르면 목표 코드가 들립니다.</p>
+                    </div>
+                    <button id="quizListenButton" class="listen-button" type="button"><span aria-hidden="true">♪</span> 코드 듣기</button>
+                    <div id="quizChoices" class="quiz-choices" aria-label="퀴즈 선택지"></div>
+                    <p id="quizFeedback" class="quiz-feedback" aria-live="polite"></p>
+                    <button id="newQuizButton" class="text-button" type="button">새 문제 ↻</button>
+                </article>
+            </section>
+
+            <section id="rhythmLab" class="lab-panel hidden" aria-labelledby="rhythmTitle">
+                <header class="section-heading rhythm-heading">
+                    <div>
+                        <p class="section-kicker coral">리듬 트레이닝</p>
+                        <h2 id="rhythmTitle">리듬 연습</h2>
+                        <p>패턴을 듣고 화면이나 스페이스바로 따라 칩니다.</p>
+                    </div>
+                    <div class="tempo-box">
+                        <div><span>TEMPO</span><output id="tempoOutput" for="tempoSlider">84</output><b>BPM</b></div>
+                        <input id="tempoSlider" type="range" min="50" max="150" value="84" aria-label="템포">
+                    </div>
+                </header>
+
+                <div class="rhythm-layout">
+                    <article class="rhythm-player-card">
+                        <div class="rhythm-toolbar">
+                            <div>
+                                <span class="mini-label">리듬 패턴</span>
+                                <h3 id="rhythmName">4분음표 워크</h3>
+                            </div>
+                            <div class="meter-badge"><strong>4</strong><i></i><strong>4</strong></div>
+                            <div class="transport">
+                                <button id="rhythmListenButton" type="button"><span>▶</span> 먼저 듣기</button>
+                                <button id="metronomeButton" type="button" aria-pressed="false"><span>●</span> 메트로놈</button>
+                            </div>
+                        </div>
+
+                        <div class="count-strip" aria-label="박자 카운트"><span>1</span><i>&amp;</i><i>e</i><i>a</i><span>2</span><i>&amp;</i><i>e</i><i>a</i><span>3</span><i>&amp;</i><i>e</i><i>a</i><span>4</span><i>&amp;</i><i>e</i><i>a</i></div>
+                        <div id="rhythmGrid" class="rhythm-grid" aria-label="16분음표 리듬 그리드"></div>
+                        <div class="beat-numbers" aria-hidden="true"><span>BEAT 1</span><span>BEAT 2</span><span>BEAT 3</span><span>BEAT 4</span></div>
+                        <p id="rhythmSyllables" class="rhythm-syllables">타 · 타 · 타 · 타</p>
+
+                        <div class="challenge-zone">
+                            <div class="challenge-copy">
+                                <span id="challengeStatus">준비</span>
+                                <strong id="challengeTitle">준비되면 시작하세요</strong>
+                                <small id="challengeGuide">한 마디 카운트 후, 들었던 리듬을 따라 두드립니다.</small>
+                            </div>
+                            <button id="tapButton" class="tap-button" type="button"><span>TAP</span><small>화면 터치 · SPACE</small></button>
+                            <button id="startChallengeButton" class="challenge-button" type="button">연습 시작</button>
+                        </div>
+
+                        <div id="scorePanel" class="score-panel hidden" aria-live="polite">
+                            <div class="score-ring"><strong id="rhythmScore">0</strong><span>점</span></div>
+                            <div><h4 id="scoreTitle">좋은 출발이에요!</h4><p id="scoreDetail"></p></div>
+                            <button id="retryButton" type="button">다시 연습</button>
+                        </div>
+                    </article>
+
+                    <aside class="pattern-list-card">
+                        <span class="mini-label">리듬 선택</span>
+                        <h3>연습할 리듬</h3>
+                        <div class="pattern-list" role="list">
+                            <button class="active" type="button" data-pattern="steady"><span>01</span><b>4분음표 워크<small>기초 · 정박</small></b><i>→</i></button>
+                            <button type="button" data-pattern="eighths"><span>02</span><b>8비트 드라이브<small>기초 · 분할</small></b><i>→</i></button>
+                            <button type="button" data-pattern="offbeat"><span>03</span><b>오프비트 팝<small>중급 · 엇박</small></b><i>→</i></button>
+                            <button type="button" data-pattern="syncopation"><span>04</span><b>싱코페이션<small>도전 · 당김음</small></b><i>→</i></button>
+                        </div>
+                        <div class="tip-card"><span>연습 방법</span><p>발로 1·2·3·4박을 유지하고 손으로 리듬을 두드립니다.</p></div>
+                    </aside>
+                </div>
+            </section>
+        </main>
+
+        <footer><b>음악 학습</b><span>소리를 켜고 사용하세요.</span><a href="#top">맨 위로 ↑</a></footer>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

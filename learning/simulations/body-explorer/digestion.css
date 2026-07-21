@@ -1,0 +1,208 @@
+:root {
+    --night: #201008;
+    --night-soft: #3a1d0f;
+    --panel: #fff9ed;
+    --panel-soft: #f9ead2;
+    --ink: #392010;
+    --muted: #765d45;
+    --line: #dec69f;
+    --red: #dc6a20;
+    --red-deep: #8e3a13;
+    --coral: #f38b45;
+    --blue: #db9c2c;
+    --cyan: #71d1c1;
+    --cream: #ffe3a0;
+    --green: #478b5a;
+    --danger: #b84631;
+}
+
+body.digestion-page {
+    background:
+        radial-gradient(circle at 14% 20%, rgba(210, 91, 28, 0.34), transparent 28rem),
+        radial-gradient(circle at 86% 38%, rgba(240, 151, 38, 0.2), transparent 31rem),
+        linear-gradient(145deg, #1a0b07, #3c170d 52%, #1d1008);
+}
+
+.digestion-page .ambient-cells i {
+    aspect-ratio: 1;
+    border-color: rgba(255, 179, 62, 0.14);
+    border-radius: 45% 55% 50% 48%;
+}
+
+.digestion-page .hero-art {
+    background-image: url("../../../assets/images/body-explorer/digestion-hero.webp");
+    background-position: center;
+}
+
+.digestion-page .hero-shade {
+    background:
+        linear-gradient(90deg, rgba(30, 8, 5, 0.96) 0%, rgba(58, 17, 8, 0.79) 45%, rgba(60, 21, 5, 0.08) 78%),
+        linear-gradient(0deg, rgba(28, 8, 4, 0.94), transparent 54%);
+}
+
+.digestion-page .hero-copy h1 span,
+.digestion-page .hero-lead {
+    color: #fff0d4;
+}
+
+.digestion-page .episode-switcher a.active {
+    background: rgba(174, 75, 23, 0.9);
+}
+
+.digestion-page .mode-card:hover,
+.digestion-page .mode-card:focus-visible {
+    border-color: #ffd47a;
+    background: rgba(92, 34, 10, 0.92);
+}
+
+.digestion-page .mode-icon,
+.digestion-page .primary-button {
+    background: linear-gradient(145deg, #f1a52e, #d35b1e);
+}
+
+.digestion-page .food-mode-icon {
+    color: #ffd16a;
+    box-shadow: inset 0 0 0 8px #f6a832, 0 0 0 3px rgba(255, 222, 145, 0.5);
+}
+
+.digestion-briefing-art {
+    background:
+        linear-gradient(155deg, rgba(46, 14, 5, 0.14), rgba(77, 22, 5, 0.76)),
+        url("../../../assets/images/body-explorer/digestion-hero.webp") center / cover;
+}
+
+.digestion-briefing-art img {
+    width: min(74%, 390px);
+}
+
+.food-orb {
+    position: absolute;
+    display: grid;
+    width: 58px;
+    aspect-ratio: 1;
+    place-items: center;
+    border: 1px solid rgba(255, 235, 184, 0.7);
+    border-radius: 50%;
+    background: rgba(232, 111, 30, 0.78);
+    color: white;
+    font-weight: 900;
+    box-shadow: 0 0 22px rgba(255, 181, 48, 0.5);
+    animation: drift 4s ease-in-out infinite alternate;
+}
+
+.digestion-page .oxygen-meter #oxygenDot {
+    background: #f3aa36;
+    box-shadow: 0 0 15px rgba(243, 170, 54, 0.76);
+}
+
+.digestion-page .oxygen-meter[data-state="moving"] #oxygenDot {
+    background: #ef7942;
+}
+
+.digestion-page .oxygen-meter[data-state="digesting"] #oxygenDot {
+    background: #e84c2d;
+}
+
+.digestion-page .oxygen-meter[data-state="absorbing"] #oxygenDot {
+    background: #62c49a;
+    box-shadow: 0 0 15px rgba(98, 196, 154, 0.76);
+}
+
+.digestion-page .oxygen-meter[data-state="remaining"] #oxygenDot {
+    background: #a67c52;
+    box-shadow: 0 0 15px rgba(166, 124, 82, 0.62);
+}
+
+.digestion-page .route-node.passed::before,
+.digestion-page .route-node.passed:not(:last-child)::after {
+    border-color: #e7842e;
+    background: #bd541c;
+}
+
+.digestion-page .scene-panel[data-scene="mouth"] .scene-image,
+.digestion-page .scene-panel[data-scene="esophagus"] .scene-image,
+.digestion-page .scene-panel[data-scene="large"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/digestion-hero.webp");
+}
+
+.digestion-page .scene-panel[data-scene="esophagus"] .scene-image {
+    background-position: 28% center;
+}
+
+.digestion-page .scene-panel[data-scene="stomach"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/digestion-stomach.webp");
+}
+
+.digestion-page .scene-panel[data-scene="intestine"] .scene-image,
+.digestion-page .scene-panel[data-scene="absorption"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/digestion-villi.webp");
+}
+
+.digestion-page .scene-panel[data-scene="large"] .scene-image {
+    background-position: 72% center;
+    filter: saturate(0.78) brightness(0.76);
+}
+
+.digestion-page .scene-overlay {
+    background:
+        linear-gradient(90deg, rgba(43, 11, 5, 0.9), rgba(58, 18, 6, 0.2) 58%, rgba(29, 10, 4, 0.52)),
+        linear-gradient(0deg, rgba(35, 8, 3, 0.94), transparent 56%);
+}
+
+.digestion-page .food-explorer {
+    width: clamp(150px, 25vw, 292px);
+    filter: drop-shadow(0 20px 24px rgba(38, 10, 2, 0.62));
+}
+
+.digestion-page .question-card {
+    border-color: rgba(220, 132, 45, 0.32);
+}
+
+.digestion-page .choice-button:hover,
+.digestion-page .choice-button:focus-visible {
+    border-color: #e28a32;
+}
+
+.digestion-page .episode.active {
+    background: #a64d19;
+}
+
+.digestion-page .episode.available:hover,
+.digestion-page .episode.available:focus-visible {
+    background: rgba(119, 54, 19, 0.82);
+}
+
+.digestion-page .teacher-hero {
+    background:
+        linear-gradient(90deg, rgba(35, 9, 4, 0.96), rgba(123, 48, 13, 0.66), rgba(74, 30, 7, 0.28)),
+        url("../../../assets/images/body-explorer/digestion-hero.webp") center / cover no-repeat;
+}
+
+.digestion-page .teacher-hero p:last-child {
+    color: #ffe6bf;
+}
+
+.digestion-page .teacher-room-card {
+    border-color: #d59d58;
+    background: #fff3d8;
+}
+
+.digestion-page .teacher-room-card > span,
+.digestion-page .teacher-room-card > strong {
+    color: #69310f;
+}
+
+@media (max-width: 560px) {
+    .digestion-page .hero-screen {
+        min-height: 980px;
+    }
+
+    .digestion-page .hero-art {
+        background-position: 62% center;
+    }
+
+    .digestion-page .food-explorer {
+        bottom: 154px;
+        width: min(49vw, 200px);
+    }
+}

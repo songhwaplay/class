@@ -1,0 +1,210 @@
+:root {
+    --night: #090d2b;
+    --night-soft: #24205b;
+    --panel: #fbf8ff;
+    --panel-soft: #f1eaff;
+    --ink: #261b45;
+    --muted: #665d7c;
+    --line: #cfc1ea;
+    --red: #7865d8;
+    --red-deep: #49379f;
+    --coral: #f0a83c;
+    --blue: #36c9cf;
+    --cyan: #7be5db;
+    --cream: #fff2b5;
+    --green: #349b78;
+    --danger: #b34368;
+}
+
+body.nervous-page {
+    background:
+        radial-gradient(circle at 12% 18%, rgba(72, 81, 192, 0.34), transparent 28rem),
+        radial-gradient(circle at 86% 42%, rgba(165, 72, 184, 0.27), transparent 30rem),
+        linear-gradient(145deg, #050823, #20164f 54%, #15082d);
+}
+
+.nervous-page .ambient-cells i {
+    aspect-ratio: 1;
+    border-color: rgba(255, 211, 91, 0.13);
+    border-radius: 48% 52% 43% 57%;
+    box-shadow: inset 0 0 20px rgba(255, 209, 92, 0.08), 0 0 24px rgba(80, 213, 210, 0.08);
+}
+
+.nervous-page .hero-art {
+    background-image: url("../../../assets/images/body-explorer/nervous-hero.webp");
+    background-position: center;
+}
+
+.nervous-page .hero-shade {
+    background:
+        linear-gradient(90deg, rgba(5, 7, 35, 0.98) 0%, rgba(22, 18, 67, 0.82) 44%, rgba(29, 17, 82, 0.05) 78%),
+        linear-gradient(0deg, rgba(8, 7, 34, 0.95), transparent 55%);
+}
+
+.nervous-page .hero-copy h1 span,
+.nervous-page .hero-lead {
+    color: #fff4c7;
+}
+
+.nervous-page .episode-switcher a.active {
+    background: rgba(89, 56, 169, 0.9);
+}
+
+.nervous-page .mode-card:hover,
+.nervous-page .mode-card:focus-visible {
+    border-color: #ffe083;
+    background: rgba(48, 31, 111, 0.94);
+}
+
+.nervous-page .mode-icon,
+.nervous-page .primary-button {
+    background: linear-gradient(145deg, #f6bf49, #7a62d4);
+}
+
+.nervous-page .signal-mode-icon {
+    color: #fff4b7;
+    box-shadow: inset 0 0 0 8px #7a62d4, 0 0 0 3px rgba(255, 224, 131, 0.45);
+}
+
+.nervous-briefing-art {
+    background:
+        linear-gradient(155deg, rgba(16, 12, 65, 0.12), rgba(18, 13, 63, 0.72)),
+        url("../../../assets/images/body-explorer/nervous-hero.webp") center / cover;
+}
+
+.nervous-briefing-art img {
+    width: min(67%, 340px);
+}
+
+.nervous-page .signal-orb {
+    border-color: rgba(255, 221, 106, 0.78);
+    background: rgba(231, 165, 43, 0.72);
+    box-shadow: 0 0 22px rgba(255, 200, 70, 0.54);
+}
+
+.nervous-page .signal-orb.outgoing-orb {
+    border-color: rgba(97, 230, 220, 0.78);
+    background: rgba(31, 169, 175, 0.72);
+    box-shadow: 0 0 22px rgba(68, 221, 215, 0.48);
+}
+
+.nervous-page .oxygen-meter #oxygenDot {
+    background: #f6c148;
+    box-shadow: 0 0 15px rgba(246, 193, 72, 0.8);
+}
+
+.nervous-page .oxygen-meter[data-state="incoming"] #oxygenDot {
+    background: #f2a93e;
+}
+
+.nervous-page .oxygen-meter[data-state="processing"] #oxygenDot {
+    background: #a878df;
+    box-shadow: 0 0 15px rgba(168, 120, 223, 0.8);
+}
+
+.nervous-page .oxygen-meter[data-state="outgoing"] #oxygenDot {
+    background: #46d7d1;
+    box-shadow: 0 0 15px rgba(70, 215, 209, 0.8);
+}
+
+.nervous-page .oxygen-meter[data-state="reacting"] #oxygenDot {
+    background: #72d57d;
+}
+
+.nervous-page .route-node.passed::before,
+.nervous-page .route-node.passed:not(:last-child)::after {
+    border-color: #d29a36;
+    background: #7556bf;
+}
+
+.nervous-page .scene-panel[data-scene="sense"] .scene-image,
+.nervous-page .scene-panel[data-scene="sensory-nerve"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/nervous-sensory.webp");
+}
+
+.nervous-page .scene-panel[data-scene="spinal"] .scene-image,
+.nervous-page .scene-panel[data-scene="brain"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/nervous-hero.webp");
+}
+
+.nervous-page .scene-panel[data-scene="motor"] .scene-image,
+.nervous-page .scene-panel[data-scene="reaction"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/nervous-response.webp");
+}
+
+.nervous-page .scene-panel[data-scene="sense"] .scene-image,
+.nervous-page .scene-panel[data-scene="sensory-nerve"] .scene-image {
+    background-position: 58% center;
+}
+
+.nervous-page .scene-panel[data-scene="brain"] .scene-image {
+    background-position: 72% 20%;
+}
+
+.nervous-page .scene-panel[data-scene="reaction"] .scene-image {
+    background-position: 63% center;
+}
+
+.nervous-page .scene-overlay {
+    background:
+        linear-gradient(90deg, rgba(8, 8, 47, 0.93), rgba(27, 20, 82, 0.17) 58%, rgba(27, 9, 64, 0.48)),
+        linear-gradient(0deg, rgba(9, 7, 43, 0.95), transparent 58%);
+}
+
+.nervous-page .signal-explorer {
+    width: clamp(140px, 22vw, 265px);
+    filter: drop-shadow(0 18px 24px rgba(4, 5, 35, 0.68));
+}
+
+.nervous-page .question-card {
+    border-color: rgba(135, 98, 205, 0.36);
+}
+
+.nervous-page .choice-button:hover,
+.nervous-page .choice-button:focus-visible {
+    border-color: #8b6dcc;
+}
+
+.nervous-page .episode.active {
+    background: #6545ad;
+}
+
+.nervous-page .episode.available:hover,
+.nervous-page .episode.available:focus-visible {
+    background: rgba(61, 39, 124, 0.85);
+}
+
+.nervous-page .teacher-hero {
+    background:
+        linear-gradient(90deg, rgba(7, 8, 42, 0.98), rgba(74, 44, 146, 0.68), rgba(35, 132, 145, 0.22)),
+        url("../../../assets/images/body-explorer/nervous-hero.webp") center / cover no-repeat;
+}
+
+.nervous-page .teacher-hero p:last-child {
+    color: #fff3bd;
+}
+
+.nervous-page .teacher-room-card {
+    border-color: #bba5df;
+    background: #f6f0ff;
+}
+
+.nervous-page .teacher-room-card > span,
+.nervous-page .teacher-room-card > strong {
+    color: #513b91;
+}
+
+@media (max-width: 560px) {
+    .nervous-page .hero-screen {
+        min-height: 980px;
+    }
+
+    .nervous-page .hero-art {
+        background-position: 68% center;
+    }
+
+    .nervous-page .signal-explorer {
+        bottom: 152px;
+        width: min(46vw, 188px);
+    }
+}
