@@ -269,12 +269,17 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 72,
+  version: 75,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
   landBaseSpeed: LAND_BASE_SPEED,
-  completionSpeedMultipliers: { first: 10, second: 5, third: 3, fourthAndAfter: 1 },
+  completionSpeedMultipliers: {
+    first: CompletionRewards.speedMultiplier(1),
+    second: CompletionRewards.speedMultiplier(2),
+    third: CompletionRewards.speedMultiplier(3),
+    fourthAndAfter: CompletionRewards.speedMultiplier(4)
+  },
   currentTailAssistPercent: Math.round(CURRENT_TAIL_FACTOR * 100),
   currentStrongCoreTailAssistPercent: Math.round(CURRENT_STRONG_CORE_TAIL_FACTOR * 100),
   currentHeadPenaltyPercent: Math.round(CURRENT_HEAD_FACTOR * 100),
