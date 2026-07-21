@@ -69,7 +69,11 @@ assert.doesNotMatch(teacherJs, /rosterName|studentNumber/,
 assert.match(studentHtml, /id="studentPassage"/);
 assert.match(studentHtml, /id="studentChoices"/);
 assert.match(studentHtml, /accounts\.google\.com\/gsi\/client/);
+assert.doesNotMatch(studentHtml, /id="studentGate"/,
+  "Reading Pilot must open directly without an access gate.");
 assert.match(studentJs, /\/api\/auth\/google/);
+assert.match(studentJs, /function activateVisitor\(\)/,
+  "Visitors should see the pilot page even before joining a class.");
 assert.match(studentJs, /performance\.now\(\)/);
 assert.doesNotMatch(studentJs, /localStorage|sessionStorage/,
   "Pilot answers must use server persistence only.");

@@ -55,6 +55,13 @@
     });
   }
 
+  function showPilotError(message) {
+    state.pilots = [];
+    const list = byId("studentPilotList");
+    list.replaceChildren(node("p", "empty-pilots", message));
+    showView("dashboard");
+  }
+
   async function loadPilots() {
     const payload = await api("/api/reading/student/pilots");
     state.pilots = payload.pilots;
@@ -114,10 +121,7 @@
       state.currentIndex = next;
       renderQuestion();
     } catch (error) {
-      byId("studentGateMessage").textContent = error.message;
-      byId("studentGateLink").hidden = false;
-      byId("studentGate").hidden = false;
-      byId("studentApp").hidden = true;
+      showPilotError(error.message);
     }
   }
 
@@ -181,8 +185,14 @@
       throw new Error("먼저 홈에서 학급 코드와 학생 번호를 연결해 주세요.");
     }
     await loadPilots();
-    byId("studentGate").hidden = true;
-    byId("studentApp").hidden = false;
+    showView("dashboard");
+  }
+
+  function activateVisitor() {
+    state.pilots = [];
+    byId("studentName").textContent = "독해 파일럿";
+    byId("studentClass").textContent = "로그인 없이 둘러보기";
+    renderPilots();
     showView("dashboard");
   }
 
@@ -229,18 +239,12 @@
   async function start() {
     wireEvents();
     try {
-      const config = await api("/api/auth/config");
-      if (!config.enabled) throw new Error("학교 계정 로그인이 아직 설정되지 않았습니다.");
       const session = await api("/api/auth/me");
-      if (!session.signedIn) {
-        byId("studentGateMessage").textContent = "학교 Google 계정으로 로그인해 주세요.";
-        await renderGoogleButton(config.clientId);
-        return;
-      }
-      await activateStudent(session);
+      if (session.signedIn && session.user?.role === "student" && session.membership) {
+        await activateStudent(session);
+      } else activateVisitor();
     } catch (error) {
-      byId("studentGateMessage").textContent = error.message;
-      byId("studentGateLink").hidden = false;
+      activateVisitor();
     }
   }
 
