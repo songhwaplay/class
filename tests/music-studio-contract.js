@@ -38,5 +38,7 @@ assert.match(css, /dictation-grid/);
 assert.match(css, /answer-step\.missed/);
 assert.match(hub, /learning\/training\/music-studio\/index\.html/);
 assert.doesNotMatch(hub, /learning\/basics\/music-studio\/index\.html/);
+assert.doesNotMatch(html, /실용/);
+assert.doesNotMatch(hub, /실용화성학/);
 
 console.log("music-studio-contract: ok");
