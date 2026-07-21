@@ -109,6 +109,60 @@
         }
     };
 
+    const RHYTHM_DICTATION_BANK = [
+        { id: "b01", level: "basic", style: "정박", hits: [0, 4, 8, 12] },
+        { id: "b02", level: "basic", style: "8비트", hits: [0, 2, 4, 6, 8, 10, 12, 14] },
+        { id: "b03", level: "basic", style: "팝", hits: [0, 4, 6, 8, 12, 14] },
+        { id: "b04", level: "basic", style: "록", hits: [0, 2, 4, 8, 10, 12] },
+        { id: "b05", level: "basic", style: "발라드", hits: [0, 4, 8, 10, 12] },
+        { id: "b06", level: "basic", style: "팝", hits: [0, 2, 4, 6, 8, 12] },
+        { id: "b07", level: "basic", style: "8비트", hits: [0, 4, 6, 8, 10, 12, 14] },
+        { id: "b08", level: "basic", style: "록", hits: [0, 2, 4, 8, 12, 14] },
+        { id: "b09", level: "basic", style: "발라드", hits: [0, 4, 8, 12, 14] },
+        { id: "b10", level: "basic", style: "8비트", hits: [0, 2, 4, 6, 8, 10, 12] },
+        { id: "b11", level: "basic", style: "팝", hits: [0, 4, 6, 8, 12] },
+        { id: "b12", level: "basic", style: "록", hits: [0, 2, 4, 8, 10, 12, 14] },
+
+        { id: "o01", level: "offbeat", style: "오프비트", hits: [0, 2, 6, 8, 10, 14] },
+        { id: "o02", level: "offbeat", style: "팝", hits: [2, 4, 6, 10, 12, 14] },
+        { id: "o03", level: "offbeat", style: "싱코페이션", hits: [0, 3, 6, 8, 11, 14] },
+        { id: "o04", level: "offbeat", style: "디스코", hits: [0, 2, 5, 8, 10, 13] },
+        { id: "o05", level: "offbeat", style: "팝", hits: [0, 3, 4, 6, 8, 11, 12, 14] },
+        { id: "o06", level: "offbeat", style: "레게", hits: [2, 4, 7, 10, 12, 15] },
+        { id: "o07", level: "offbeat", style: "오프비트", hits: [0, 2, 6, 8, 11, 14] },
+        { id: "o08", level: "offbeat", style: "싱코페이션", hits: [0, 3, 6, 9, 12, 14] },
+        { id: "o09", level: "offbeat", style: "디스코", hits: [0, 2, 5, 8, 11, 14] },
+        { id: "o10", level: "offbeat", style: "레게", hits: [2, 5, 8, 10, 13] },
+        { id: "o11", level: "offbeat", style: "팝", hits: [0, 3, 6, 8, 10, 15] },
+        { id: "o12", level: "offbeat", style: "오프비트", hits: [0, 2, 7, 8, 11, 14] },
+
+        { id: "s01", level: "sixteenth", style: "펑크", hits: [0, 1, 4, 5, 8, 9, 12, 13] },
+        { id: "s02", level: "sixteenth", style: "16비트", hits: [0, 3, 4, 7, 8, 11, 12, 15] },
+        { id: "s03", level: "sixteenth", style: "R&B", hits: [0, 1, 2, 4, 6, 8, 9, 10, 12, 14] },
+        { id: "s04", level: "sixteenth", style: "펑크", hits: [0, 2, 3, 4, 6, 7, 8, 10, 11, 12, 14, 15] },
+        { id: "s05", level: "sixteenth", style: "힙합", hits: [0, 1, 3, 4, 6, 8, 9, 11, 12, 14] },
+        { id: "s06", level: "sixteenth", style: "16비트", hits: [0, 2, 4, 5, 7, 8, 10, 12, 13, 15] },
+        { id: "s07", level: "sixteenth", style: "R&B", hits: [0, 1, 4, 6, 8, 9, 12, 14] },
+        { id: "s08", level: "sixteenth", style: "펑크", hits: [0, 3, 4, 5, 8, 11, 12, 13] },
+        { id: "s09", level: "sixteenth", style: "힙합", hits: [0, 2, 3, 6, 8, 10, 11, 14] },
+        { id: "s10", level: "sixteenth", style: "16비트", hits: [0, 1, 4, 7, 8, 9, 12, 15] },
+        { id: "s11", level: "sixteenth", style: "R&B", hits: [0, 3, 5, 8, 9, 11, 12, 14] },
+        { id: "s12", level: "sixteenth", style: "펑크", hits: [0, 2, 5, 7, 8, 10, 13, 15] },
+
+        { id: "m01", level: "mixed", style: "팝", hits: [0, 3, 4, 6, 9, 10, 12, 15] },
+        { id: "m02", level: "mixed", style: "소울", hits: [0, 1, 4, 6, 8, 11, 12, 14] },
+        { id: "m03", level: "mixed", style: "라틴", hits: [0, 2, 5, 6, 8, 10, 13, 14] },
+        { id: "m04", level: "mixed", style: "펑크", hits: [0, 3, 4, 7, 9, 12, 14, 15] },
+        { id: "m05", level: "mixed", style: "R&B", hits: [0, 1, 3, 6, 8, 9, 12, 14, 15] },
+        { id: "m06", level: "mixed", style: "힙합", hits: [0, 2, 4, 7, 8, 10, 11, 13] },
+        { id: "m07", level: "mixed", style: "라틴", hits: [1, 4, 6, 8, 11, 12, 15] },
+        { id: "m08", level: "mixed", style: "소울", hits: [0, 3, 5, 6, 8, 10, 13, 15] },
+        { id: "m09", level: "mixed", style: "팝", hits: [0, 1, 4, 7, 8, 11, 13, 14] },
+        { id: "m10", level: "mixed", style: "펑크", hits: [0, 2, 3, 5, 8, 9, 12, 15] },
+        { id: "m11", level: "mixed", style: "R&B", hits: [0, 1, 3, 4, 7, 10, 12, 13, 15] },
+        { id: "m12", level: "mixed", style: "라틴", hits: [0, 2, 5, 6, 9, 11, 12, 14] }
+    ];
+
     function normalizeKey(key) {
         return String(key || "C").replace("♭", "b");
     }
@@ -191,6 +245,19 @@
         return getClosedPositionMidi(chord, 48);
     }
 
+    function scoreRhythmDictation(expectedHits, selectedHits) {
+        const expected = new Set(expectedHits);
+        const selected = new Set(selectedHits);
+        let correct = 0;
+        expected.forEach(function (step) { if (selected.has(step)) correct += 1; });
+        const missed = expected.size - correct;
+        const extra = selected.size - correct;
+        const precision = selected.size ? correct / selected.size : 0;
+        const recall = expected.size ? correct / expected.size : 0;
+        const score = precision + recall ? Math.round(200 * precision * recall / (precision + recall)) : 0;
+        return { exact: missed === 0 && extra === 0, score: score, correct: correct, missed: missed, extra: extra };
+    }
+
     function scoreRhythm(expectedTimes, tapTimes, toleranceMs) {
         const tolerance = Math.max(40, Number(toleranceMs) || 150);
         const expected = expectedTimes.slice().sort(function (a, b) { return a - b; });
@@ -244,11 +311,13 @@
         KEY_SCALES: KEY_SCALES,
         MINOR_SCALES: MINOR_SCALES,
         RHYTHM_PATTERNS: RHYTHM_PATTERNS,
+        RHYTHM_DICTATION_BANK: RHYTHM_DICTATION_BANK,
         buildDiatonicChords: buildDiatonicChords,
         getProgression: getProgression,
         midiToFrequency: midiToFrequency,
         getClosedPositionMidi: getClosedPositionMidi,
         getLeftHandCompingMidi: getLeftHandCompingMidi,
+        scoreRhythmDictation: scoreRhythmDictation,
         scoreRhythm: scoreRhythm,
         getNoteName: getNoteName
     };

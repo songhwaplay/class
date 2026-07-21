@@ -99,7 +99,7 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .segmented button.active { color: var(--bg); background: var(--mint); }
 
 .harmony-layout { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(280px, .8fr); gap: 18px; }
-.progression-card, .function-card, .chord-bank-card, .ear-quiz-card, .rhythm-player-card, .pattern-list-card {
+.progression-card, .function-card, .chord-bank-card, .ear-quiz-card, .rhythm-player-card, .pattern-list-card, .dictation-card, .dictation-bank-card {
     border: 1px solid var(--line);
     border-radius: 13px;
     background: var(--panel);
@@ -172,12 +172,46 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .text-button { border: 0; color: var(--muted); background: transparent; font-size: 11px; cursor: pointer; }
 
 .rhythm-heading { align-items: center; }
+.rhythm-mode-switch { display: inline-flex; gap: 4px; margin-bottom: 18px; padding: 4px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }
+.rhythm-mode-switch button { height: 38px; padding: 0 18px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; font-size: 11px; font-weight: 800; cursor: pointer; }
+.rhythm-mode-switch button.active { color: var(--bg); background: var(--coral); }
 .tempo-box { display: flex; align-items: center; gap: 18px; padding: 12px 17px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel-2); }
 .tempo-box > div { display: grid; grid-template-columns: auto auto; align-items: end; gap: 0 7px; }
 .tempo-box span { grid-column: 1 / -1; color: var(--muted); font: 800 8px Montserrat, sans-serif; letter-spacing: 1px; }
 .tempo-box output { font: 800 26px Montserrat, sans-serif; }
 .tempo-box b { padding-bottom: 4px; color: var(--coral); font: 800 9px Montserrat, sans-serif; }
 .tempo-box input { width: 150px; accent-color: var(--coral); }
+.dictation-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(250px, .65fr); gap: 18px; }
+.dictation-card, .dictation-bank-card { padding: 27px; }
+.dictation-toolbar { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; }
+.dictation-toolbar h3 { margin: 5px 0 0; font-size: 23px; }
+.dictation-listen-button { height: 42px; padding: 0 15px; border: 1px solid var(--coral); border-radius: 7px; color: var(--coral); background: #12111a; font-size: 10px; font-weight: 800; cursor: pointer; }
+.dictation-listen-button span { margin-right: 5px; }
+.dictation-grid .answer-step { cursor: pointer; touch-action: manipulation; }
+.dictation-grid .answer-step.selected::before, .dictation-grid .answer-step.missed::before, .dictation-grid .answer-step.extra::before { content: "♪"; position: absolute; left: 50%; top: 48%; transform: translate(-50%,-50%); color: var(--mint); font: 800 29px Georgia, serif; }
+.dictation-grid .answer-step.selected::after, .dictation-grid .answer-step.missed::after, .dictation-grid .answer-step.extra::after { display: none; }
+.dictation-grid .answer-step.correct { background: rgba(108,229,202,.13); }
+.dictation-grid .answer-step.missed { background: rgba(255,118,95,.1); }
+.dictation-grid .answer-step.missed::before { color: var(--coral); opacity: .65; }
+.dictation-grid .answer-step.extra::before { content: "×"; color: var(--coral); font: 800 22px Montserrat, sans-serif; }
+.dictation-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 22px; }
+.dictation-actions p { flex: 1; margin: 0; color: var(--muted); font-size: 10px; }
+.dictation-actions p.correct { color: var(--mint); }
+.dictation-actions p.incorrect { color: var(--coral); }
+.dictation-actions button { height: 40px; padding: 0 13px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); background: transparent; font-size: 10px; font-weight: 800; cursor: pointer; }
+.dictation-actions #checkDictationButton { border-color: var(--coral); color: #21120f; background: var(--coral); }
+.dictation-actions #newDictationButton { color: var(--ink); }
+.dictation-bank-card h3 { margin: 7px 0 20px; font-size: 21px; }
+.dictation-bank-card h3 strong { color: var(--coral); }
+.difficulty-list { display: grid; }
+.difficulty-list button { display: flex; align-items: center; justify-content: space-between; min-height: 49px; padding: 0 6px; border: 0; border-bottom: 1px solid var(--line); color: var(--muted); background: transparent; font-size: 11px; cursor: pointer; }
+.difficulty-list button b { color: var(--ink); font: 800 11px Montserrat, sans-serif; }
+.difficulty-list button.active { color: var(--coral); }
+.difficulty-list button.active b { color: var(--coral); }
+.dictation-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 24px 0 0; background: var(--line); }
+.dictation-stats div { padding: 13px 8px; background: var(--panel-2); text-align: center; }
+.dictation-stats dt { color: var(--muted); font-size: 8px; }
+.dictation-stats dd { margin: 5px 0 0; color: var(--ink); font: 800 17px Montserrat, sans-serif; }
 .rhythm-layout { display: grid; grid-template-columns: minmax(0, 1.8fr) minmax(270px, .65fr); gap: 18px; }
 .rhythm-player-card { padding: 27px; }
 .rhythm-toolbar { display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 20px; }
@@ -240,7 +274,7 @@ footer b { color: var(--ink); font: 800 11px Montserrat, sans-serif; letter-spac
     .hero h1 { letter-spacing: -3px; }
     .lab-panel { padding: 50px 4%; }
     .section-heading { align-items: start; }
-    .harmony-layout, .rhythm-layout { grid-template-columns: 1fr; }
+    .harmony-layout, .rhythm-layout, .dictation-layout { grid-template-columns: 1fr; }
     .ear-quiz-card { grid-template-columns: 1fr auto; }
     .quiz-choices { grid-column: 1; }.quiz-feedback { grid-column: 1; }.ear-quiz-card > .text-button { grid-column: 2; grid-row: 2; }
     .chord-bank { grid-template-columns: repeat(4, 1fr); }
@@ -254,7 +288,7 @@ footer b { color: var(--ink); font: 800 11px Montserrat, sans-serif; letter-spac
     .hero h1 { font-size: 36px; letter-spacing: -2px; }.hero-copy > p:last-child { font-size: 14px; }
     .lab-tab { min-height: 85px; gap: 10px; padding: 14px 8px; }.tab-number { display: none; }.lab-tab b { font-size: 15px; }.lab-tab small { font-size: 9px; }
     .lab-panel { padding: 38px 15px; }.section-heading { display: grid; }.section-heading h2 { font-size: 32px; }.harmony-controls { width: 100%; justify-content: flex-start; }.harmony-controls label, .harmony-controls .control-stack { flex: 1 1 130px; }.harmony-controls select { width: 100%; }
-    .progression-card, .function-card, .chord-bank-card, .ear-quiz-card, .rhythm-player-card, .pattern-list-card { padding: 18px; }
+    .progression-card, .function-card, .chord-bank-card, .ear-quiz-card, .rhythm-player-card, .pattern-list-card, .dictation-card, .dictation-bank-card { padding: 18px; }
     .progression-slots { grid-template-columns: 1fr 1fr; }.chord-slot { min-height: 104px; }
     .function-flow b { font-size: 9px; }
     .card-heading-inline { display: block; }.card-heading-inline p { margin-top: 9px; }
@@ -262,6 +296,9 @@ footer b { color: var(--ink); font: 800 11px Montserrat, sans-serif; letter-spac
     .piano { height: 94px; margin-left: -8px; margin-right: -8px; }
     .ear-quiz-card { grid-template-columns: 1fr; }.ear-quiz-card > *, .quiz-choices, .quiz-feedback, .ear-quiz-card > .text-button { grid-column: 1; grid-row: auto; }.quiz-choices { flex-wrap: wrap; }
     .rhythm-heading { display: grid; }.tempo-box { width: 100%; justify-content: space-between; }.tempo-box input { width: min(55%, 190px); }
+    .rhythm-mode-switch { display: flex; }.rhythm-mode-switch button { flex: 1; }
+    .dictation-toolbar { grid-template-columns: 1fr auto; }.dictation-listen-button { grid-column: 1 / -1; }
+    .dictation-actions { flex-wrap: wrap; }.dictation-actions p { flex-basis: 100%; }.dictation-actions button { flex: 1; }
     .rhythm-toolbar { grid-template-columns: 1fr auto; }.transport { grid-column: 1 / -1; }.transport button { flex: 1; }
     .count-strip > *:not(:nth-child(4n+1)) { color: transparent; }
     .rhythm-grid { height: 95px; }

@@ -37,6 +37,7 @@
         progressionToken: 0,
         quizTarget: 4,
         quizAnswered: false,
+        rhythmMode: "dictation",
         rhythmPattern: "steady",
         rhythmPlaybackToken: 0,
         tempo: 84,
@@ -46,6 +47,15 @@
         challengeActive: false,
         performanceStartMs: 0,
         taps: [],
+        dictationLevel: "all",
+        dictationQuestionId: null,
+        dictationQuestionNumber: 0,
+        dictationAnswer: [],
+        dictationReviewed: false,
+        dictationSolved: false,
+        dictationAttempts: 0,
+        dictationCorrect: 0,
+        dictationListens: 0,
         practiceCount: 0
     };
 
@@ -59,7 +69,10 @@
             "quizChoices", "quizFeedback", "newQuizButton", "tempoOutput", "tempoSlider", "rhythmName",
             "rhythmListenButton", "metronomeButton", "rhythmGrid", "rhythmSyllables", "challengeStatus",
             "challengeTitle", "challengeGuide", "tapButton", "startChallengeButton", "scorePanel",
-            "rhythmScore", "scoreTitle", "scoreDetail", "retryButton", "toast"
+            "rhythmScore", "scoreTitle", "scoreDetail", "retryButton", "dictationPanel", "performancePanel",
+            "dictationQuestionLabel", "dictationListenButton", "dictationGrid", "dictationFeedback",
+            "clearDictationButton", "checkDictationButton", "newDictationButton", "dictationBankCount",
+            "dictationAttemptCount", "dictationCorrectCount", "dictationListenCount", "toast"
         ].forEach(function (id) { elements[id] = document.getElementById(id); });
     }
 
@@ -412,6 +425,140 @@
         }
     }
 
+    function getDictationPool() {
+        if (state.dictationLevel === "all") return core.RHYTHM_DICTATION_BANK;
+        return core.RHYTHM_DICTATION_BANK.filter(function (pattern) { return pattern.level === state.dictationLevel; });
+    }
+
+    function getDictationQuestion() {
+        return core.RHYTHM_DICTATION_BANK.find(function (pattern) { return pattern.id === state.dictationQuestionId; });
+    }
+
+    function renderDictationGrid() {
+        const question = getDictationQuestion();
+        if (!question) return;
+        elements.dictationGrid.innerHTML = "";
+        for (let index = 0; index < 16; index += 1) {
+            const selected = state.dictationAnswer.includes(index);
+            const target = question.hits.includes(index);
+            const step = document.createElement("button");
+            step.type = "button";
+            step.className = "rhythm-step answer-step" + (selected ? " selected" : "");
+            if (state.dictationReviewed) {
+                if (selected && target) step.classList.add("correct");
+                else if (target) step.classList.add("missed");
+                else if (selected) step.classList.add("extra");
+            }
+            step.dataset.step = index;
+            step.setAttribute("aria-pressed", String(selected));
+            step.setAttribute("aria-label", (Math.floor(index / 4) + 1) + "박 " + ["1", "e", "&", "a"][index % 4] + (selected ? " 입력됨" : " 비어 있음"));
+            step.addEventListener("click", function () {
+                const answerIndex = state.dictationAnswer.indexOf(index);
+                if (answerIndex >= 0) state.dictationAnswer.splice(answerIndex, 1);
+                else state.dictationAnswer.push(index);
+                state.dictationAnswer.sort(function (a, b) { return a - b; });
+                if (state.dictationReviewed) {
+                    state.dictationReviewed = false;
+                    elements.dictationFeedback.className = "";
+                    elements.dictationFeedback.textContent = "답을 수정했습니다. 다시 확인하세요.";
+                }
+                renderDictationGrid();
+            });
+            elements.dictationGrid.appendChild(step);
+        }
+    }
+
+    function newDictationQuestion() {
+        state.rhythmPlaybackToken += 1;
+        const pool = getDictationPool();
+        const candidates = pool.filter(function (pattern) { return pattern.id !== state.dictationQuestionId; });
+        const choices = candidates.length ? candidates : pool;
+        const next = choices[Math.floor(Math.random() * choices.length)];
+        state.dictationQuestionId = next.id;
+        state.dictationQuestionNumber += 1;
+        state.dictationAnswer = [];
+        state.dictationReviewed = false;
+        state.dictationSolved = false;
+        elements.dictationQuestionLabel.textContent = "문제 " + state.dictationQuestionNumber + " · " + pool.length + "개 중 무작위";
+        elements.dictationBankCount.textContent = pool.length;
+        elements.dictationFeedback.className = "";
+        elements.dictationFeedback.textContent = "한 마디 예비박 뒤에 문제가 두 번 재생됩니다.";
+        renderDictationGrid();
+    }
+
+    function clearDictationAnswer() {
+        state.dictationAnswer = [];
+        state.dictationReviewed = false;
+        elements.dictationFeedback.className = "";
+        elements.dictationFeedback.textContent = "입력을 지웠습니다.";
+        renderDictationGrid();
+    }
+
+    function checkDictationAnswer() {
+        const question = getDictationQuestion();
+        if (!question || !state.dictationAnswer.length) {
+            showToast("격자에 리듬을 먼저 입력하세요.");
+            return;
+        }
+        const result = core.scoreRhythmDictation(question.hits, state.dictationAnswer);
+        state.dictationReviewed = true;
+        state.dictationAttempts += 1;
+        elements.dictationAttemptCount.textContent = state.dictationAttempts;
+        if (result.exact) {
+            if (!state.dictationSolved) {
+                state.dictationSolved = true;
+                state.dictationCorrect += 1;
+                elements.dictationCorrectCount.textContent = state.dictationCorrect;
+                incrementPractice();
+            }
+            elements.dictationFeedback.className = "correct";
+            elements.dictationFeedback.textContent = "정답 · " + question.style + " 리듬";
+        } else {
+            elements.dictationFeedback.className = "incorrect";
+            elements.dictationFeedback.textContent = result.score + "점 · 맞음 " + result.correct + " · 빠짐 " + result.missed + " · 추가 " + result.extra;
+        }
+        renderDictationGrid();
+    }
+
+    function listenToDictation() {
+        const context = ensureAudio();
+        const question = getDictationQuestion();
+        if (!context || !question || state.challengeRunning) return;
+        const token = ++state.rhythmPlaybackToken;
+        const beatSeconds = 60 / state.tempo;
+        const beatMs = beatSeconds * 1000;
+        const stepMs = beatMs / 4;
+        const countStart = context.currentTime + .08;
+        state.dictationListens += 1;
+        elements.dictationListenCount.textContent = state.dictationListens;
+        elements.dictationFeedback.className = "";
+        elements.dictationFeedback.textContent = "재생 중";
+        for (let beat = 0; beat < 4; beat += 1) playClick(countStart + beat * beatSeconds, beat === 0, .9);
+        const firstStart = countStart + 4 * beatSeconds;
+        const secondStart = firstStart + 4 * beatSeconds;
+        scheduleHits(question.hits, firstStart, true);
+        scheduleHits(question.hits, secondStart, true);
+        animateRhythmGrid(80 + 4 * beatMs, stepMs, token, elements.dictationGrid);
+        animateRhythmGrid(80 + 8 * beatMs, stepMs, token, elements.dictationGrid);
+        window.setTimeout(function () {
+            if (token !== state.rhythmPlaybackToken) return;
+            elements.dictationFeedback.textContent = "들은 위치를 클릭한 뒤 정답을 확인하세요.";
+        }, 80 + 12 * beatMs);
+    }
+
+    function switchRhythmMode(mode) {
+        if (state.challengeRunning) return;
+        state.rhythmMode = mode === "performance" ? "performance" : "dictation";
+        document.querySelectorAll("[data-rhythm-mode]").forEach(function (button) {
+            const active = button.dataset.rhythmMode === state.rhythmMode;
+            button.classList.toggle("active", active);
+            button.setAttribute("aria-selected", String(active));
+        });
+        elements.dictationPanel.classList.toggle("hidden", state.rhythmMode !== "dictation");
+        elements.performancePanel.classList.toggle("hidden", state.rhythmMode !== "performance");
+        if (state.rhythmMode !== "performance" && state.metronomeOn) toggleMetronome();
+    }
+
     function renderRhythm() {
         const pattern = core.RHYTHM_PATTERNS[state.rhythmPattern];
         elements.rhythmName.textContent = pattern.name;
@@ -428,31 +575,36 @@
         resetChallengeCopy();
     }
 
-    function animateRhythmGrid(startDelayMs, durationMs, token) {
+    function animateRhythmGrid(startDelayMs, durationMs, token, targetGrid) {
+        const grid = targetGrid || elements.rhythmGrid;
         for (let index = 0; index < 16; index += 1) {
             window.setTimeout(function () {
                 if (token !== state.rhythmPlaybackToken) return;
-                document.querySelectorAll(".rhythm-step").forEach(function (step, stepIndex) {
+                grid.querySelectorAll(".rhythm-step").forEach(function (step, stepIndex) {
                     step.classList.toggle("current", stepIndex === index);
                 });
             }, startDelayMs + index * durationMs);
         }
         window.setTimeout(function () {
             if (token !== state.rhythmPlaybackToken) return;
-            document.querySelectorAll(".rhythm-step").forEach(function (step) { step.classList.remove("current"); });
+            grid.querySelectorAll(".rhythm-step").forEach(function (step) { step.classList.remove("current"); });
         }, startDelayMs + 16 * durationMs);
     }
 
-    function schedulePattern(startTime, includeBeatClicks) {
+    function scheduleHits(hits, startTime, includeBeatClicks) {
         const context = ensureAudio();
-        const pattern = core.RHYTHM_PATTERNS[state.rhythmPattern];
         const beatSeconds = 60 / state.tempo;
         const stepSeconds = beatSeconds / 4;
         if (!context) return;
         for (let beat = 0; beat < 4; beat += 1) {
             if (includeBeatClicks) playClick(startTime + beat * beatSeconds, beat === 0, .8);
         }
-        pattern.hits.forEach(function (step) { playDrum(startTime + step * stepSeconds, step % 4 === 0); });
+        hits.forEach(function (step) { playDrum(startTime + step * stepSeconds, step % 4 === 0); });
+    }
+
+    function schedulePattern(startTime, includeBeatClicks) {
+        const pattern = core.RHYTHM_PATTERNS[state.rhythmPattern];
+        scheduleHits(pattern.hits, startTime, includeBeatClicks);
     }
 
     function listenToRhythm() {
@@ -662,6 +814,9 @@
         elements.playProgressionButton.addEventListener("click", playProgression);
         elements.quizListenButton.addEventListener("click", function () { playChord(getChords()[state.quizTarget]); });
         elements.newQuizButton.addEventListener("click", makeQuiz);
+        document.querySelectorAll("[data-rhythm-mode]").forEach(function (button) {
+            button.addEventListener("click", function () { switchRhythmMode(button.dataset.rhythmMode); });
+        });
         elements.tempoSlider.addEventListener("input", function () {
             state.tempo = Number(elements.tempoSlider.value);
             elements.tempoOutput.value = state.tempo;
@@ -670,6 +825,17 @@
         });
         elements.rhythmListenButton.addEventListener("click", listenToRhythm);
         elements.metronomeButton.addEventListener("click", toggleMetronome);
+        elements.dictationListenButton.addEventListener("click", listenToDictation);
+        elements.clearDictationButton.addEventListener("click", clearDictationAnswer);
+        elements.checkDictationButton.addEventListener("click", checkDictationAnswer);
+        elements.newDictationButton.addEventListener("click", newDictationQuestion);
+        document.querySelectorAll("[data-dictation-level]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                state.dictationLevel = button.dataset.dictationLevel;
+                document.querySelectorAll("[data-dictation-level]").forEach(function (item) { item.classList.toggle("active", item === button); });
+                newDictationQuestion();
+            });
+        });
         document.querySelectorAll("[data-pattern]").forEach(function (button) {
             button.addEventListener("click", function () {
                 if (state.challengeRunning) return;
@@ -682,7 +848,7 @@
         elements.retryButton.addEventListener("click", startChallenge);
         elements.tapButton.addEventListener("pointerdown", function (event) { event.preventDefault(); registerTap(); });
         window.addEventListener("keydown", function (event) {
-            if (event.code !== "Space" || elements.rhythmLab.classList.contains("hidden")) return;
+            if (event.code !== "Space" || elements.rhythmLab.classList.contains("hidden") || state.rhythmMode !== "performance") return;
             const tag = document.activeElement && document.activeElement.tagName;
             if (tag === "INPUT" || tag === "SELECT") return;
             event.preventDefault();
@@ -696,6 +862,7 @@
         loadPracticeCount();
         renderKeyOptions();
         renderHarmony();
+        newDictationQuestion();
         renderRhythm();
         makeQuiz();
     }
