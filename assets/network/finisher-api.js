@@ -1,7 +1,7 @@
 (() => {
     "use strict";
 
-    const API_URL = `${window.ClassroomNetwork?.HTTP_URL || "https://classroom-game-hub.onrender.com"}/api/finishers`;
+    const API_URL = `${window.ClassroomNetwork?.HTTP_URL || window.location.origin}/api/finishers`;
 
     async function request(url, options) {
         await window.ClassroomNetwork?.wakeServer?.();

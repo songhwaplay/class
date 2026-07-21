@@ -3,8 +3,12 @@
 
     const useLocalServer = ["localhost", "127.0.0.1"].includes(location.hostname) &&
         new URLSearchParams(location.search).get("server") === "local";
-    const HTTP_URL = useLocalServer ? "http://127.0.0.1:10000" : "https://classroom-game-hub.onrender.com";
-    const WS_URL = useLocalServer ? "ws://127.0.0.1:10000" : "wss://classroom-game-hub.onrender.com";
+    // Production games always connect back to the same site that served the page.
+    // This keeps rooms working when the Render service name or custom domain changes.
+    const HTTP_URL = useLocalServer ? "http://127.0.0.1:10000" : window.location.origin;
+    const WS_URL = useLocalServer
+        ? "ws://127.0.0.1:10000"
+        : `${window.location.protocol === "https:" ? "wss:" : "ws:"}//${window.location.host}`;
     const MAX_OPEN_ATTEMPTS = 3;
     const HEALTH_ATTEMPTS = 3;
     let statusElement = null;
