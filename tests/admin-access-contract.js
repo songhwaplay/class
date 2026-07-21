@@ -34,6 +34,9 @@ assert.match(platformSource, /user\.role !== "admin"/,
   "Admin API authorization must happen on the server.");
 assert.match(platformSource, /VALUES \('site_access_mode', 'open'\)/,
   "New sites should start in open development mode.");
+assert.match(platformSource, /school_login_v2_enabled/);
+assert.match(platformSource, /SET setting_value = 'restricted'/,
+  "The school login upgrade should replace the development guest gate once.");
 assert.match(platformSource, /router\.put\("\/admin\/site-access"/);
 assert.match(platformSource, /const isAdmin = adminEmails\.has\(email\)/,
   "Only the configured administrator email can bootstrap admin access.");

@@ -278,7 +278,17 @@ function createClassroomPlatform(options = {}) {
       )`,
       `INSERT INTO classroom_settings (setting_key, setting_value)
         VALUES ('site_access_mode', 'open')
-        ON CONFLICT (setting_key) DO NOTHING`
+        ON CONFLICT (setting_key) DO NOTHING`,
+      `WITH first_login_upgrade AS (
+        INSERT INTO classroom_settings (setting_key, setting_value)
+        VALUES ('school_login_v2_enabled', 'true')
+        ON CONFLICT (setting_key) DO NOTHING
+        RETURNING setting_key
+      )
+      UPDATE classroom_settings
+      SET setting_value = 'restricted', updated_at = NOW()
+      WHERE setting_key = 'site_access_mode'
+        AND EXISTS (SELECT 1 FROM first_login_upgrade)`
     ];
 
     try {
