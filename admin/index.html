@@ -178,6 +178,11 @@
         .control { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--ink); background: #101512; }
         .action-button { min-height: 44px; border: 1px solid var(--green); border-radius: 10px; padding: 0 16px; color: var(--ink); background: var(--green-dark); font-weight: 800; cursor: pointer; }
         .school-tools { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center; margin-top: 18px; }
+        .school-directory { display: grid; gap: 8px; margin: 14px 0 4px; }
+        .school-directory-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 9px 10px 9px 14px; background: #101512; }
+        .school-directory-row.selected { border-color: var(--green); background: var(--green-dark); }
+        .school-directory-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 800; }
+        .school-directory-state { margin-left: 8px; color: var(--muted); font-size: 12px; font-weight: 500; }
         .check-label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
         .teacher-list { display: grid; gap: 10px; margin-top: 14px; }
         .teacher-row { display: grid; grid-template-columns: 110px 90px 90px minmax(130px, 1fr) 120px auto auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
@@ -188,7 +193,7 @@
         @media (max-width: 560px) {
             body { padding: 32px 14px; }
             .choice-grid { grid-template-columns: 1fr; }
-            .form-row, .teacher-form, .school-tools, .teacher-row { grid-template-columns: 1fr; }
+            .form-row, .teacher-form, .school-tools, .teacher-row, .school-directory-row { grid-template-columns: 1fr; }
             .teacher-class { grid-column: auto; }
         }
     </style>
@@ -234,6 +239,7 @@
                         <input class="control" id="newSchoolName" maxlength="80" placeholder="School name">
                         <button class="action-button" id="addSchoolButton" type="button">ADD SCHOOL</button>
                     </div>
+                    <div class="school-directory" id="schoolDirectory" aria-label="All schools"></div>
                     <div class="school-tools">
                         <select class="control" id="schoolSelect"><option value="">Select school</option></select>
                         <label class="check-label"><input id="schoolEnabled" type="checkbox"> Enabled</label>
@@ -283,6 +289,7 @@
             const modeButtons = Array.from(document.querySelectorAll("[data-mode]"));
             const newSchoolName = document.querySelector("#newSchoolName");
             const addSchoolButton = document.querySelector("#addSchoolButton");
+            const schoolDirectory = document.querySelector("#schoolDirectory");
             const schoolSelect = document.querySelector("#schoolSelect");
             const schoolEnabled = document.querySelector("#schoolEnabled");
             const saveSchoolButton = document.querySelector("#saveSchoolButton");
@@ -339,6 +346,48 @@
 
             function selectedSchool() {
                 return schools.find((school) => school.id === schoolSelect.value) || null;
+            }
+
+            async function deleteSchool(school) {
+                if (!school) return;
+                if (!confirm(`Delete ${school.name}? Delete its teachers first.`)) return;
+                try {
+                    await api(`/api/admin/schools/${school.id}`, { method: "DELETE" });
+                    await loadSchools("");
+                    setStatus("School deleted.");
+                } catch (error) { setStatus(error.message, true); }
+            }
+
+            function renderSchoolDirectory() {
+                schoolDirectory.replaceChildren();
+                schools.forEach((school) => {
+                    const row = document.createElement("div");
+                    row.className = "school-directory-row";
+                    row.classList.toggle("selected", school.id === schoolSelect.value);
+                    const name = document.createElement("div");
+                    name.className = "school-directory-name";
+                    name.append(school.name);
+                    const state = document.createElement("span");
+                    state.className = "school-directory-state";
+                    state.textContent = school.enabled ? "Enabled" : "Disabled";
+                    name.append(state);
+                    const manage = document.createElement("button");
+                    manage.className = "action-button";
+                    manage.type = "button";
+                    manage.textContent = school.id === schoolSelect.value ? "MANAGING" : "MANAGE";
+                    manage.addEventListener("click", () => {
+                        schoolSelect.value = school.id;
+                        renderTeachers();
+                        renderSchoolDirectory();
+                    });
+                    const remove = document.createElement("button");
+                    remove.className = "action-button danger-button";
+                    remove.type = "button";
+                    remove.textContent = "DELETE";
+                    remove.addEventListener("click", () => deleteSchool(school));
+                    row.append(name, manage, remove);
+                    schoolDirectory.append(row);
+                });
             }
 
             function renderTeachers() {
@@ -439,6 +488,7 @@
                     : (schools[0]?.id || "");
                 schoolSelect.value = selectedId;
                 renderTeachers();
+                renderSchoolDirectory();
             }
 
             async function showAdmin(user) {
@@ -454,7 +504,10 @@
             newTeacherPassword.addEventListener("input", () => {
                 newTeacherPassword.value = newTeacherPassword.value.replace(/\D/g, "").slice(0, 6);
             });
-            schoolSelect.addEventListener("change", renderTeachers);
+            schoolSelect.addEventListener("change", () => {
+                renderTeachers();
+                renderSchoolDirectory();
+            });
             addSchoolButton.addEventListener("click", async () => {
                 try {
                     const result = await api("/api/admin/schools", { method: "POST", body: JSON.stringify({ name: newSchoolName.value.trim() }) });
@@ -473,14 +526,7 @@
                 } catch (error) { setStatus(error.message, true); }
             });
             deleteSchoolButton.addEventListener("click", async () => {
-                const school = selectedSchool();
-                if (!school) return;
-                if (!confirm(`Delete ${school.name}? Delete its teachers first.`)) return;
-                try {
-                    await api(`/api/admin/schools/${school.id}`, { method: "DELETE" });
-                    await loadSchools("");
-                    setStatus("School deleted.");
-                } catch (error) { setStatus(error.message, true); }
+                await deleteSchool(selectedSchool());
             });
             addTeacherButton.addEventListener("click", async () => {
                 const school = selectedSchool();

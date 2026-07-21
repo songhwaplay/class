@@ -25,12 +25,14 @@ assert.match(adminScript, /\/api\/admin\/site-access/);
 assert.match(adminScript, /\/api\/admin\/schools/);
 assert.match(adminScript, /\/api\/admin\/teachers/);
 assert.match(adminHtml, /School management/);
-for (const id of ["newTeacherYear", "newTeacherGrade", "newTeacherClass", "deleteSchoolButton"]) {
+for (const id of ["newTeacherYear", "newTeacherGrade", "newTeacherClass", "deleteSchoolButton", "schoolDirectory"]) {
   assert.match(adminHtml, new RegExp(`id=["']${id}["']`), `${id} is missing.`);
 }
 assert.match(adminScript, /academicYear: Number\(newTeacherYear\.value\)/);
 assert.match(adminScript, /method: "DELETE"/,
   "Administrators must be able to delete teachers/classes and empty schools.");
+assert.match(adminScript, /function renderSchoolDirectory\(\)/,
+  "All schools should be visible without opening the collapsed select control.");
 assert.match(adminScript, /schools\[0\]\?\.id \|\| ""/,
   "A saved school should remain visibly selected after refreshing the admin page.");
 assert.match(adminScript, /user\?\.role !== "admin"/,
