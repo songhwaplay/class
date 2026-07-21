@@ -102,6 +102,7 @@
         questionType: byId("questionType"), questionPrompt: byId("questionPrompt"), answerOptions: byId("answerOptions"),
         questionIllustration: byId("questionIllustration"), questionIllustrationImage: byId("questionIllustrationImage"),
         answerFeedback: byId("answerFeedback"), feedbackTitle: byId("feedbackTitle"), feedbackCopy: byId("feedbackCopy"),
+        feedbackStory: byId("feedbackStory"), feedbackStoryCopy: byId("feedbackStoryCopy"),
         nextQuestion: byId("nextQuestion"), resultTitle: byId("resultTitle"), resultScore: byId("resultScore"),
         resultMessage: byId("resultMessage"), resultMistakeList: byId("resultMistakeList"),
         retryQuiz: byId("retryQuiz"), retryMistakes: byId("retryMistakes"), reviewMistakes: byId("reviewMistakes"),
@@ -371,6 +372,8 @@
         });
         elements.feedbackTitle.textContent = correct ? "정답" : `오답 · 정답: ${question.answerLabel}`;
         elements.feedbackCopy.textContent = `${answerIdiom.meaning} · ${question.source}`;
+        elements.feedbackStoryCopy.textContent = answerIdiom.story;
+        elements.feedbackStory.open = !correct;
         elements.answerFeedback.classList.toggle("wrong", !correct);
         elements.answerFeedback.hidden = false;
         elements.nextQuestion.textContent = quizIndex === quiz.length - 1 ? "결과 보기 →" : "다음 문제 →";

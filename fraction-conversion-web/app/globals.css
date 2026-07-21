@@ -2136,6 +2136,320 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
   }
 }
 
+/* 4나눗셈 */
+.grade-four-division-sheet {
+  padding-bottom: 26px;
+}
+
+.grade-four-division-grid {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+  background: white;
+}
+
+.grade-four-division-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: center;
+  border-right: 1px dashed #d8d2ca;
+  border-bottom: 1px dashed #d8d2ca;
+  padding: 14px 10px 20px 8px;
+  background: white;
+  color: #17233c;
+}
+
+.grade-four-division-question:nth-child(3n) {
+  border-right: 0;
+}
+
+.grade-four-division-question:nth-last-child(-n + 3) {
+  border-bottom: 0;
+}
+
+.grade-four-division-index {
+  align-self: start;
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.grade-four-division-operation {
+  width: 168px;
+  justify-self: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
+    ". quotient"
+    "bracket bracket"
+    ". remainder";
+  align-items: center;
+  row-gap: 7px;
+}
+
+.grade-four-division-quotient,
+.grade-four-division-remainder {
+  display: grid;
+  grid-template-columns: 34px 48px;
+  align-items: center;
+  gap: 4px;
+  color: #657086;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.grade-four-division-quotient {
+  grid-area: quotient;
+}
+
+.grade-four-division-remainder {
+  grid-area: remainder;
+}
+
+.grade-four-division-bracket {
+  grid-area: bracket;
+  display: grid;
+  grid-template-columns: 67px 1fr;
+  align-items: center;
+  font-size: 27px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.grade-four-division-bracket strong,
+.grade-four-division-bracket b {
+  font: inherit;
+}
+
+.grade-four-division-bracket b {
+  position: relative;
+  padding: 9px 5px 2px 11px;
+  border-top: 2px solid #17233c;
+}
+
+.grade-four-division-bracket b::before {
+  content: "";
+  position: absolute;
+  top: -2px;
+  bottom: 0;
+  left: 0;
+  width: 10px;
+  border-left: 2px solid #17233c;
+  border-radius: 70% 0 0 0;
+}
+
+.grade-four-division-input,
+.grade-four-division-static-answer {
+  width: 48px;
+  height: 40px;
+  border-radius: 7px;
+  background: white;
+  color: #17233c;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.grade-four-division-input {
+  border: 1.5px solid #968f85;
+  outline: none;
+}
+
+.grade-four-division-static-answer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grade-four-division-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.grade-four-division-question .counting-result {
+  right: 7px;
+  bottom: 4px;
+  font-size: 9px;
+}
+
+@media print {
+  .grade-four-division-input {
+    background: white;
+    color: black;
+  }
+}
+
+/* 4분수 */
+.grade-four-fraction-sheet {
+  padding-bottom: 26px;
+}
+
+.grade-four-fraction-columns {
+  min-height: 0;
+  flex: 1 1 auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 14px;
+  overflow: hidden;
+  border: 1px solid #d8d0c5;
+  border-radius: 12px;
+  background: white;
+}
+
+.grade-four-fraction-column {
+  min-width: 0;
+  display: grid;
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+}
+
+.grade-four-fraction-column:first-child {
+  border-right: 1px solid #b9afa1;
+}
+
+.grade-four-fraction-question {
+  position: relative;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 25px minmax(0, 1fr);
+  align-items: center;
+  padding: 15px 10px 21px 8px;
+  border-bottom: 1px dashed #d8d2ca;
+  background: white;
+  color: #17233c;
+}
+
+.grade-four-fraction-question:last-child {
+  border-bottom: 0;
+}
+
+.grade-four-fraction-index {
+  align-self: start;
+  color: #647087;
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.grade-four-fraction-expression {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 25px;
+  font-weight: 850;
+}
+
+.grade-four-fraction-value,
+.grade-four-fraction-answer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.grade-four-fraction-value > strong {
+  min-width: 18px;
+  font: inherit;
+  text-align: center;
+}
+
+.grade-four-fraction-operator {
+  min-width: 18px;
+  text-align: center;
+}
+
+.grade-four-fraction-stack {
+  width: 34px;
+  display: inline-grid;
+  grid-template-rows: 25px 2px 25px;
+  align-items: center;
+  justify-items: stretch;
+  vertical-align: middle;
+}
+
+.grade-four-fraction-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+}
+
+.grade-four-fraction-line {
+  width: 100%;
+  height: 2px;
+  background: #17233c;
+}
+
+.grade-four-fraction-whole-input,
+.grade-four-fraction-part-input {
+  border: 1.5px solid #968f85;
+  border-radius: 6px;
+  outline: none;
+  background: white;
+  color: #17233c;
+  font-family: inherit;
+  font-weight: 900;
+  text-align: center;
+}
+
+.grade-four-fraction-whole-input {
+  width: 42px;
+  height: 49px;
+  font-size: 21px;
+}
+
+.grade-four-fraction-stack.answer {
+  width: 42px;
+  grid-template-rows: 30px 2px 30px;
+}
+
+.grade-four-fraction-part-input {
+  width: 42px;
+  height: 29px;
+  font-size: 18px;
+}
+
+.grade-four-fraction-whole-input:focus,
+.grade-four-fraction-part-input:focus {
+  border-color: #258f86;
+  box-shadow: 0 0 0 3px rgba(49, 168, 157, 0.2);
+}
+
+.grade-four-fraction-static-answer {
+  min-width: 82px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #17233c;
+}
+
+.grade-four-fraction-question .counting-result {
+  right: 7px;
+  bottom: 4px;
+  font-size: 9px;
+}
+
+@media print {
+  .grade-four-fraction-whole-input,
+  .grade-four-fraction-part-input {
+    background: white;
+    color: black;
+  }
+}
+
 /* 2구구단⑤ */
 .multiplication-five-columns {
   grid-template-columns: repeat(5, minmax(0, 1fr));

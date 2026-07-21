@@ -587,8 +587,7 @@ function pressBell(){
  if(myRole==="host")hostBell(myId);
  else send({type:"BELL_REQ"});
 
- if(window.ClassGameSfx)window.ClassGameSfx.play("bell");
- else playBrightBell();
+ playBrightBell();
 }
 function handleBellPointerDown(event){
  if(event.isPrimary===false||event.button>0)return;

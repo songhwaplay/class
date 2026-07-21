@@ -788,7 +788,17 @@ kbd {
 .answer-feedback strong { color: var(--green); }
 .answer-feedback.wrong strong { color: var(--red); }
 .answer-feedback p { margin: 0; color: var(--muted); font-size: 12px; }
-.answer-feedback button { grid-column: 2; grid-row: 1 / 3; min-height: 42px; color: var(--green); }
+.feedback-story { grid-column: 1; margin-top: 8px; }
+.feedback-story summary {
+    width: fit-content;
+    color: var(--green);
+    font-size: 12px;
+    font-weight: 900;
+    cursor: pointer;
+}
+.answer-feedback.wrong .feedback-story summary { color: var(--red); }
+.feedback-story p { margin-top: 8px; line-height: 1.65; }
+.answer-feedback button { grid-column: 2; grid-row: 1 / 4; min-height: 42px; color: var(--green); }
 
 .quiz-result {
     width: min(620px, 100%);

@@ -47,6 +47,8 @@ const readyRoutes: Record<string, string> = {
   "4숫자읽기": "/arithmetic/grade-4-number-reading",
   "4곱셈": "/arithmetic/grade-4-multiplication",
   "4큰수곱셈": "/arithmetic/grade-4-large-number-multiplication",
+  "4나눗셈": "/arithmetic/grade-4-division",
+  "4분수": "/arithmetic/grade-4-fraction",
 };
 
 const worksheetNames = [
