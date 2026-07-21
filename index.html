@@ -148,6 +148,18 @@
             background: linear-gradient(135deg, #a9651c, #4a2910);
         }
 
+        #hubContent.is-locked a {
+            opacity: 0.38;
+            filter: grayscale(0.75);
+            cursor: not-allowed;
+        }
+
+        #hubContent.is-locked a:hover,
+        #hubContent.is-locked a:focus-visible {
+            border-color: #6f4b24;
+            background: linear-gradient(135deg, #5f3514, #2b1709);
+        }
+
         .worksheet-arrow {
             color: var(--gold-bright);
             font-size: 20px;
@@ -472,9 +484,8 @@
             const signOutButton = document.getElementById('signOutButton');
             const classToolsLink = document.getElementById('classToolsLink');
             const hubContent = document.getElementById('hubContent');
+            const hubLinks = Array.from(hubContent.querySelectorAll('a[href]'));
             const playerLearningLinks = Array.from(document.querySelectorAll('[data-requires-player="true"]'));
-            let openAccess = false;
-            let currentPlayerName = '';
 
             function normalizePlayerName(value) {
                 return String(value || '').replace(/[^가-힣]/g, '').slice(0, 6);
@@ -501,7 +512,41 @@
                     } else {
                         targetUrl.searchParams.delete('name');
                     }
-                    link.href = targetUrl.toString();
+                    const nextHref = targetUrl.toString();
+                    if (hubContent.classList.contains('is-locked')) {
+                        link.dataset.lockedHref = nextHref;
+                    } else {
+                        link.href = nextHref;
+                    }
+                });
+            }
+
+            function setHubLocked(locked) {
+                hubContent.classList.toggle('is-locked', locked);
+                hubContent.setAttribute('aria-disabled', String(locked));
+                hubLinks.forEach((link) => {
+                    if (locked) {
+                        if (!link.hasAttribute('data-original-tabindex')) {
+                            link.dataset.originalTabindex = link.getAttribute('tabindex') || '';
+                        }
+                        if (link.hasAttribute('href')) {
+                            link.dataset.lockedHref = link.getAttribute('href');
+                            link.removeAttribute('href');
+                        }
+                        link.setAttribute('aria-disabled', 'true');
+                        link.setAttribute('tabindex', '-1');
+                        return;
+                    }
+
+                    if (link.dataset.lockedHref) {
+                        link.setAttribute('href', link.dataset.lockedHref);
+                    }
+                    delete link.dataset.lockedHref;
+                    link.removeAttribute('aria-disabled');
+                    const originalTabindex = link.dataset.originalTabindex;
+                    if (originalTabindex) link.setAttribute('tabindex', originalTabindex);
+                    else link.removeAttribute('tabindex');
+                    delete link.dataset.originalTabindex;
                 });
             }
 
@@ -536,14 +581,13 @@
                 signedInName.textContent = playerName;
                 classMembership.textContent = `${membership.schoolName} · G${membership.grade}-${membership.classNumber} · No. ${membership.studentNumber}`;
                 hubContent.hidden = false;
-                currentPlayerName = playerName;
                 localStorage.setItem('classPlayerName', playerName);
                 updatePlayerLearningLinks(playerName);
+                setHubLocked(false);
                 setStatus('');
             }
 
             function showOpenAccess() {
-                openAccess = true;
                 authTitle.textContent = 'DEVELOPMENT ACCESS · OPEN';
                 authMessage.hidden = false;
                 authMessage.textContent = 'Google sign-in is not required while the site is being developed.';
@@ -556,10 +600,12 @@
                 const savedName = normalizePlayerName(localStorage.getItem('classPlayerName') || '');
                 guestNameInput.value = savedName;
                 if (isValidPlayerName(savedName)) {
-                    currentPlayerName = savedName;
                     updatePlayerLearningLinks(savedName);
+                    setHubLocked(false);
                     setStatus(`PLAYER · ${savedName}`);
                 } else {
+                    updatePlayerLearningLinks('');
+                    setHubLocked(true);
                     setStatus('Enter a Korean player name before opening a game.');
                 }
             }
@@ -574,6 +620,7 @@
                 classMembership.textContent = state.user.email;
                 joinForm.hidden = false;
                 hubContent.hidden = true;
+                setHubLocked(true);
                 joinCodeInput.focus();
             }
 
@@ -644,19 +691,20 @@
                     return;
                 }
                 guestNameInput.value = playerName;
-                currentPlayerName = playerName;
                 localStorage.setItem('classPlayerName', playerName);
                 updatePlayerLearningLinks(playerName);
+                setHubLocked(false);
                 setStatus(`PLAYER · ${playerName}`);
             });
-            playerLearningLinks.forEach((link) => {
-                link.addEventListener('click', (event) => {
-                    if (!openAccess || isValidPlayerName(currentPlayerName)) return;
-                    event.preventDefault();
-                    setStatus('Enter a Korean player name before opening a game.', true);
-                    guestNameInput.focus();
-                });
-            });
+            hubContent.addEventListener('click', (event) => {
+                if (!hubContent.classList.contains('is-locked')) return;
+                const link = event.target instanceof Element ? event.target.closest('a') : null;
+                if (!link || !hubContent.contains(link)) return;
+                event.preventDefault();
+                event.stopPropagation();
+                setStatus('Enter a Korean player name before opening a game.', true);
+                guestNameInput.focus();
+            }, true);
             studentNumberInput.addEventListener('input', () => {
                 studentNumberInput.value = studentNumberInput.value.replace(/\D/g, '').slice(0, 3);
             });
