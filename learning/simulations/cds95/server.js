@@ -269,7 +269,7 @@ app.use(express.static(path.join(__dirname, 'public'), {
 app.get('/api/mission-catalog', (_req, res) => { res.setHeader('Cache-Control', 'no-store'); res.json(publicMissionCatalog()); });
 app.get('/health', (_req, res) => res.json({
   ok: true,
-  version: 75,
+  version: 76,
   rooms: rooms.size,
   players: playerCount(),
   seaBaseSpeed: SEA_BASE_SPEED,
@@ -2440,6 +2440,6 @@ setInterval(() => {
 setInterval(() => store.saveNow(), 5000).unref();
 
 server.listen(PORT, '0.0.0.0', () => {
-  console.log(`CDS95 실시간 학습 서버 v75 · 구면 항해·현실 속력 HUD: http://localhost:${PORT}`);
+  console.log(`CDS95 실시간 학습 서버 v76 · 지역사·특별 도시사 도서관: http://localhost:${PORT}`);
   console.log(`교사 관찰 화면: http://localhost:${PORT}/teacher.html`);
 });

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v75</title>
+<title>세계 항해·육상 탐험 학습 · 실시간 교실 v76</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -19,6 +19,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 .actionPrompt{position:fixed;left:50%;bottom:20px;z-index:12;transform:translateX(-50%);display:none;align-items:center;gap:12px;padding:10px 12px;border-radius:9px;font-size:13px}.actionPrompt.show{display:flex}.actionPrompt button{background:#71532b;font-weight:800;min-width:100px}.actionPrompt button:disabled{background:#3b4345;color:#b9c1c1;border-color:#667072;cursor:not-allowed}
 #cityView{position:fixed;inset:0;z-index:25;display:none;background:#07141a;align-items:center;justify-content:center;padding:88px 18px 18px}#cityView.show{display:flex}#cityCard{position:relative;width:min(94vw,900px);aspect-ratio:5/4;max-height:calc(100vh - 112px);border:2px solid #bca36d;border-radius:10px;overflow:hidden;background:#050b0e;box-shadow:0 14px 50px #000}#cityScene{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;image-rendering:pixelated;background:#050b0e}#cityShade{position:absolute;inset:0;background:linear-gradient(180deg,#0000 0%,#0000 64%,#061116b8 79%,#061116f5 100%);pointer-events:none}#cityTitle{position:absolute;left:20px;top:16px;padding:7px 14px;border-radius:5px;font-size:23px;font-weight:800;background:#102832dc;border:1px solid #bca36d;text-shadow:0 2px 2px #000}#cityInfo{position:absolute;left:22px;bottom:76px;max-width:72%;font-size:12px;line-height:1.55;text-shadow:0 2px 2px #000}#cityMenu{position:absolute;left:18px;right:18px;bottom:15px;display:flex;gap:8px;flex-wrap:wrap}#cityMenu button{padding:0 18px;font-weight:800}#libraryBtn{background:#365d3e}#leaveCityBtn{margin-left:auto;background:#71532bee}#libraryView{position:fixed;inset:0;z-index:52;display:none;align-items:center;justify-content:center;padding:18px;background:#041015e8;touch-action:auto}#libraryView.show{display:flex}#libraryCard{width:min(96vw,1050px);height:min(90vh,760px);display:grid;grid-template-rows:auto minmax(0,1fr);overflow:hidden;border:2px solid #bca36d;border-radius:10px;background:#0b2028;box-shadow:0 16px 55px #000}#libraryHeader{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #756849;background:#102d37}#libraryHeader h2{margin:0;font-size:19px;color:#ffe3a0}#libraryHeader span{font-size:11px;color:#cbd9d8}#libraryClose{margin-left:auto;min-width:76px}#libraryBody{display:grid;grid-template-columns:minmax(220px,31%) minmax(0,1fr);min-height:0}#bookList{overflow:auto;padding:10px;border-right:1px solid #53645c;background:#081920;touch-action:pan-y}#bookList button{display:block;width:100%;min-height:0;margin-bottom:7px;padding:9px 10px;text-align:left;background:#102a32;border-color:#5f746b}#bookList button b{display:block;color:#ffe3a0;font-size:13px}#bookList button small{display:block;margin-top:3px;color:#c5d5d3;font-size:10px;line-height:1.35}#bookList button.active{background:#385241;border-color:#d5bb70}#bookReader{overflow:auto;padding:24px clamp(18px,4vw,42px);background:linear-gradient(90deg,#d7c89a 0,#efe4bc 7%,#f3e8c3 50%,#eadcaf 93%,#c7b787 100%);color:#2b281d;touch-action:pan-y}#bookReader h2{margin:0 0 5px;font-family:serif;font-size:27px;color:#332913}#bookMeta{font-size:12px;color:#665839;margin-bottom:18px}#bookIntro{font-weight:700;line-height:1.75;border-bottom:1px solid #a89667;padding-bottom:16px}#bookSections h3{font-family:serif;margin:20px 0 7px;color:#4c3d20}#bookSections p{margin:0;white-space:pre-line;line-height:1.85;font-size:15px}
 
+#bookList button.regionHistory{border-left:4px solid #8dcfe2;background:#13313b}#bookList button.cityHistory{border-left:4px solid #f2cf78;background:#3a2b1d}#bookList button.cityHistory b{color:#fff0b8}
 .atlasGuide{border-left:3px solid #8dcfe2;background:#081d25;padding:8px 9px;margin:8px 0;color:#d4eef5;font-size:12px;line-height:1.55}.stageBox{border-top:1px solid #34505a;margin-top:8px;padding-top:8px}.stageNow{color:#ffe3a0;font-weight:800}.cargo{color:#bde8c8;font-weight:800}
 #missionPanel{position:fixed;right:12px;top:70px;z-index:30;width:min(360px,calc(100vw - 24px));max-height:calc(100vh - 150px);overflow:auto;border-radius:10px;padding:13px;display:none;touch-action:auto}#missionPanel.show{display:block}#missionPanel h3{margin:0 0 5px;color:#ffe3a0;font-size:16px}#missionPanel p{margin:6px 0;font-size:12px;line-height:1.55}.missionMeta{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0}.tag{border:1px solid #6e897f;border-radius:999px;padding:3px 7px;font-size:10px;background:#0b222a}.choice{display:flex;align-items:flex-start;gap:7px;padding:7px 5px;border-top:1px solid #34505a;font-size:12px;cursor:pointer}.choice input{height:auto;margin-top:2px}.missionActions{display:flex;gap:7px;margin-top:8px}.missionActions button{flex:1;min-height:36px}.missionDone{color:var(--good);font-weight:800}.missionRetry{color:#ffc28b;font-weight:800}.missionChoiceGrid{display:grid;gap:9px;margin-top:10px}.missionChoiceCard{width:100%;text-align:left;padding:11px;background:#0b222a;border:1px solid #6e897f;min-height:0;transition:background .08s,border-color .08s,transform .08s}.missionChoiceCard:hover{background:#173640;border-color:#f2cf78}.missionChoiceCard:active{transform:translateY(1px)}.missionChoiceCard.isSelecting,.missionChoiceCard.isSelecting:disabled{background:#35543d;border:2px solid #9fe1b0;color:#fff;opacity:1}.missionChoiceCard.isSelecting::after{content:'선택 중…';display:block;margin-top:7px;color:#bff0ca;font-size:11px;font-weight:800}.missionChoiceCard:disabled{cursor:wait;opacity:.62}.missionChoiceCard b{display:block;color:#ffe3a0;font-size:14px;margin-bottom:4px}.missionChoiceCard span{display:block;font-size:11px;line-height:1.45;color:#d8e7e6}.choiceWarning{color:#ffc28b;font-size:11px;font-weight:800;margin-top:8px}#missionToggle{position:fixed;right:12px;top:70px;z-index:31;display:none;background:#6b542d;font-weight:800;padding:0 12px}#missionToggle.show{display:block}
 
@@ -45,7 +46,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 </head>
 <body>
 <canvas id="game"></canvas>
-<div id="loading">Natural Earth 16K 원본 지도(V75)를 불러오는 중…</div>
+<div id="loading">Natural Earth 16K 원본 지도(V76)를 불러오는 중…</div>
 <div id="join">
   <form id="joinCard" class="panel">
     <h1>세계 항해·육상 탐험</h1>
@@ -121,6 +122,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 <script src="/js/ocean-current.js"></script>
 <script src="/js/wind.js"></script>
 <script src="/js/bgm.js?v=72"></script>
+<script src="/js/library-history.js?v=76"></script>
 <script>
 'use strict';
 const {WORLD_W:WW,WORLD_H:WH,TILE:TS,WORLD_PIXEL_W:SPAN,WORLD_PIXEL_H:MAP_H,SPEED:TERRAIN_SPEED,LABEL:TERRAIN_LABEL}=UW3Terrain;
@@ -427,7 +429,7 @@ function cityBooks(city){
   const common=books.filter(book=>Array.isArray(book.shelves)&&book.shelves.includes('공통'));
   const result=[];const seen=new Set();
   for(const book of [...local,...common]){if(seen.has(book.id))continue;seen.add(book.id);result.push(book)}
-  return result;
+  return CDS95LibraryHistory.contextualBooks(catalogCity,result);
 }
 function renderBook(book){
   if(!book){bookTitle.textContent='읽을 책이 없습니다.';bookMeta.textContent='';bookIntro.textContent='';bookSections.replaceChildren();return}
@@ -441,8 +443,8 @@ function openLibrary(){
   const catalogCity=currentLibraryCity(serverSelf);
   if(!catalogCity){closeLibrary();showToast('도시 정보를 불러오지 못했습니다.');return}
   const books=cityBooks(serverSelf);libraryTitle.textContent=`${serverSelf?.currentCityName||'도시'} 도서관 · ${catalogCity.libraryRegion} 장서`;
-  libraryHint.textContent=`지역 공통 ${books.length}권 · 총 ${books.reduce((sum,book)=>sum+(book.sections?.length||0),0)}개 학습 단락`;bookList.replaceChildren();
-  for(const book of books){const button=document.createElement('button');button.type='button';button.dataset.bookId=book.id;const title=document.createElement('b');title.textContent=book.title;const meta=document.createElement('small');meta.textContent=[book.category,book.author,book.period].filter(Boolean).join(' · ');button.append(title,meta);button.onclick=()=>renderBook(book);bookList.append(button)}
+  const hasCityHistory=books.some(book=>book.contextKind==='cityHistory');libraryHint.textContent=hasCityHistory?`${catalogCity.libraryRegion} 지역사 · ${catalogCity.name} 특별 도시사 · 총 ${books.length}권`:`${catalogCity.libraryRegion} 지역사 · 총 ${books.length}권`;bookList.replaceChildren();
+  for(const book of books){const button=document.createElement('button');button.type='button';button.dataset.bookId=book.id;if(book.contextKind)button.classList.add(book.contextKind);const title=document.createElement('b');title.textContent=book.title;const meta=document.createElement('small');meta.textContent=[book.category,book.author,book.period].filter(Boolean).join(' · ');button.append(title,meta);button.onclick=()=>renderBook(book);bookList.append(button)}
   libraryView.classList.add('show');renderBook(books.find(book=>book.id===openedBookId)||books[0]);
 }
 function closeLibrary(){libraryView.classList.remove('show')}
@@ -694,10 +696,52 @@ function drawNameLabel(screenX,screenY,name,isMine,suffix=''){
   const label=suffix?`${name} · ${suffix}`:name;ctx.font=`${isMine?'bold ':''}12px "Malgun Gothic",sans-serif`;ctx.textAlign='center';ctx.textBaseline='bottom';const tw=ctx.measureText(label).width;ctx.fillStyle='rgba(5,20,26,.84)';ctx.fillRect(Math.round(screenX-tw/2-5),Math.round(screenY-46),Math.round(tw+10),18);ctx.strokeStyle=isMine?'#f3d48d':'#dbeaf0';ctx.strokeRect(Math.round(screenX-tw/2-5)+.5,Math.round(screenY-46)+.5,Math.round(tw+10),18);ctx.fillStyle=isMine?'#ffe9a8':'#fff';ctx.fillText(label,Math.round(screenX),Math.round(screenY-30));
 }
 function screenPoint(x,y,cw,ch){return {x:cw/2+dxWrap(x,self.x)*zoom,y:ch/2+(y-self.y)*zoom}}
+function ufoPalette(rank,isMine){
+  const n=Number(rank)||0;
+  if(n===1)return{metal:'#f6d365',edge:'#8b5a12',glow:'#fff2a6',glass:'#70e7e3',ribbon:'#c83f4d'};
+  if(n===2)return{metal:'#dce8ee',edge:'#667985',glow:'#eaffff',glass:'#78d7ea',ribbon:'#526f87'};
+  if(n===3)return{metal:'#d88b53',edge:'#713b20',glow:'#ffd2a0',glass:'#83d8ce',ribbon:'#9c4135'};
+  return{metal:isMine?'#e7c979':'#b8ccd0',edge:isMine?'#77531c':'#526970',glow:'#b9fff2',glass:'#70d9cf',ribbon:'#477c69'};
+}
+function drawFinishedUfoAt(p,isMine,cw,ch){
+  const s=screenPoint(p.x,p.y,cw,ch);if(s.x<-90||s.x>cw+90||s.y<-90||s.y>ch+90)return;
+  const rank=Number(p.finishRank)||0,palette=ufoPalette(rank,isMine),scale=Math.max(.76,Math.min(1.28,zoom*.76)),r=29*scale;
+  const now=performance.now(),phase=now/310+(String(p.name||'').length*.73),bob=Math.sin(phase)*1.7*scale,boost=Number(p.speedBoostMultiplier)||speedBoostForRank(rank);
+  ctx.save();ctx.translate(Math.round(s.x),Math.round(s.y+bob));
+
+  // The soft wake and three navigation rays make the fast reward readable over sea and land.
+  ctx.save();ctx.globalAlpha=.2;ctx.fillStyle=palette.glow;ctx.beginPath();ctx.moveTo(-r*.58,r*.25);ctx.lineTo(-r*.22,r*1.05);ctx.lineTo(0,r*.38);ctx.lineTo(r*.22,r*1.05);ctx.lineTo(r*.58,r*.25);ctx.closePath();ctx.fill();ctx.restore();
+  ctx.save();ctx.globalAlpha=.28;ctx.fillStyle='#071b22';ctx.beginPath();ctx.ellipse(0,r*.72,r*.78,r*.19,0,0,Math.PI*2);ctx.fill();ctx.restore();
+  if(boost>1){
+    ctx.save();ctx.strokeStyle=palette.glow;ctx.lineWidth=Math.max(1.5,1.8*scale);ctx.lineCap='round';ctx.globalAlpha=.34;
+    for(let i=-1;i<=1;i++){const pulse=(now/18+i*17)%20;ctx.beginPath();ctx.moveTo(i*r*.48,r*.28+pulse*.12);ctx.lineTo(i*r*.63,r*.68+pulse*.22);ctx.stroke()}
+    ctx.restore();
+  }
+
+  // Brass hull and crimson pennant keep the craft tied to the Age of Exploration.
+  ctx.shadowColor='rgba(0,0,0,.72)';ctx.shadowBlur=7;
+  const hull=ctx.createLinearGradient(0,-r*.2,0,r*.48);hull.addColorStop(0,palette.metal);hull.addColorStop(.42,'#fff0a4');hull.addColorStop(.48,palette.metal);hull.addColorStop(1,palette.edge);
+  ctx.fillStyle=hull;ctx.strokeStyle='#34220f';ctx.lineWidth=Math.max(1.5,2*scale);ctx.beginPath();ctx.ellipse(0,r*.18,r,r*.34,0,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.shadowBlur=0;ctx.fillStyle=palette.edge;ctx.beginPath();ctx.ellipse(0,r*.34,r*.72,r*.22,0,0,Math.PI);ctx.fill();
+
+  const glass=ctx.createLinearGradient(0,-r*.72,0,r*.1);glass.addColorStop(0,'rgba(221,255,242,.96)');glass.addColorStop(.38,palette.glass);glass.addColorStop(1,'rgba(18,83,91,.92)');
+  ctx.fillStyle=glass;ctx.strokeStyle='#193c43';ctx.lineWidth=Math.max(1.3,1.7*scale);ctx.beginPath();ctx.moveTo(-r*.48,r*.05);ctx.bezierCurveTo(-r*.37,-r*.66,r*.37,-r*.66,r*.48,r*.05);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.save();ctx.globalAlpha=.56;ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(-r*.17,-r*.33,r*.11,r*.2,-.55,0,Math.PI*2);ctx.fill();ctx.restore();
+
+  // A tiny mast, pennant and compass boss sell the impossible "explorer's flagship" silhouette.
+  ctx.strokeStyle='#493117';ctx.lineWidth=Math.max(1.2,1.5*scale);ctx.beginPath();ctx.moveTo(0,-r*.52);ctx.lineTo(0,-r*.9);ctx.stroke();
+  ctx.fillStyle=palette.ribbon;ctx.strokeStyle='#4a2020';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,-r*.88);ctx.lineTo(r*.42,-r*.73);ctx.lineTo(0,-r*.61);ctx.closePath();ctx.fill();ctx.stroke();
+  ctx.fillStyle='#f7e8ae';ctx.strokeStyle='#4a3217';ctx.lineWidth=Math.max(1,1.4*scale);ctx.beginPath();ctx.arc(0,r*.18,r*.18,0,Math.PI*2);ctx.fill();ctx.stroke();
+  ctx.fillStyle=palette.edge;ctx.font=`bold ${Math.max(8,Math.round(r*.25))}px Georgia,serif`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(rank&&rank<=3?String(rank):'✦',0,r*.19);
+
+  const lights=7;for(let i=0;i<lights;i++){const a=(i/(lights-1))*Math.PI*.84+Math.PI*.08,x=Math.cos(a)*r*.8,y=r*.18+Math.sin(a)*r*.25;const active=(i+Math.floor(now/115))%lights===0;ctx.fillStyle=active?'#fff':palette.glow;ctx.globalAlpha=active?1:.78;ctx.beginPath();ctx.arc(x,y,Math.max(1.4,r*.052),0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1;
+  ctx.restore();
+  drawNameLabel(s.x,s.y-r+18,p.name,isMine,completionSuffix(p));drawMedalBadge(s.x,s.y-r-43,p.finishRank);
+}
 function drawShipAt(p,isMine,cw,ch){const s=screenPoint(p.x,p.y,cw,ch);if(s.x<-80||s.x>cw+80||s.y<-80||s.y>ch+80)return;const scale=Math.max(.64,Math.min(1.25,zoom*.69)),size=48*scale;ctx.save();ctx.imageSmoothingEnabled=false;ctx.shadowColor='#000';ctx.shadowBlur=5;ctx.drawImage(shipAtlas,p.dir*48,0,48,48,Math.round(s.x-size/2),Math.round(s.y-size/2),Math.round(size),Math.round(size));ctx.shadowBlur=0;drawNameLabel(s.x,s.y-size/2+18,p.name,isMine,completionSuffix(p));drawMedalBadge(s.x,s.y-size/2-42,p.finishRank);ctx.restore()}
 function drawExplorerAt(p,isMine,cw,ch){const s=screenPoint(p.x,p.y,cw,ch);if(s.x<-60||s.x>cw+60||s.y<-60||s.y>ch+60)return;const size=Math.max(13,Math.min(23,zoom*11));ctx.save();ctx.translate(Math.round(s.x),Math.round(s.y));ctx.shadowColor='#000';ctx.shadowBlur=4;ctx.fillStyle=isMine?'#f2cf78':'#d9eef5';ctx.beginPath();ctx.arc(0,-size*.62,size*.24,0,Math.PI*2);ctx.fill();ctx.fillRect(-size*.22,-size*.38,size*.44,size*.62);ctx.fillStyle=isMine?'#7f5426':'#42616c';ctx.fillRect(size*.18,-size*.30,size*.22,size*.42);ctx.strokeStyle='#1a2528';ctx.lineWidth=Math.max(2,size*.10);ctx.beginPath();ctx.moveTo(-size*.12,size*.22);ctx.lineTo(-size*.28,size*.60);ctx.moveTo(size*.12,size*.22);ctx.lineTo(size*.28,size*.60);ctx.stroke();ctx.shadowBlur=0;ctx.restore();drawNameLabel(s.x,s.y-size*.65,p.name,isMine,completionSuffix(p)||'탐험대');drawMedalBadge(s.x,s.y-size*.65-55,p.finishRank)}
 function drawCityMarker(p,isMine,cw,ch){const s=screenPoint(p.x,p.y,cw,ch);ctx.save();ctx.fillStyle=isMine?'#ffe49a':'#fff';ctx.strokeStyle='#4b321c';ctx.lineWidth=2;ctx.beginPath();ctx.arc(s.x,s.y,7,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.restore();drawNameLabel(s.x,s.y-2,p.name,isMine,'입항 중')}
-function drawActor(p,isMine,cw,ch){if(p.mode==='city')return;if(p.mode==='land')drawExplorerAt(p,isMine,cw,ch);else drawShipAt(p,isMine,cw,ch)}
+function drawActor(p,isMine,cw,ch){if(p.mode==='city')return;if(p.missionCompleted||Number(p.finishRank)>0)drawFinishedUfoAt(p,isMine,cw,ch);else if(p.mode==='land')drawExplorerAt(p,isMine,cw,ch);else drawShipAt(p,isMine,cw,ch)}
 function drawPlayers(cw,ch){const now=performance.now();for(const p of remote.values()){const t=Math.min(1,(now-p.received)/120);p.x=wrapX(p.fromX+dxWrap(p.targetX,p.fromX)*t);p.y=p.fromY+(p.targetY-p.fromY)*t;drawActor(p,false,cw,ch)}drawActor({...self,mode,name:self.name,finishRank:missionProgress?.finishRank||serverSelf?.finishRank,speedBoostMultiplier:completionBoost()},true,cw,ch)}
 function formatGameDate(minutes){const base=Date.UTC(1492,0,1,0,0),d=new Date(base+Math.max(0,minutes||0)*60000);return `${d.getUTCFullYear()}년 ${d.getUTCMonth()+1}월 ${d.getUTCDate()}일 ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')}`}
 function formatSpeedKmh(value){const speed=Math.max(0,Number(value)||0);return `${speed>0&&speed<10?speed.toFixed(1):Math.round(speed)} km/h`}
