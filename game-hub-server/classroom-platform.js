@@ -2,12 +2,11 @@ const crypto = require("crypto");
 const express = require("express");
 const { OAuth2Client } = require("google-auth-library");
 const { Pool } = require("pg");
+const { createReadingBank } = require("./reading-bank");
 
 const SESSION_COOKIE = "class_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 const JOIN_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-const DEFAULT_STUDENT_PASSWORD = "123456";
-const STUDENT_PASSWORD_PATTERN = /^\d{6}$/;
 
 class HttpError extends Error {
   constructor(status, code, message) {
@@ -58,30 +57,6 @@ function readCookie(req, name) {
 
 function hashSessionToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
-}
-
-function hashStudentPassword(password) {
-  const normalized = String(password || "").trim();
-  if (!STUDENT_PASSWORD_PATTERN.test(normalized)) {
-    throw new Error("Student passwords must contain exactly 6 digits.");
-  }
-  const salt = crypto.randomBytes(16);
-  const derivedKey = crypto.scryptSync(normalized, salt, 32);
-  return `scrypt$${salt.toString("hex")}$${derivedKey.toString("hex")}`;
-}
-
-function verifyStudentPassword(password, encodedHash) {
-  const [algorithm, saltHex, keyHex] = String(encodedHash || "").split("$");
-  if (algorithm !== "scrypt" || !saltHex || !keyHex || !STUDENT_PASSWORD_PATTERN.test(String(password || ""))) {
-    return false;
-  }
-  try {
-    const expected = Buffer.from(keyHex, "hex");
-    const actual = crypto.scryptSync(String(password), Buffer.from(saltHex, "hex"), expected.length);
-    return expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
-  } catch (_) {
-    return false;
-  }
 }
 
 function makeJoinCode() {
@@ -210,25 +185,18 @@ function createClassroomPlatform(options = {}) {
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         UNIQUE (name, google_domain)
       )`,
-      `ALTER TABLE classroom_schools
-        ADD COLUMN IF NOT EXISTS school_code TEXT`,
-      `CREATE UNIQUE INDEX IF NOT EXISTS classroom_schools_code_idx
-        ON classroom_schools (UPPER(school_code))
-        WHERE school_code IS NOT NULL`,
       `CREATE TABLE IF NOT EXISTS classroom_classes (
         id BIGSERIAL PRIMARY KEY,
         school_id BIGINT NOT NULL REFERENCES classroom_schools(id),
         teacher_user_id BIGINT NOT NULL UNIQUE REFERENCES classroom_users(id),
         academic_year INTEGER NOT NULL,
-        grade INTEGER NOT NULL CHECK (grade BETWEEN 1 AND 6),
+        grade INTEGER NOT NULL CHECK (grade BETWEEN 1 AND 12),
         class_number INTEGER NOT NULL CHECK (class_number BETWEEN 1 AND 30),
         teacher_name TEXT NOT NULL,
         join_code TEXT NOT NULL UNIQUE,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
       )`,
-      `CREATE UNIQUE INDEX IF NOT EXISTS classroom_classes_identity_idx
-        ON classroom_classes (school_id, academic_year, grade, class_number)`,
       `CREATE TABLE IF NOT EXISTS classroom_students (
         id BIGSERIAL PRIMARY KEY,
         class_id BIGINT NOT NULL REFERENCES classroom_classes(id) ON DELETE CASCADE,
@@ -240,10 +208,13 @@ function createClassroomPlatform(options = {}) {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         UNIQUE (class_id, student_number)
       )`,
-      `ALTER TABLE classroom_students
-        ADD COLUMN IF NOT EXISTS password_hash TEXT`,
       `CREATE INDEX IF NOT EXISTS classroom_students_class_idx
         ON classroom_students (class_id)`,
+      `ALTER TABLE classroom_classes
+        DROP CONSTRAINT IF EXISTS classroom_classes_grade_check`,
+      `ALTER TABLE classroom_classes
+        ADD CONSTRAINT classroom_classes_grade_check
+        CHECK (grade BETWEEN 1 AND 12)`,
       `CREATE TABLE IF NOT EXISTS classroom_settings (
         setting_key TEXT PRIMARY KEY,
         setting_value TEXT NOT NULL,
@@ -258,6 +229,7 @@ function createClassroomPlatform(options = {}) {
     try {
       for (const statement of statements) await pool.query(statement);
       await pool.query("DELETE FROM classroom_sessions WHERE expires_at <= NOW()");
+      await readingBank.initialize();
       databaseReady = true;
       initializationError = null;
       console.log("Classroom database is ready.");
@@ -311,6 +283,15 @@ function createClassroomPlatform(options = {}) {
     }
     return user;
   }
+
+  const readingBank = createReadingBank({
+    pool,
+    requireUser,
+    requireAdmin,
+    requireDatabase,
+    HttpError,
+    asyncRoute
+  });
 
   async function getSiteAccessMode() {
     requireDatabase();
@@ -471,7 +452,7 @@ function createClassroomPlatform(options = {}) {
   router.get("/teacher/class", asyncRoute(async (req, res) => {
     const teacher = await requireTeacher(req);
     const classResult = await pool.query(
-      `SELECT c.*, sc.name AS school_name, sc.school_code
+      `SELECT c.*, sc.name AS school_name
        FROM classroom_classes c
        JOIN classroom_schools sc ON sc.id = c.school_id
        WHERE c.teacher_user_id = $1
@@ -483,8 +464,7 @@ function createClassroomPlatform(options = {}) {
     if (!classroom) return res.json({ classroom: null });
 
     const studentsResult = await pool.query(
-      `SELECT student_number, roster_name, user_id IS NOT NULL AS linked,
-              password_hash IS NOT NULL AS password_configured
+      `SELECT student_number, roster_name, user_id IS NOT NULL AS linked
        FROM classroom_students
        WHERE class_id = $1
        ORDER BY CASE WHEN student_number ~ '^[0-9]+$' THEN student_number::INTEGER END,
@@ -494,16 +474,15 @@ function createClassroomPlatform(options = {}) {
     return res.json({
       classroom: {
         schoolName: classroom.school_name,
-        schoolCode: classroom.school_code,
         academicYear: classroom.academic_year,
         grade: classroom.grade,
         classNumber: classroom.class_number,
         teacherName: classroom.teacher_name,
+        joinCode: classroom.join_code,
         students: studentsResult.rows.map((student) => ({
           number: student.student_number,
           name: student.roster_name,
-          linked: student.linked,
-          passwordConfigured: student.password_configured
+          linked: student.linked
         }))
       }
     });
@@ -512,7 +491,6 @@ function createClassroomPlatform(options = {}) {
   router.put("/teacher/class", asyncRoute(async (req, res) => {
     const teacher = await requireTeacher(req);
     const schoolName = String(req.body?.schoolName || "").trim();
-    const schoolCode = String(req.body?.schoolCode || "").trim().toUpperCase();
     const academicYear = Number(req.body?.academicYear);
     const grade = Number(req.body?.grade);
     const classNumber = Number(req.body?.classNumber);
@@ -523,14 +501,11 @@ function createClassroomPlatform(options = {}) {
     if (!schoolName || schoolName.length > 80) {
       throw new HttpError(400, "INVALID_SCHOOL", "Enter a school name.");
     }
-    if (!/^[A-Z0-9]{4,12}$/.test(schoolCode)) {
-      throw new HttpError(400, "INVALID_SCHOOL_CODE", "School code must contain 4 to 12 English letters or digits.");
-    }
     if (![currentYear - 1, currentYear, currentYear + 1].includes(academicYear)) {
       throw new HttpError(400, "INVALID_ACADEMIC_YEAR", "Choose one of the three available school years.");
     }
-    if (!Number.isInteger(grade) || grade < 1 || grade > 6) {
-      throw new HttpError(400, "INVALID_GRADE", "Grade must be between 1 and 6.");
+    if (!Number.isInteger(grade) || grade < 1 || grade > 12) {
+      throw new HttpError(400, "INVALID_GRADE", "Grade must be between 1 and 12.");
     }
     if (!Number.isInteger(classNumber) || classNumber < 1 || classNumber > 30) {
       throw new HttpError(400, "INVALID_CLASS_NUMBER", "Class number must be between 1 and 30.");
@@ -544,8 +519,7 @@ function createClassroomPlatform(options = {}) {
 
     const cleanStudents = students.map((student) => ({
       number: String(student?.number || "").trim(),
-      name: String(student?.name || "").normalize("NFC").trim(),
-      password: String(student?.password || "").trim()
+      name: String(student?.name || "").normalize("NFC").trim()
     }));
     if (cleanStudents.some((student) => !/^\d{1,3}$/.test(student.number))) {
       throw new HttpError(400, "INVALID_STUDENT_NUMBER", "Student numbers must contain digits only.");
@@ -556,49 +530,18 @@ function createClassroomPlatform(options = {}) {
     if (new Set(cleanStudents.map((student) => student.number)).size !== cleanStudents.length) {
       throw new HttpError(400, "DUPLICATE_STUDENT_NUMBER", "Student numbers must be unique.");
     }
-    if (cleanStudents.some((student) => student.password && !STUDENT_PASSWORD_PATTERN.test(student.password))) {
-      throw new HttpError(400, "INVALID_STUDENT_PASSWORD", "Student passwords must contain exactly 6 digits.");
-    }
 
     const client = await pool.connect();
     try {
       await client.query("BEGIN");
-      const schoolCodeOwnerResult = await client.query(
-        `SELECT id, name, google_domain
-         FROM classroom_schools
-         WHERE UPPER(school_code) = $1
-         FOR UPDATE`,
-        [schoolCode]
-      );
-      const schoolCodeOwner = schoolCodeOwnerResult.rows[0];
-      if (schoolCodeOwner && (
-        schoolCodeOwner.name !== schoolName || schoolCodeOwner.google_domain !== teacher.google_domain
-      )) {
-        throw new HttpError(409, "SCHOOL_CODE_IN_USE", "That school code is already used by another school.");
-      }
       const schoolResult = await client.query(
-        `INSERT INTO classroom_schools (name, google_domain, school_code)
-         VALUES ($1, $2, $3)
-         ON CONFLICT (name, google_domain) DO UPDATE SET
-           school_code = COALESCE(classroom_schools.school_code, EXCLUDED.school_code)
-         RETURNING id, school_code`,
-        [schoolName, teacher.google_domain, schoolCode]
+        `INSERT INTO classroom_schools (name, google_domain)
+         VALUES ($1, $2)
+         ON CONFLICT (name, google_domain) DO UPDATE SET name = EXCLUDED.name
+         RETURNING id`,
+        [schoolName, teacher.google_domain]
       );
-      if (String(schoolResult.rows[0].school_code || "").toUpperCase() !== schoolCode) {
-        throw new HttpError(409, "SCHOOL_CODE_MISMATCH", "This school already uses a different school code.");
-      }
       const schoolId = schoolResult.rows[0].id;
-      const assignedClassResult = await client.query(
-        `SELECT 1
-         FROM classroom_classes
-         WHERE school_id = $1 AND academic_year = $2 AND grade = $3 AND class_number = $4
-           AND teacher_user_id <> $5
-         FOR UPDATE`,
-        [schoolId, academicYear, grade, classNumber, teacher.id]
-      );
-      if (assignedClassResult.rowCount > 0) {
-        throw new HttpError(409, "CLASS_ALREADY_ASSIGNED", "That school year, grade, and class already have a homeroom teacher.");
-      }
       const existingResult = await client.query(
         "SELECT id, join_code FROM classroom_classes WHERE teacher_user_id = $1 FOR UPDATE",
         [teacher.id]
@@ -645,31 +588,18 @@ function createClassroomPlatform(options = {}) {
          WHERE class_id = $1 AND NOT (student_number = ANY($2::TEXT[]))`,
         [classroom.id, numbers]
       );
-      const existingPasswordsResult = await client.query(
-        `SELECT student_number, password_hash
-         FROM classroom_students
-         WHERE class_id = $1 AND student_number = ANY($2::TEXT[])`,
-        [classroom.id, numbers]
-      );
-      const existingPasswords = new Map(
-        existingPasswordsResult.rows.map((student) => [student.student_number, student.password_hash])
-      );
       for (const student of cleanStudents) {
-        const passwordHash = student.password
-          ? hashStudentPassword(student.password)
-          : existingPasswords.get(student.number) || hashStudentPassword(DEFAULT_STUDENT_PASSWORD);
         await client.query(
-          `INSERT INTO classroom_students (class_id, student_number, roster_name, password_hash)
-           VALUES ($1, $2, $3, $4)
+          `INSERT INTO classroom_students (class_id, student_number, roster_name)
+           VALUES ($1, $2, $3)
            ON CONFLICT (class_id, student_number) DO UPDATE SET
              roster_name = EXCLUDED.roster_name,
-             password_hash = EXCLUDED.password_hash,
              updated_at = NOW()`,
-          [classroom.id, student.number, student.name, passwordHash]
+          [classroom.id, student.number, student.name]
         );
       }
       await client.query("COMMIT");
-      return res.json({ ok: true, schoolCode, studentCount: cleanStudents.length });
+      return res.json({ ok: true, joinCode: classroom.join_code, studentCount: cleanStudents.length });
     } catch (error) {
       await client.query("ROLLBACK");
       throw error;
@@ -683,48 +613,29 @@ function createClassroomPlatform(options = {}) {
     if (user.role === "teacher") {
       throw new HttpError(403, "STUDENT_REQUIRED", "Teacher accounts cannot join a student roster.");
     }
-    const schoolCode = String(req.body?.schoolCode || "").trim().toUpperCase();
-    const grade = Number(req.body?.grade);
-    const classNumber = Number(req.body?.classNumber);
+    const joinCode = String(req.body?.joinCode || "").trim().toUpperCase();
     const studentNumber = String(req.body?.studentNumber || "").trim();
-    const studentName = String(req.body?.name || "").normalize("NFC").trim();
-    const password = String(req.body?.password || "").trim();
-    const currentYear = new Date().getFullYear();
-    if (
-      !/^[A-Z0-9]{4,12}$/.test(schoolCode) ||
-      !Number.isInteger(grade) || grade < 1 || grade > 6 ||
-      !Number.isInteger(classNumber) || classNumber < 1 || classNumber > 30 ||
-      !/^\d{1,3}$/.test(studentNumber) ||
-      !/^[가-힣]{2,6}$/.test(studentName) ||
-      !STUDENT_PASSWORD_PATTERN.test(password)
-    ) {
-      throw new HttpError(400, "INVALID_JOIN_DETAILS", "Check the school code, grade, class, number, name, and password.");
+    if (!/^[A-Z2-9]{6}$/.test(joinCode) || !/^\d{1,3}$/.test(studentNumber)) {
+      throw new HttpError(400, "INVALID_JOIN_DETAILS", "Check the class code and student number.");
     }
 
     const slotResult = await pool.query(
-      `SELECT s.id, s.roster_name, s.user_id, s.password_hash, c.id AS class_id,
+      `SELECT s.id, s.roster_name, s.user_id, c.id AS class_id,
               sc.name AS school_name, sc.google_domain,
               c.academic_year, c.grade, c.class_number
        FROM classroom_students s
        JOIN classroom_classes c ON c.id = s.class_id
        JOIN classroom_schools sc ON sc.id = c.school_id
-       WHERE UPPER(sc.school_code) = $1
-         AND c.academic_year = $2
-         AND c.grade = $3
-         AND c.class_number = $4
-         AND s.student_number = $5`,
-      [schoolCode, currentYear, grade, classNumber, studentNumber]
+       WHERE c.join_code = $1 AND s.student_number = $2`,
+      [joinCode, studentNumber]
     );
     const slot = slotResult.rows[0];
     if (!slot) throw new HttpError(404, "STUDENT_NOT_FOUND", "No matching student was found in that class.");
-    if (!slot.password_hash || !verifyStudentPassword(password, slot.password_hash)) {
-      throw new HttpError(403, "INVALID_STUDENT_PASSWORD", "Check the school code, grade, class, number, name, and password.");
-    }
     if (slot.google_domain !== user.google_domain) {
       throw new HttpError(403, "SCHOOL_ACCOUNT_MISMATCH", "Use the Google account issued by this school.");
     }
-    if (normalizePersonName(slot.roster_name) !== normalizePersonName(studentName)) {
-      throw new HttpError(403, "NAME_MISMATCH", "Check the school code, grade, class, number, name, and password.");
+    if (normalizePersonName(slot.roster_name) !== normalizePersonName(user.display_name)) {
+      throw new HttpError(403, "NAME_MISMATCH", "Your Google account name does not match the class roster.");
     }
     if (slot.user_id && String(slot.user_id) !== String(user.id)) {
       throw new HttpError(409, "STUDENT_ALREADY_LINKED", "This student number is already linked to another account.");
@@ -766,10 +677,16 @@ function createClassroomPlatform(options = {}) {
     });
   }));
 
+  router.use("/reading", readingBank.router);
+
   router.use((error, req, res, next) => {
     if (res.headersSent) return next(error);
     if (error instanceof HttpError) {
-      return res.status(error.status).json({ error: error.code, message: error.message });
+      return res.status(error.status).json({
+        error: error.code,
+        message: error.message,
+        ...(error.details ? { details: error.details } : {})
+      });
     }
     console.error("Classroom API error:", error);
     return res.status(500).json({ error: "INTERNAL_ERROR", message: "The server could not complete the request." });
@@ -780,8 +697,6 @@ function createClassroomPlatform(options = {}) {
 
 module.exports = {
   createClassroomPlatform,
-  hashStudentPassword,
   normalizePersonName,
-  parseTeacherEmails,
-  verifyStudentPassword
+  parseTeacherEmails
 };
