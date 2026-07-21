@@ -13,3 +13,9 @@ services:
         value: 22.17.0
       - key: NODE_ENV
         value: production
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: TEACHER_EMAILS
+        sync: false
+      - key: ADMIN_EMAILS
+        sync: false

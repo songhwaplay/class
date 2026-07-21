@@ -9,10 +9,18 @@ const LastCard = require("./lastcard");
 const Rummikub = require("./rummikub");
 const Blokus = require("./blokus");
 const DrawRelay = require("./drawrelay");
+const { createClassroomPlatform } = require("./classroom-platform");
 
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
+const classroomPlatform = createClassroomPlatform({
+  databaseUrl: process.env.DATABASE_URL,
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
+  teacherEmails: process.env.TEACHER_EMAILS,
+  adminEmails: process.env.ADMIN_EMAILS,
+  nodeEnv: process.env.NODE_ENV
+});
 
 const PORT = Number(process.env.PORT) || 10000;
 const MAX_ROOM_PLAYERS = {
@@ -43,11 +51,18 @@ const FINISHER_DATA_FILE =
 app.use(express.json({ limit: "32kb" }));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
+
+app.use("/api", classroomPlatform.router);
+
+const SITE_ROOT = path.resolve(__dirname, "..");
+for (const directory of ["admin", "assets", "classtools", "css", "js", "learning"]) {
+  app.use(`/${directory}`, express.static(path.join(SITE_ROOT, directory), { dotfiles: "ignore" }));
+}
 
 const rooms = new Map();
 let finisherStore = loadFinisherStore();
@@ -552,7 +567,7 @@ function getTodayRecords(gameId) {
 }
 
 app.get("/", (req, res) => {
-  res.type("text").send("Classroom Game Hub is running.");
+  res.sendFile(path.join(SITE_ROOT, "index.html"));
 });
 
 app.get("/health", (req, res) => {
@@ -1888,7 +1903,9 @@ const heartbeatTimer = setInterval(() => {
 heartbeatTimer.unref?.();
 wss.on("close", () => clearInterval(heartbeatTimer));
 
-server.listen(PORT, "0.0.0.0", () => {
-  console.log(`Classroom Game Hub listening on port ${PORT}`);
-  console.log(`Finisher data file: ${FINISHER_DATA_FILE}`);
+classroomPlatform.initialize().finally(() => {
+  server.listen(PORT, "0.0.0.0", () => {
+    console.log(`Classroom Game Hub listening on port ${PORT}`);
+    console.log(`Finisher data file: ${FINISHER_DATA_FILE}`);
+  });
 });

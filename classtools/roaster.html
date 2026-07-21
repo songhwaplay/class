@@ -1,10 +1,10 @@
 <!doctype html>
-<html lang="ko">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f6f3ec">
-    <title>우리 반 명단</title>
+    <title>Class Roster</title>
     <style>
         :root {
             color-scheme: light;
@@ -38,8 +38,36 @@
 
         button,
         input,
+        select,
         textarea {
             font: inherit;
+        }
+
+        .account-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 28px;
+            color: var(--muted);
+            font-size: 0.82rem;
+        }
+
+        .account-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .text-link,
+        .sign-out-button {
+            border: 0;
+            padding: 0;
+            color: var(--brand-dark);
+            background: transparent;
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
         }
 
         main {
@@ -88,6 +116,33 @@
             margin-bottom: 26px;
             padding-bottom: 26px;
             border-bottom: 1px solid var(--line);
+        }
+
+        .join-code-panel {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 18px;
+            margin-bottom: 24px;
+            border-radius: 16px;
+            padding: 15px 18px;
+            color: var(--brand-dark);
+            background: var(--brand-soft);
+        }
+
+        .join-code-panel span {
+            display: grid;
+            gap: 2px;
+            text-align: left;
+        }
+
+        .join-code-panel small {
+            color: var(--muted);
+        }
+
+        .join-code-panel strong {
+            font-size: 1.45rem;
+            letter-spacing: 0.16em;
         }
 
         .profile-head {
@@ -430,45 +485,59 @@
 </head>
 <body>
     <main>
+        <div class="account-bar">
+            <a class="text-link" href="/">HOME</a>
+            <div class="account-actions">
+                <span id="teacher-account">Checking account…</span>
+                <button class="sign-out-button" id="sign-out-button" type="button">SIGN OUT</button>
+            </div>
+        </div>
         <p class="eyebrow">CLASS ROSTER</p>
-        <h1>우리 반 명단</h1>
-        <p class="intro">엑셀에서 번호 열과 이름 열을 각각 복사해 붙여넣으세요. 같은 줄의 번호와 이름이 한 명으로 연결됩니다.</p>
+        <h1>Paste your class list.</h1>
+        <p class="intro">Copy the number column and name column from Excel, then paste each column below. Use the same Korean names shown on the students’ school Google accounts.</p>
 
         <section class="roster-card" aria-labelledby="roster-input-title">
-            <h2 id="roster-input-title" hidden>학생 명단 입력</h2>
+            <h2 id="roster-input-title" hidden>Roster input</h2>
+            <div class="join-code-panel" id="join-code-panel" hidden>
+                <span>
+                    <small>Students enter this code with their student number.</small>
+                    <strong id="join-code">—</strong>
+                </span>
+                <small id="join-code-count"></small>
+            </div>
             <div class="class-profile">
                 <div class="profile-head">
-                    <h3>학급 기본정보</h3>
-                    <span class="profile-note" id="profile-status" role="status" aria-live="polite">이 기기에 자동 저장</span>
+                    <h3>Class details</h3>
+                    <span class="profile-note" id="profile-status" role="status" aria-live="polite">Stored on the server</span>
                 </div>
                 <div class="profile-grid">
                     <div class="profile-field profile-field--school">
-                        <label for="school-name">학교명</label>
-                        <input class="profile-control" id="school-name" type="text" autocomplete="organization" maxlength="50" placeholder="예: 계상초등학교">
+                        <label for="school-name">School</label>
+                        <input class="profile-control" id="school-name" type="text" autocomplete="organization" maxlength="80" placeholder="School name">
                     </div>
                     <div class="profile-field">
-                        <label for="school-year">학년도</label>
+                        <label for="school-year">School year</label>
                         <select class="profile-control" id="school-year"></select>
                     </div>
                     <div class="profile-field">
-                        <label for="grade">학년</label>
+                        <label for="grade">Grade</label>
                         <select class="profile-control" id="grade">
-                            <option value="">선택</option>
-                            <option value="1">1학년</option>
-                            <option value="2">2학년</option>
-                            <option value="3">3학년</option>
-                            <option value="4">4학년</option>
-                            <option value="5">5학년</option>
-                            <option value="6">6학년</option>
+                            <option value="">Select</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
                         </select>
                     </div>
                     <div class="profile-field">
-                        <label for="class-number">반</label>
+                        <label for="class-number">Class</label>
                         <input class="profile-control" id="class-number" type="number" inputmode="numeric" min="1" max="30" placeholder="1">
                     </div>
                     <div class="profile-field">
-                        <label for="teacher-name">담임명</label>
-                        <input class="profile-control" id="teacher-name" type="text" autocomplete="name" maxlength="30" placeholder="예: 김선생">
+                        <label for="teacher-name">Teacher</label>
+                        <input class="profile-control" id="teacher-name" type="text" autocomplete="name" maxlength="30" placeholder="Teacher name">
                     </div>
                 </div>
             </div>
@@ -476,42 +545,42 @@
             <div class="paste-grid">
                 <div class="field">
                     <div class="field-head">
-                        <label for="numbers">번호</label>
-                        <span class="line-count" id="number-count">0줄</span>
+                        <label for="numbers">Numbers</label>
+                        <span class="line-count" id="number-count">0 rows</span>
                     </div>
                     <textarea id="numbers" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="1&#10;2&#10;3&#10;4" aria-describedby="input-status"></textarea>
                 </div>
 
                 <div class="field">
                     <div class="field-head">
-                        <label for="names">이름</label>
-                        <span class="line-count" id="name-count">0줄</span>
+                        <label for="names">Names</label>
+                        <span class="line-count" id="name-count">0 rows</span>
                     </div>
                     <textarea id="names" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="김민준&#10;이서연&#10;박지우&#10;최하늘" aria-describedby="input-status"></textarea>
                 </div>
             </div>
 
             <div class="actions">
-                <p class="status" id="input-status" role="status" aria-live="polite">번호와 이름을 붙여넣어 주세요.</p>
-                <button class="save-button" id="save-button" type="button" disabled>명단 저장</button>
+                <p class="status" id="input-status" role="status" aria-live="polite">Paste student numbers and names.</p>
+                <button class="save-button" id="save-button" type="button" disabled>SAVE ROSTER</button>
             </div>
         </section>
 
         <section class="preview-card" aria-labelledby="preview-title">
             <div class="preview-head">
                 <div>
-                    <h2 id="preview-title">명단 미리보기</h2>
+                    <h2 id="preview-title">Preview</h2>
                     <p class="class-summary" id="class-summary"></p>
                 </div>
-                <span class="student-total" id="student-total">0명</span>
+                <span class="student-total" id="student-total">0 students</span>
             </div>
-            <p class="empty-preview" id="empty-preview">입력한 명단이 여기에 표시됩니다.</p>
+            <p class="empty-preview" id="empty-preview">Your roster preview will appear here.</p>
             <div class="table-wrap" id="table-wrap" hidden>
                 <table>
                     <thead>
                         <tr>
-                            <th scope="col">번호</th>
-                            <th scope="col">이름</th>
+                            <th scope="col">NUMBER</th>
+                            <th scope="col">NAME</th>
                         </tr>
                     </thead>
                     <tbody id="roster-body"></tbody>
@@ -524,11 +593,13 @@
         (() => {
             "use strict";
 
-            const STORAGE_KEY = "class-roster-v1";
-            const PROFILE_STORAGE_KEY = "class-profile-v1";
-            const LEGACY_TEACHER_STORAGE_KEY = "class-teacher-v1";
             const currentYear = new Date().getFullYear();
             const allowedYears = [currentYear - 1, currentYear, currentYear + 1];
+            const teacherAccount = document.querySelector("#teacher-account");
+            const signOutButton = document.querySelector("#sign-out-button");
+            const joinCodePanel = document.querySelector("#join-code-panel");
+            const joinCode = document.querySelector("#join-code");
+            const joinCodeCount = document.querySelector("#join-code-count");
             const schoolInput = document.querySelector("#school-name");
             const schoolYearInput = document.querySelector("#school-year");
             const gradeInput = document.querySelector("#grade");
@@ -546,6 +617,18 @@
             const tableWrap = document.querySelector("#table-wrap");
             const emptyPreview = document.querySelector("#empty-preview");
             const studentTotal = document.querySelector("#student-total");
+            let authorized = false;
+            let saving = false;
+
+            async function api(path, options = {}) {
+                const response = await fetch(path, {
+                    ...options,
+                    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+                });
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(payload.message || "The server could not complete the request.");
+                return payload;
+            }
 
             function splitLines(value) {
                 const normalized = value.replace(/\r\n?/g, "\n");
@@ -562,9 +645,16 @@
                 const names = splitLines(namesInput.value);
                 const hasBlank = numbers.some((value) => !value) || names.some((value) => !value);
                 const duplicateNumbers = numbers.filter((value, index) => value && numbers.indexOf(value) !== index);
-                const isComplete = numbers.length > 0 && numbers.length === names.length && !hasBlank && duplicateNumbers.length === 0;
+                const invalidNumbers = numbers.filter((value) => value && !/^\d{1,3}$/.test(value));
+                const invalidNames = names.filter((value) => value && !/^[가-힣]{2,6}$/.test(value));
+                const isComplete = numbers.length > 0 &&
+                    numbers.length === names.length &&
+                    !hasBlank &&
+                    duplicateNumbers.length === 0 &&
+                    invalidNumbers.length === 0 &&
+                    invalidNames.length === 0;
 
-                return { numbers, names, hasBlank, duplicateNumbers, isComplete };
+                return { numbers, names, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, isComplete };
             }
 
             function createRoster(numbers, names) {
@@ -587,7 +677,7 @@
                 const hasRoster = roster.length > 0;
                 tableWrap.hidden = !hasRoster;
                 emptyPreview.hidden = hasRoster;
-                studentTotal.textContent = `${roster.length}명`;
+                studentTotal.textContent = `${roster.length} ${roster.length === 1 ? "student" : "students"}`;
             }
 
             function setStatus(message, tone = "neutral") {
@@ -599,7 +689,7 @@
                 allowedYears.forEach((year) => {
                     const option = document.createElement("option");
                     option.value = String(year);
-                    option.textContent = `${year}학년도`;
+                    option.textContent = String(year);
                     schoolYearInput.append(option);
                 });
             }
@@ -614,134 +704,183 @@
                 };
             }
 
+            function isProfileComplete(profile = getProfile()) {
+                return Boolean(
+                    profile.schoolName &&
+                    allowedYears.includes(Number(profile.schoolYear)) &&
+                    ["1", "2", "3", "4", "5", "6"].includes(profile.grade) &&
+                    Number(profile.classNumber) >= 1 && Number(profile.classNumber) <= 30 &&
+                    profile.teacherName
+                );
+            }
+
             function updateClassSummary(profile) {
                 const school = profile.schoolName;
-                const year = profile.schoolYear ? `${profile.schoolYear}학년도` : "";
+                const year = profile.schoolYear || "";
                 const gradeAndClass = [
-                    profile.grade ? `${profile.grade}학년` : "",
-                    profile.classNumber ? `${profile.classNumber}반` : "",
-                ].filter(Boolean).join(" ");
-                const teacher = profile.teacherName ? `담임 ${profile.teacherName}` : "";
+                    profile.grade ? `Grade ${profile.grade}` : "",
+                    profile.classNumber ? `Class ${profile.classNumber}` : "",
+                ].filter(Boolean).join(" · ");
+                const teacher = profile.teacherName ? `Teacher ${profile.teacherName}` : "";
                 const summary = [school, year, gradeAndClass, teacher].filter(Boolean);
-                classSummary.textContent = summary.join(" · ") || "학급 정보를 입력해 주세요.";
+                classSummary.textContent = summary.join(" · ") || "Enter the class details above.";
             }
 
-            function saveProfile() {
-                const profile = getProfile();
-
-                try {
-                    localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile));
-                    profileStatus.textContent = "자동 저장됨";
-                } catch {
-                    profileStatus.textContent = "저장하지 못함";
-                }
-
-                updateClassSummary(profile);
+            function markUnsaved() {
+                profileStatus.textContent = "Unsaved changes";
+                updateClassSummary(getProfile());
+                update();
             }
 
-            function loadProfile() {
-                let saved = {};
+            function showJoinCode(code, count) {
+                joinCode.textContent = code;
+                joinCodeCount.textContent = `${count} ${count === 1 ? "student" : "students"}`;
+                joinCodePanel.hidden = false;
+            }
 
-                try {
-                    saved = JSON.parse(localStorage.getItem(PROFILE_STORAGE_KEY) || "{}");
-                    if (!saved || typeof saved !== "object" || Array.isArray(saved)) saved = {};
-                    if (!saved.teacherName) {
-                        saved.teacherName = localStorage.getItem(LEGACY_TEACHER_STORAGE_KEY) || "";
-                    }
-                } catch {
-                    saved = {};
-                }
-
-                schoolInput.value = typeof saved.schoolName === "string" ? saved.schoolName : "";
-                const savedYear = Number(saved.schoolYear);
-                schoolYearInput.value = String(allowedYears.includes(savedYear) ? savedYear : currentYear);
-                gradeInput.value = ["1", "2", "3", "4", "5", "6"].includes(String(saved.grade)) ? String(saved.grade) : "";
-                classNumberInput.value = typeof saved.classNumber === "string" ? saved.classNumber : "";
-                teacherInput.value = typeof saved.teacherName === "string" ? saved.teacherName : "";
+            function loadClassroom(classroom) {
+                schoolInput.value = classroom.schoolName;
+                schoolYearInput.value = String(classroom.academicYear);
+                gradeInput.value = String(classroom.grade);
+                classNumberInput.value = String(classroom.classNumber);
+                teacherInput.value = classroom.teacherName;
+                numbersInput.value = classroom.students.map((student) => student.number).join("\n");
+                namesInput.value = classroom.students.map((student) => student.name).join("\n");
+                showJoinCode(classroom.joinCode, classroom.students.length);
+                profileStatus.textContent = "Saved on the server";
                 updateClassSummary(getProfile());
             }
 
             function update() {
                 const state = getRosterState();
-                numberCount.textContent = `${state.numbers.length}줄`;
-                nameCount.textContent = `${state.names.length}줄`;
+                numberCount.textContent = `${state.numbers.length} rows`;
+                nameCount.textContent = `${state.names.length} rows`;
 
                 const hasAnyInput = state.numbers.length > 0 || state.names.length > 0;
                 const hasMismatchedCounts = hasAnyInput && state.numbers.length !== state.names.length;
 
-                numbersInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.duplicateNumbers.length > 0));
-                namesInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank));
-                saveButton.disabled = !state.isComplete;
+                numbersInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.duplicateNumbers.length > 0 || state.invalidNumbers.length > 0));
+                namesInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.invalidNames.length > 0));
+                saveButton.disabled = saving || !authorized || !state.isComplete || !isProfileComplete();
 
                 if (!hasAnyInput) {
-                    setStatus("번호와 이름을 붙여넣어 주세요.");
+                    setStatus("Paste student numbers and names.");
                     renderRoster([]);
                     return;
                 }
 
                 if (hasMismatchedCounts) {
                     const difference = Math.abs(state.numbers.length - state.names.length);
-                    const shorterSide = state.numbers.length < state.names.length ? "번호" : "이름";
-                    setStatus(`${shorterSide}가 ${difference}줄 부족해요. 두 칸의 줄 수를 맞춰 주세요.`, "error");
+                    const shorterSide = state.numbers.length < state.names.length ? "number" : "name";
+                    setStatus(`The ${shorterSide} column is ${difference} ${difference === 1 ? "row" : "rows"} short.`, "error");
                     renderRoster([]);
                     return;
                 }
 
                 if (state.hasBlank) {
-                    setStatus("중간에 빈 줄이 있어요. 빈 줄을 지우거나 내용을 입력해 주세요.", "error");
+                    setStatus("Remove blank rows in the middle of either column.", "error");
                     renderRoster([]);
                     return;
                 }
 
                 if (state.duplicateNumbers.length > 0) {
                     const duplicated = [...new Set(state.duplicateNumbers)].join(", ");
-                    setStatus(`중복된 번호가 있어요: ${duplicated}`, "error");
+                    setStatus(`Duplicate student numbers: ${duplicated}`, "error");
                     renderRoster([]);
                     return;
                 }
 
-                setStatus(`${state.numbers.length}명의 번호와 이름이 잘 맞습니다.`, "success");
+                if (state.invalidNumbers.length > 0) {
+                    setStatus("Student numbers must contain digits only.", "error");
+                    renderRoster([]);
+                    return;
+                }
+
+                if (state.invalidNames.length > 0) {
+                    setStatus("Each student name must be 2 to 6 Korean characters.", "error");
+                    renderRoster([]);
+                    return;
+                }
+
+                if (!isProfileComplete()) {
+                    setStatus("Complete every class detail before saving.", "error");
+                    renderRoster(createRoster(state.numbers, state.names));
+                    return;
+                }
+
+                setStatus(`${state.numbers.length} students are ready to save.`, "success");
                 renderRoster(createRoster(state.numbers, state.names));
             }
 
-            function saveRoster() {
+            async function saveRoster() {
                 const state = getRosterState();
-                if (!state.isComplete) return;
+                const profile = getProfile();
+                if (!authorized || !state.isComplete || !isProfileComplete(profile) || saving) return;
 
                 const roster = createRoster(state.numbers, state.names);
+                saving = true;
+                saveButton.textContent = "SAVING…";
+                update();
                 try {
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(roster));
-                    setStatus(`${roster.length}명의 명단을 이 기기에 저장했어요.`, "success");
-                } catch {
-                    setStatus("미리보기는 만들었지만 이 기기에 저장하지 못했어요.", "error");
+                    const result = await api("/api/teacher/class", {
+                        method: "PUT",
+                        body: JSON.stringify({
+                            schoolName: profile.schoolName,
+                            academicYear: Number(profile.schoolYear),
+                            grade: Number(profile.grade),
+                            classNumber: Number(profile.classNumber),
+                            teacherName: profile.teacherName,
+                            students: roster,
+                        }),
+                    });
+                    profileStatus.textContent = "Saved on the server";
+                    showJoinCode(result.joinCode, result.studentCount);
+                    setStatus(`${roster.length} students saved.`, "success");
+                } catch (error) {
+                    setStatus(error.message, "error");
+                } finally {
+                    saving = false;
+                    saveButton.textContent = "SAVE ROSTER";
+                    update();
                 }
             }
 
-            function loadRoster() {
+            async function start() {
                 try {
-                    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-                    if (!Array.isArray(saved) || !saved.length) return;
-
-                    const validRows = saved.filter((row) => row && typeof row.number === "string" && typeof row.name === "string");
-                    if (!validRows.length) return;
-
-                    numbersInput.value = validRows.map((row) => row.number).join("\n");
-                    namesInput.value = validRows.map((row) => row.name).join("\n");
-                } catch {
-                    // 저장 공간을 사용할 수 없는 환경이어도 입력 기능은 그대로 유지한다.
+                    const session = await api("/api/auth/me");
+                    if (!session.signedIn || session.user?.role !== "teacher") {
+                        location.replace("/");
+                        return;
+                    }
+                    authorized = true;
+                    teacherAccount.textContent = session.user.email;
+                    if (!teacherInput.value) teacherInput.value = session.user.name;
+                    const result = await api("/api/teacher/class");
+                    if (result.classroom) loadClassroom(result.classroom);
+                    else profileStatus.textContent = "Not saved yet";
+                    update();
+                } catch (error) {
+                    teacherAccount.textContent = "Account unavailable";
+                    setStatus(error.message, "error");
+                    saveButton.disabled = true;
                 }
             }
 
-            [schoolInput, classNumberInput, teacherInput].forEach((input) => input.addEventListener("input", saveProfile));
-            [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", saveProfile));
+            [schoolInput, classNumberInput, teacherInput].forEach((input) => input.addEventListener("input", markUnsaved));
+            [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", markUnsaved));
             numbersInput.addEventListener("input", update);
             namesInput.addEventListener("input", update);
             saveButton.addEventListener("click", saveRoster);
+            signOutButton.addEventListener("click", async () => {
+                await api("/api/auth/logout", { method: "POST", body: "{}" }).catch(() => {});
+                location.replace("/");
+            });
 
             populateYearOptions();
-            loadProfile();
-            loadRoster();
+            schoolYearInput.value = String(currentYear);
+            updateClassSummary(getProfile());
             update();
+            start();
         })();
     </script>
 </body>

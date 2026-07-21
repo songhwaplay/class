@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#101512">
+    <title>Site Admin</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #101512;
+            --panel: #171f1a;
+            --line: #334239;
+            --ink: #f5f1e8;
+            --muted: #a9b4ad;
+            --green: #75d69f;
+            --green-dark: #173b28;
+            --amber: #f0bd64;
+            --amber-dark: #443017;
+            --danger: #ff8b82;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
+            padding: 48px 20px;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at 20% 0, rgba(117, 214, 159, .09), transparent 28rem),
+                var(--bg);
+            font-family: Inter, Arial, sans-serif;
+        }
+
+        main {
+            width: min(720px, 100%);
+            margin: 0 auto;
+        }
+
+        .eyebrow {
+            margin: 0 0 10px;
+            color: var(--green);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .16em;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(2.3rem, 8vw, 4.8rem);
+            line-height: .96;
+            letter-spacing: -.06em;
+        }
+
+        .intro {
+            max-width: 560px;
+            margin: 18px 0 30px;
+            color: var(--muted);
+            line-height: 1.65;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 22px;
+            padding: clamp(20px, 5vw, 32px);
+            background: rgba(23, 31, 26, .94);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, .25);
+        }
+
+        .account-row,
+        .mode-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .account-row {
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--line);
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .mode-label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: .12em;
+        }
+
+        .mode-value {
+            margin: 6px 0 0;
+            font-size: 2rem;
+            font-weight: 900;
+        }
+
+        .mode-description {
+            margin: 12px 0 22px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .choice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .mode-button {
+            min-height: 112px;
+            border: 1px solid var(--line);
+            border-radius: 16px;
+            padding: 18px;
+            color: var(--ink);
+            background: #121814;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .mode-button strong,
+        .mode-button span { display: block; }
+        .mode-button strong { margin-bottom: 7px; font-size: 1.15rem; }
+        .mode-button span { color: var(--muted); font-size: 13px; line-height: 1.45; }
+        .mode-button[data-mode="open"].active { border-color: var(--green); background: var(--green-dark); }
+        .mode-button[data-mode="restricted"].active { border-color: var(--amber); background: var(--amber-dark); }
+        .mode-button:disabled { cursor: wait; opacity: .55; }
+
+        .text-button {
+            border: 0;
+            padding: 0;
+            color: var(--green);
+            background: transparent;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .google-button {
+            display: flex;
+            justify-content: center;
+            min-height: 44px;
+            margin-top: 20px;
+        }
+
+        .status {
+            min-height: 21px;
+            margin: 16px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .status.error { color: var(--danger); }
+        [hidden] { display: none !important; }
+
+        @media (max-width: 560px) {
+            body { padding: 32px 14px; }
+            .choice-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <p class="eyebrow">SITE ADMIN</p>
+        <h1>Access control.</h1>
+        <p class="intro">Open the site while it is being developed. Switch to restricted access when school account sign-in is ready.</p>
+
+        <section class="card">
+            <div id="loginView">
+                <p id="loginMessage" class="mode-description">Checking administrator access…</p>
+                <div id="googleButton" class="google-button" hidden></div>
+            </div>
+
+            <div id="adminView" hidden>
+                <div class="account-row">
+                    <span id="adminEmail"></span>
+                    <button id="signOutButton" class="text-button" type="button">SIGN OUT</button>
+                </div>
+                <div class="mode-head">
+                    <div>
+                        <div class="mode-label">FIRST PAGE ACCESS</div>
+                        <div id="modeValue" class="mode-value">—</div>
+                    </div>
+                </div>
+                <p id="modeDescription" class="mode-description"></p>
+                <div class="choice-grid">
+                    <button class="mode-button" data-mode="open" type="button">
+                        <strong>OPEN</strong>
+                        <span>No Google sign-in. Best while developing and testing.</span>
+                    </button>
+                    <button class="mode-button" data-mode="restricted" type="button">
+                        <strong>RESTRICTED</strong>
+                        <span>Require a school Google Workspace account.</span>
+                    </button>
+                </div>
+            </div>
+            <p id="status" class="status" role="status" aria-live="polite"></p>
+        </section>
+    </main>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script>
+        (() => {
+            "use strict";
+
+            const APP_ORIGIN = "https://classroom-game-hub.onrender.com";
+            const isLocal = ["localhost", "127.0.0.1"].includes(location.hostname);
+            const loginView = document.querySelector("#loginView");
+            const loginMessage = document.querySelector("#loginMessage");
+            const googleButton = document.querySelector("#googleButton");
+            const adminView = document.querySelector("#adminView");
+            const adminEmail = document.querySelector("#adminEmail");
+            const signOutButton = document.querySelector("#signOutButton");
+            const modeValue = document.querySelector("#modeValue");
+            const modeDescription = document.querySelector("#modeDescription");
+            const status = document.querySelector("#status");
+            const modeButtons = Array.from(document.querySelectorAll("[data-mode]"));
+            let saving = false;
+
+            async function api(path, options = {}) {
+                const response = await fetch(path, {
+                    ...options,
+                    headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+                });
+                const payload = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(payload.message || "The server could not complete the request.");
+                return payload;
+            }
+
+            function setStatus(message, error = false) {
+                status.textContent = message;
+                status.classList.toggle("error", error);
+            }
+
+            function renderMode(mode) {
+                modeValue.textContent = mode.toUpperCase();
+                modeDescription.textContent = mode === "open"
+                    ? "Anyone can open the first page. A player name is enough to use the games."
+                    : "The first page requires a verified school Google Workspace account.";
+                modeButtons.forEach((button) => {
+                    button.classList.toggle("active", button.dataset.mode === mode);
+                    button.disabled = saving;
+                });
+            }
+
+            async function showAdmin(user) {
+                loginView.hidden = true;
+                adminView.hidden = false;
+                adminEmail.textContent = user.email;
+                const result = await api("/api/admin/site-access");
+                renderMode(result.mode);
+                setStatus("");
+            }
+
+            async function waitForGoogle() {
+                for (let attempt = 0; attempt < 80; attempt += 1) {
+                    if (window.google?.accounts?.id) return true;
+                    await new Promise((resolve) => setTimeout(resolve, 100));
+                }
+                return false;
+            }
+
+            async function showGoogleSignIn(clientId) {
+                googleButton.hidden = false;
+                if (!await waitForGoogle()) throw new Error("Google sign-in did not load. Refresh this page.");
+                window.google.accounts.id.initialize({
+                    client_id: clientId,
+                    callback: async ({ credential }) => {
+                        setStatus("Signing in…");
+                        try {
+                            const result = await api("/api/auth/google", {
+                                method: "POST",
+                                body: JSON.stringify({ credential }),
+                            });
+                            if (result.user?.role !== "admin") throw new Error("This Google account is not the site administrator.");
+                            await showAdmin(result.user);
+                        } catch (error) {
+                            setStatus(error.message, true);
+                        }
+                    },
+                    auto_select: false,
+                });
+                window.google.accounts.id.renderButton(googleButton, {
+                    type: "standard",
+                    theme: "outline",
+                    size: "large",
+                    text: "signin_with",
+                    width: Math.min(320, googleButton.clientWidth || 320),
+                });
+            }
+
+            modeButtons.forEach((button) => {
+                button.addEventListener("click", async () => {
+                    if (saving || button.classList.contains("active")) return;
+                    saving = true;
+                    modeButtons.forEach((item) => { item.disabled = true; });
+                    setStatus("Saving access mode…");
+                    try {
+                        const result = await api("/api/admin/site-access", {
+                            method: "PUT",
+                            body: JSON.stringify({ mode: button.dataset.mode }),
+                        });
+                        saving = false;
+                        renderMode(result.mode);
+                        setStatus(`First page access is now ${result.mode.toUpperCase()}.`);
+                    } catch (error) {
+                        saving = false;
+                        modeButtons.forEach((item) => { item.disabled = false; });
+                        setStatus(error.message, true);
+                    }
+                });
+            });
+
+            signOutButton.addEventListener("click", async () => {
+                await api("/api/auth/logout", { method: "POST", body: "{}" }).catch(() => {});
+                location.reload();
+            });
+
+            async function start() {
+                if (!isLocal && location.origin !== APP_ORIGIN) {
+                    location.replace(`${APP_ORIGIN}/admin/`);
+                    return;
+                }
+                try {
+                    const config = await api("/api/auth/config");
+                    if (!config.enabled) {
+                        loginMessage.textContent = `Login setup required: ${config.missing.join(", ")}`;
+                        setStatus("Add the missing values in Render.", true);
+                        return;
+                    }
+                    if (!config.adminConfigured) {
+                        loginMessage.textContent = "Administrator email is not configured.";
+                        setStatus("Add ADMIN_EMAILS in Render.", true);
+                        return;
+                    }
+                    const session = await api("/api/auth/me");
+                    if (session.signedIn) {
+                        if (session.user?.role !== "admin") {
+                            loginMessage.textContent = "This Google account is not the site administrator.";
+                            setStatus("Choose the administrator account below.", true);
+                            await showGoogleSignIn(config.clientId);
+                            return;
+                        }
+                        await showAdmin(session.user);
+                        return;
+                    }
+                    loginMessage.textContent = "Sign in with the administrator Google account.";
+                    await showGoogleSignIn(config.clientId);
+                } catch (error) {
+                    loginMessage.textContent = "Administrator access is unavailable.";
+                    setStatus(error.message, true);
+                }
+            }
+
+            start();
+        })();
+    </script>
+</body>
+</html>
