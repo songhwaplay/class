@@ -177,7 +177,7 @@
         .teacher-form { grid-template-columns: 1fr 130px auto; }
         .control { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--ink); background: #101512; }
         .action-button { min-height: 44px; border: 1px solid var(--green); border-radius: 10px; padding: 0 16px; color: var(--ink); background: var(--green-dark); font-weight: 800; cursor: pointer; }
-        .school-tools { display: grid; grid-template-columns: 1fr 1fr auto auto; gap: 10px; align-items: center; margin-top: 18px; }
+        .school-tools { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; margin-top: 18px; }
         .check-label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
         .teacher-list { display: grid; gap: 10px; margin-top: 14px; }
         .teacher-row { display: grid; grid-template-columns: 1fr 120px auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
@@ -235,7 +235,6 @@
                     </div>
                     <div class="school-tools">
                         <select class="control" id="schoolSelect"><option value="">Select school</option></select>
-                        <input class="control" id="schoolNameEditor" maxlength="80" placeholder="School name">
                         <label class="check-label"><input id="schoolEnabled" type="checkbox"> Enabled</label>
                         <button class="action-button" id="saveSchoolButton" type="button">SAVE SCHOOL</button>
                     </div>
@@ -280,7 +279,6 @@
             const newSchoolName = document.querySelector("#newSchoolName");
             const addSchoolButton = document.querySelector("#addSchoolButton");
             const schoolSelect = document.querySelector("#schoolSelect");
-            const schoolNameEditor = document.querySelector("#schoolNameEditor");
             const schoolEnabled = document.querySelector("#schoolEnabled");
             const saveSchoolButton = document.querySelector("#saveSchoolButton");
             const teacherManagement = document.querySelector("#teacherManagement");
@@ -325,8 +323,6 @@
                 const school = selectedSchool();
                 teacherManagement.hidden = !school;
                 teacherList.replaceChildren();
-                schoolNameEditor.value = school?.name || "";
-                schoolNameEditor.disabled = !school;
                 schoolEnabled.disabled = !school;
                 saveSchoolButton.disabled = !school;
                 if (!school) return;
@@ -411,7 +407,7 @@
                 const school = selectedSchool();
                 if (!school) return;
                 try {
-                    await api(`/api/admin/schools/${school.id}`, { method: "PATCH", body: JSON.stringify({ name: schoolNameEditor.value.trim(), enabled: schoolEnabled.checked }) });
+                    await api(`/api/admin/schools/${school.id}`, { method: "PATCH", body: JSON.stringify({ name: school.name, enabled: schoolEnabled.checked }) });
                     await loadSchools(school.id);
                     setStatus("School access saved.");
                 } catch (error) { setStatus(error.message, true); }
