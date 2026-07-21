@@ -1,0 +1,75 @@
+:root {
+  --paper: #f3efe4;
+  --paper-deep: #e8dfcd;
+  --ink: #1e2924;
+  --muted: #68746e;
+  --line: #cfc5b1;
+  --green: #17684f;
+  --green-soft: #dce9df;
+  --orange: #c45e2b;
+  --white: #fffdf8;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; color: var(--ink); background: radial-gradient(circle at 12% 2%, rgba(23,104,79,.09), transparent 24rem), var(--paper); font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif; }
+button, input { font: inherit; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+.gate { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+.gate-card { width: min(520px, 100%); padding: 36px; border: 1px solid var(--line); border-radius: 22px; background: var(--white); box-shadow: 0 24px 70px rgba(56,45,26,.12); }
+.gate-card h1 { margin: 7px 0 12px; font-size: clamp(2.2rem, 8vw, 4rem); letter-spacing: -.06em; }
+.gate-card p:not(.eyebrow) { color: var(--muted); line-height: 1.7; }
+.google-sign-in { min-height: 44px; margin: 20px 0 12px; }
+.eyebrow { margin: 0; color: var(--green); font-size: 11px; font-weight: 950; letter-spacing: .18em; }
+.button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; border: 1px solid transparent; border-radius: 12px; padding: 0 18px; text-decoration: none; cursor: pointer; font-weight: 900; }
+.button.primary { color: #fff; background: var(--green); }
+.button.secondary { color: var(--ink); border-color: var(--line); background: var(--white); }
+.button:disabled { opacity: .55; cursor: wait; }
+.text-button { border: 0; padding: 6px 0; color: var(--green); background: transparent; cursor: pointer; font-weight: 900; }
+.student-header { min-height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px clamp(18px, 5vw, 72px); border-bottom: 1px solid var(--line); background: rgba(243,239,228,.92); backdrop-filter: blur(15px); }
+.student-header h1 { margin: 4px 0 0; font-family: Georgia, "Noto Serif KR", serif; font-size: 1.35rem; }
+.student-header a { color: var(--green); font-size: 13px; font-weight: 900; text-decoration: none; }
+.student-band { display: flex; align-items: center; justify-content: space-between; gap: 22px; padding: 17px clamp(18px, 5vw, 72px); color: #fff; background: var(--green); }
+.student-band strong, .student-band span { display: block; }
+.student-band span { margin-top: 3px; color: rgba(255,255,255,.72); font-size: 12px; }
+.student-band p { max-width: 570px; margin: 0; color: rgba(255,255,255,.78); font-size: 12px; line-height: 1.55; text-align: right; }
+.student-main { width: min(980px, calc(100% - 32px)); margin: 0 auto; padding: 50px 0 90px; }
+.view-heading h2 { margin: 7px 0 28px; font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(2rem, 6vw, 3.6rem); letter-spacing: -.05em; }
+.student-pilot-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.student-pilot-card { display: grid; gap: 14px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--white); box-shadow: 0 10px 32px rgba(56,45,26,.06); }
+.student-pilot-card h3 { margin: 0; font-family: Georgia, "Noto Serif KR", serif; font-size: 1.45rem; }
+.student-pilot-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
+.student-pilot-meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--muted); font-size: 11px; }
+.empty-pilots { grid-column: 1 / -1; padding: 48px; border: 1px dashed var(--line); border-radius: 18px; color: var(--muted); text-align: center; line-height: 1.7; }
+.question-topline, .progress-copy, .answer-actions { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.level-chip { display: inline-flex; align-items: center; min-height: 30px; padding: 0 11px; border-radius: 99px; color: var(--green); background: var(--green-soft); font-size: 12px; font-weight: 950; }
+.progress-copy { margin-top: 25px; }
+.progress-copy span { color: var(--muted); font-size: 12px; }
+.progress-track { height: 6px; margin: 10px 0 24px; overflow: hidden; border-radius: 99px; background: var(--paper-deep); }
+.progress-fill { height: 100%; border-radius: inherit; background: var(--orange); transition: width .25s ease; }
+.reading-sheet { padding: clamp(22px, 5vw, 54px); border: 1px solid var(--line); border-radius: 20px; background: var(--white); box-shadow: 0 18px 55px rgba(56,45,26,.08); }
+.question-topic { margin: 0 0 20px; color: var(--green); font-size: 12px; font-weight: 900; }
+.student-passage { padding-bottom: 28px; border-bottom: 1px solid var(--line); font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(1.05rem, 2.1vw, 1.22rem); line-height: 1.95; white-space: pre-wrap; }
+.student-prompt { margin: 30px 0 18px; font-size: clamp(1.15rem, 2.5vw, 1.4rem); line-height: 1.55; }
+.answer-form fieldset { margin: 0; padding: 0; border: 0; }
+.student-choices { display: grid; gap: 10px; }
+.student-choice { display: grid; grid-template-columns: 28px 1fr; align-items: start; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: 13px; cursor: pointer; line-height: 1.55; }
+.student-choice:hover { border-color: var(--green); }
+.student-choice:has(input:checked) { border-color: var(--green); background: var(--green-soft); }
+.student-choice input { width: 19px; height: 19px; margin: 2px 0 0; accent-color: var(--green); }
+.choice-number { color: var(--green); font-weight: 950; }
+.answer-actions { margin-top: 24px; }
+#answerStatus { color: var(--orange); font-size: 12px; }
+.completion-view { min-height: 60vh; display: grid; place-content: center; justify-items: center; text-align: center; }
+.completion-mark { width: 72px; height: 72px; display: grid; place-items: center; margin-bottom: 18px; border-radius: 50%; color: #fff; background: var(--green); font-size: 2rem; }
+.completion-view h2 { margin: 7px 0 10px; font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(2rem, 7vw, 4rem); letter-spacing: -.05em; }
+.completion-view > p:not(.eyebrow) { max-width: 540px; margin: 0 0 26px; color: var(--muted); line-height: 1.75; }
+@media (max-width: 680px) {
+  .student-band { align-items: flex-start; flex-direction: column; }
+  .student-band p { text-align: left; }
+  .student-pilot-list { grid-template-columns: 1fr; }
+  .student-main { padding-top: 34px; }
+  .reading-sheet { padding: 22px 17px; }
+  .answer-actions { align-items: stretch; flex-direction: column; }
+  .answer-actions .button { width: 100%; }
+}

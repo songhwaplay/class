@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3efe4">
+  <title>독해 파일럿</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div id="studentGate" class="gate">
+    <div class="gate-card">
+      <p class="eyebrow">READING PILOT</p>
+      <h1>읽기 준비 중</h1>
+      <p id="studentGateMessage">학급에 열린 독해 활동을 확인하고 있어요.</p>
+      <div id="pilotGoogleSignIn" class="google-sign-in" hidden></div>
+      <a id="studentGateLink" class="button secondary" href="/" hidden>홈으로</a>
+    </div>
+  </div>
+
+  <div id="studentApp" class="student-app" hidden>
+    <header class="student-header">
+      <div>
+        <p class="eyebrow">READING PILOT</p>
+        <h1>차분히 읽고, 하나씩</h1>
+      </div>
+      <a href="/">학습 홈</a>
+    </header>
+
+    <section class="student-band">
+      <div>
+        <strong id="studentName"></strong>
+        <span id="studentClass"></span>
+      </div>
+      <p>점수를 빨리 내는 시험이 아니에요. 실제 난이도를 알아보기 위한 읽기 활동입니다.</p>
+    </section>
+
+    <main class="student-main">
+      <section id="pilotDashboard" class="dashboard-view">
+        <div class="view-heading">
+          <p class="eyebrow">MY PILOTS</p>
+          <h2>지금 풀 수 있는 활동</h2>
+        </div>
+        <div id="studentPilotList" class="student-pilot-list"></div>
+      </section>
+
+      <section id="questionView" class="question-view" hidden>
+        <div class="question-topline">
+          <button id="backToPilotsButton" class="text-button" type="button">← 활동 목록</button>
+          <span id="questionLevel" class="level-chip">K1</span>
+        </div>
+        <div class="progress-copy">
+          <strong id="questionProgress">1 / 5</strong>
+          <span id="pilotQuestionTitle"></span>
+        </div>
+        <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+        <article class="reading-sheet">
+          <p id="questionTopic" class="question-topic"></p>
+          <div id="studentPassage" class="student-passage"></div>
+          <h2 id="studentPrompt" class="student-prompt"></h2>
+          <form id="answerForm" class="answer-form">
+            <fieldset>
+              <legend class="sr-only">보기 선택</legend>
+              <div id="studentChoices" class="student-choices"></div>
+            </fieldset>
+            <div class="answer-actions">
+              <span id="answerStatus" role="status"></span>
+              <button id="saveAnswerButton" class="button primary" type="submit">이 답으로 다음</button>
+            </div>
+          </form>
+        </article>
+      </section>
+
+      <section id="completionView" class="completion-view" hidden>
+        <div class="completion-mark">✓</div>
+        <p class="eyebrow">SUBMITTED</p>
+        <h2>모두 제출했어요</h2>
+        <p>응답은 문항의 실제 난이도를 맞추는 데 사용됩니다. 정답이나 다른 학생의 결과는 공개되지 않아요.</p>
+        <button id="completionBackButton" class="button secondary" type="button">활동 목록으로</button>
+      </section>
+    </main>
+  </div>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="./app.js"></script>
+</body>
+</html>
