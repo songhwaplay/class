@@ -5,6 +5,7 @@ const fs = require("fs");
 const crypto = require("crypto");
 const { WebSocketServer, WebSocket } = require("ws");
 const LoveLetter = require("./loveletter");
+const LastCard = require("./lastcard");
 const Rummikub = require("./rummikub");
 const Blokus = require("./blokus");
 const DrawRelay = require("./drawrelay");
@@ -21,6 +22,7 @@ const MAX_ROOM_PLAYERS = {
   omok: 2,
   connect6: 2,
   diamondgame: 3,
+  lastcard: 4,
   loveletter: 4,
   rummikub: 4,
   blokus: 4,
@@ -72,6 +74,20 @@ function loveLetterBroadcast(room) {
 
 function loveLetterError(socket, message) {
   safeSend(socket, { type: "LOVELETTER_ERROR", message });
+}
+
+function lastCardBroadcast(room) {
+  if (!room?.lastcard) return;
+  for (const [id, client] of room.clients) {
+    safeSend(client, {
+      type: "LASTCARD_STATE",
+      state: LastCard.stateFor(room.lastcard, id)
+    });
+  }
+}
+
+function lastCardError(socket, message) {
+  safeSend(socket, { type: "LASTCARD_ERROR", message });
 }
 
 function rummikubBroadcast(room) {
@@ -489,6 +505,7 @@ wss.on("connection", socket => {
         existingRoom.clients.set(playerId, socket);
         safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
         if (existingRoom.avalon) avalonBroadcast(existingRoom);
+        if (existingRoom.lastcard) lastCardBroadcast(existingRoom);
         if (existingRoom.loveletter) loveLetterBroadcast(existingRoom);
         if (existingRoom.rummikub) rummikubBroadcast(existingRoom);
         if (existingRoom.blokus) blokusBroadcast(existingRoom);
@@ -522,6 +539,9 @@ wss.on("connection", socket => {
       if (gameId === "loveletter") {
         room.loveletter = LoveLetter.createGame(playerId, cleanToken(message.name, 12) || "방장");
       }
+      if (gameId === "lastcard") {
+        room.lastcard = LastCard.createGame(playerId, cleanToken(message.name, 12) || "방장");
+      }
       if (gameId === "rummikub") {
         room.rummikub = Rummikub.createGame(playerId, cleanToken(message.name, 12) || "방장");
       }
@@ -553,6 +573,7 @@ wss.on("connection", socket => {
         playerId
       });
       if (room.avalon) avalonBroadcast(room);
+      if (room.lastcard) lastCardBroadcast(room);
       if (room.loveletter) loveLetterBroadcast(room);
       if (room.rummikub) rummikubBroadcast(room);
       if (room.blokus) blokusBroadcast(room);
@@ -588,6 +609,7 @@ wss.on("connection", socket => {
         room.clients.set(playerId, socket);
         safeSend(socket, { type: "ROOM_RESUMED", gameId, roomCode, playerId });
         if (room.avalon) avalonBroadcast(room);
+        if (room.lastcard) lastCardBroadcast(room);
         if (room.loveletter) loveLetterBroadcast(room);
         if (room.rummikub) rummikubBroadcast(room);
         if (room.blokus) blokusBroadcast(room);
@@ -633,6 +655,16 @@ wss.on("connection", socket => {
           return;
         }
         LoveLetter.addPlayer(room.loveletter, playerId, cleanToken(message.name, 12) || `플레이어 ${room.loveletter.players.length + 1}`);
+      }
+      if (room.lastcard) {
+        if (room.lastcard.phase !== "lobby") {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "이미 시작한 게임입니다." });
+          return;
+        }
+        LastCard.addPlayer(room.lastcard, playerId, cleanToken(message.name, 12) || `플레이어 ${room.lastcard.players.length + 1}`);
       }
       if (room.rummikub) {
         if (room.rummikub.phase !== "lobby") {
@@ -697,6 +729,7 @@ wss.on("connection", socket => {
         name: cleanToken(message.name, 20)
       });
       if (room.avalon) avalonBroadcast(room);
+      if (room.lastcard) lastCardBroadcast(room);
       if (room.loveletter) loveLetterBroadcast(room);
       if (room.rummikub) rummikubBroadcast(room);
       if (room.blokus) blokusBroadcast(room);
@@ -793,12 +826,47 @@ wss.on("connection", socket => {
       return;
     }
 
+    if (type === "LASTCARD_ACTION") {
+      const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
+      const game = room?.lastcard;
+      const action = cleanToken(message.action, 30);
+      if (!room || !game) {
+        lastCardError(socket, "라스트 카드 방에 참가하지 않았습니다.");
+        return;
+      }
+
+      let result = null;
+      if (action === "START") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 게임을 시작할 수 있습니다." };
+        else result = LastCard.startMatch(game);
+      } else if (action === "PLAY") {
+        result = LastCard.playCard(game, playerId, message);
+      } else if (action === "DRAW") {
+        result = LastCard.drawAndPass(game, playerId);
+      } else if (action === "NEW_GAME") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 새 게임을 시작할 수 있습니다." };
+        else result = LastCard.startMatch(game);
+      } else if (action === "RETURN_LOBBY") {
+        if (playerId !== room.hostId) result = { ok: false, error: "방장만 대기실로 돌아갈 수 있습니다." };
+        else result = LastCard.resetToLobby(game);
+      } else {
+        result = { ok: false, error: "알 수 없는 행동입니다." };
+      }
+
+      if (!result.ok) {
+        lastCardError(socket, result.error || "행동을 처리하지 못했습니다.");
+        return;
+      }
+      lastCardBroadcast(room);
+      return;
+    }
+
     if (type === "LOVELETTER_ACTION") {
       const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
       const game = room?.loveletter;
       const action = cleanToken(message.action, 30);
       if (!room || !game) {
-        loveLetterError(socket, "러브레터 방에 참가하지 않았습니다.");
+        loveLetterError(socket, "궁정 추리 방에 참가하지 않았습니다.");
         return;
       }
 
@@ -846,7 +914,7 @@ wss.on("connection", socket => {
       const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
       const game = room?.avalon;
       const action = cleanToken(message.action, 30);
-      if (!room || !game) return safeSend(socket, { type: "ERROR", message: "아발론 방에 참가하지 않았습니다." });
+      if (!room || !game) return safeSend(socket, { type: "ERROR", message: "원정대 추리 방에 참가하지 않았습니다." });
       const player = game.players.find(p => p.id === playerId);
       if (!player) return;
 
@@ -860,7 +928,7 @@ wss.on("connection", socket => {
         avalonBroadcast(room);
       } else if (action === "START" && playerId === room.hostId && game.phase === "lobby") {
         if (game.players.length < 5) return safeSend(socket, { type: "ERROR", message: "게임 시작에는 최소 5명이 필요합니다." });
-        if (game.players.length > 8) return safeSend(socket, { type: "ERROR", message: "수업용 아발론은 최대 8명까지 참여할 수 있습니다." });
+        if (game.players.length > 8) return safeSend(socket, { type: "ERROR", message: "원정대 추리는 최대 8명까지 참여할 수 있습니다." });
         const roles = buildAvalonRoles(game.players.length, game.settings);
         const roleVariantCounts = new Map();
         game.players.forEach((p, index) => {
@@ -922,7 +990,7 @@ wss.on("connection", socket => {
       const game = room?.rummikub;
       const action = cleanToken(message.action, 30);
       if (!room || !game) {
-        rummikubError(socket, "루미큐브 방에 참가하지 않았습니다.");
+        rummikubError(socket, "숫자 타일 방에 참가하지 않았습니다.");
         return;
       }
 
@@ -963,7 +1031,7 @@ wss.on("connection", socket => {
       const game = room?.blokus;
       const action = cleanToken(message.action, 30);
       if (!room || !game) {
-        blokusError(socket, "블로커스 방에 참가하지 않았습니다.");
+        blokusError(socket, "코너 블록 방에 참가하지 않았습니다.");
         return;
       }
 
@@ -1101,6 +1169,13 @@ wss.on("connection", socket => {
           LoveLetter.resetToLobby(currentRoom.loveletter, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
         }
       }
+      if (currentRoom.lastcard) {
+        const gameWasActive = currentRoom.lastcard.phase !== "lobby";
+        LastCard.removePlayer(currentRoom.lastcard, playerId);
+        if (gameWasActive) {
+          LastCard.resetToLobby(currentRoom.lastcard, "플레이어가 나가 게임을 중단하고 대기실로 돌아왔습니다.");
+        }
+      }
       if (currentRoom.rummikub) {
         const gameWasActive = currentRoom.rummikub.phase !== "lobby";
         Rummikub.removePlayer(currentRoom.rummikub, playerId);
@@ -1137,6 +1212,7 @@ wss.on("connection", socket => {
       });
 
       if (currentRoom.avalon) avalonBroadcast(currentRoom);
+      if (currentRoom.lastcard) lastCardBroadcast(currentRoom);
       if (currentRoom.loveletter) loveLetterBroadcast(currentRoom);
       if (currentRoom.rummikub) rummikubBroadcast(currentRoom);
       if (currentRoom.blokus) blokusBroadcast(currentRoom);
