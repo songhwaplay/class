@@ -241,8 +241,73 @@
         });
     }
 
-    function getLeftHandCompingMidi(chord) {
-        return getClosedPositionMidi(chord, 48);
+    function getChordVoicingCandidates(chord) {
+        const rootPosition = getClosedPositionMidi(chord, 48);
+        const candidates = [];
+        for (let inversion = 0; inversion < rootPosition.length; inversion += 1) {
+            const rotated = rootPosition.slice(inversion).concat(rootPosition.slice(0, inversion).map(function (midi) { return midi + 12; }));
+            for (let shift = -24; shift <= 24; shift += 12) {
+                const notes = rotated.map(function (midi) { return midi + shift; });
+                if (notes[0] < 48 || notes[notes.length - 1] > 72) continue;
+                candidates.push({ notes: notes, inversion: inversion });
+            }
+        }
+        return candidates;
+    }
+
+    function getLeftHandCompingMidi(chord, inversion) {
+        const requested = Math.max(0, Math.min(chord.pitchClasses.length - 1, Number(inversion) || 0));
+        const candidates = getChordVoicingCandidates(chord)
+            .filter(function (candidate) { return candidate.inversion === requested; })
+            .sort(function (a, b) { return a.notes[0] - b.notes[0]; });
+        return candidates.length ? candidates[0].notes.slice() : getClosedPositionMidi(chord, 48);
+    }
+
+    function findNearestVoicing(chord, previousNotes) {
+        const previous = Array.isArray(previousNotes) ? previousNotes : [];
+        if (!previous.length) {
+            const notes = getLeftHandCompingMidi(chord, 0);
+            return { notes: notes, inversion: 0, movement: 0, commonTones: [] };
+        }
+        const candidates = getChordVoicingCandidates(chord);
+        let best = null;
+        candidates.forEach(function (candidate) {
+            const movement = candidate.notes.reduce(function (sum, midi, index) {
+                return sum + Math.abs(midi - previous[Math.min(index, previous.length - 1)]);
+            }, 0);
+            const commonTones = candidate.notes.filter(function (midi) { return previous.includes(midi); });
+            const score = movement - commonTones.length * 3;
+            if (!best || score < best.score || (score === best.score && candidate.notes[0] < best.notes[0])) {
+                best = {
+                    notes: candidate.notes.slice(),
+                    inversion: candidate.inversion,
+                    movement: movement,
+                    commonTones: commonTones,
+                    score: score
+                };
+            }
+        });
+        return best || { notes: getLeftHandCompingMidi(chord, 0), inversion: 0, movement: 0, commonTones: [] };
+    }
+
+    function buildVoiceLedProgression(chords, forcedInversion) {
+        let previous = [];
+        return chords.map(function (chord) {
+            let entry;
+            if (Number.isInteger(forcedInversion)) {
+                const inversion = Math.max(0, Math.min(chord.pitchClasses.length - 1, forcedInversion));
+                const notes = getLeftHandCompingMidi(chord, inversion);
+                const commonTones = notes.filter(function (midi) { return previous.includes(midi); });
+                const movement = previous.length ? notes.reduce(function (sum, midi, index) {
+                    return sum + Math.abs(midi - previous[Math.min(index, previous.length - 1)]);
+                }, 0) : 0;
+                entry = { notes: notes, inversion: inversion, movement: movement, commonTones: commonTones };
+            } else {
+                entry = findNearestVoicing(chord, previous);
+            }
+            previous = entry.notes.slice();
+            return entry;
+        });
     }
 
     function scoreRhythmDictation(expectedHits, selectedHits) {
@@ -316,7 +381,10 @@
         getProgression: getProgression,
         midiToFrequency: midiToFrequency,
         getClosedPositionMidi: getClosedPositionMidi,
+        getChordVoicingCandidates: getChordVoicingCandidates,
         getLeftHandCompingMidi: getLeftHandCompingMidi,
+        findNearestVoicing: findNearestVoicing,
+        buildVoiceLedProgression: buildVoiceLedProgression,
         scoreRhythmDictation: scoreRhythmDictation,
         scoreRhythm: scoreRhythm,
         getNoteName: getNoteName

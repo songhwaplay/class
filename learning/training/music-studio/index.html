@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#100f19">
     <title>화성학·리듬 트레이닝</title>
     <meta name="description" content="화성학과 리듬 트레이닝 웹 학습 도구">
-    <link rel="stylesheet" href="styles.css?v=20260721-aurora">
-    <script src="music-core.js?v=20260721-dictation" defer></script>
-    <script src="app.js?v=20260721-dictation" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260721-voiceleading">
+    <script src="music-core.js?v=20260721-voiceleading" defer></script>
+    <script src="app.js?v=20260721-voiceleading" defer></script>
 </head>
 <body>
     <div class="noise" aria-hidden="true"></div>
@@ -80,6 +80,16 @@
                                 <button type="button" data-voicing="seventh">7화음</button>
                             </div>
                         </div>
+                        <div class="control-stack voicing-control">
+                            <span>왼손 보이싱</span>
+                            <div class="segmented" aria-label="왼손 보이싱 방식">
+                                <button class="active" type="button" data-inversion-mode="auto">근접</button>
+                                <button type="button" data-inversion-mode="0">기본</button>
+                                <button type="button" data-inversion-mode="1">1전위</button>
+                                <button type="button" data-inversion-mode="2">2전위</button>
+                                <button class="seventh-only hidden" type="button" data-inversion-mode="3">3전위</button>
+                            </div>
+                        </div>
                     </div>
                 </header>
 
@@ -120,6 +130,7 @@
                     </div>
                     <div id="chordBank" class="chord-bank"></div>
                     <div id="piano" class="piano" aria-label="C3부터 C5까지 선택한 왼손 컴핑 보이싱을 보여주는 두 옥타브 피아노 건반"></div>
+                    <div class="voicing-legend" aria-label="보이싱 건반 색상"><span><i class="common"></i>공통음</span><span><i class="moved"></i>움직인 음</span></div>
                     <p id="chordReadout" class="chord-readout" aria-live="polite">I · C Major · 토닉</p>
                 </article>
 
@@ -133,6 +144,18 @@
                     <div id="quizChoices" class="quiz-choices" aria-label="퀴즈 선택지"></div>
                     <p id="quizFeedback" class="quiz-feedback" aria-live="polite"></p>
                     <button id="newQuizButton" class="text-button" type="button">새 문제 ↻</button>
+                </article>
+
+                <article class="voicing-quiz-card">
+                    <div class="quiz-copy">
+                        <span class="mini-label">보이싱 듣기</span>
+                        <h3>들은 코드의 전위형을 고르세요</h3>
+                        <p id="voicingQuizPrompt">같은 코드도 베이스음에 따라 다르게 들립니다.</p>
+                    </div>
+                    <button id="voicingQuizListenButton" class="listen-button voicing-listen-button" type="button"><span aria-hidden="true">♪</span> 보이싱 듣기</button>
+                    <div id="voicingQuizChoices" class="quiz-choices" aria-label="전위형 퀴즈 선택지"></div>
+                    <p id="voicingQuizFeedback" class="quiz-feedback" aria-live="polite"></p>
+                    <button id="newVoicingQuizButton" class="text-button" type="button">새 문제 ↻</button>
                 </article>
             </section>
 

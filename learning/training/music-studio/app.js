@@ -18,6 +18,7 @@
         minor: ["A", "E", "B", "F#", "C#", "D", "G", "C"]
     };
     const MINOR_VARIANT_LABEL = { natural: "자연단조", harmonic: "화성단조", melodic: "가락단조" };
+    const INVERSION_LABELS = ["기본형", "1전위", "2전위", "3전위"];
 
     const state = {
         audioContext: null,
@@ -34,9 +35,14 @@
         progressionDegrees: PROGRESSIONS.pop.degrees.slice(),
         selectedSlot: 0,
         selectedChord: 0,
+        inversionMode: "auto",
+        progressionVoicings: [],
         progressionToken: 0,
         quizTarget: 4,
         quizAnswered: false,
+        voicingQuizChord: 0,
+        voicingQuizInversion: 1,
+        voicingQuizAnswered: false,
         rhythmMode: "dictation",
         rhythmPattern: "steady",
         rhythmPlaybackToken: 0,
@@ -66,7 +72,8 @@
             "practiceCount", "harmonyLab", "rhythmLab", "keySelect", "minorVariantControl", "minorVariantSelect", "progressionName",
             "progressionSlots", "progressionHint", "playProgressionButton", "functionExplanation",
             "chordBankTitle", "chordBank", "piano", "chordReadout", "quizPrompt", "quizListenButton",
-            "quizChoices", "quizFeedback", "newQuizButton", "tempoOutput", "tempoSlider", "rhythmName",
+            "quizChoices", "quizFeedback", "newQuizButton", "voicingQuizPrompt", "voicingQuizListenButton",
+            "voicingQuizChoices", "voicingQuizFeedback", "newVoicingQuizButton", "tempoOutput", "tempoSlider", "rhythmName",
             "rhythmListenButton", "metronomeButton", "rhythmGrid", "rhythmSyllables", "challengeStatus",
             "challengeTitle", "challengeGuide", "tapButton", "startChallengeButton", "scorePanel",
             "rhythmScore", "scoreTitle", "scoreDetail", "retryButton", "dictationPanel", "performancePanel",
@@ -263,19 +270,38 @@
         elements.minorVariantControl.classList.toggle("hidden", state.mode !== "minor");
     }
 
-    function playChord(chord, when, duration) {
+    function playChord(chord, when, duration, voicingNotes) {
         const context = ensureAudio();
         if (!context || !chord) return;
         const start = when || context.currentTime + .02;
         const length = duration || .85;
-        core.getLeftHandCompingMidi(chord).forEach(function (midi) {
+        const notes = Array.isArray(voicingNotes) ? voicingNotes : core.getLeftHandCompingMidi(chord);
+        notes.forEach(function (midi) {
             playPianoTone(core.midiToFrequency(midi), start, length, .052);
         });
+    }
+
+    function midiNoteLabel(chord, midi) {
+        const pitchClass = ((midi % 12) + 12) % 12;
+        const noteIndex = chord.pitchClasses.indexOf(pitchClass);
+        const noteName = noteIndex >= 0 ? chord.noteNames[noteIndex] : core.getNoteName(pitchClass);
+        return noteName + (Math.floor(midi / 12) - 1);
+    }
+
+    function formatVoicingNotes(chord, notes) {
+        return notes.map(function (midi) { return midiNoteLabel(chord, midi); }).join("–");
+    }
+
+    function getProgressionVoicings(chords) {
+        const progressionChords = state.progressionDegrees.map(function (degree) { return chords[degree]; });
+        const forcedInversion = state.inversionMode === "auto" ? undefined : Number(state.inversionMode);
+        return core.buildVoiceLedProgression(progressionChords, forcedInversion);
     }
 
     function renderHarmony() {
         const chords = getChords();
         const progression = PROGRESSIONS[state.progressionId];
+        state.progressionVoicings = getProgressionVoicings(chords);
         elements.progressionName.textContent = progression.name;
         elements.progressionHint.textContent = progression.hint;
         const scaleLabel = state.mode === "major" ? "장조" : MINOR_VARIANT_LABEL[state.minorVariant];
@@ -287,16 +313,17 @@
         elements.progressionSlots.innerHTML = "";
         state.progressionDegrees.forEach(function (degree, index) {
             const chord = chords[degree];
+            const voicing = state.progressionVoicings[index];
             const button = document.createElement("button");
             button.type = "button";
             button.className = "chord-slot" + (state.selectedSlot === index ? " selected" : "");
             button.dataset.slot = index;
-            button.innerHTML = "<span>0" + (index + 1) + " · " + chord.roman + "</span><strong>" + chord.name + "</strong><small>" + chord.functionName + " · " + chord.functionDescription + "</small><i></i>";
+            button.innerHTML = "<span>0" + (index + 1) + " · " + chord.roman + "</span><strong>" + chord.name + "</strong><small>" + chord.functionName + " · " + chord.functionDescription + "</small><em>" + INVERSION_LABELS[voicing.inversion] + " · " + formatVoicingNotes(chord, voicing.notes) + "</em><i></i>";
             button.addEventListener("click", function () {
                 state.selectedSlot = index;
                 state.selectedChord = degree;
                 renderHarmony();
-                playChord(chord);
+                playChord(chord, undefined, undefined, voicing.notes);
             });
             elements.progressionSlots.appendChild(button);
         });
@@ -312,20 +339,24 @@
                 state.selectedChord = index;
                 state.progressionDegrees[state.selectedSlot] = index;
                 renderHarmony();
-                playChord(chord);
+                playChord(chord, undefined, undefined, state.progressionVoicings[state.selectedSlot].notes);
                 explainFunction(chord.functionName);
             });
             elements.chordBank.appendChild(button);
         });
-        renderPiano(chords[state.selectedChord]);
+        const selectedVoicing = state.progressionVoicings[state.selectedSlot];
+        const previousNotes = state.selectedSlot > 0 ? state.progressionVoicings[state.selectedSlot - 1].notes : [];
+        renderPiano(chords[state.selectedChord], selectedVoicing, previousNotes);
     }
 
-    function renderPiano(chord) {
+    function renderPiano(chord, voicingEntry, previousNotes) {
         const whitePitchClasses = [0, 2, 4, 5, 7, 9, 11];
         const blackPitchClasses = [1, 3, 6, 8, 10];
         const whiteMidis = [];
         const blackMidis = [];
-        const voicing = core.getLeftHandCompingMidi(chord);
+        const entry = voicingEntry || { notes: core.getLeftHandCompingMidi(chord), inversion: 0, movement: 0, commonTones: [] };
+        const voicing = entry.notes;
+        const previous = Array.isArray(previousNotes) ? previousNotes : [];
         for (let midi = 48; midi <= 72; midi += 1) {
             const pitchClass = midi % 12;
             if (whitePitchClasses.includes(pitchClass)) whiteMidis.push(midi);
@@ -338,8 +369,10 @@
             const noteName = core.getNoteName(pitchClass);
             const key = document.createElement("button");
             key.type = "button";
-            key.className = "white-key" + (voicing.includes(midi) ? " active" : "");
-            key.setAttribute("aria-label", noteName + octave + " 음 듣기");
+            const active = voicing.includes(midi);
+            const relation = active ? (previous.includes(midi) ? " common" : " moved") : "";
+            key.className = "white-key" + (active ? " active" : "") + relation;
+            key.setAttribute("aria-label", noteName + octave + " 음 듣기" + (active ? (previous.includes(midi) ? " · 공통음" : " · 움직인 음") : ""));
             key.innerHTML = "<span>" + (pitchClass === 0 ? noteName + octave : noteName) + "</span>";
             key.addEventListener("click", function () { playPianoTone(core.midiToFrequency(midi), 0, .65, .07); });
             elements.piano.appendChild(key);
@@ -349,28 +382,29 @@
             const octave = Math.floor(midi / 12) - 1;
             const key = document.createElement("button");
             key.type = "button";
-            key.className = "black-key" + (voicing.includes(midi) ? " active" : "");
+            const active = voicing.includes(midi);
+            const relation = active ? (previous.includes(midi) ? " common" : " moved") : "";
+            key.className = "black-key" + (active ? " active" : "") + relation;
             key.style.left = (whiteMidis.filter(function (whiteMidi) { return whiteMidi < midi; }).length / whiteMidis.length * 100) + "%";
-            key.setAttribute("aria-label", core.getNoteName(pitchClass) + octave + " 음 듣기");
+            key.setAttribute("aria-label", core.getNoteName(pitchClass) + octave + " 음 듣기" + (active ? (previous.includes(midi) ? " · 공통음" : " · 움직인 음") : ""));
             key.addEventListener("click", function () { playPianoTone(core.midiToFrequency(midi), 0, .65, .07); });
             elements.piano.appendChild(key);
         });
-        const playedNotes = voicing.map(function (midi, index) {
-            return chord.noteNames[index] + (Math.floor(midi / 12) - 1);
-        });
-        elements.chordReadout.textContent = chord.roman + " · " + chord.name + " · 왼손 컴핑 " + playedNotes.join("–") + " · 음역 C3–C5";
+        const commonLabels = entry.commonTones.map(function (midi) { return midiNoteLabel(chord, midi); });
+        elements.chordReadout.textContent = chord.roman + " · " + chord.name + " · " + INVERSION_LABELS[entry.inversion] + " · " + formatVoicingNotes(chord, voicing) + " · 공통음 " + (commonLabels.length ? commonLabels.join("·") : "없음") + " · 이동 " + entry.movement + "반음";
     }
 
     function playProgression() {
         const context = ensureAudio();
         if (!context) return;
         const chords = getChords();
+        const voicings = getProgressionVoicings(chords);
         const token = ++state.progressionToken;
         const start = context.currentTime + .08;
         const beat = .78;
         elements.playProgressionButton.classList.add("playing");
         state.progressionDegrees.forEach(function (degree, index) {
-            playChord(chords[degree], start + index * beat, .68);
+            playChord(chords[degree], start + index * beat, .68, voicings[index].notes);
             window.setTimeout(function () {
                 if (token !== state.progressionToken) return;
                 document.querySelectorAll(".chord-slot").forEach(function (slot, slotIndex) {
@@ -421,6 +455,46 @@
         } else {
             button.classList.add("wrong");
             elements.quizFeedback.textContent = chords[degree].roman + "는 아니에요. 한 번 더 들어보세요.";
+            window.setTimeout(function () { button.classList.remove("wrong"); }, 650);
+        }
+    }
+
+    function makeVoicingQuiz() {
+        const chords = getChords();
+        state.voicingQuizChord = Math.floor(Math.random() * chords.length);
+        state.voicingQuizInversion = Math.floor(Math.random() * (state.useSevenths ? 4 : 3));
+        state.voicingQuizAnswered = false;
+        elements.voicingQuizPrompt.textContent = "보이싱을 듣고 전위형을 고르세요.";
+        elements.voicingQuizFeedback.textContent = "";
+        elements.voicingQuizChoices.innerHTML = "";
+        const optionCount = state.useSevenths ? 4 : 3;
+        for (let inversion = 0; inversion < optionCount; inversion += 1) {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.textContent = INVERSION_LABELS[inversion];
+            button.setAttribute("aria-label", INVERSION_LABELS[inversion] + " 선택");
+            button.addEventListener("click", function () { answerVoicingQuiz(inversion, button); });
+            elements.voicingQuizChoices.appendChild(button);
+        }
+    }
+
+    function listenToVoicingQuiz() {
+        const chord = getChords()[state.voicingQuizChord];
+        playChord(chord, undefined, 1, core.getLeftHandCompingMidi(chord, state.voicingQuizInversion));
+    }
+
+    function answerVoicingQuiz(inversion, button) {
+        if (state.voicingQuizAnswered) return;
+        const chord = getChords()[state.voicingQuizChord];
+        if (inversion === state.voicingQuizInversion) {
+            state.voicingQuizAnswered = true;
+            button.classList.add("correct");
+            const notes = core.getLeftHandCompingMidi(chord, inversion);
+            elements.voicingQuizFeedback.textContent = "정답 · " + chord.name + " " + INVERSION_LABELS[inversion] + " · " + formatVoicingNotes(chord, notes);
+            incrementPractice();
+        } else {
+            button.classList.add("wrong");
+            elements.voicingQuizFeedback.textContent = "다시 들어보세요.";
             window.setTimeout(function () { button.classList.remove("wrong"); }, 650);
         }
     }
@@ -756,6 +830,16 @@
         toastTimer = window.setTimeout(function () { elements.toast.classList.remove("show"); }, 2200);
     }
 
+    function syncInversionControls() {
+        if (!state.useSevenths && state.inversionMode === "3") state.inversionMode = "auto";
+        document.querySelectorAll("[data-inversion-mode]").forEach(function (button) {
+            button.classList.toggle("active", button.dataset.inversionMode === state.inversionMode);
+        });
+        document.querySelectorAll(".seventh-only").forEach(function (button) {
+            button.classList.toggle("hidden", !state.useSevenths);
+        });
+    }
+
     function bindEvents() {
         document.querySelectorAll(".lab-tab").forEach(function (button) {
             button.addEventListener("click", function () { switchTab(button.dataset.tab); });
@@ -777,6 +861,7 @@
                 renderKeyOptions();
                 renderHarmony();
                 makeQuiz();
+                makeVoicingQuiz();
             });
         });
         elements.keySelect.addEventListener("change", function () {
@@ -784,18 +869,29 @@
             state.selectedChord = state.progressionDegrees[state.selectedSlot];
             renderHarmony();
             makeQuiz();
+            makeVoicingQuiz();
         });
         elements.minorVariantSelect.addEventListener("change", function () {
             state.minorVariant = elements.minorVariantSelect.value;
             renderHarmony();
             makeQuiz();
+            makeVoicingQuiz();
         });
         document.querySelectorAll("[data-voicing]").forEach(function (button) {
             button.addEventListener("click", function () {
                 state.useSevenths = button.dataset.voicing === "seventh";
                 document.querySelectorAll("[data-voicing]").forEach(function (item) { item.classList.toggle("active", item === button); });
+                syncInversionControls();
                 renderHarmony();
                 makeQuiz();
+                makeVoicingQuiz();
+            });
+        });
+        document.querySelectorAll("[data-inversion-mode]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                state.inversionMode = button.dataset.inversionMode;
+                syncInversionControls();
+                renderHarmony();
             });
         });
         document.querySelectorAll("[data-progression]").forEach(function (button) {
@@ -814,6 +910,8 @@
         elements.playProgressionButton.addEventListener("click", playProgression);
         elements.quizListenButton.addEventListener("click", function () { playChord(getChords()[state.quizTarget]); });
         elements.newQuizButton.addEventListener("click", makeQuiz);
+        elements.voicingQuizListenButton.addEventListener("click", listenToVoicingQuiz);
+        elements.newVoicingQuizButton.addEventListener("click", makeVoicingQuiz);
         document.querySelectorAll("[data-rhythm-mode]").forEach(function (button) {
             button.addEventListener("click", function () { switchRhythmMode(button.dataset.rhythmMode); });
         });
@@ -865,6 +963,7 @@
         newDictationQuestion();
         renderRhythm();
         makeQuiz();
+        makeVoicingQuiz();
     }
 
     document.addEventListener("DOMContentLoaded", init);
