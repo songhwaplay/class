@@ -35,7 +35,7 @@
         }
 
         main {
-            width: min(720px, 100%);
+            width: min(1180px, 100%);
             margin: 0 auto;
         }
 
@@ -174,14 +174,15 @@
         .management h2 { margin: 0 0 8px; font-size: 1.35rem; }
         .management-copy { margin: 0 0 16px; color: var(--muted); font-size: 13px; line-height: 1.55; }
         .form-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; margin: 12px 0; }
-        .teacher-form { grid-template-columns: 1fr 130px auto; }
+        .teacher-form { grid-template-columns: 110px 90px 90px 1fr 130px auto; }
         .control { width: 100%; min-height: 44px; border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; color: var(--ink); background: #101512; }
         .action-button { min-height: 44px; border: 1px solid var(--green); border-radius: 10px; padding: 0 16px; color: var(--ink); background: var(--green-dark); font-weight: 800; cursor: pointer; }
-        .school-tools { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; margin-top: 18px; }
+        .school-tools { display: grid; grid-template-columns: 1fr auto auto auto; gap: 10px; align-items: center; margin-top: 18px; }
         .check-label { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 13px; }
         .teacher-list { display: grid; gap: 10px; margin-top: 14px; }
-        .teacher-row { display: grid; grid-template-columns: 1fr 120px auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+        .teacher-row { display: grid; grid-template-columns: 110px 90px 90px minmax(130px, 1fr) 120px auto auto auto; gap: 8px; align-items: center; border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
         .teacher-class { grid-column: 1 / -1; color: var(--muted); font-size: 12px; }
+        .danger-button { border-color: #9c4943; color: #ffd6d2; background: #3c1d1a; }
         [hidden] { display: none !important; }
 
         @media (max-width: 560px) {
@@ -228,7 +229,7 @@
                 </div>
                 <section class="management" aria-labelledby="school-management-title">
                     <h2 id="school-management-title">School management</h2>
-                    <p class="management-copy">Only enabled schools appear on the student and teacher pages. Select a school to manage its teachers and classes.</p>
+                    <p class="management-copy">Assign each homeroom teacher a school year, grade, and class. Teachers can manage only the student roster for the class assigned here.</p>
                     <div class="form-row">
                         <input class="control" id="newSchoolName" maxlength="80" placeholder="School name">
                         <button class="action-button" id="addSchoolButton" type="button">ADD SCHOOL</button>
@@ -237,9 +238,13 @@
                         <select class="control" id="schoolSelect"><option value="">Select school</option></select>
                         <label class="check-label"><input id="schoolEnabled" type="checkbox"> Enabled</label>
                         <button class="action-button" id="saveSchoolButton" type="button">SAVE SCHOOL</button>
+                        <button class="action-button danger-button" id="deleteSchoolButton" type="button">DELETE SCHOOL</button>
                     </div>
                     <div id="teacherManagement" hidden>
                         <div class="form-row teacher-form">
+                            <select class="control" id="newTeacherYear" aria-label="School year"></select>
+                            <select class="control" id="newTeacherGrade" aria-label="Grade"></select>
+                            <input class="control" id="newTeacherClass" type="number" min="1" max="30" value="1" aria-label="Class">
                             <input class="control" id="newTeacherName" maxlength="30" placeholder="Teacher name">
                             <input class="control" id="newTeacherPassword" type="password" inputmode="numeric" maxlength="6" value="123456" aria-label="Initial teacher password">
                             <button class="action-button" id="addTeacherButton" type="button">ADD TEACHER</button>
@@ -281,13 +286,30 @@
             const schoolSelect = document.querySelector("#schoolSelect");
             const schoolEnabled = document.querySelector("#schoolEnabled");
             const saveSchoolButton = document.querySelector("#saveSchoolButton");
+            const deleteSchoolButton = document.querySelector("#deleteSchoolButton");
             const teacherManagement = document.querySelector("#teacherManagement");
+            const newTeacherYear = document.querySelector("#newTeacherYear");
+            const newTeacherGrade = document.querySelector("#newTeacherGrade");
+            const newTeacherClass = document.querySelector("#newTeacherClass");
             const newTeacherName = document.querySelector("#newTeacherName");
             const newTeacherPassword = document.querySelector("#newTeacherPassword");
             const addTeacherButton = document.querySelector("#addTeacherButton");
             const teacherList = document.querySelector("#teacherList");
             let saving = false;
             let schools = [];
+            const currentYear = new Date().getFullYear();
+
+            function fillYearSelect(select, value = currentYear) {
+                select.replaceChildren();
+                [currentYear - 1, currentYear, currentYear + 1].forEach((year) => select.add(new Option(String(year), String(year))));
+                select.value = String(value || currentYear);
+            }
+
+            function fillGradeSelect(select, value = 1) {
+                select.replaceChildren();
+                for (let grade = 1; grade <= 12; grade += 1) select.add(new Option(`Grade ${grade}`, String(grade)));
+                select.value = String(value || 1);
+            }
 
             async function api(path, options = {}) {
                 const response = await fetch(path, {
@@ -325,11 +347,27 @@
                 teacherList.replaceChildren();
                 schoolEnabled.disabled = !school;
                 saveSchoolButton.disabled = !school;
+                deleteSchoolButton.disabled = !school;
                 if (!school) return;
                 schoolEnabled.checked = school.enabled;
                 school.teachers.forEach((teacher) => {
                     const row = document.createElement("div");
                     row.className = "teacher-row";
+                    const year = document.createElement("select");
+                    year.className = "control";
+                    year.setAttribute("aria-label", `School year for ${teacher.name}`);
+                    fillYearSelect(year, teacher.classroom?.academicYear);
+                    const grade = document.createElement("select");
+                    grade.className = "control";
+                    grade.setAttribute("aria-label", `Grade for ${teacher.name}`);
+                    fillGradeSelect(grade, teacher.classroom?.grade);
+                    const classNumber = document.createElement("input");
+                    classNumber.className = "control";
+                    classNumber.type = "number";
+                    classNumber.min = "1";
+                    classNumber.max = "30";
+                    classNumber.value = String(teacher.classroom?.classNumber || 1);
+                    classNumber.setAttribute("aria-label", `Class for ${teacher.name}`);
                     const name = document.createElement("input");
                     name.className = "control";
                     name.value = teacher.name;
@@ -356,10 +394,29 @@
                         try {
                             await api(`/api/admin/teachers/${teacher.id}`, {
                                 method: "PATCH",
-                                body: JSON.stringify({ name: name.value.trim(), password: password.value, active: active.checked }),
+                                body: JSON.stringify({
+                                    academicYear: Number(year.value),
+                                    grade: Number(grade.value),
+                                    classNumber: Number(classNumber.value),
+                                    name: name.value.trim(),
+                                    password: password.value,
+                                    active: active.checked,
+                                }),
                             });
                             await loadSchools(school.id);
                             setStatus("Teacher information saved.");
+                        } catch (error) { setStatus(error.message, true); }
+                    });
+                    const remove = document.createElement("button");
+                    remove.className = "action-button danger-button";
+                    remove.type = "button";
+                    remove.textContent = "DELETE";
+                    remove.addEventListener("click", async () => {
+                        if (!confirm(`Delete ${teacher.name}'s teacher account, class, and student roster? This cannot be undone.`)) return;
+                        try {
+                            await api(`/api/admin/teachers/${teacher.id}`, { method: "DELETE" });
+                            await loadSchools(school.id);
+                            setStatus("Teacher and class deleted.");
                         } catch (error) { setStatus(error.message, true); }
                     });
                     const classInfo = document.createElement("div");
@@ -367,7 +424,7 @@
                     classInfo.textContent = teacher.classroom
                         ? `${teacher.classroom.academicYear} · Grade ${teacher.classroom.grade} Class ${teacher.classroom.classNumber} · ${teacher.classroom.studentCount} students${teacher.linked ? " · Google linked" : ""}`
                         : `No class saved${teacher.linked ? " · Google linked" : ""}`;
-                    row.append(name, password, activeLabel, save, classInfo);
+                    row.append(year, grade, classNumber, name, password, activeLabel, save, remove, classInfo);
                     teacherList.append(row);
                 });
             }
@@ -415,6 +472,16 @@
                     setStatus("School access saved.");
                 } catch (error) { setStatus(error.message, true); }
             });
+            deleteSchoolButton.addEventListener("click", async () => {
+                const school = selectedSchool();
+                if (!school) return;
+                if (!confirm(`Delete ${school.name}? Delete its teachers first.`)) return;
+                try {
+                    await api(`/api/admin/schools/${school.id}`, { method: "DELETE" });
+                    await loadSchools("");
+                    setStatus("School deleted.");
+                } catch (error) { setStatus(error.message, true); }
+            });
             addTeacherButton.addEventListener("click", async () => {
                 const school = selectedSchool();
                 if (!school) return;
@@ -422,7 +489,13 @@
                 try {
                     await api(`/api/admin/schools/${school.id}/teachers`, {
                         method: "POST",
-                        body: JSON.stringify({ name: newTeacherName.value.trim(), password: newTeacherPassword.value }),
+                        body: JSON.stringify({
+                            academicYear: Number(newTeacherYear.value),
+                            grade: Number(newTeacherGrade.value),
+                            classNumber: Number(newTeacherClass.value),
+                            name: newTeacherName.value.trim(),
+                            password: newTeacherPassword.value,
+                        }),
                     });
                     newTeacherName.value = "";
                     newTeacherPassword.value = "123456";
@@ -531,6 +604,8 @@
                 }
             }
 
+            fillYearSelect(newTeacherYear);
+            fillGradeSelect(newTeacherGrade);
             start();
         })();
     </script>

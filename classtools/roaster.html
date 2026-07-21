@@ -504,7 +504,7 @@
         </div>
         <p class="eyebrow">CLASS ROSTER</p>
         <h1>Paste your class list.</h1>
-        <p class="intro">Copy the number column and name column from Excel, then paste each column below. Use the same Korean names shown on the students’ school Google accounts.</p>
+        <p class="intro">Your class is assigned by the site administrator. Copy the number column and name column from Excel, then paste each column below.</p>
 
         <section class="roster-card" id="teacher-claim-card" hidden>
             <div class="profile-head">
@@ -534,9 +534,9 @@
         <section class="roster-card" id="roster-card" aria-labelledby="roster-input-title" hidden>
             <h2 id="roster-input-title" hidden>Roster input</h2>
             <div class="class-profile">
-                <div class="profile-head">
-                    <h3>Class details</h3>
-                    <span class="profile-note" id="profile-status" role="status" aria-live="polite">Stored on the server</span>
+                    <div class="profile-head">
+                        <h3>Class details</h3>
+                        <span class="profile-note" id="profile-status" role="status" aria-live="polite">Assigned by the site administrator</span>
                 </div>
                 <div class="profile-grid">
                     <div class="profile-field profile-field--school">
@@ -967,8 +967,14 @@
                     }
                     authorized = true;
                     schoolInput.value = teacherProfile.profile.schoolName;
+                    schoolYearInput.value = String(teacherProfile.profile.academicYear);
+                    gradeInput.value = String(teacherProfile.profile.grade);
+                    classNumberInput.value = String(teacherProfile.profile.classNumber);
                     teacherInput.value = teacherProfile.profile.name;
                     schoolInput.readOnly = true;
+                    schoolYearInput.disabled = true;
+                    gradeInput.disabled = true;
+                    classNumberInput.readOnly = true;
                     teacherInput.readOnly = true;
                     rosterCard.hidden = false;
                     previewCard.hidden = false;

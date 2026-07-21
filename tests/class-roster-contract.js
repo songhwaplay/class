@@ -52,5 +52,9 @@ assert.match(html, /Each new or changed password must contain exactly 6 digits/,
   "Student passwords must be validated as exactly six digits.");
 assert.match(html, /Leave a saved student's password blank to keep it unchanged/,
   "The teacher must be told how saved passwords are preserved.");
+assert.match(html, /schoolYearInput\.disabled = true/);
+assert.match(html, /gradeInput\.disabled = true/);
+assert.match(html, /classNumberInput\.readOnly = true/,
+  "The administrator-assigned class must be read-only on the teacher page.");
 
 console.log("Class roster contract: OK");
