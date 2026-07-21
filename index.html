@@ -361,12 +361,11 @@
             </select>
             <input id="studentGrade" class="auth-input" type="text" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="GRADE" aria-label="Grade">
             <input id="studentClass" class="auth-input" type="text" maxlength="2" inputmode="numeric" autocomplete="off" placeholder="CLASS" aria-label="Class">
-            <input id="studentNumber" class="auth-input" type="text" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="NO." aria-label="Student number">
+            <input id="studentNumber" class="auth-input" type="text" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="NO. (TEACHER 0)" aria-label="Student number or zero for teacher">
             <input id="studentName" class="auth-input student-name" type="text" maxlength="6" autocomplete="name" placeholder="NAME" aria-label="Student name">
             <input id="studentPassword" class="auth-input join-wide" type="password" maxlength="6" inputmode="numeric" autocomplete="current-password" placeholder="PASSWORD" aria-label="Student password">
             <button class="auth-button" type="submit">JOIN</button>
         </form>
-        <a id="teacherSetupLink" class="class-tools-link" href="/classtools/roaster.html" hidden>TEACHER PAGE</a>
 
         <div id="signedInArea" hidden>
             <div class="signed-in-row">
@@ -495,7 +494,6 @@
             const classMembership = document.getElementById('classMembership');
             const signOutButton = document.getElementById('signOutButton');
             const classToolsLink = document.getElementById('classToolsLink');
-            const teacherSetupLink = document.getElementById('teacherSetupLink');
             const hubContent = document.getElementById('hubContent');
             const playerLearningLinks = Array.from(document.querySelectorAll('[data-requires-player="true"]'));
             let openAccess = false;
@@ -600,13 +598,12 @@
             async function showJoin(state) {
                 authTitle.textContent = 'FIRST-TIME SETUP';
                 authMessage.hidden = false;
-                authMessage.textContent = `${state.user.name}, choose your school and enter your roster details.`;
+                authMessage.textContent = `${state.user.name}, students enter number 1 or higher. Teachers enter 0.`;
                 googleSignInButton.hidden = true;
                 signedInArea.hidden = false;
                 signedInName.textContent = state.user.name;
                 classMembership.textContent = state.user.email;
                 joinForm.hidden = false;
-                teacherSetupLink.hidden = false;
                 hubContent.hidden = true;
                 setHubLocked(true);
                 await loadSchools();
@@ -707,8 +704,21 @@
             });
             joinForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
-                setStatus('Linking your class…');
+                const isTeacherLogin = studentNumberInput.value === '0';
+                setStatus(isTeacherLogin ? 'Checking teacher registration…' : 'Linking your class…');
                 try {
+                    if (isTeacherLogin) {
+                        await api('/api/teacher/claim', {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                schoolId: schoolInput.value,
+                                name: studentNameInput.value.trim(),
+                                password: studentPasswordInput.value,
+                            }),
+                        });
+                        location.replace('/classtools/roaster.html');
+                        return;
+                    }
                     await api('/api/student/join', {
                         method: 'POST',
                         body: JSON.stringify({
