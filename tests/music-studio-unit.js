@@ -14,6 +14,17 @@ assert.deepEqual(core.getClosedPositionMidi(cMajor[0], 60), [60, 64, 67]);
 assert.equal(core.getClosedPositionMidi(cMajor[0], 60).length, 3);
 assert.deepEqual(core.getLeftHandCompingMidi(cMajor[0]), [48, 52, 55]);
 assert.equal(core.getLeftHandCompingMidi(cMajor[0]).length, 3);
+assert.deepEqual(core.getLeftHandCompingMidi(cMajor[0], 1), [52, 55, 60]);
+assert.deepEqual(core.getLeftHandCompingMidi(cMajor[0], 2), [55, 60, 64]);
+core.getChordVoicingCandidates(cMajor[0]).forEach((candidate) => {
+    assert.ok(candidate.notes[0] >= 48);
+    assert.ok(candidate.notes.at(-1) <= 72);
+});
+
+const cPopVoiceLeading = core.buildVoiceLedProgression([cMajor[0], cMajor[4], cMajor[5], cMajor[3]]);
+assert.deepEqual(cPopVoiceLeading.map((entry) => entry.inversion), [0, 2, 2, 0]);
+assert.deepEqual(cPopVoiceLeading[1].commonTones, [55]);
+assert.ok(cPopVoiceLeading.slice(1).reduce((sum, entry) => sum + entry.movement, 0) < 20);
 
 const gMajorSevenths = core.buildDiatonicChords("G", true);
 assert.equal(gMajorSevenths[0].name, "Gmaj7");
@@ -21,6 +32,7 @@ assert.equal(gMajorSevenths[4].name, "D7");
 assert.equal(gMajorSevenths[6].name, "F♯m7♭5");
 assert.equal(core.getClosedPositionMidi(gMajorSevenths[0], 60).length, 4);
 assert.deepEqual(core.getLeftHandCompingMidi(gMajorSevenths[0]), [55, 59, 62, 66]);
+assert.equal(core.getLeftHandCompingMidi(gMajorSevenths[0], 3).length, 4);
 
 [cMajor, gMajorSevenths].flat().forEach((chord) => {
     core.getLeftHandCompingMidi(chord).forEach((midi) => {

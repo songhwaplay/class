@@ -11,7 +11,8 @@ const hub = fs.readFileSync("index.html", "utf8");
 [
     "harmonyLab", "rhythmLab", "progressionSlots", "chordBank", "piano",
     "minorVariantControl", "minorVariantSelect", "rhythmGrid", "tapButton", "startChallengeButton", "scorePanel",
-    "dictationPanel", "performancePanel", "dictationGrid", "dictationListenButton", "checkDictationButton", "newDictationButton"
+    "dictationPanel", "performancePanel", "dictationGrid", "dictationListenButton", "checkDictationButton", "newDictationButton",
+    "voicingQuizPrompt", "voicingQuizListenButton", "voicingQuizChoices", "voicingQuizFeedback", "newVoicingQuizButton"
 ].forEach((id) => assert.match(html, new RegExp(`id=["']${id}["']`)));
 
 assert.match(html, /music-core\.js/);
@@ -26,8 +27,11 @@ assert.match(app, /createConvolver/);
 assert.match(app, /createDynamicsCompressor/);
 assert.match(app, /playPianoTone/);
 assert.match(app, /getLeftHandCompingMidi/);
+assert.match(app, /buildVoiceLedProgression/);
+assert.match(app, /data-inversion-mode/);
+assert.match(app, /makeVoicingQuiz/);
 assert.match(app, /midi <= 72/);
-assert.match(app, /음역 C3–C5/);
+assert.match(html, /C3부터 C5까지/);
 assert.match(app, /playNoiseTransient/);
 assert.match(app, /data-mode/);
 assert.match(app, /minorVariant/);
@@ -36,6 +40,8 @@ assert.match(css, /@media \(max-width: 640px\)/);
 assert.match(css, /prefers-reduced-motion/);
 assert.match(css, /dictation-grid/);
 assert.match(css, /answer-step\.missed/);
+assert.match(css, /white-key\.active\.common/);
+assert.match(css, /white-key\.active\.moved/);
 assert.match(hub, /learning\/training\/music-studio\/index\.html/);
 assert.doesNotMatch(hub, /learning\/basics\/music-studio\/index\.html/);
 assert.doesNotMatch(html, /실용/);
