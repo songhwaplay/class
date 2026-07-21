@@ -14,6 +14,7 @@ const expectedMultiplayerGames = [
     "drawrelay",
     "fruitbell",
     "janggi",
+    "lastcard",
     "loveletter",
     "nimgame",
     "omok",
@@ -51,23 +52,29 @@ assert.deepEqual(
 
 for (const { id, file } of multiplayerGames) {
     const html = fs.readFileSync(file, "utf8");
+    const externalSource = [...html.matchAll(/<script[^>]+src=["']([^"']+)["'][^>]*><\/script>/gi)]
+        .map(match => path.resolve(path.dirname(file), match[1]))
+        .filter(scriptFile => scriptFile.startsWith(`${path.dirname(file)}${path.sep}`) && fs.existsSync(scriptFile))
+        .map(scriptFile => fs.readFileSync(scriptFile, "utf8"))
+        .join("\n");
+    const source = `${html}\n${externalSource}`;
     const context = `${id} (${path.relative(gamesRoot, file)})`;
 
     assert.match(html, /multiplayer-lobby\.css/, `${context}: 공통 로비 CSS가 필요합니다.`);
     assert.match(html, /multiplayer-lobby\.js/, `${context}: 공통 로비 스크립트가 필요합니다.`);
-    assert.match(html, /ClassroomMultiplayerLobby\.create\s*\(/, `${context}: 공통 로비 인스턴스가 필요합니다.`);
+    assert.match(source, /ClassroomMultiplayerLobby\.create\s*\(/, `${context}: 공통 로비 인스턴스가 필요합니다.`);
     assert.match(html, /id=["']missingScreen["']/, `${context}: 메인 화면 이름 안내가 필요합니다.`);
 
-    assert.doesNotMatch(html, /ClassroomNetwork\.createSocket\s*\(/, `${context}: 개별 소켓 연결을 만들면 안 됩니다.`);
-    assert.doesNotMatch(html, /new\s+WebSocket\s*\(/, `${context}: 개별 WebSocket 연결을 만들면 안 됩니다.`);
+    assert.doesNotMatch(source, /ClassroomNetwork\.createSocket\s*\(/, `${context}: 개별 소켓 연결을 만들면 안 됩니다.`);
+    assert.doesNotMatch(source, /new\s+WebSocket\s*\(/, `${context}: 개별 WebSocket 연결을 만들면 안 됩니다.`);
     assert.doesNotMatch(
-        html,
+        source,
         /id=["'](?:copyBtnGame|copyGameBtn)["']/,
         `${context}: 게임 시작 후에는 방 번호 복사 버튼을 표시하면 안 됩니다.`
     );
-    assert.doesNotMatch(html, /type\s*:\s*["'](?:CREATE_ROOM|JOIN_ROOM)["']/, `${context}: 방 요청은 공통 로비가 전담해야 합니다.`);
+    assert.doesNotMatch(source, /type\s*:\s*["'](?:CREATE_ROOM|JOIN_ROOM)["']/, `${context}: 방 요청은 공통 로비가 전담해야 합니다.`);
     assert.doesNotMatch(
-        html,
+        source,
         /localStorage\.setItem\s*\(\s*(?:NAME_KEY|["']classPlayerName["'])/,
         `${context}: 이름 변경은 index 페이지에서만 허용됩니다.`
     );
