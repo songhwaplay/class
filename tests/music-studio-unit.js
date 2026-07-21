@@ -12,12 +12,21 @@ assert.deepEqual(cMajor[4].pitchClasses, [7, 11, 2]);
 assert.equal(cMajor[4].functionName, "도미넌트");
 assert.deepEqual(core.getClosedPositionMidi(cMajor[0], 60), [60, 64, 67]);
 assert.equal(core.getClosedPositionMidi(cMajor[0], 60).length, 3);
+assert.deepEqual(core.getLeftHandCompingMidi(cMajor[0]), [48, 52, 55]);
+assert.equal(core.getLeftHandCompingMidi(cMajor[0]).length, 3);
 
 const gMajorSevenths = core.buildDiatonicChords("G", true);
 assert.equal(gMajorSevenths[0].name, "Gmaj7");
 assert.equal(gMajorSevenths[4].name, "D7");
 assert.equal(gMajorSevenths[6].name, "F♯m7♭5");
 assert.equal(core.getClosedPositionMidi(gMajorSevenths[0], 60).length, 4);
+assert.deepEqual(core.getLeftHandCompingMidi(gMajorSevenths[0]), [55, 59, 62, 66]);
+
+[cMajor, gMajorSevenths].flat().forEach((chord) => {
+    core.getLeftHandCompingMidi(chord).forEach((midi) => {
+        assert.ok(midi >= 48 && midi < 72);
+    });
+});
 
 const pop = core.getProgression([0, 4, 5, 3], "F", false);
 assert.deepEqual(pop.map((chord) => chord.name), ["F", "C", "Dm", "B♭"]);
