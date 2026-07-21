@@ -36,5 +36,15 @@ assert.doesNotMatch(html, /localStorage|sessionStorage/,
 assert.match(html, /SAVE ROSTER/, "Teacher controls should use the compact English UI.");
 assert.match(html, /Student names must be 2 to 6 Korean characters|Each student name must be 2 to 6 Korean characters/,
   "Student roster names should be validated.");
+assert.match(html, /const DEFAULT_STUDENT_PASSWORD = "123456"/,
+  "New students should receive the requested initial password.");
+assert.match(html, /passwordInput\.type = "password"/,
+  "Each roster row must include a protected password field.");
+assert.match(html, /password: getStudentPassword\(number\)/,
+  "Each saved roster entry must carry its password draft.");
+assert.match(html, /Each new or changed password must contain exactly 6 digits/,
+  "Student passwords must be validated as exactly six digits.");
+assert.match(html, /Leave a saved student's password blank to keep it unchanged/,
+  "The teacher must be told how saved passwords are preserved.");
 
 console.log("Class roster contract: OK");

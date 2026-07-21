@@ -6,6 +6,8 @@ const { Pool } = require("pg");
 const SESSION_COOKIE = "class_session";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 const JOIN_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+const DEFAULT_STUDENT_PASSWORD = "123456";
+const STUDENT_PASSWORD_PATTERN = /^\d{6}$/;
 
 class HttpError extends Error {
   constructor(status, code, message) {
@@ -56,6 +58,30 @@ function readCookie(req, name) {
 
 function hashSessionToken(token) {
   return crypto.createHash("sha256").update(token).digest("hex");
+}
+
+function hashStudentPassword(password) {
+  const normalized = String(password || "").trim();
+  if (!STUDENT_PASSWORD_PATTERN.test(normalized)) {
+    throw new Error("Student passwords must contain exactly 6 digits.");
+  }
+  const salt = crypto.randomBytes(16);
+  const derivedKey = crypto.scryptSync(normalized, salt, 32);
+  return `scrypt$${salt.toString("hex")}$${derivedKey.toString("hex")}`;
+}
+
+function verifyStudentPassword(password, encodedHash) {
+  const [algorithm, saltHex, keyHex] = String(encodedHash || "").split("$");
+  if (algorithm !== "scrypt" || !saltHex || !keyHex || !STUDENT_PASSWORD_PATTERN.test(String(password || ""))) {
+    return false;
+  }
+  try {
+    const expected = Buffer.from(keyHex, "hex");
+    const actual = crypto.scryptSync(String(password), Buffer.from(saltHex, "hex"), expected.length);
+    return expected.length === actual.length && crypto.timingSafeEqual(expected, actual);
+  } catch (_) {
+    return false;
+  }
 }
 
 function makeJoinCode() {
@@ -207,6 +233,8 @@ function createClassroomPlatform(options = {}) {
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
         UNIQUE (class_id, student_number)
       )`,
+      `ALTER TABLE classroom_students
+        ADD COLUMN IF NOT EXISTS password_hash TEXT`,
       `CREATE INDEX IF NOT EXISTS classroom_students_class_idx
         ON classroom_students (class_id)`,
       `CREATE TABLE IF NOT EXISTS classroom_settings (
@@ -448,7 +476,8 @@ function createClassroomPlatform(options = {}) {
     if (!classroom) return res.json({ classroom: null });
 
     const studentsResult = await pool.query(
-      `SELECT student_number, roster_name, user_id IS NOT NULL AS linked
+      `SELECT student_number, roster_name, user_id IS NOT NULL AS linked,
+              password_hash IS NOT NULL AS password_configured
        FROM classroom_students
        WHERE class_id = $1
        ORDER BY CASE WHEN student_number ~ '^[0-9]+$' THEN student_number::INTEGER END,
@@ -466,7 +495,8 @@ function createClassroomPlatform(options = {}) {
         students: studentsResult.rows.map((student) => ({
           number: student.student_number,
           name: student.roster_name,
-          linked: student.linked
+          linked: student.linked,
+          passwordConfigured: student.password_configured
         }))
       }
     });
@@ -503,7 +533,8 @@ function createClassroomPlatform(options = {}) {
 
     const cleanStudents = students.map((student) => ({
       number: String(student?.number || "").trim(),
-      name: String(student?.name || "").normalize("NFC").trim()
+      name: String(student?.name || "").normalize("NFC").trim(),
+      password: String(student?.password || "").trim()
     }));
     if (cleanStudents.some((student) => !/^\d{1,3}$/.test(student.number))) {
       throw new HttpError(400, "INVALID_STUDENT_NUMBER", "Student numbers must contain digits only.");
@@ -513,6 +544,9 @@ function createClassroomPlatform(options = {}) {
     }
     if (new Set(cleanStudents.map((student) => student.number)).size !== cleanStudents.length) {
       throw new HttpError(400, "DUPLICATE_STUDENT_NUMBER", "Student numbers must be unique.");
+    }
+    if (cleanStudents.some((student) => student.password && !STUDENT_PASSWORD_PATTERN.test(student.password))) {
+      throw new HttpError(400, "INVALID_STUDENT_PASSWORD", "Student passwords must contain exactly 6 digits.");
     }
 
     const client = await pool.connect();
@@ -572,14 +606,27 @@ function createClassroomPlatform(options = {}) {
          WHERE class_id = $1 AND NOT (student_number = ANY($2::TEXT[]))`,
         [classroom.id, numbers]
       );
+      const existingPasswordsResult = await client.query(
+        `SELECT student_number, password_hash
+         FROM classroom_students
+         WHERE class_id = $1 AND student_number = ANY($2::TEXT[])`,
+        [classroom.id, numbers]
+      );
+      const existingPasswords = new Map(
+        existingPasswordsResult.rows.map((student) => [student.student_number, student.password_hash])
+      );
       for (const student of cleanStudents) {
+        const passwordHash = student.password
+          ? hashStudentPassword(student.password)
+          : existingPasswords.get(student.number) || hashStudentPassword(DEFAULT_STUDENT_PASSWORD);
         await client.query(
-          `INSERT INTO classroom_students (class_id, student_number, roster_name)
-           VALUES ($1, $2, $3)
+          `INSERT INTO classroom_students (class_id, student_number, roster_name, password_hash)
+           VALUES ($1, $2, $3, $4)
            ON CONFLICT (class_id, student_number) DO UPDATE SET
              roster_name = EXCLUDED.roster_name,
+             password_hash = EXCLUDED.password_hash,
              updated_at = NOW()`,
-          [classroom.id, student.number, student.name]
+          [classroom.id, student.number, student.name, passwordHash]
         );
       }
       await client.query("COMMIT");
@@ -599,12 +646,13 @@ function createClassroomPlatform(options = {}) {
     }
     const joinCode = String(req.body?.joinCode || "").trim().toUpperCase();
     const studentNumber = String(req.body?.studentNumber || "").trim();
-    if (!/^[A-Z2-9]{6}$/.test(joinCode) || !/^\d{1,3}$/.test(studentNumber)) {
-      throw new HttpError(400, "INVALID_JOIN_DETAILS", "Check the class code and student number.");
+    const password = String(req.body?.password || "").trim();
+    if (!/^[A-Z2-9]{6}$/.test(joinCode) || !/^\d{1,3}$/.test(studentNumber) || !STUDENT_PASSWORD_PATTERN.test(password)) {
+      throw new HttpError(400, "INVALID_JOIN_DETAILS", "Check the class code, student number, and password.");
     }
 
     const slotResult = await pool.query(
-      `SELECT s.id, s.roster_name, s.user_id, c.id AS class_id,
+      `SELECT s.id, s.roster_name, s.user_id, s.password_hash, c.id AS class_id,
               sc.name AS school_name, sc.google_domain,
               c.academic_year, c.grade, c.class_number
        FROM classroom_students s
@@ -615,6 +663,9 @@ function createClassroomPlatform(options = {}) {
     );
     const slot = slotResult.rows[0];
     if (!slot) throw new HttpError(404, "STUDENT_NOT_FOUND", "No matching student was found in that class.");
+    if (!slot.password_hash || !verifyStudentPassword(password, slot.password_hash)) {
+      throw new HttpError(403, "INVALID_STUDENT_PASSWORD", "Check the class code, student number, and password.");
+    }
     if (slot.google_domain !== user.google_domain) {
       throw new HttpError(403, "SCHOOL_ACCOUNT_MISMATCH", "Use the Google account issued by this school.");
     }
@@ -675,6 +726,8 @@ function createClassroomPlatform(options = {}) {
 
 module.exports = {
   createClassroomPlatform,
+  hashStudentPassword,
   normalizePersonName,
-  parseTeacherEmails
+  parseTeacherEmails,
+  verifyStudentPassword
 };

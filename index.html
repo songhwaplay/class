@@ -238,7 +238,7 @@
 
         .join-form {
             display: grid;
-            grid-template-columns: 1.4fr 0.8fr auto;
+            grid-template-columns: 1.4fr 0.8fr 1fr auto;
             gap: 8px;
             margin-top: 14px;
         }
@@ -361,6 +361,7 @@
         <form id="joinForm" class="join-form" hidden>
             <input id="joinCode" class="auth-input" type="text" maxlength="6" autocomplete="off" placeholder="CLASS CODE" aria-label="Class code">
             <input id="studentNumber" class="auth-input" type="text" maxlength="3" inputmode="numeric" autocomplete="off" placeholder="NO." aria-label="Student number">
+            <input id="studentPassword" class="auth-input" type="password" maxlength="6" inputmode="numeric" autocomplete="current-password" placeholder="PASSWORD" aria-label="Student password">
             <button class="auth-button" type="submit">JOIN</button>
         </form>
 
@@ -478,6 +479,7 @@
             const joinForm = document.getElementById('joinForm');
             const joinCodeInput = document.getElementById('joinCode');
             const studentNumberInput = document.getElementById('studentNumber');
+            const studentPasswordInput = document.getElementById('studentPassword');
             const signedInArea = document.getElementById('signedInArea');
             const signedInName = document.getElementById('signedInName');
             const classMembership = document.getElementById('classMembership');
@@ -613,7 +615,7 @@
             function showJoin(state) {
                 authTitle.textContent = 'FIRST-TIME SETUP';
                 authMessage.hidden = false;
-                authMessage.textContent = `${state.user.name}, enter the class code and your student number.`;
+                authMessage.textContent = `${state.user.name}, enter the class code, your student number, and password.`;
                 googleSignInButton.hidden = true;
                 signedInArea.hidden = false;
                 signedInName.textContent = state.user.name;
@@ -708,6 +710,9 @@
             studentNumberInput.addEventListener('input', () => {
                 studentNumberInput.value = studentNumberInput.value.replace(/\D/g, '').slice(0, 3);
             });
+            studentPasswordInput.addEventListener('input', () => {
+                studentPasswordInput.value = studentPasswordInput.value.replace(/\D/g, '').slice(0, 6);
+            });
             joinForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 setStatus('Linking your class…');
@@ -717,6 +722,7 @@
                         body: JSON.stringify({
                             joinCode: joinCodeInput.value,
                             studentNumber: studentNumberInput.value,
+                            password: studentPasswordInput.value,
                         }),
                     });
                     const state = await api('/api/auth/me');
