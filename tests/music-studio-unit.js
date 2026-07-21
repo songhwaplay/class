@@ -85,7 +85,27 @@ core.RHYTHM_DICTATION_BANK.forEach((pattern) => {
     assert.ok(["basic", "offbeat", "sixteenth", "mixed"].includes(pattern.level));
     assert.ok(pattern.hits.length >= 4);
     pattern.hits.forEach((step) => assert.ok(Number.isInteger(step) && step >= 0 && step < 16));
+    const notation = core.buildRhythmNotation(pattern);
+    assert.equal(notation.length, 16);
+    notation.forEach((symbol) => assert.ok(core.RHYTHM_SYMBOLS.includes(symbol)));
+    notation.forEach((symbol, index) => {
+        if (symbol === "tie") assert.ok(index > 0 && ["note", "tie"].includes(notation[index - 1]));
+    });
 });
+assert.ok(core.RHYTHM_DICTATION_BANK.filter((pattern) => core.buildRhythmNotation(pattern).includes("tie")).length >= 20);
+assert.deepEqual(core.notationToEvents(core.buildRhythmNotation(core.RHYTHM_DICTATION_BANK.find((pattern) => pattern.id === "b01"))).map((event) => event.length), [4, 4, 4, 4]);
+assert.deepEqual(core.notationToEvents(core.buildRhythmNotation(core.RHYTHM_DICTATION_BANK.find((pattern) => pattern.id === "b02"))).map((event) => event.length), [2, 2, 2, 2, 2, 2, 2, 2]);
+
+const notationExample = ["note", "tie", "rest", "rest", "note", "rest", "rest", "rest", "note", "tie", "tie", "rest", "note", "rest", "rest", "rest"];
+assert.deepEqual(core.notationToEvents(notationExample), [
+    { step: 0, length: 2 }, { step: 4, length: 1 }, { step: 8, length: 3 }, { step: 12, length: 1 }
+]);
+const exactNotation = core.scoreRhythmNotation(notationExample, notationExample.slice());
+assert.equal(exactNotation.exact, true);
+assert.equal(exactNotation.score, 100);
+const wrongNotation = notationExample.slice();
+wrongNotation[2] = "note";
+assert.equal(core.scoreRhythmNotation(notationExample, wrongNotation).wrong, 1);
 
 const exactDictation = core.scoreRhythmDictation([0, 3, 6, 8], [0, 3, 6, 8]);
 assert.deepEqual(exactDictation, { exact: true, score: 100, correct: 4, missed: 0, extra: 0 });
