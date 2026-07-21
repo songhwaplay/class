@@ -25,6 +25,8 @@ assert.match(adminScript, /\/api\/admin\/site-access/);
 assert.match(adminScript, /\/api\/admin\/schools/);
 assert.match(adminScript, /\/api\/admin\/teachers/);
 assert.match(adminHtml, /School management/);
+assert.match(adminScript, /schools\[0\]\?\.id \|\| ""/,
+  "A saved school should remain visibly selected after refreshing the admin page.");
 assert.match(adminScript, /user\?\.role !== "admin"/,
   "The dashboard must reject non-admin sessions.");
 assert.match(platformSource, /async function requireAdmin/);

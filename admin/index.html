@@ -377,7 +377,10 @@
                 schools = result.schools;
                 schoolSelect.replaceChildren(new Option("Select school", ""));
                 schools.forEach((school) => schoolSelect.add(new Option(school.name, school.id)));
-                schoolSelect.value = schools.some((school) => school.id === preferredId) ? preferredId : "";
+                const selectedId = schools.some((school) => school.id === preferredId)
+                    ? preferredId
+                    : (schools[0]?.id || "");
+                schoolSelect.value = selectedId;
                 renderTeachers();
             }
 
