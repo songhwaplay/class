@@ -85,7 +85,7 @@ assert.equal(Rummikub.play(winner, "host", [["red-1-1", "red-2-1", "red-3-1", "r
 assert.equal(winner.phase, "ended");
 assert.equal(winner.winnerId, "host");
 
-const htmlPath = path.resolve(__dirname, "..", "games", "rummikub", "rummikub.html");
+const htmlPath = path.resolve(__dirname, "..", "learning", "games", "rummikub", "rummikub.html");
 if (fs.existsSync(htmlPath)) {
   const html = fs.readFileSync(htmlPath, "utf8");
   assert.match(html, /allowedPlayerCounts:\[2,3,4\]/, "루미큐브는 2~4인을 지원해야 합니다.");

@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>새 멀티플레이 게임</title>
+<link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#eef4ff;background:#101827}*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(circle at top,#20365b,#101827 58%);padding:24px}.shell{width:min(760px,100%);margin:auto}.panel{padding:22px;margin-bottom:16px;border:1px solid #49658f;border-radius:18px;background:#16243acc;box-shadow:0 18px 50px #0005}.hidden{display:none!important}h1,h2,h3,p{margin-top:0}.eyebrow{color:#8eb9ff;font-size:12px;font-weight:800;letter-spacing:.18em}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row.spread{justify-content:space-between}.primary,.secondary{min-height:42px;padding:9px 16px;border:1px solid #6593d8;border-radius:10px;font-weight:800;cursor:pointer}.primary{background:#3777d1;color:white}.secondary{background:#1b2d49;color:#dceaff}.primary:disabled,.secondary:disabled{cursor:not-allowed;opacity:.45}.gameStatus{padding:14px;border-radius:12px;background:#0e192a;color:#bed4f5}.players{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0}.playerChip{padding:7px 10px;border:1px solid #49658f;border-radius:999px;background:#1a2b46}.playerChip.active{border-color:#f3c969;color:#ffe5a2}.turnButton{width:100%;min-height:64px;margin-top:12px;font-size:18px}.overlay{position:fixed;inset:0;display:grid;place-items:center;padding:20px;background:#050a12cc;z-index:10}.modal{width:min(620px,100%);max-height:85vh;overflow:auto;padding:24px;border:1px solid #6593d8;border-radius:18px;background:#16243a}.toast{position:fixed;right:18px;bottom:18px;max-width:min(380px,calc(100vw - 36px));padding:12px 15px;border-radius:10px;background:#07101f;color:#fff;box-shadow:0 10px 30px #0008}.code{font-size:26px;font-weight:900;letter-spacing:.16em}@media(max-width:520px){body{padding:12px}.panel{padding:16px}.row>*{flex:1 1 auto}}
+</style>
+<script src="../../../assets/network/game-network.js"></script>
+<script src="../../../assets/network/multiplayer-lobby.js"></script>
+</head>
+<body>
+<main class="shell">
+  <section id="missingScreen" class="panel hidden">
+    <div class="eyebrow">PLAYER NAME REQUIRED</div>
+    <h1>이름이 없습니다</h1>
+    <p>이름 변경은 메인 화면에서만 가능합니다.</p>
+    <button class="primary" type="button" onclick="location.href='../../../index.html'">메인 화면으로</button>
+  </section>
+
+  <section id="lobbyScreen" class="hidden">
+    <div class="panel">
+      <div class="eyebrow">NEW MULTIPLAYER GAME</div>
+      <h1>새 멀티플레이 게임</h1>
+      <p>PLAYER · <strong id="savedName">-</strong></p>
+      <div class="mp-lobby-tabs">
+        <button id="hostTab" class="primary" type="button">CREATE ROOM</button>
+        <button id="joinTab" class="secondary" type="button">JOIN ROOM</button>
+      </div>
+    </div>
+
+    <section id="hostPane" class="panel mp-lobby-card hidden">
+      <div class="row spread">
+        <div><div class="eyebrow">ROOM CODE</div><div id="roomCode" class="code">----</div></div>
+        <button id="copyBtn" class="secondary" type="button">COPY CODE</button>
+      </div>
+      <div id="hostStatus" class="mp-lobby-status">방을 만드는 중입니다.</div>
+    </section>
+
+    <section id="joinPane" class="panel mp-lobby-card hidden">
+      <div class="mp-lobby-row">
+        <input id="joinCode" class="mp-lobby-code-input" inputmode="numeric" maxlength="4" placeholder="ROOM CODE · 4 DIGITS">
+        <button id="joinBtn" class="primary" type="button">JOIN ROOM</button>
+      </div>
+      <div id="joinStatus" class="mp-lobby-status">방장이 알려준 번호를 입력하세요.</div>
+    </section>
+
+    <section class="panel">
+      <h2>PLAYERS</h2>
+      <div id="lobbyPlayers" class="mp-lobby-players"></div>
+      <p id="lobbyGuide" class="mp-lobby-guide">참가자를 기다리는 중입니다.</p>
+      <button id="startBtn" class="primary" type="button" disabled>WAITING FOR PLAYERS</button>
+      <div class="row" style="margin-top:10px">
+        <button id="rulesBtnLobby" class="secondary" type="button">RULES</button>
+        <button id="leaveBtn" class="secondary" type="button">메인 화면</button>
+      </div>
+    </section>
+  </section>
+
+  <section id="gameScreen" class="hidden">
+    <section class="panel">
+      <div class="row spread">
+        <div><div class="eyebrow">ROOM CODE</div><div id="gameRoomCode" class="code">----</div></div>
+        <div class="row">
+          <button id="rulesBtnGame" class="secondary" type="button">RULES</button>
+        </div>
+      </div>
+    </section>
+    <section class="panel">
+      <div class="eyebrow">HOST-AUTHORITATIVE SAMPLE</div>
+      <h2 id="roundText">ROUND 1</h2>
+      <div id="gamePlayers" class="players"></div>
+      <p id="gameStatus" class="gameStatus">게임을 준비하는 중입니다.</p>
+      <button id="turnBtn" class="primary turnButton" type="button">TAKE TURN</button>
+      <button id="restartBtn" class="secondary turnButton hidden" type="button">RETURN TO LOBBY</button>
+    </section>
+  </section>
+</main>
+
+<section id="rulesOverlay" class="overlay hidden" aria-modal="true" role="dialog">
+  <div class="modal">
+    <h2>HOW TO PLAY</h2>
+    <p>이 부분을 새 게임의 실제 규칙으로 교체하세요.</p>
+    <ol>
+      <li>방장이 게임을 시작합니다.</li>
+      <li>현재 차례인 참가자만 행동할 수 있습니다.</li>
+      <li>방장이 행동을 검증한 뒤 모든 참가자에게 같은 상태를 전송합니다.</li>
+    </ol>
+    <button id="closeRulesBtn" class="primary" type="button">CLOSE</button>
+  </div>
+</section>
+
+<section id="abortOverlay" class="overlay hidden" aria-modal="true" role="dialog">
+  <div class="modal">
+    <h2 id="abortTitle">게임 중단</h2>
+    <p id="abortMessage"></p>
+    <button id="reloadBtn" class="primary" type="button">처음부터</button>
+  </div>
+</section>
+
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+// 새 게임을 만들 때 반드시 고유한 영문 ID로 바꾸세요.
+const GAME_ID="replace-with-new-game-id";
+const NAME_KEY="classPlayerName";
+const MESSAGE=Object.freeze({ACTION:"TEMPLATE_ACTION",STATE:"TEMPLATE_STATE",RESTART:"TEMPLATE_RESTART"});
+const $=id=>document.getElementById(id);
+
+let lobby=null;
+let gameState=null;
+let toastTimer=null;
+const savedName=String(localStorage.getItem(NAME_KEY)||"").trim();
+
+function showToast(message){
+  clearTimeout(toastTimer);
+  $("toast").textContent=message;
+  $("toast").classList.remove("hidden");
+  toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),2200);
+}
+
+function showRules(){$("rulesOverlay").classList.remove("hidden")}
+function hideRules(){$("rulesOverlay").classList.add("hidden")}
+function showLobby(){
+  $("gameScreen").classList.add("hidden");
+  $("lobbyScreen").classList.remove("hidden");
+  gameState=null;
+}
+function showGame(){
+  $("lobbyScreen").classList.add("hidden");
+  $("gameScreen").classList.remove("hidden");
+}
+
+function createInitialState(snapshot){
+  return {
+    playerOrder:Object.keys(snapshot.players),
+    turnIndex:0,
+    round:1,
+    moves:0,
+    finished:false,
+    lastMove:"게임이 시작되었습니다."
+  };
+}
+
+function renderGame(){
+  if(!gameState)return;
+  const snapshot=lobby.snapshot();
+  const activeId=gameState.playerOrder[gameState.turnIndex];
+  const activeName=snapshot.players[activeId]?.name||"참가자";
+  $("roundText").textContent=gameState.finished?"GAME COMPLETE":`ROUND ${gameState.round}`;
+  $("gamePlayers").innerHTML=gameState.playerOrder.map(id=>{
+    const name=snapshot.players[id]?.name||"참가자";
+    return `<span class="playerChip ${id===activeId&&!gameState.finished?"active":""}">${escapeHtml(name)}</span>`;
+  }).join("");
+  $("gameStatus").textContent=gameState.finished
+    ?`샘플 진행 ${gameState.moves}회가 끝났습니다. 실제 게임의 승리 조건으로 교체하세요.`
+    :`${gameState.lastMove} 현재 차례: ${activeName}`;
+  $("turnBtn").classList.toggle("hidden",gameState.finished);
+  $("turnBtn").disabled=activeId!==snapshot.myId;
+  $("turnBtn").textContent=activeId===snapshot.myId?"TAKE TURN":"WAITING FOR TURN";
+  $("restartBtn").classList.toggle("hidden",!gameState.finished||snapshot.role!=="host");
+}
+
+function applyAction(senderId,payload){
+  if(lobby.snapshot().role!=="host"||!gameState||gameState.finished)return;
+  if(payload.action!=="TAKE_TURN")return;
+  const activeId=gameState.playerOrder[gameState.turnIndex];
+  if(senderId!==activeId)return;
+
+  const nextIndex=(gameState.turnIndex+1)%gameState.playerOrder.length;
+  const nextMoves=gameState.moves+1;
+  const playerName=lobby.snapshot().players[senderId]?.name||"참가자";
+  gameState={
+    ...gameState,
+    turnIndex:nextIndex,
+    round:gameState.round+(nextIndex===0?1:0),
+    moves:nextMoves,
+    finished:nextMoves>=8,
+    lastMove:`${playerName}의 행동이 반영되었습니다.`
+  };
+  lobby.broadcast({type:MESSAGE.STATE,state:gameState});
+  renderGame();
+}
+
+function submitTurn(){
+  if(!gameState)return;
+  const snapshot=lobby.snapshot();
+  const payload={type:MESSAGE.ACTION,action:"TAKE_TURN"};
+  if(snapshot.role==="host")applyAction(snapshot.myId,payload);
+  else lobby.send(payload);
+}
+
+function handleGameMessage(senderId,payload,snapshot){
+  if(payload.type===MESSAGE.ACTION&&snapshot.role==="host"){
+    applyAction(senderId,payload);
+    return;
+  }
+  if(payload.type===MESSAGE.STATE){
+    gameState=payload.state;
+    renderGame();
+    return;
+  }
+  if(payload.type===MESSAGE.RESTART){
+    showLobby();
+    lobby.returnToLobby();
+  }
+}
+
+function restartGame(){
+  if(lobby.snapshot().role!=="host")return;
+  lobby.broadcast({type:MESSAGE.RESTART});
+  showLobby();
+  lobby.returnToLobby();
+}
+
+function syncLobby(snapshot){
+  $("gameRoomCode").textContent=snapshot.roomCode||"----";
+}
+
+function showAbort({title,message}){
+  $("abortTitle").textContent=title;
+  $("abortMessage").textContent=message;
+  $("abortOverlay").classList.remove("hidden");
+}
+
+function escapeHtml(value){
+  return String(value).replace(/[&<>"']/g,character=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[character]));
+}
+
+function init(){
+  lobby=ClassroomMultiplayerLobby.create({
+    gameId:GAME_ID,
+    getPlayerName:()=>/^[가-힣]{2,6}$/.test(savedName)?savedName:"",
+    allowedPlayerCounts:[2,3,4],
+    maxPlayers:4,
+    rulesButtonIds:["rulesBtnLobby","rulesBtnGame"],
+    leaveButtonIds:["leaveBtn"],
+    onRules:showRules,
+    onLeave:()=>location.href="../../../index.html",
+    onNotice:showToast,
+    onInvalidStart:()=>showToast("2~4명이 모이면 시작할 수 있습니다."),
+    onStateChange:syncLobby,
+    getLobbyPresentation:({count,role,canStart})=>({
+      canStart,
+      startText:role==="host"&&canStart?`START GAME · ${count} PLAYERS`:"WAITING FOR PLAYERS",
+      guideText:role==="host"?`현재 ${count}명 · 2~4명에서 시작 가능`:"방장이 게임을 시작할 때까지 기다리세요."
+    }),
+    createStartData:snapshot=>({state:createInitialState(snapshot)}),
+    onStarted:({data})=>{gameState=data.state;showGame();renderGame()},
+    onGameMessage:handleGameMessage,
+    onAbort:showAbort
+  }).mount();
+
+  $("turnBtn").addEventListener("click",submitTurn);
+  $("restartBtn").addEventListener("click",restartGame);
+  $("closeRulesBtn").addEventListener("click",hideRules);
+  $("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});
+  $("reloadBtn").addEventListener("click",()=>location.reload());
+}
+
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>

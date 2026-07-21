@@ -5,7 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
-const html = fs.readFileSync(path.resolve(__dirname, "..", "games", "connect6", "connect6.html"), "utf8");
+const html = fs.readFileSync(path.resolve(__dirname, "..", "learning", "games", "connect6", "connect6.html"), "utf8");
 const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
 assert.equal(scripts.length, 1, "육목에는 인라인 게임 스크립트가 하나 있어야 합니다.");
 

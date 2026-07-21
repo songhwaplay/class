@@ -3,7 +3,7 @@ const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
 const vm=require("node:vm");
-const html=fs.readFileSync(path.resolve(__dirname,"..","games","diamondgame","diamondgame.html"),"utf8");
+const html=fs.readFileSync(path.resolve(__dirname,"..","learning", "games","diamondgame","diamondgame.html"),"utf8");
 const scripts=[...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/gi)];
 assert.equal(scripts.length,1,"인라인 게임 스크립트가 하나여야 합니다.");
 const context=vm.createContext({console,localStorage:{getItem:()=>""},document:{getElementById:()=>null,createElementNS:()=>({setAttribute(){},addEventListener(){},appendChild(){}}),createDocumentFragment:()=>({appendChild(){}})},window:{addEventListener(){}},setTimeout,clearTimeout});

@@ -108,7 +108,7 @@ assert.equal(Blokus.place(perfect, "host", "I1", [{ x: 0, y: 0 }]).ok, true);
 assert.equal(perfect.phase, "ended");
 assert.equal(Blokus.colorScore(perfect, "blue"), 20, "한 칸 조각을 마지막으로 모두 놓으면 20점입니다.");
 
-const htmlPath = path.resolve(__dirname, "..", "games", "blokus", "blokus.html");
+const htmlPath = path.resolve(__dirname, "..", "learning", "games", "blokus", "blokus.html");
 if (fs.existsSync(htmlPath)) {
   const html = fs.readFileSync(htmlPath, "utf8");
   assert.match(html, /allowedPlayerCounts:\s*\[2,\s*4\]/);

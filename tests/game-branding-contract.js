@@ -38,16 +38,16 @@ assert.doesNotMatch(
 );
 
 const pageContracts = [
-  ["games/fruitbell/fruitbell.html", /FRUIT BELL/, /과일 종 대결/],
-  ["games/connect6/connect6.html", /SIX IN A ROW/, /<title>육목 · 온라인 대전<\/title>/],
-  ["games/loveletter/loveletter.html", /궁정 추리/, /Court Deduction/],
-  ["games/rummikub/rummikub.html", /숫자 타일/, /NUMBER TILES/],
-  ["games/blokus/blokus.html", /코너 블록/, /CORNER BLOCKS/],
-  ["games/setgame/setgame.html", /PATTERN TRIO/, /pattern3-bg\.png/],
-  ["games/davincicode/davincicode.html", /NUMBER CODE/, /숫자 암호/],
-  ["games/traverse/traverse.html", /SHAPE CROSSING/, /도형 건너기/],
-  ["games/avalon/avalon.html", /QUEST DEDUCTION/, /원정대 추리/],
-  ["games/lastcard/lastcard.html", /LAST/, /라스트 카드/]
+  ["learning/games/fruitbell/fruitbell.html", /FRUIT BELL/, /과일 종 대결/],
+  ["learning/games/connect6/connect6.html", /SIX IN A ROW/, /<title>육목 · 온라인 대전<\/title>/],
+  ["learning/games/loveletter/loveletter.html", /궁정 추리/, /Court Deduction/],
+  ["learning/games/rummikub/rummikub.html", /숫자 타일/, /NUMBER TILES/],
+  ["learning/games/blokus/blokus.html", /코너 블록/, /CORNER BLOCKS/],
+  ["learning/games/setgame/setgame.html", /PATTERN TRIO/, /pattern3-bg\.png/],
+  ["learning/games/davincicode/davincicode.html", /NUMBER CODE/, /숫자 암호/],
+  ["learning/games/traverse/traverse.html", /SHAPE CROSSING/, /도형 건너기/],
+  ["learning/games/avalon/avalon.html", /QUEST DEDUCTION/, /원정대 추리/],
+  ["learning/games/lastcard/lastcard.html", /LAST/, /라스트 카드/]
 ];
 
 for (const [relative, ...patterns] of pageContracts) {
@@ -55,12 +55,12 @@ for (const [relative, ...patterns] of pageContracts) {
   patterns.forEach(pattern => assert.match(html, pattern, `${relative}: 새 독자 명칭이 필요합니다.`));
 }
 
-const patternTrio = read("games/setgame/setgame.html");
+const patternTrio = read("learning/games/setgame/setgame.html");
 assert.doesNotMatch(patternTrio, /youtube\.com|youtu\.be/, "패턴 3장은 외부 상품 규칙 영상을 사용하면 안 됩니다.");
 assert.match(patternTrio, /\["triangle", "hexagon", "circle"\]/, "패턴 3장은 독자 도형 구성을 사용해야 합니다.");
 assert.match(patternTrio, /\["blue", "orange", "teal"\]/, "패턴 3장은 독자 색상 구성을 사용해야 합니다.");
 
-const quest = read("games/avalon/avalon.html");
+const quest = read("learning/games/avalon/avalon.html");
 assert.match(quest, /Merlin:"예언자"/, "원정대 추리의 역할명을 독자화해야 합니다.");
 assert.match(quest, /Assassin:"추격자"/, "원정대 추리의 역할명을 독자화해야 합니다.");
 assert.match(quest, /roleCardTitleOverlay/, "기존 카드 이미지의 제목을 독자 역할명으로 가려야 합니다.");
@@ -76,7 +76,7 @@ const questRoleCardHashes = new Set(questRoleCardFiles.map(name =>
 ));
 assert.equal(questRoleCardHashes.size, 1, "원정대 추리 역할 카드는 독자 제작한 공통 카드 아트를 사용해야 합니다.");
 
-const lastCard = `${read("games/lastcard/lastcard.html")}\n${read("games/lastcard/cards.css")}\n${read("games/lastcard/game.js")}`;
+const lastCard = `${read("learning/games/lastcard/lastcard.html")}\n${read("learning/games/lastcard/cards.css")}\n${read("learning/games/lastcard/game.js")}`;
 assert.doesNotMatch(lastCard, /\bUNO\b/i, "라스트 카드에는 기존 상품명을 노출하면 안 됩니다.");
 assert.match(lastCard, /EMBER/, "라스트 카드는 독자 색상 체계를 사용해야 합니다.");
 assert.match(lastCard, /SHIFT/, "라스트 카드는 독자 액션 명칭을 사용해야 합니다.");

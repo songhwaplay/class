@@ -6,7 +6,7 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const indexHtml = fs.readFileSync(path.join(root, "index.html"), "utf8");
-const gamePaths = [...indexHtml.matchAll(/href="(games\/[^"?#]+\.html)"/g)].map(match => match[1]);
+const gamePaths = [...indexHtml.matchAll(/href="(learning\/games\/[^"?#]+\.html)"/g)].map(match => match[1]);
 
 assert.ok(gamePaths.length >= 16, "메인 화면에 연결된 게임 목록을 찾을 수 있어야 합니다.");
 

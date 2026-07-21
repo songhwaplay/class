@@ -7,7 +7,7 @@ const root = path.resolve(__dirname, "..");
 const sfxPath = path.join(root, "assets", "sound", "game-sfx.js");
 const musicControlPath = path.join(root, "assets", "sound", "music-control.js");
 const hubPath = path.join(root, "index.html");
-const fruitBellPath = path.join(root, "games", "fruitbell", "fruitbell.html");
+const fruitBellPath = path.join(root, "learning", "games", "fruitbell", "fruitbell.html");
 
 for (const filePath of [sfxPath, musicControlPath, hubPath, fruitBellPath]) {
     assert.ok(fs.existsSync(filePath), `Missing sound effect file: ${filePath}`);
@@ -28,7 +28,7 @@ assert.ok(musicControlSource.includes('new URL("game-sfx.js", currentScript.src)
 assert.ok(musicControlSource.includes("classmusicchange"), "Music controls should publish the shared mute and volume state.");
 
 const hub = fs.readFileSync(hubPath, "utf8");
-const gameLinks = [...hub.matchAll(/href="(games\/[^"]+\.html)"/g)].map((match) => match[1]);
+const gameLinks = [...hub.matchAll(/href="(learning\/games\/[^"]+\.html)"/g)].map((match) => match[1]);
 assert.ok(gameLinks.length >= 15, "Expected the local game catalog in the hub.");
 for (const relativePath of gameLinks) {
     const gameHtml = fs.readFileSync(path.join(root, ...relativePath.split("/")), "utf8");

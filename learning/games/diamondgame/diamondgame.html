@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>다이아몬드 게임 · Online Diamond Game</title>
+<link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
+<style>
+:root{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;color:#f8f2e8;background:#14100d}*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:20px;background:radial-gradient(circle at 50% 15%,#60452a99,transparent 40%),linear-gradient(135deg,#21170f,#0d0a08 70%)}button,input{font:inherit}.shell{width:min(1040px,100%);margin:auto}.panel{margin-bottom:14px;padding:18px;border:1px solid #8f6b43;border-radius:17px;background:#211912ed;box-shadow:0 16px 45px #0008}.hidden{display:none!important}.eyebrow{color:#d8b377;font-size:12px;font-weight:900;letter-spacing:.17em}.title{margin:4px 0 0;font-family:Georgia,"Times New Roman",serif;font-size:clamp(39px,7vw,66px);letter-spacing:.06em}.subtitle{margin:4px 0;color:#cbbda8}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.spread{justify-content:space-between}.primary,.secondary{min-height:42px;padding:9px 15px;border:1px solid #bd9158;border-radius:10px;font-weight:850;cursor:pointer}.primary{background:linear-gradient(#e0b36c,#a46d30);color:#211205}.secondary{background:#36291e;color:#f5e8d3}.primary:disabled,.secondary:disabled{cursor:not-allowed;opacity:.42}.code{font-size:28px;font-weight:950;letter-spacing:.16em}.game-layout{display:grid;grid-template-columns:minmax(0,720px) minmax(220px,1fr);gap:14px;align-items:start}.board-panel{padding:10px}.board-frame{position:relative;width:100%;aspect-ratio:500/524;margin:auto;border:3px solid #8a5729;border-radius:18px;background:linear-gradient(145deg,#f5e5bd,#d6aa67);box-shadow:inset 0 0 40px #7a451f88,0 18px 38px #0009;overflow:hidden}.board{display:block;width:100%;height:100%;touch-action:manipulation}.board-bg{fill:#f8ead0;stroke:#b47d43;stroke-width:5}.link{stroke:#a68459;stroke-width:1.25}.hole{fill:#805b37;stroke:#51351f;stroke-width:1.2}.hole.foreign{opacity:.62}.hole.legal{fill:#fff3a5;stroke:#f0a900;stroke-width:3;filter:drop-shadow(0 0 5px #ffdc43)}.piece{stroke:#fff9;stroke-width:1.5;filter:drop-shadow(0 3px 2px #0007);cursor:pointer}.piece.selected{stroke:#fff1a1;stroke-width:4;filter:drop-shadow(0 0 7px #ffe44d)}.cell-hit{fill:transparent;cursor:pointer}.side{display:grid;gap:12px}.info{padding:14px;border:1px solid #73573b;border-radius:13px;background:#17110d}.info h2,.info h3{margin:0 0 10px}.turn{padding:13px;border-radius:11px;background:#0e0a08;text-align:center;font-weight:900}.player-row{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;padding:9px;border-radius:10px}.player-row.active{background:#fff1c217;outline:1px solid #d8ac65}.dot{width:18px;height:18px;border-radius:50%;background:var(--color);box-shadow:inset 0 2px 2px #fff8,0 2px 3px #0008}.progress{color:#d6c2a5;font-variant-numeric:tabular-nums}.actions{display:grid;gap:8px}.message{min-height:48px;color:#e7d8c2;line-height:1.45}.log{max-height:210px;overflow:auto;color:#cdbb9f;font-size:13px}.log div{padding:5px 0;border-bottom:1px solid #ffffff0d}.result{padding:13px;border:1px solid #dbaf67;border-radius:12px;background:#3c2918;text-align:center}.overlay{position:fixed;inset:0;z-index:20;display:grid;place-items:center;padding:18px;background:#090704df}.modal{width:min(610px,100%);max-height:86vh;overflow:auto;padding:23px;border:1px solid #b78b52;border-radius:16px;background:#261c14}.modal li{margin-bottom:9px;line-height:1.5}.toast{position:fixed;right:17px;bottom:17px;z-index:30;max-width:min(390px,calc(100vw - 34px));padding:12px 15px;border:1px solid #c09258;border-radius:10px;background:#17100a;box-shadow:0 10px 30px #0009}.legend{display:flex;gap:10px;flex-wrap:wrap;color:#cdbb9f;font-size:13px}.legend span{display:flex;align-items:center;gap:5px}@media(max-width:800px){body{padding:9px}.panel{padding:14px}.game-layout{grid-template-columns:1fr}.side{grid-template-columns:1fr 1fr}.side .info:first-child,.side .info:last-child{grid-column:1/-1}}@media(max-width:520px){.side{grid-template-columns:1fr}.side .info{grid-column:auto!important}.title{font-size:42px}.board-frame{border-width:2px}.board-panel{padding:5px}}
+body{background:linear-gradient(rgba(7,10,16,.18),rgba(8,9,13,.24)),url("../../../assets/images/diamond-bg.png") center/cover fixed no-repeat,#10131a}body:has(#lobbyScreen:not(.hidden)){background:url("../../../assets/images/diamond-bg.png") center/cover fixed no-repeat,#10131a}.orientation{position:absolute;z-index:2;right:8px;padding:4px 10px;border:1px solid #8c6339;border-radius:999px;background:#28190ed9;color:#f5deb6;font-size:11px;font-weight:900;letter-spacing:.05em;pointer-events:none}.orientation.goal{top:8px}.orientation.home{bottom:8px}@media(max-width:520px){.orientation{padding:3px 8px;font-size:9px}}
+.turn-clock{display:grid;grid-template-columns:1fr auto;align-items:center;gap:8px;margin:7px 0 10px}.turn-clock-label{color:#88df9d;font-weight:900;font-variant-numeric:tabular-nums}.turn-clock.urgent .turn-clock-label{color:#ff776d}.turn-track{grid-column:1/-1;height:6px;overflow:hidden;border-radius:999px;background:#ffffff1f}.turn-bar{width:100%;height:100%;transform-origin:left center;background:linear-gradient(90deg,#66d985,#efd365,#ed6259)}
+</style>
+<script src="../../../assets/network/game-network.js"></script>
+<script src="../../../assets/network/multiplayer-lobby.js"></script>
+<script src="../../../assets/sound/music-control.js" defer></script>
+<link rel="stylesheet" href="../../../assets/device-game.css">
+</head>
+<body>
+<main class="shell">
+  <section id="missingScreen" class="panel hidden">
+    <div class="eyebrow">PLAYER NAME REQUIRED</div><h1>이름이 없습니다</h1>
+    <p>이름 변경은 메인 화면에서만 가능합니다.</p>
+    <button class="primary" type="button" onclick="location.href='../../../index.html'">메인 화면으로</button>
+  </section>
+
+  <section id="lobbyScreen" class="hidden mp-lobby-compact mp-lobby-standard" data-multiplayer-lobby>
+    <header class="panel">
+      <h1 class="title">다이아몬드 게임</h1>
+      <p class="subtitle">ONLINE DIAMOND GAME · 2–3 PLAYERS</p><p>PLAYER · <strong id="savedName">-</strong></p>
+      <div class="mp-lobby-tabs"><button id="hostTab" class="primary" type="button">CREATE ROOM</button><button id="joinTab" class="secondary" type="button">JOIN ROOM</button></div>
+    </header>
+    <section id="hostPane" class="panel mp-lobby-card hidden"><div class="row spread"><div><div class="eyebrow">ROOM CODE</div><div id="roomCode" class="code">----</div></div><button id="copyBtn" class="secondary" type="button">COPY CODE</button></div><div id="hostStatus" class="mp-lobby-status">방을 만드는 중입니다.</div></section>
+    <section id="joinPane" class="panel mp-lobby-card hidden"><div class="mp-lobby-row"><input id="joinCode" class="mp-lobby-code-input" inputmode="numeric" maxlength="4" placeholder="ROOM CODE · 4 DIGITS"><button id="joinBtn" class="primary" type="button">JOIN ROOM</button></div><div id="joinStatus" class="mp-lobby-status">방장이 알려준 번호를 입력하세요.</div></section>
+    <section class="panel"><h2>PLAYERS</h2><div id="lobbyPlayers" class="mp-lobby-players"></div><p id="lobbyGuide" class="mp-lobby-guide">참가자를 기다리는 중입니다.</p><button id="startBtn" class="primary" type="button" disabled>WAITING FOR PLAYERS</button><div class="row" style="margin-top:10px"><button id="rulesBtnLobby" class="secondary" type="button">RULES</button><button id="leaveBtnLobby" class="secondary" type="button">메인 화면</button></div></section>
+  </section>
+
+  <section id="gameScreen" class="hidden">
+    <header class="panel"><div class="row spread"><div><div class="eyebrow">ROOM CODE</div><div id="gameRoomCode" class="code">----</div></div><div class="row"><button id="rulesBtnGame" class="secondary" type="button">RULES</button><button id="leaveBtnGame" class="secondary" type="button">메인 화면</button></div></div></header>
+    <div class="game-layout">
+      <section class="panel board-panel"><div class="board-frame"><span class="orientation goal">내 도착 진영</span><svg id="board" class="board" viewBox="0 0 500 524" role="grid" aria-label="내 진영이 아래쪽에 배치된 다이아몬드 게임판"></svg><span class="orientation home">내 출발 진영</span></div></section>
+      <aside class="side">
+        <section class="info"><h2 id="turnText">게임 준비 중</h2><div id="turnClock" class="turn-clock"><span>TURN TIME</span><span id="turnSeconds" class="turn-clock-label">30초</span><div class="turn-track"><div id="turnTimerBar" class="turn-bar"></div></div></div><div id="message" class="message"></div><div id="resultBox" class="result hidden"></div></section>
+        <section class="info"><h3>PLAYERS</h3><div id="playerStatus"></div></section>
+        <section class="info"><h3>TURN ACTION</h3><div class="actions"><button id="endJumpBtn" class="primary" type="button" disabled>점프 종료</button><button id="cancelBtn" class="secondary" type="button" disabled>선택 취소</button><button id="rematchBtn" class="primary hidden" type="button">다시 하기</button><button id="returnLobbyBtn" class="secondary hidden" type="button">대기실로</button></div></section>
+        <section class="info"><h3>GAME LOG</h3><div id="gameLog" class="log"></div></section>
+      </aside>
+    </div>
+  </section>
+</main>
+
+<audio id="bgm" src="../../../assets/sound/diamond-1.mp3" preload="auto"></audio>
+
+<section id="rulesOverlay" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><div class="eyebrow">HOW TO PLAY</div><h2>다이아몬드 게임 규칙</h2><ol><li>각자 말 10개를 자신의 반대편 같은 색 진영으로 모두 옮기면 승리합니다.</li><li>자기 차례에는 말 하나를 선으로 연결된 빈칸으로 한 칸 옮기거나, 인접한 말 하나를 넘어 바로 다음 빈칸으로 점프합니다.</li><li>한 사람의 차례는 <strong>30초</strong>입니다. 시간이 끝나면 자동으로 다음 사람에게 넘어가며, 연속 점프 뒤에는 최소 10초가 보장됩니다.</li><li>점프 뒤 다시 점프할 수 있다면 같은 말을 계속 움직일 수 있습니다. 점프할 때마다 방향을 바꿀 수 있습니다.</li><li>연속 점프를 그만하려면 <strong>점프 종료</strong>를 누릅니다. 한 칸 이동 뒤에는 즉시 차례가 끝납니다.</li><li>다른 플레이어 색의 출발·도착 진영에는 들어갈 수 없습니다.</li><li>진행 순서는 빨강 → 파랑 → 노랑입니다.</li></ol><button id="closeRulesBtn" class="primary" type="button">CLOSE</button></div></section>
+<section id="abortOverlay" class="overlay hidden" role="dialog" aria-modal="true"><div class="modal"><h2 id="abortTitle">게임 중단</h2><p id="abortMessage"></p><button id="reloadBtn" class="primary" type="button">처음부터</button></div></section>
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+const GAME_ID="diamondgame",NAME_KEY="classPlayerName";
+const TURN_MS=30000,JUMP_GRACE_MS=10000;
+const MESSAGE=Object.freeze({ACTION:"DIAMOND_ACTION",STATE:"DIAMOND_STATE",RETURN_LOBBY:"DIAMOND_RETURN_LOBBY"});
+const BGM_TRACKS=["../../../assets/sound/diamond-1.mp3","../../../assets/sound/diamond-2.mp3","../../../assets/sound/diamond-3.mp3"];
+const COLORS=[{id:"red",name:"빨강",hex:"#e44336",start:"top",goal:"bottom"},{id:"blue",name:"파랑",hex:"#3479d8",start:"lowerLeft",goal:"upperRight"},{id:"yellow",name:"노랑",hex:"#f0c51e",start:"lowerRight",goal:"upperLeft"}];
+const DIRECTIONS=[[2,0],[-2,0],[1,1],[-1,1],[1,-1],[-1,-1]];
+const $=id=>document.getElementById(id);
+let lobby=null,state=null,players={},myId=null,myRole="host",selectedKey=null,legalOptions=[];
+let toastTimer=null,bgmIndex=0;
+let hostTurnTimer=null,clientTimerRaf=null;
+const savedName=String(localStorage.getItem(NAME_KEY)||"").trim();
+
+function key(x,y){return `${x},${y}`}
+function buildCells(){const cells=[];for(let y=-8;y<=8;y++){const count=Math.abs(y)>=5?9-Math.abs(y):9+Math.abs(y);for(let i=0;i<count;i++)cells.push({x:-(count-1)+i*2,y})}return cells}
+const CELLS=buildCells(),CELL_KEYS=new Set(CELLS.map(c=>key(c.x,c.y)));
+function campAt(x,y){if(y<=-5)return"top";if(y>=5)return"bottom";if(y>=-4&&y<=-1){const edge=8-Math.abs(y);if(x<-edge)return"upperLeft";if(x>edge)return"upperRight"}if(y>=1&&y<=4){const edge=8-Math.abs(y);if(x<-edge)return"lowerLeft";if(x>edge)return"lowerRight"}return"center"}
+function cellsInCamp(camp){return CELLS.filter(c=>campAt(c.x,c.y)===camp)}
+function colorForPlayer(id){const index=state?.order?.indexOf(id)??-1;return COLORS[index]||null}
+function pieceAt(x,y,source=state){return source?.pieces?.[key(x,y)]||null}
+function currentPlayerId(){return state?.order?.[state.turnIndex]||null}
+function myTurn(){return Boolean(state&&!state.winner&&String(currentPlayerId())===String(myId))}
+function canEnterCamp(playerId,x,y){const camp=campAt(x,y),color=colorForPlayer(playerId);return camp==="center"||camp===color?.start||camp===color?.goal}
+function getStepOptions(playerId,x,y,source=state){if(!source||source.jump)return[];return DIRECTIONS.map(([dx,dy])=>({x:x+dx,y:y+dy,kind:"step"})).filter(p=>CELL_KEYS.has(key(p.x,p.y))&&!pieceAt(p.x,p.y,source)&&canEnterCamp(playerId,p.x,p.y))}
+function getJumpOptions(playerId,x,y,source=state){const visited=new Set(source?.jump?.visited||[]);return DIRECTIONS.map(([dx,dy])=>({mx:x+dx,my:y+dy,x:x+dx*2,y:y+dy*2,kind:"jump"})).filter(p=>CELL_KEYS.has(key(p.x,p.y))&&pieceAt(p.mx,p.my,source)&&!pieceAt(p.x,p.y,source)&&!visited.has(key(p.x,p.y))&&canEnterCamp(playerId,p.x,p.y))}
+function legalMoves(playerId,x,y,source=state){if(String(pieceAt(x,y,source))!==String(playerId))return[];const jumps=getJumpOptions(playerId,x,y,source);return source?.jump?jumps:[...getStepOptions(playerId,x,y,source),...jumps]}
+function createInitialState(snapshot){const order=Object.keys(snapshot.players),pieces={};order.forEach((id,index)=>cellsInCamp(COLORS[index].start).forEach(c=>{pieces[key(c.x,c.y)]=id}));return{order,pieces,turnIndex:0,jump:null,winner:null,moveCount:0,lastMove:null,turnDeadline:Date.now()+TURN_MS,log:[`${snapshot.players[order[0]].name}님이 빨강으로 먼저 시작합니다.`]}}
+function cloneState(value){return JSON.parse(JSON.stringify(value))}
+function playerHasWon(playerId,source=state){const color=colorForPlayer(playerId);return Boolean(color&&cellsInCamp(color.goal).every(c=>String(pieceAt(c.x,c.y,source))===String(playerId)))}
+function scheduleHostTurnTimer(){clearTimeout(hostTurnTimer);if(myRole!=="host"||!state||state.winner)return;if(!Number.isFinite(state.turnDeadline)||state.turnDeadline<=0)state.turnDeadline=Date.now()+TURN_MS;const delay=Math.max(0,state.turnDeadline-Date.now());hostTurnTimer=setTimeout(hostTurnExpired,delay+25)}
+function resetTurnClock(duration=TURN_MS){state.turnDeadline=Date.now()+duration;scheduleHostTurnTimer()}
+function extendJumpClock(){state.turnDeadline=Math.max(state.turnDeadline||0,Date.now()+JUMP_GRACE_MS);scheduleHostTurnTimer()}
+function hostTurnExpired(){if(myRole!=="host"||!state||state.winner)return;if(Date.now()+20<(state.turnDeadline||0)){scheduleHostTurnTimer();return}const expiredId=currentPlayerId(),name=players[expiredId]?.name||"플레이어";state=cloneState(state);state.log.unshift(`${name}: 시간 초과 · ${state.jump?"점프 자동 종료":"차례 넘김"}`);advanceTurn();publish()}
+function advanceTurn(){state.turnIndex=(state.turnIndex+1)%state.order.length;state.jump=null;selectedKey=null;legalOptions=[];resetTurnClock()}
+function publish(){lobby.broadcast({type:MESSAGE.STATE,state,players});renderAll()}
+function hostMove(sender,x,y,toX,toY){
+ if(myRole!=="host"||!state||state.winner||String(sender)!==String(currentPlayerId()))return;
+ if(Date.now()>(state.turnDeadline||0)){hostTurnExpired();return}
+ if(state.jump&&state.jump.pieceKey!==key(x,y))return;
+ const option=legalMoves(sender,x,y).find(p=>p.x===toX&&p.y===toY);if(!option)return;
+ const next=cloneState(state),fromKey=key(x,y),toKey=key(toX,toY);delete next.pieces[fromKey];next.pieces[toKey]=sender;state=next;
+ state.moveCount+=1;state.lastMove={from:fromKey,to:toKey,kind:option.kind};
+ const name=players[sender]?.name||"플레이어";
+ if(option.kind==="step"){state.log.unshift(`${name}: 한 칸 이동`);if(playerHasWon(sender)){state.winner=sender;state.turnDeadline=0;clearTimeout(hostTurnTimer);state.log.unshift(`${name}님이 모든 말을 도착시켰습니다.`)}else advanceTurn();publish();return}
+ if(!state.jump)state.jump={pieceKey:toKey,visited:[fromKey,toKey]};else{state.jump.pieceKey=toKey;state.jump.visited.push(toKey)}
+ state.log.unshift(`${name}: 점프`);selectedKey=toKey;
+ if(playerHasWon(sender)){state.winner=sender;state.jump=null;state.turnDeadline=0;clearTimeout(hostTurnTimer);state.log.unshift(`${name}님이 모든 말을 도착시켰습니다.`);publish();return}
+ if(getJumpOptions(sender,toX,toY).length===0)advanceTurn();else extendJumpClock();publish()
+}
+function hostEndJump(sender){if(myRole!=="host"||!state?.jump||String(sender)!==String(currentPlayerId()))return;if(Date.now()>(state.turnDeadline||0)){hostTurnExpired();return}state=cloneState(state);state.log.unshift(`${players[sender]?.name||"플레이어"}: 점프 종료`);advanceTurn();publish()}
+function requestMove(x,y,toX,toY){const payload={type:MESSAGE.ACTION,action:"MOVE",x,y,toX,toY};if(myRole==="host")hostMove(myId,x,y,toX,toY);else lobby.send(payload)}
+function requestEndJump(){if(!myTurn()||!state?.jump)return;const payload={type:MESSAGE.ACTION,action:"END_JUMP"};if(myRole==="host")hostEndJump(myId);else lobby.send(payload)}
+function handleGameMessage(sender,payload,snapshot){if(!payload)return;if(payload.type===MESSAGE.ACTION&&snapshot.role==="host"){if(payload.action==="MOVE")hostMove(sender,Number(payload.x),Number(payload.y),Number(payload.toX),Number(payload.toY));else if(payload.action==="END_JUMP")hostEndJump(sender);return}if(payload.type===MESSAGE.STATE){state=payload.state;players=payload.players||players;selectedKey=state.jump?.pieceKey||null;showGame();renderAll();return}if(payload.type===MESSAGE.RETURN_LOBBY){showLobby();lobby.returnToLobby()}}
+
+function chooseCell(x,y){
+ if(!myTurn()){showToast(`${players[currentPlayerId()]?.name||"다른 플레이어"}님의 차례입니다.`);return}
+ const occupant=pieceAt(x,y),clicked=key(x,y);
+ if(occupant){if(String(occupant)!==String(myId)){showToast("자기 말을 선택하세요.");return}if(state.jump&&clicked!==state.jump.pieceKey){showToast("연속 점프 중에는 같은 말만 움직일 수 있습니다.");return}selectedKey=selectedKey===clicked&&!state.jump?null:clicked;refreshLegal();renderAll();return}
+ if(!selectedKey){showToast("먼저 움직일 말을 선택하세요.");return}
+ const option=legalOptions.find(p=>p.x===x&&p.y===y);if(!option){showToast("표시된 칸으로만 움직일 수 있습니다.");return}
+ const [sx,sy]=selectedKey.split(",").map(Number);requestMove(sx,sy,x,y)
+}
+function refreshLegal(){if(!selectedKey||!state){legalOptions=[];return}const [x,y]=selectedKey.split(",").map(Number);legalOptions=legalMoves(myId,x,y)}
+function viewerRotation(){const index=state?.order?.indexOf(myId)??-1;return[180,-60,60][index]||0}
+function point(c){const x=c.x*17.3,y=c.y*29,angle=viewerRotation()*Math.PI/180;return{x:250+x*Math.cos(angle)-y*Math.sin(angle),y:262+x*Math.sin(angle)+y*Math.cos(angle)}}
+function svgEl(name,attrs={}){const el=document.createElementNS("http://www.w3.org/2000/svg",name);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));return el}
+function renderBoard(){
+ const board=$("board"),fragment=document.createDocumentFragment();
+ const bg=svgEl("polygon",{class:"board-bg",points:"250,8 326,126 466,146 392,262 466,378 326,398 250,516 174,398 34,378 108,262 34,146 174,126"});fragment.appendChild(bg);
+ const links=svgEl("g");for(const c of CELLS){for(const [dx,dy] of [[2,0],[1,1],[-1,1]]){if(!CELL_KEYS.has(key(c.x+dx,c.y+dy)))continue;const a=point(c),b=point({x:c.x+dx,y:c.y+dy});links.appendChild(svgEl("line",{class:"link",x1:a.x,y1:a.y,x2:b.x,y2:b.y}))}}fragment.appendChild(links);
+ const holes=svgEl("g");for(const c of CELLS){const p=point(c),camp=campAt(c.x,c.y),circle=svgEl("circle",{class:`hole ${camp!=="center"?"foreign":""}`,cx:p.x,cy:p.y,r:6.1});const campColor=COLORS.find(color=>color.start===camp||color.goal===camp);if(campColor)circle.setAttribute("style",`fill:${campColor.hex}77`);if(legalOptions.some(o=>o.x===c.x&&o.y===c.y)){circle.setAttribute("class","hole legal");circle.removeAttribute("style")}holes.appendChild(circle)}fragment.appendChild(holes);
+ const piecesGroup=svgEl("g");for(const c of CELLS){const owner=pieceAt(c.x,c.y);if(!owner)continue;const p=point(c),color=colorForPlayer(owner);const piece=svgEl("circle",{class:`piece ${selectedKey===key(c.x,c.y)?"selected":""}`,cx:p.x,cy:p.y,r:10.2,fill:color?.hex||"#777"});piecesGroup.appendChild(piece)}fragment.appendChild(piecesGroup);
+ const hits=svgEl("g");for(const c of CELLS){const p=point(c),hit=svgEl("circle",{class:"cell-hit",cx:p.x,cy:p.y,r:14,tabindex:"0","aria-label":`${c.x}, ${c.y} 칸`});hit.addEventListener("click",()=>chooseCell(c.x,c.y));hit.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();chooseCell(c.x,c.y)}});hits.appendChild(hit)}fragment.appendChild(hits);board.replaceChildren(fragment)
+}
+function renderStatus(){if(!state)return;const current=currentPlayerId(),currentName=players[current]?.name||"플레이어";$("turnText").textContent=state.winner?"GAME COMPLETE":String(current)===String(myId)?"내 차례":`${currentName}님 차례`;if(state.winner)$("message").textContent=`${players[state.winner]?.name||"플레이어"}님이 승리했습니다!`;else if(!myTurn())$("message").textContent="상대방의 이동을 기다리는 중입니다.";else if(state.jump)$("message").textContent="같은 말로 계속 점프하거나 ‘점프 종료’를 누르세요.";else if(selectedKey)$("message").textContent=legalOptions.length?`이동 가능한 칸 ${legalOptions.length}곳을 표시했습니다.`:"이 말은 지금 움직일 수 없습니다.";else $("message").textContent="움직일 자기 말을 선택하세요.";
+ $("playerStatus").innerHTML=state.order.map((id,index)=>{const color=COLORS[index],arrived=cellsInCamp(color.goal).filter(c=>String(pieceAt(c.x,c.y))===String(id)).length;return`<div class="player-row ${String(id)===String(current)&&!state.winner?"active":""}"><span class="dot" style="--color:${color.hex}"></span><strong>${escapeHtml(players[id]?.name||"플레이어")}${String(id)===String(myId)?" (나)":""}</strong><span class="progress">${arrived}/10</span></div>`}).join("");
+ $("endJumpBtn").disabled=!(myTurn()&&state.jump);$("cancelBtn").disabled=!selectedKey||Boolean(state.jump);const ended=Boolean(state.winner),host=myRole==="host";$("resultBox").classList.toggle("hidden",!ended);$("resultBox").textContent=ended?`${players[state.winner]?.name||"플레이어"} 승리 · ${state.moveCount}회 이동`:"";$("rematchBtn").classList.toggle("hidden",!ended||!host);$("returnLobbyBtn").classList.toggle("hidden",!ended||!host)
+}
+function startClientTurnTimer(){
+ cancelAnimationFrame(clientTimerRaf);
+ const seconds=$("turnSeconds"),bar=$("turnTimerBar"),clock=$("turnClock");
+ const tick=()=>{
+   if(!state||state.winner){seconds.textContent="";bar.style.transform="scaleX(0)";clock.classList.remove("urgent");return}
+   const remain=Math.max(0,(state.turnDeadline||0)-Date.now());
+   seconds.textContent=`${Math.ceil(remain/1000)}초`;
+   bar.style.transform=`scaleX(${Math.min(1,remain/TURN_MS)})`;
+   clock.classList.toggle("urgent",remain<=JUMP_GRACE_MS);
+   clientTimerRaf=requestAnimationFrame(tick)
+ };
+ tick()
+}
+function renderAll(){if(state?.jump)selectedKey=state.jump.pieceKey;refreshLegal();renderBoard();renderStatus();$("gameLog").innerHTML=(state?.log||[]).slice(0,40).map(line=>`<div>• ${escapeHtml(line)}</div>`).join("");startClientTurnTimer()}
+function showToast(message){clearTimeout(toastTimer);$("toast").textContent=message;$("toast").classList.remove("hidden");toastTimer=setTimeout(()=>$("toast").classList.add("hidden"),2100)}
+function escapeHtml(value){return String(value??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function showRules(){$("rulesOverlay").classList.remove("hidden")}function hideRules(){$("rulesOverlay").classList.add("hidden")}
+function showGame(){$("lobbyScreen").classList.add("hidden");$("gameScreen").classList.remove("hidden")}
+function showLobby(){clearTimeout(hostTurnTimer);cancelAnimationFrame(clientTimerRaf);state=null;selectedKey=null;legalOptions=[];$("gameScreen").classList.add("hidden");$("lobbyScreen").classList.remove("hidden")}
+function syncLobby(snapshot){myId=snapshot.myId;myRole=snapshot.role;players=snapshot.players;$("gameRoomCode").textContent=snapshot.roomCode||"----"}
+function startRematch(){if(myRole!=="host"||!state?.winner)return;state=createInitialState(lobby.snapshot());scheduleHostTurnTimer();publish()}
+function returnToLobby(){if(myRole!=="host")return;lobby.broadcast({type:MESSAGE.RETURN_LOBBY});showLobby();lobby.returnToLobby()}
+function showAbort({title,message}){clearTimeout(hostTurnTimer);cancelAnimationFrame(clientTimerRaf);$("abortTitle").textContent=title;$("abortMessage").textContent=message;$("abortOverlay").classList.remove("hidden")}
+function playNextBgm(){const bgm=$("bgm");bgmIndex=(bgmIndex+1)%BGM_TRACKS.length;bgm.src=BGM_TRACKS[bgmIndex];bgm.load();bgm.play().catch(()=>{})}
+function init(){
+ lobby=ClassroomMultiplayerLobby.create({gameId:GAME_ID,getPlayerName:()=>/^[가-힣]{2,6}$/.test(savedName)?savedName:"",allowedPlayerCounts:[2,3],maxPlayers:3,rulesButtonIds:["rulesBtnLobby","rulesBtnGame"],leaveButtonIds:["leaveBtnLobby","leaveBtnGame"],onRules:showRules,onLeave:()=>location.href="../../../index.html",onNotice:showToast,onInvalidStart:()=>showToast("다이아몬드 게임은 2명 또는 3명이 필요합니다."),onStateChange:syncLobby,getLobbyPresentation:({count,role,canStart})=>({canStart,startText:role==="host"&&canStart?`START GAME · ${count} PLAYERS`:"WAITING FOR PLAYERS",guideText:role==="host"?(canStart?`${count}인 게임을 시작할 수 있습니다.`:"한 명 이상 더 기다리세요."):"방장이 게임을 시작할 때까지 기다리세요."}),createStartData:snapshot=>({state:createInitialState(snapshot)}),onStarted:({data,players:roomPlayers,myId:id,role})=>{players=roomPlayers;myId=id;myRole=role;state=data.state;showGame();renderAll();if(myRole==="host")scheduleHostTurnTimer()},onGameMessage:handleGameMessage,onAbort:showAbort}).mount();
+ $("bgm").addEventListener("ended",playNextBgm);$("closeRulesBtn").addEventListener("click",hideRules);$("rulesOverlay").addEventListener("click",event=>{if(event.target===$("rulesOverlay"))hideRules()});$("endJumpBtn").addEventListener("click",requestEndJump);$("cancelBtn").addEventListener("click",()=>{if(state?.jump)return;selectedKey=null;renderAll()});$("rematchBtn").addEventListener("click",startRematch);$("returnLobbyBtn").addEventListener("click",returnToLobby);$("reloadBtn").addEventListener("click",()=>location.reload())
+}
+window.addEventListener("DOMContentLoaded",init);
+</script>
+</body>
+</html>

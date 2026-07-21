@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const gamesRoot = path.resolve(__dirname, "..", "games");
+const gamesRoot = path.resolve(__dirname, "..", "learning", "games");
 const expectedMultiplayerGames = [
     "avalon",
     "blokus",

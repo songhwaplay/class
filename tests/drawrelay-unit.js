@@ -81,7 +81,7 @@ assert.equal(DrawRelay.resetToLobby(game).ok, true);
 assert.equal(game.phase, "lobby");
 assert.deepEqual(game.chains, []);
 
-const html = fs.readFileSync(path.resolve(__dirname, "..", "games", "drawrelay", "drawrelay.html"), "utf8");
+const html = fs.readFileSync(path.resolve(__dirname, "..", "learning", "games", "drawrelay", "drawrelay.html"), "utf8");
 assert.match(html, /gameId:\s*GAME_ID/);
 assert.match(html, /minPlayers:\s*4/);
 assert.match(html, /maxPlayers:\s*8/);
@@ -90,10 +90,10 @@ assert.match(html, /pointerdown/);
 assert.match(html, /SUBMIT_DRAWING/);
 assert.match(html, /SUBMIT_GUESS/);
 assert.match(html, /다음 장 공개/);
-assert.ok(fs.existsSync(path.resolve(__dirname, "..", "games", "drawrelay", "styles.css")));
+assert.ok(fs.existsSync(path.resolve(__dirname, "..", "learning", "games", "drawrelay", "styles.css")));
 
 const hub = fs.readFileSync(path.resolve(__dirname, "..", "index.html"), "utf8");
-assert.match(hub, /games\/drawrelay\/drawrelay\.html/);
+assert.match(hub, /learning\/games\/drawrelay\/drawrelay\.html/);
 assert.match(hub, />그림 릴레이</);
 
 const server = fs.readFileSync(path.resolve(__dirname, "..", "game-hub-server", "server.js"), "utf8");

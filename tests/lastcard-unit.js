@@ -107,8 +107,8 @@ assert.equal(hostState.players.some(player => Object.hasOwn(player, "hand")), fa
 assert.equal(hostState.players.find(player => player.id === "guest1").handCount, 1);
 
 const root = path.resolve(__dirname, "..");
-const html = fs.readFileSync(path.join(root, "games", "lastcard", "lastcard.html"), "utf8");
-const client = fs.readFileSync(path.join(root, "games", "lastcard", "game.js"), "utf8");
+const html = fs.readFileSync(path.join(root, "learning", "games", "lastcard", "lastcard.html"), "utf8");
+const client = fs.readFileSync(path.join(root, "learning", "games", "lastcard", "game.js"), "utf8");
 assert.match(client, /ClassroomMultiplayerLobby\.create\s*\(/, "라스트 카드는 공통 멀티플레이 로비를 사용해야 합니다.");
 assert.match(client, /allowedPlayerCounts:\s*\[2,3,4\]/, "라스트 카드는 2~4인용이어야 합니다.");
 assert.match(html, /multiplayer-lobby\.js/, "라스트 카드 화면은 공통 멀티플레이 로비를 불러와야 합니다.");

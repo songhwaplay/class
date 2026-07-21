@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#090d18">
+    <title>라스트 카드 · Last Card</title>
+    <link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
+    <link rel="stylesheet" href="cards.css">
+    <script src="../../../assets/sound/game-sfx.js" defer></script>
+    <link rel="stylesheet" href="game.css">
+    <link rel="stylesheet" href="../../../assets/device-game.css">
+    <script src="../../../assets/network/game-network.js"></script>
+    <script src="../../../assets/network/multiplayer-lobby.js"></script>
+</head>
+<body>
+    <main class="game-shell">
+        <section id="missingScreen" class="screen-panel missing-screen hidden">
+            <p class="eyebrow">PLAYER NAME REQUIRED</p>
+            <h1>이름이 없습니다</h1>
+            <p>메인 화면에서 한글 이름을 먼저 저장해 주세요.</p>
+            <button class="primary-button" type="button" data-go-home>메인 화면으로</button>
+        </section>
+
+        <section id="lobbyScreen" class="hidden mp-lobby-compact" data-multiplayer-lobby>
+            <header class="screen-panel lobby-hero">
+                <div>
+                    <p class="eyebrow">MATCH · TURN · SURVIVE</p>
+                    <h1><span>LAST</span> CARD</h1>
+                    <p class="subtitle">2–4 PLAYERS · 마지막 한 장이 승부를 결정한다</p>
+                </div>
+                <div class="lobby-entry">
+                    <p>PLAYER · <strong id="savedName">-</strong></p>
+                    <div class="mp-lobby-tabs">
+                        <button id="hostTab" class="primary-button" type="button">CREATE ROOM</button>
+                        <button id="joinTab" class="secondary-button" type="button">JOIN ROOM</button>
+                    </div>
+                </div>
+            </header>
+
+            <section id="hostPane" class="screen-panel lobby-card hidden">
+                <div>
+                    <p class="eyebrow">ROOM CODE</p>
+                    <strong id="roomCode" class="room-code">----</strong>
+                </div>
+                <button id="copyBtn" class="secondary-button" type="button">COPY CODE</button>
+                <p id="hostStatus" class="mp-lobby-status">방을 만드는 중입니다.</p>
+            </section>
+
+            <section id="joinPane" class="screen-panel lobby-card hidden">
+                <div class="mp-lobby-row">
+                    <input id="joinCode" class="mp-lobby-code-input" inputmode="numeric" maxlength="4" placeholder="ROOM CODE · 4 DIGITS">
+                    <button id="joinBtn" class="primary-button" type="button">JOIN ROOM</button>
+                </div>
+                <p id="joinStatus" class="mp-lobby-status">방장이 알려준 번호를 입력하세요.</p>
+            </section>
+
+            <section class="screen-panel players-panel">
+                <div>
+                    <p class="eyebrow">PLAYERS</p>
+                    <div id="lobbyPlayers" class="mp-lobby-players"></div>
+                    <p id="lobbyGuide" class="mp-lobby-guide">2~4명이 모이면 시작할 수 있습니다.</p>
+                </div>
+                <div class="lobby-actions">
+                    <button id="startBtn" class="primary-button" type="button" disabled>WAITING FOR PLAYERS</button>
+                    <div class="button-row">
+                        <button id="rulesBtnLobby" class="secondary-button" type="button">RULES</button>
+                        <button id="leaveBtnLobby" class="secondary-button" type="button">메인 화면</button>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <section id="gameScreen" class="hidden">
+            <header class="game-header">
+                <div>
+                    <p class="eyebrow">ROOM <span id="gameRoomCode">----</span></p>
+                    <h1><span>LAST</span> CARD</h1>
+                </div>
+                <div class="game-stats">
+                    <div><small>ROUND</small><strong id="roundText">1</strong></div>
+                    <div><small>DECK</small><strong id="deckText">0</strong></div>
+                    <div><small>FLOW</small><strong id="directionText">→</strong></div>
+                </div>
+                <div class="button-row game-menu">
+                    <button id="rulesBtnGame" class="secondary-button" type="button">RULES</button>
+                    <button id="leaveBtnGame" class="secondary-button" type="button">메인 화면</button>
+                </div>
+            </header>
+
+            <section class="game-board">
+                <div id="playerSeats" class="player-seats"></div>
+
+                <div class="table-zone">
+                    <div class="draw-zone">
+                        <div id="deckVisual" class="table-card"></div>
+                        <button id="drawButton" class="draw-button" type="button">카드 1장 뽑기</button>
+                    </div>
+
+                    <div class="discard-zone">
+                        <p class="table-label">PLAY PILE</p>
+                        <div id="topCard" class="table-card"></div>
+                    </div>
+
+                    <div class="status-zone">
+                        <div id="activeColor" class="active-color"></div>
+                        <strong id="turnBanner">게임 준비 중</strong>
+                        <p id="actionLog">서버 상태를 기다리고 있습니다.</p>
+                    </div>
+                </div>
+
+                <div id="playControls" class="play-controls">
+                    <div id="shiftColors" class="shift-colors hidden" aria-label="시프트 카드 색상 선택">
+                        <span>SHIFT COLOR</span>
+                        <button type="button" data-shift-color="ember" aria-label="엠버 선택"></button>
+                        <button type="button" data-shift-color="tide" aria-label="타이드 선택"></button>
+                        <button type="button" data-shift-color="leaf" aria-label="리프 선택"></button>
+                        <button type="button" data-shift-color="volt" aria-label="볼트 선택"></button>
+                    </div>
+                    <button id="lastCallButton" class="last-call-button hidden" type="button">LAST!</button>
+                    <button id="playButton" class="primary-button play-button" type="button" disabled>카드 선택</button>
+                </div>
+
+                <section class="hand-zone" aria-labelledby="handTitle">
+                    <div class="hand-heading">
+                        <div><p class="eyebrow">YOUR HAND</p><h2 id="handTitle">내 카드</h2></div>
+                        <span id="handCount">0 CARDS</span>
+                    </div>
+                    <div id="hand" class="hand"></div>
+                </section>
+
+                <section id="finishPanel" class="finish-panel hidden" aria-live="polite">
+                    <p class="eyebrow">GAME COMPLETE</p>
+                    <h2 id="winnerTitle">승리!</h2>
+                    <p id="winnerMessage"></p>
+                    <div id="finishActions" class="button-row"></div>
+                </section>
+            </section>
+        </section>
+    </main>
+
+    <section id="rulesOverlay" class="overlay hidden" role="dialog" aria-modal="true" aria-labelledby="rulesTitle">
+        <div class="modal">
+            <p class="eyebrow">HOW TO PLAY</p>
+            <h2 id="rulesTitle">라스트 카드 규칙</h2>
+            <ol>
+                <li>내 차례에는 공개 카드와 <strong>색상·숫자·기호</strong> 중 하나가 같은 카드를 냅니다.</li>
+                <li>낼 카드가 없거나 내고 싶지 않으면 카드 한 장을 뽑고 차례를 넘깁니다.</li>
+                <li><strong>SKIP</strong>은 다음 차례 건너뛰기, <strong>TURN</strong>은 진행 방향 바꾸기, <strong>+2</strong>는 다음 사람이 2장을 받고 쉬기입니다.</li>
+                <li><strong>SHIFT</strong>는 언제든 낼 수 있으며 원하는 활성 색상을 고릅니다.</li>
+                <li>카드를 내고 한 장만 남게 된다면 함께 <strong>LAST!</strong>를 선언하세요. 놓치면 즉시 2장을 받습니다.</li>
+                <li>손의 카드를 가장 먼저 모두 없앤 사람이 승리합니다.</li>
+            </ol>
+            <div class="rule-symbols">
+                <span><b>⨯</b> SKIP</span><span><b>↻</b> TURN</span><span><b>+2</b> DRAW</span><span><b>◆</b> SHIFT</span>
+            </div>
+            <button id="closeRulesButton" class="primary-button" type="button">확인</button>
+        </div>
+    </section>
+
+    <section id="abortOverlay" class="overlay hidden" role="dialog" aria-modal="true">
+        <div class="modal">
+            <h2 id="abortTitle">게임 중단</h2>
+            <p id="abortMessage"></p>
+            <button id="reloadButton" class="primary-button" type="button">처음부터</button>
+        </div>
+    </section>
+
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <script src="cards.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
