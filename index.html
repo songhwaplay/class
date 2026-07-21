@@ -635,17 +635,15 @@
             joinCodeInput.addEventListener('input', () => {
                 joinCodeInput.value = joinCodeInput.value.toUpperCase().replace(/[^A-Z2-9]/g, '').slice(0, 6);
             });
-            guestNameInput.addEventListener('input', () => {
-                guestNameInput.value = normalizePlayerName(guestNameInput.value);
-            });
             guestForm.addEventListener('submit', (event) => {
                 event.preventDefault();
-                const playerName = normalizePlayerName(guestNameInput.value);
+                const playerName = guestNameInput.value.trim();
                 if (!isValidPlayerName(playerName)) {
                     setStatus('Enter a Korean name with 2 to 6 characters.', true);
                     guestNameInput.focus();
                     return;
                 }
+                guestNameInput.value = playerName;
                 currentPlayerName = playerName;
                 localStorage.setItem('classPlayerName', playerName);
                 updatePlayerLearningLinks(playerName);
