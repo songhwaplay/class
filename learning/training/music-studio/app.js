@@ -57,6 +57,7 @@
         dictationQuestionId: null,
         dictationQuestionNumber: 0,
         dictationAnswer: [],
+        dictationSymbol: "note",
         dictationReviewed: false,
         dictationSolved: false,
         dictationAttempts: 0,
@@ -211,6 +212,36 @@
             oscillator.connect(gain).connect(filter);
             oscillator.start(start);
             oscillator.stop(start + .075);
+        });
+    }
+
+    function playRhythmTone(when, duration, accent) {
+        const context = ensureAudio();
+        if (!context) return;
+        const start = Math.max(context.currentTime, when || context.currentTime);
+        const length = Math.max(.08, duration || .16);
+        const releaseStart = start + Math.max(.045, length - .035);
+        const envelope = context.createGain();
+        const filter = context.createBiquadFilter();
+        filter.type = "lowpass";
+        filter.frequency.value = 2400;
+        filter.Q.value = 1.2;
+        envelope.gain.setValueAtTime(.0001, start);
+        envelope.gain.exponentialRampToValueAtTime(accent ? .105 : .085, start + .006);
+        envelope.gain.setValueAtTime(accent ? .09 : .072, releaseStart);
+        envelope.gain.exponentialRampToValueAtTime(.0001, start + length);
+        filter.connect(envelope);
+        connectToMix(envelope, .12);
+
+        [{ ratio: 1, gain: 1, type: "triangle" }, { ratio: 2, gain: .22, type: "sine" }].forEach(function (partial) {
+            const oscillator = context.createOscillator();
+            const partialGain = context.createGain();
+            oscillator.type = partial.type;
+            oscillator.frequency.value = 392 * partial.ratio;
+            partialGain.gain.value = partial.gain;
+            oscillator.connect(partialGain).connect(filter);
+            oscillator.start(start);
+            oscillator.stop(start + length + .02);
         });
     }
 
@@ -508,29 +539,55 @@
         return core.RHYTHM_DICTATION_BANK.find(function (pattern) { return pattern.id === state.dictationQuestionId; });
     }
 
+    function rhythmSymbolLabel(symbol) {
+        return { note: "음표", rest: "쉼표", tie: "타이" }[symbol] || "쉼표";
+    }
+
+    function rhythmSymbolGlyph(symbol) {
+        return { note: "♪", rest: "𝄿", tie: "⌒" }[symbol] || "𝄿";
+    }
+
+    function repairDictationTies() {
+        state.dictationAnswer = Array.from({ length: 16 }, function (_, index) {
+            return core.RHYTHM_SYMBOLS.includes(state.dictationAnswer[index]) ? state.dictationAnswer[index] : "rest";
+        });
+        for (let index = 0; index < 16; index += 1) {
+            if (state.dictationAnswer[index] !== "tie") continue;
+            if (index === 0 || !["note", "tie"].includes(state.dictationAnswer[index - 1])) state.dictationAnswer[index] = "rest";
+        }
+    }
+
     function renderDictationGrid() {
         const question = getDictationQuestion();
         if (!question) return;
+        const targetNotation = core.buildRhythmNotation(question);
         elements.dictationGrid.innerHTML = "";
         for (let index = 0; index < 16; index += 1) {
-            const selected = state.dictationAnswer.includes(index);
-            const target = question.hits.includes(index);
+            const symbol = state.dictationAnswer[index] || "rest";
+            const target = targetNotation[index];
             const step = document.createElement("button");
             step.type = "button";
-            step.className = "rhythm-step answer-step" + (selected ? " selected" : "");
+            step.className = "rhythm-step answer-step symbol-" + symbol;
             if (state.dictationReviewed) {
-                if (selected && target) step.classList.add("correct");
-                else if (target) step.classList.add("missed");
-                else if (selected) step.classList.add("extra");
+                if (symbol === target) step.classList.add("correct");
+                else {
+                    step.classList.add("wrong");
+                    step.dataset.expected = rhythmSymbolGlyph(target);
+                }
             }
             step.dataset.step = index;
-            step.setAttribute("aria-pressed", String(selected));
-            step.setAttribute("aria-label", (Math.floor(index / 4) + 1) + "박 " + ["1", "e", "&", "a"][index % 4] + (selected ? " 입력됨" : " 비어 있음"));
+            step.setAttribute("aria-label", (Math.floor(index / 4) + 1) + "박 " + ["1", "e", "앤드", "a"][index % 4] + " · " + rhythmSymbolLabel(symbol));
+            const glyph = document.createElement("span");
+            glyph.textContent = rhythmSymbolGlyph(symbol);
+            glyph.setAttribute("aria-hidden", "true");
+            step.appendChild(glyph);
             step.addEventListener("click", function () {
-                const answerIndex = state.dictationAnswer.indexOf(index);
-                if (answerIndex >= 0) state.dictationAnswer.splice(answerIndex, 1);
-                else state.dictationAnswer.push(index);
-                state.dictationAnswer.sort(function (a, b) { return a - b; });
+                if (state.dictationSymbol === "tie" && (index === 0 || !["note", "tie"].includes(state.dictationAnswer[index - 1]))) {
+                    showToast("타이는 음표나 타이 뒤에 놓으세요.");
+                    return;
+                }
+                state.dictationAnswer[index] = state.dictationSymbol;
+                repairDictationTies();
                 if (state.dictationReviewed) {
                     state.dictationReviewed = false;
                     elements.dictationFeedback.className = "";
@@ -550,7 +607,7 @@
         const next = choices[Math.floor(Math.random() * choices.length)];
         state.dictationQuestionId = next.id;
         state.dictationQuestionNumber += 1;
-        state.dictationAnswer = [];
+        state.dictationAnswer = Array(16).fill("rest");
         state.dictationReviewed = false;
         state.dictationSolved = false;
         elements.dictationQuestionLabel.textContent = "문제 " + state.dictationQuestionNumber + " · " + pool.length + "개 중 무작위";
@@ -561,7 +618,7 @@
     }
 
     function clearDictationAnswer() {
-        state.dictationAnswer = [];
+        state.dictationAnswer = Array(16).fill("rest");
         state.dictationReviewed = false;
         elements.dictationFeedback.className = "";
         elements.dictationFeedback.textContent = "입력을 지웠습니다.";
@@ -570,11 +627,8 @@
 
     function checkDictationAnswer() {
         const question = getDictationQuestion();
-        if (!question || !state.dictationAnswer.length) {
-            showToast("격자에 리듬을 먼저 입력하세요.");
-            return;
-        }
-        const result = core.scoreRhythmDictation(question.hits, state.dictationAnswer);
+        if (!question) return;
+        const result = core.scoreRhythmNotation(core.buildRhythmNotation(question), state.dictationAnswer);
         state.dictationReviewed = true;
         state.dictationAttempts += 1;
         elements.dictationAttemptCount.textContent = state.dictationAttempts;
@@ -589,7 +643,7 @@
             elements.dictationFeedback.textContent = "정답 · " + question.style + " 리듬";
         } else {
             elements.dictationFeedback.className = "incorrect";
-            elements.dictationFeedback.textContent = result.score + "점 · 맞음 " + result.correct + " · 빠짐 " + result.missed + " · 추가 " + result.extra;
+            elements.dictationFeedback.textContent = result.score + "점 · 16칸 중 " + result.correct + "칸 일치 · " + result.wrong + "칸 수정";
         }
         renderDictationGrid();
     }
@@ -610,13 +664,14 @@
         for (let beat = 0; beat < 4; beat += 1) playClick(countStart + beat * beatSeconds, beat === 0, .9);
         const firstStart = countStart + 4 * beatSeconds;
         const secondStart = firstStart + 4 * beatSeconds;
-        scheduleHits(question.hits, firstStart, true);
-        scheduleHits(question.hits, secondStart, true);
+        const notation = core.buildRhythmNotation(question);
+        scheduleNotation(notation, firstStart, true);
+        scheduleNotation(notation, secondStart, true);
         animateRhythmGrid(80 + 4 * beatMs, stepMs, token, elements.dictationGrid);
         animateRhythmGrid(80 + 8 * beatMs, stepMs, token, elements.dictationGrid);
         window.setTimeout(function () {
             if (token !== state.rhythmPlaybackToken) return;
-            elements.dictationFeedback.textContent = "들은 위치를 클릭한 뒤 정답을 확인하세요.";
+            elements.dictationFeedback.textContent = "기호를 선택하고 한 마디를 입력하세요.";
         }, 80 + 12 * beatMs);
     }
 
@@ -674,6 +729,20 @@
             if (includeBeatClicks) playClick(startTime + beat * beatSeconds, beat === 0, .8);
         }
         hits.forEach(function (step) { playDrum(startTime + step * stepSeconds, step % 4 === 0); });
+    }
+
+    function scheduleNotation(notation, startTime, includeBeatClicks) {
+        const context = ensureAudio();
+        const beatSeconds = 60 / state.tempo;
+        const stepSeconds = beatSeconds / 4;
+        if (!context) return;
+        for (let beat = 0; beat < 4; beat += 1) {
+            if (includeBeatClicks) playClick(startTime + beat * beatSeconds, beat === 0, .72);
+        }
+        core.notationToEvents(notation).forEach(function (event) {
+            const duration = Math.max(.16, event.length * stepSeconds - .025);
+            playRhythmTone(startTime + event.step * stepSeconds, duration, event.step % 4 === 0);
+        });
     }
 
     function schedulePattern(startTime, includeBeatClicks) {
@@ -927,6 +996,16 @@
         elements.clearDictationButton.addEventListener("click", clearDictationAnswer);
         elements.checkDictationButton.addEventListener("click", checkDictationAnswer);
         elements.newDictationButton.addEventListener("click", newDictationQuestion);
+        document.querySelectorAll("[data-dictation-symbol]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                state.dictationSymbol = button.dataset.dictationSymbol;
+                document.querySelectorAll("[data-dictation-symbol]").forEach(function (item) {
+                    const active = item === button;
+                    item.classList.toggle("active", active);
+                    item.setAttribute("aria-pressed", String(active));
+                });
+            });
+        });
         document.querySelectorAll("[data-dictation-level]").forEach(function (button) {
             button.addEventListener("click", function () {
                 state.dictationLevel = button.dataset.dictationLevel;

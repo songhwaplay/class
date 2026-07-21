@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#100f19">
     <title>화성학·리듬 트레이닝</title>
     <meta name="description" content="화성학과 리듬 트레이닝 웹 학습 도구">
-    <link rel="stylesheet" href="styles.css?v=20260721-voiceleading">
-    <script src="music-core.js?v=20260721-voiceleading" defer></script>
-    <script src="app.js?v=20260721-voiceleading" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260721-rhythm-notation">
+    <script src="music-core.js?v=20260721-rhythm-notation" defer></script>
+    <script src="app.js?v=20260721-rhythm-notation" defer></script>
 </head>
 <body>
     <div class="noise" aria-hidden="true"></div>
@@ -182,14 +182,21 @@
                         <div class="dictation-toolbar">
                             <div>
                                 <span id="dictationQuestionLabel" class="mini-label">문제 1</span>
-                                <h3>들은 위치를 클릭하세요</h3>
+                                <h3>음표·쉼표·타이로 입력하세요</h3>
                             </div>
                             <div class="meter-badge"><strong>4</strong><i></i><strong>4</strong></div>
                             <button id="dictationListenButton" class="dictation-listen-button" type="button"><span aria-hidden="true">▶</span> 문제 듣기</button>
                         </div>
 
+                        <div class="rhythm-symbol-palette" role="toolbar" aria-label="리듬 기호 선택">
+                            <span>입력 기호</span>
+                            <button class="active" type="button" data-dictation-symbol="note" aria-pressed="true"><b aria-hidden="true">♪</b>음표</button>
+                            <button type="button" data-dictation-symbol="rest" aria-pressed="false"><b aria-hidden="true">𝄿</b>쉼표</button>
+                            <button type="button" data-dictation-symbol="tie" aria-pressed="false"><b aria-hidden="true">⌒</b>타이</button>
+                            <small>쉼표가 기본으로 채워집니다.</small>
+                        </div>
                         <div class="count-strip" aria-label="박자 카운트"><span>1</span><i>e</i><i>&amp;</i><i>a</i><span>2</span><i>e</i><i>&amp;</i><i>a</i><span>3</span><i>e</i><i>&amp;</i><i>a</i><span>4</span><i>e</i><i>&amp;</i><i>a</i></div>
-                        <div id="dictationGrid" class="rhythm-grid dictation-grid" role="group" aria-label="16분음표 리듬 답안 입력"></div>
+                        <div id="dictationGrid" class="rhythm-grid dictation-grid notation-grid" role="group" aria-label="음표 쉼표 타이 리듬 답안 입력"></div>
                         <div class="beat-numbers" aria-hidden="true"><span>BEAT 1</span><span>BEAT 2</span><span>BEAT 3</span><span>BEAT 4</span></div>
 
                         <div class="dictation-actions">

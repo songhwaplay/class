@@ -163,6 +163,72 @@
         { id: "m12", level: "mixed", style: "라틴", hits: [0, 2, 5, 6, 9, 11, 12, 14] }
     ];
 
+    const RHYTHM_SYMBOLS = ["note", "rest", "tie"];
+
+    function buildRhythmNotation(pattern) {
+        const notation = Array(16).fill("rest");
+        const hits = Array.from(new Set((pattern && pattern.hits) || []))
+            .filter(function (step) { return Number.isInteger(step) && step >= 0 && step < 16; })
+            .sort(function (a, b) { return a - b; });
+        const hitSet = new Set(hits);
+
+        hits.forEach(function (step, index) {
+            notation[step] = "note";
+            const next = index + 1 < hits.length ? hits[index + 1] : 16;
+            const gap = next - step;
+            let sustain = 0;
+
+            if (pattern.level === "basic" && step % 2 === 0 && gap >= 2) sustain = gap >= 4 ? Math.min(3, gap - 1) : 1;
+            else if (gap > 1 && step % 4 === 3) sustain = 1;
+            else if (gap > 2 && step % 4 === 2) sustain = 2;
+            else if (gap > 2 && pattern.level === "offbeat" && step % 4 !== 0) sustain = Math.min(2, gap - 1);
+            else if (gap > 3 && pattern.level === "mixed" && step % 4 === 1) sustain = 2;
+
+            for (let offset = 1; offset <= sustain; offset += 1) {
+                const target = step + offset;
+                if (target >= 16 || target >= next || hitSet.has(target)) break;
+                notation[target] = "tie";
+            }
+        });
+        return notation;
+    }
+
+    function notationToEvents(symbols) {
+        const notation = Array.isArray(symbols) ? symbols : [];
+        const events = [];
+        notation.forEach(function (symbol, step) {
+            if (symbol !== "note") return;
+            let length = 1;
+            while (step + length < notation.length && notation[step + length] === "tie") length += 1;
+            events.push({ step: step, length: length });
+        });
+        return events;
+    }
+
+    function scoreRhythmNotation(expectedSymbols, answerSymbols) {
+        const expected = Array.from({ length: 16 }, function (_, index) {
+            const symbol = expectedSymbols && expectedSymbols[index];
+            return RHYTHM_SYMBOLS.includes(symbol) ? symbol : "rest";
+        });
+        const answer = Array.from({ length: 16 }, function (_, index) {
+            const symbol = answerSymbols && answerSymbols[index];
+            return RHYTHM_SYMBOLS.includes(symbol) ? symbol : "rest";
+        });
+        let correct = 0;
+        const mistakes = [];
+        expected.forEach(function (symbol, index) {
+            if (answer[index] === symbol) correct += 1;
+            else mistakes.push(index);
+        });
+        return {
+            exact: mistakes.length === 0,
+            score: Math.round(correct / 16 * 100),
+            correct: correct,
+            wrong: mistakes.length,
+            mistakes: mistakes
+        };
+    }
+
     function normalizeKey(key) {
         return String(key || "C").replace("♭", "b");
     }
@@ -377,6 +443,9 @@
         MINOR_SCALES: MINOR_SCALES,
         RHYTHM_PATTERNS: RHYTHM_PATTERNS,
         RHYTHM_DICTATION_BANK: RHYTHM_DICTATION_BANK,
+        RHYTHM_SYMBOLS: RHYTHM_SYMBOLS,
+        buildRhythmNotation: buildRhythmNotation,
+        notationToEvents: notationToEvents,
         buildDiatonicChords: buildDiatonicChords,
         getProgression: getProgression,
         midiToFrequency: midiToFrequency,
@@ -386,6 +455,7 @@
         findNearestVoicing: findNearestVoicing,
         buildVoiceLedProgression: buildVoiceLedProgression,
         scoreRhythmDictation: scoreRhythmDictation,
+        scoreRhythmNotation: scoreRhythmNotation,
         scoreRhythm: scoreRhythm,
         getNoteName: getNoteName
     };

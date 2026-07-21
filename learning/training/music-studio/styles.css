@@ -233,13 +233,23 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .dictation-toolbar h3 { margin: 5px 0 0; font-size: 23px; }
 .dictation-listen-button { height: 42px; padding: 0 15px; border: 1px solid var(--coral); border-radius: 7px; color: var(--coral); background: #12111a; font-size: 10px; font-weight: 800; cursor: pointer; }
 .dictation-listen-button span { margin-right: 5px; }
+.rhythm-symbol-palette { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-top: 24px; }
+.rhythm-symbol-palette > span { margin-right: 4px; color: var(--muted); font-size: 9px; font-weight: 800; }
+.rhythm-symbol-palette button { display: inline-flex; align-items: center; gap: 6px; height: 38px; padding: 0 13px; border: 1px solid var(--line); border-radius: 7px; color: var(--muted); background: #12111a; font-size: 10px; font-weight: 800; cursor: pointer; }
+.rhythm-symbol-palette button b { color: var(--ink); font: 800 20px Georgia, serif; }
+.rhythm-symbol-palette button.active { border-color: var(--coral); color: var(--bg); background: var(--coral); }
+.rhythm-symbol-palette button.active b { color: var(--bg); }
+.rhythm-symbol-palette small { margin-left: auto; color: var(--muted); font-size: 9px; }
+.rhythm-symbol-palette + .count-strip { margin-top: 16px; }
 .dictation-grid .answer-step { cursor: pointer; touch-action: manipulation; }
-.dictation-grid .answer-step.selected::before, .dictation-grid .answer-step.missed::before, .dictation-grid .answer-step.extra::before { content: "♪"; position: absolute; left: 50%; top: 48%; transform: translate(-50%,-50%); color: var(--mint); font: 800 29px Georgia, serif; }
-.dictation-grid .answer-step.selected::after, .dictation-grid .answer-step.missed::after, .dictation-grid .answer-step.extra::after { display: none; }
-.dictation-grid .answer-step.correct { background: rgba(108,229,202,.13); }
-.dictation-grid .answer-step.missed { background: rgba(255,118,95,.1); }
-.dictation-grid .answer-step.missed::before { color: var(--coral); opacity: .65; }
-.dictation-grid .answer-step.extra::before { content: "×"; color: var(--coral); font: 800 22px Montserrat, sans-serif; }
+.notation-grid .answer-step::after { display: none; }
+.notation-grid .answer-step > span { position: absolute; left: 50%; top: 49%; transform: translate(-50%,-50%); font: 800 25px Georgia, serif; }
+.notation-grid .answer-step.symbol-note > span { color: var(--coral); }
+.notation-grid .answer-step.symbol-rest > span { color: #686472; font-size: 21px; }
+.notation-grid .answer-step.symbol-tie > span { color: var(--mint); font: 800 23px Montserrat, sans-serif; }
+.notation-grid .answer-step.correct { background: rgba(108,229,202,.12); }
+.notation-grid .answer-step.wrong { background: rgba(255,118,95,.12); }
+.notation-grid .answer-step.wrong::after { content: attr(data-expected); position: absolute; right: 3px; bottom: 3px; display: grid; width: 19px; height: 19px; place-items: center; border-radius: 50%; color: #21120f; background: var(--coral); font: 800 12px Georgia, serif; }
 .dictation-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; margin-top: 22px; }
 .dictation-actions p { flex: 1; margin: 0; color: var(--muted); font-size: 10px; }
 .dictation-actions p.correct { color: var(--mint); }
@@ -344,6 +354,7 @@ footer b { color: var(--ink); font: 800 11px Montserrat, sans-serif; letter-spac
     .rhythm-heading { display: grid; }.tempo-box { width: 100%; justify-content: space-between; }.tempo-box input { width: min(55%, 190px); }
     .rhythm-mode-switch { display: flex; }.rhythm-mode-switch button { flex: 1; }
     .dictation-toolbar { grid-template-columns: 1fr auto; }.dictation-listen-button { grid-column: 1 / -1; }
+    .rhythm-symbol-palette > span, .rhythm-symbol-palette small { flex-basis: 100%; margin-left: 0; }.rhythm-symbol-palette button { flex: 1; justify-content: center; }
     .dictation-actions { flex-wrap: wrap; }.dictation-actions p { flex-basis: 100%; }.dictation-actions button { flex: 1; }
     .rhythm-toolbar { grid-template-columns: 1fr auto; }.transport { grid-column: 1 / -1; }.transport button { flex: 1; }
     .count-strip > *:not(:nth-child(4n+1)) { color: transparent; }
