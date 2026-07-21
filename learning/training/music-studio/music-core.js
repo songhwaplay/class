@@ -187,6 +187,10 @@
         });
     }
 
+    function getLeftHandCompingMidi(chord) {
+        return getClosedPositionMidi(chord, 48);
+    }
+
     function scoreRhythm(expectedTimes, tapTimes, toleranceMs) {
         const tolerance = Math.max(40, Number(toleranceMs) || 150);
         const expected = expectedTimes.slice().sort(function (a, b) { return a - b; });
@@ -244,6 +248,7 @@
         getProgression: getProgression,
         midiToFrequency: midiToFrequency,
         getClosedPositionMidi: getClosedPositionMidi,
+        getLeftHandCompingMidi: getLeftHandCompingMidi,
         scoreRhythm: scoreRhythm,
         getNoteName: getNoteName
     };

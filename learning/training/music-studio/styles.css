@@ -151,11 +151,11 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .chord-button small { color: var(--muted); font-size: 9px; }
 .chord-button[data-function="서브도미넌트"]::after, .chord-button[data-function="도미넌트"]::after { content: ""; display: block; width: 14px; height: 2px; margin: 9px auto 0; background: var(--purple); }
 .chord-button[data-function="도미넌트"]::after { background: var(--coral); }
-.piano { position: relative; display: flex; height: 115px; margin: 25px auto 0; max-width: 720px; border: 4px solid #0c0b11; border-radius: 4px 4px 8px 8px; background: #0c0b11; overflow: hidden; }
+.piano { position: relative; display: flex; height: 115px; margin: 25px auto 0; max-width: 900px; border: 4px solid #0c0b11; border-radius: 4px 4px 8px 8px; background: #0c0b11; overflow: hidden; }
 .white-key { position: relative; flex: 1; border: 0; border-right: 1px solid #b9b6b2; border-radius: 0 0 5px 5px; background: #f1eee7; }
 .white-key.active { background: linear-gradient(#f1eee7 0 65%, var(--mint) 66%); }
 .white-key span { position: absolute; left: 0; right: 0; bottom: 8px; color: #35333b; font: 800 9px Montserrat, sans-serif; text-align: center; }
-.black-key { position: absolute; z-index: 2; top: 0; width: 7%; height: 64%; transform: translateX(-50%); border: 0; border-radius: 0 0 4px 4px; background: #1c1b24; box-shadow: 0 4px 6px rgba(0,0,0,.4); }
+.black-key { position: absolute; z-index: 2; top: 0; width: 4.5%; height: 64%; transform: translateX(-50%); border: 0; border-radius: 0 0 4px 4px; background: #1c1b24; box-shadow: 0 4px 6px rgba(0,0,0,.4); }
 .black-key.active { background: linear-gradient(#272530, var(--mint-strong)); }
 .chord-readout { margin: 13px 0 0; color: var(--muted); text-align: center; font-size: 11px; }
 

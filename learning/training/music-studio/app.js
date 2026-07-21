@@ -255,7 +255,7 @@
         if (!context || !chord) return;
         const start = when || context.currentTime + .02;
         const length = duration || .85;
-        core.getClosedPositionMidi(chord, 60).forEach(function (midi) {
+        core.getLeftHandCompingMidi(chord).forEach(function (midi) {
             playPianoTone(core.midiToFrequency(midi), start, length, .052);
         });
     }
@@ -308,34 +308,44 @@
     }
 
     function renderPiano(chord) {
-        const whites = [
-            { name: "C", pc: 0 }, { name: "D", pc: 2 }, { name: "E", pc: 4 }, { name: "F", pc: 5 },
-            { name: "G", pc: 7 }, { name: "A", pc: 9 }, { name: "B", pc: 11 }
-        ];
-        const blacks = [
-            { pc: 1, left: 14.28 }, { pc: 3, left: 28.56 }, { pc: 6, left: 57.12 },
-            { pc: 8, left: 71.4 }, { pc: 10, left: 85.68 }
-        ];
+        const whitePitchClasses = [0, 2, 4, 5, 7, 9, 11];
+        const blackPitchClasses = [1, 3, 6, 8, 10];
+        const whiteMidis = [];
+        const blackMidis = [];
+        const voicing = core.getLeftHandCompingMidi(chord);
+        for (let midi = 48; midi <= 72; midi += 1) {
+            const pitchClass = midi % 12;
+            if (whitePitchClasses.includes(pitchClass)) whiteMidis.push(midi);
+            if (blackPitchClasses.includes(pitchClass)) blackMidis.push(midi);
+        }
         elements.piano.innerHTML = "";
-        whites.forEach(function (note) {
+        whiteMidis.forEach(function (midi) {
+            const pitchClass = midi % 12;
+            const octave = Math.floor(midi / 12) - 1;
+            const noteName = core.getNoteName(pitchClass);
             const key = document.createElement("button");
             key.type = "button";
-            key.className = "white-key" + (chord.pitchClasses.includes(note.pc) ? " active" : "");
-            key.setAttribute("aria-label", note.name + " 음 듣기");
-            key.innerHTML = "<span>" + note.name + "</span>";
-            key.addEventListener("click", function () { playPianoTone(core.midiToFrequency(60 + note.pc), 0, .65, .07); });
+            key.className = "white-key" + (voicing.includes(midi) ? " active" : "");
+            key.setAttribute("aria-label", noteName + octave + " 음 듣기");
+            key.innerHTML = "<span>" + (pitchClass === 0 ? noteName + octave : noteName) + "</span>";
+            key.addEventListener("click", function () { playPianoTone(core.midiToFrequency(midi), 0, .65, .07); });
             elements.piano.appendChild(key);
         });
-        blacks.forEach(function (note) {
+        blackMidis.forEach(function (midi) {
+            const pitchClass = midi % 12;
+            const octave = Math.floor(midi / 12) - 1;
             const key = document.createElement("button");
             key.type = "button";
-            key.className = "black-key" + (chord.pitchClasses.includes(note.pc) ? " active" : "");
-            key.style.left = note.left + "%";
-            key.setAttribute("aria-label", core.getNoteName(note.pc) + " 음 듣기");
-            key.addEventListener("click", function () { playPianoTone(core.midiToFrequency(60 + note.pc), 0, .65, .07); });
+            key.className = "black-key" + (voicing.includes(midi) ? " active" : "");
+            key.style.left = (whiteMidis.filter(function (whiteMidi) { return whiteMidi < midi; }).length / whiteMidis.length * 100) + "%";
+            key.setAttribute("aria-label", core.getNoteName(pitchClass) + octave + " 음 듣기");
+            key.addEventListener("click", function () { playPianoTone(core.midiToFrequency(midi), 0, .65, .07); });
             elements.piano.appendChild(key);
         });
-        elements.chordReadout.textContent = chord.roman + " · " + chord.name + " · " + chord.functionName + " · 구성음 " + chord.noteNames.join("–");
+        const playedNotes = voicing.map(function (midi, index) {
+            return chord.noteNames[index] + (Math.floor(midi / 12) - 1);
+        });
+        elements.chordReadout.textContent = chord.roman + " · " + chord.name + " · 왼손 컴핑 " + playedNotes.join("–") + " · 음역 C3–C5";
     }
 
     function playProgression() {
