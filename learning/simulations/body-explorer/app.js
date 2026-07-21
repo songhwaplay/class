@@ -23,7 +23,8 @@
     const TOTAL_STAGES = stages.length;
     const HAS_INTERACTIVE_SIMULATION = config.experienceType === "nervous-simulation"
         || config.experienceType === "immune-simulation"
-        || config.experienceType === "movement-simulation";
+        || config.experienceType === "movement-simulation"
+        || config.experienceType === "excretion-simulation";
     const simulationCopy = {
         thresholdWord: "감지 기준",
         slotLabel: "경로",
@@ -115,6 +116,16 @@
         motionAngle: document.getElementById("motionAngle"),
         motionFrontState: document.getElementById("motionFrontState"),
         motionBackState: document.getElementById("motionBackState"),
+        excretionVisual: document.getElementById("excretionVisual"),
+        excretionWasteDots: document.getElementById("excretionWasteDots"),
+        returnFlow: document.getElementById("returnFlow"),
+        urineStreamLeft: document.getElementById("urineStreamLeft"),
+        urineStreamRight: document.getElementById("urineStreamRight"),
+        bladderFluid: document.getElementById("bladderFluid"),
+        urethraFlow: document.getElementById("urethraFlow"),
+        filterState: document.getElementById("filterState"),
+        urineState: document.getElementById("urineState"),
+        bladderState: document.getElementById("bladderState"),
         finalScore: document.getElementById("finalScore"),
         resultMessage: document.getElementById("resultMessage"),
         bestMessage: document.getElementById("bestMessage"),
@@ -381,6 +392,7 @@
         elements.stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · ${simulationCopy.thresholdWord} ${stage.scenario.threshold}`;
         elements.stimulusIntensity.style.setProperty("--stimulus-level", `${intensity}%`);
         updateMovementVisual(stage, intensity);
+        updateExcretionVisual(stage, intensity);
     }
 
     function updateMovementVisual(stage, intensity) {
@@ -405,6 +417,51 @@
         if (elements.motionAngle) elements.motionAngle.textContent = `${angle}°`;
         if (elements.motionFrontState) elements.motionFrontState.textContent = activeFront ? (intensity >= stage.scenario.threshold ? "수축" : "수축 준비") : "이완";
         if (elements.motionBackState) elements.motionBackState.textContent = !activeFront ? (intensity >= stage.scenario.threshold ? "수축" : "수축 준비") : "이완";
+    }
+
+    function updateExcretionVisual(stage, intensity) {
+        const visual = stage?.scenario?.visual;
+        if (!elements.excretionVisual || !visual) return;
+
+        const progress = Math.max(0, Math.min(1, intensity / 100));
+        const process = visual.process || "filter";
+        const fillPercent = visual.startFill + (visual.endFill - visual.startFill) * progress;
+        const fluidHeight = Math.max(6, 54 * fillPercent / 100);
+        const returnStrength = process === "reclaim" ? progress : process === "balance" ? 0.35 + progress * 0.4 : 0.2;
+        const releaseStrength = process === "bladder" && intensity >= stage.scenario.threshold ? progress : 0.1;
+        const flowStrength = process === "bladder" ? Math.max(0.25, progress * 0.65) : progress;
+        const urineLightness = process === "balance" ? 48 + progress * 22 : 51 + progress * 7;
+
+        elements.excretionVisual.dataset.process = process;
+        elements.excretionVisual.classList.remove("is-success");
+        elements.excretionVisual.style.setProperty("--flow-strength", String(flowStrength));
+        elements.excretionVisual.style.setProperty("--return-strength", String(returnStrength));
+        elements.excretionVisual.style.setProperty("--release-strength", String(releaseStrength));
+        elements.excretionVisual.style.setProperty("--urine-color", `hsl(42 82% ${urineLightness}%)`);
+        elements.bladderFluid?.setAttribute("y", String(210 - fluidHeight));
+        elements.bladderFluid?.setAttribute("height", String(fluidHeight));
+
+        if (process === "filter") {
+            elements.filterState.textContent = `거르기 ${Math.round(progress * 100)}%`;
+            elements.urineState.textContent = intensity >= stage.scenario.threshold ? "노폐물 이동" : "이동 준비";
+            elements.bladderState.textContent = "저장 시작";
+        } else if (process === "reclaim") {
+            elements.filterState.textContent = `필요한 물질 회수 ${Math.round(progress * 100)}%`;
+            elements.urineState.textContent = "노폐물·남는 물 이동";
+            elements.bladderState.textContent = "소변 재료 모임";
+        } else if (process === "pathway") {
+            elements.filterState.textContent = "콩팥에서 소변 생성";
+            elements.urineState.textContent = `요관 흐름 ${Math.round(progress * 100)}%`;
+            elements.bladderState.textContent = `${Math.round(fillPercent)}% 참`;
+        } else if (process === "balance") {
+            elements.filterState.textContent = `들어온 물 ${intensity}%`;
+            elements.urineState.textContent = progress >= 0.55 ? "양 증가·색 옅어짐" : "양 적음·색 진함";
+            elements.bladderState.textContent = `${Math.round(fillPercent)}% 참`;
+        } else {
+            elements.filterState.textContent = "소변 만들기 계속";
+            elements.urineState.textContent = "요관으로 이동";
+            elements.bladderState.textContent = intensity >= stage.scenario.threshold ? "비울 신호 전달" : `${Math.round(fillPercent)}% 참`;
+        }
     }
 
     function renderExperimentPath(stage, mismatchIndex = -1, animate = false) {
@@ -503,6 +560,7 @@
         elements.runSimulationButton.disabled = false;
         elements.runSimulationButton.textContent = simulationCopy.runLabel;
         elements.motionVisual?.classList.remove("hidden", "is-success");
+        elements.excretionVisual?.classList.remove("hidden", "is-success");
         state.experimentPath = [];
         state.componentOrder = shuffledChoices(stage.scenario.components);
         updateStimulusReadout();
@@ -566,6 +624,7 @@
         elements.simulationNextButton.textContent = simulationCopy.nextLabel;
         elements.scenePanel.classList.add("simulation-reacting");
         elements.motionVisual?.classList.add("is-success");
+        elements.excretionVisual?.classList.add("is-success");
         setTimeout(() => elements.scenePanel.classList.remove("simulation-reacting"), 900);
         elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent} ${elements.simulationFeedbackText.textContent}`;
         window.ClassGameSfx?.play("success");
@@ -584,6 +643,7 @@
         elements.stageMission.textContent = stage.mission;
         elements.scenePanel.classList.remove("simulation-reacting");
         elements.motionVisual?.classList.toggle("hidden", !isExperimentStage(stage));
+        elements.excretionVisual?.classList.toggle("hidden", !isExperimentStage(stage));
         hideFact();
         elements.oxygenLabel.textContent = stateText(stage.oxygen);
         elements.oxygenMeter.dataset.state = stage.oxygen;

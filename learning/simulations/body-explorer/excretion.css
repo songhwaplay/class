@@ -1,0 +1,262 @@
+:root {
+    --excretion-night: #071d29;
+    --excretion-ink: #183949;
+    --excretion-teal: #16869a;
+    --excretion-cyan: #65c9d2;
+    --excretion-gold: #edaa42;
+    --excretion-coral: #c85e4c;
+}
+
+body.excretion-page {
+    background:
+        radial-gradient(circle at 13% 18%, rgba(38, 160, 173, 0.22), transparent 27rem),
+        radial-gradient(circle at 87% 52%, rgba(223, 151, 52, 0.18), transparent 30rem),
+        linear-gradient(145deg, #05131d, #0d3041 57%, #071b28);
+}
+
+.excretion-page .ambient-cells i {
+    border-color: rgba(120, 222, 226, 0.13);
+    border-radius: 48% 52% 45% 55%;
+    box-shadow: inset 0 0 22px rgba(75, 196, 203, 0.06), 0 0 26px rgba(235, 170, 65, 0.08);
+}
+
+.excretion-page .hero-copy { width: min(850px, 100%); }
+.excretion-page .hero-art {
+    background-image: url("../../../assets/images/body-explorer/excretion-hero.webp");
+    background-position: center;
+}
+.excretion-page .hero-shade {
+    background:
+        linear-gradient(90deg, rgba(4, 17, 27, 0.99) 0%, rgba(6, 39, 51, 0.86) 49%, rgba(8, 45, 57, 0.04) 81%),
+        linear-gradient(0deg, rgba(4, 18, 28, 0.95), transparent 59%);
+}
+.excretion-page .hero-copy h1 span,
+.excretion-page .hero-lead { color: #eafcff; }
+.excretion-page .episode-switcher { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.excretion-page .episode-switcher a.active { background: rgba(20, 126, 144, 0.93); }
+.excretion-page .mode-card:hover,
+.excretion-page .mode-card:focus-visible { border-color: #8ce4e7; background: rgba(18, 70, 82, 0.94); }
+.excretion-page .mode-icon,
+.excretion-page .primary-button { background: linear-gradient(145deg, #1c9bae, #eda540); }
+.excretion-page .excretion-mode-icon {
+    color: #eaffff;
+    box-shadow: inset 0 0 0 8px #147487, 0 0 0 3px rgba(123, 225, 229, 0.38);
+}
+
+.excretion-briefing-art {
+    background:
+        linear-gradient(155deg, rgba(7, 40, 51, 0.08), rgba(5, 29, 40, 0.67)),
+        url("../../../assets/images/body-explorer/excretion-hero.webp") center / cover;
+}
+.excretion-briefing-art img { width: min(62%, 318px); }
+.excretion-page .excretion-orb {
+    border-color: rgba(118, 222, 226, 0.82);
+    background: rgba(18, 126, 144, 0.82);
+    box-shadow: 0 0 23px rgba(48, 190, 201, 0.45);
+}
+.excretion-page .excretion-orb.bladder-orb {
+    border-color: rgba(255, 210, 124, 0.84);
+    background: rgba(196, 118, 45, 0.82);
+    box-shadow: 0 0 23px rgba(237, 167, 66, 0.45);
+}
+
+.excretion-page .oxygen-meter #oxygenDot { background: #4fc2cb; box-shadow: 0 0 15px rgba(79, 194, 203, 0.78); }
+.excretion-page .oxygen-meter[data-state="reclaim"] #oxygenDot { background: #77d1b0; }
+.excretion-page .oxygen-meter[data-state="pathway"] #oxygenDot { background: #efb24e; }
+.excretion-page .oxygen-meter[data-state="balance"] #oxygenDot { background: #7cbde8; }
+.excretion-page .oxygen-meter[data-state="bladder"] #oxygenDot { background: #d97b55; }
+.excretion-page .route-node.passed::before,
+.excretion-page .route-node.passed:not(:last-child)::after { border-color: #82d9d9; background: #188899; }
+
+.excretion-page .scene-panel[data-scene="filter"] .scene-image,
+.excretion-page .scene-panel[data-scene="reclaim"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/excretion-kidney.webp");
+    background-position: 60% center;
+}
+.excretion-page .scene-panel[data-scene="pathway"] .scene-image,
+.excretion-page .scene-panel[data-scene="balance"] .scene-image,
+.excretion-page .scene-panel[data-scene="bladder"] .scene-image {
+    background-image: url("../../../assets/images/body-explorer/excretion-path.webp");
+    background-position: 57% center;
+}
+.excretion-page .scene-overlay {
+    background:
+        linear-gradient(90deg, rgba(4, 22, 31, 0.96), rgba(9, 50, 60, 0.16) 61%, rgba(7, 35, 45, 0.42)),
+        linear-gradient(0deg, rgba(4, 22, 31, 0.97), transparent 63%);
+}
+.excretion-page .excretion-explorer,
+.excretion-page .signal-explorer {
+    right: 4px;
+    bottom: 11px;
+    width: clamp(92px, 12vw, 139px);
+    filter: drop-shadow(0 15px 20px rgba(2, 13, 18, 0.7));
+}
+
+.excretion-live-visual {
+    position: absolute;
+    z-index: 4;
+    top: clamp(166px, 30%, 200px);
+    left: 7%;
+    width: 86%;
+    padding: 5px 9px 8px;
+    box-sizing: border-box;
+    border: 1px solid rgba(126, 222, 222, 0.42);
+    border-radius: 18px;
+    background: rgba(4, 28, 38, 0.76);
+    box-shadow: 0 14px 28px rgba(1, 10, 16, 0.36);
+    backdrop-filter: blur(8px);
+}
+.excretion-live-visual.hidden { display: none; }
+.excretion-live-visual svg { display: block; width: 100%; height: 142px; overflow: visible; }
+.kidney-shape {
+    fill: rgba(188, 83, 66, 0.9);
+    stroke: #f6af73;
+    stroke-width: 3;
+    filter: drop-shadow(0 0 calc(4px + var(--flow-strength, 0) * 7px) rgba(239, 164, 67, 0.58));
+}
+.kidney-filter {
+    fill: rgba(245, 189, 82, calc(0.28 + var(--flow-strength, 0) * 0.65));
+    stroke: #ffd988;
+    stroke-width: calc(2px + var(--flow-strength, 0) * 3px);
+}
+.excretion-vessel { fill: none; stroke-width: 9; stroke-linecap: round; }
+.blood-in { stroke: #ca5d54; }
+.blood-out { stroke: #4aaac3; }
+.waste-dots circle {
+    fill: #f7c453;
+    opacity: calc(0.35 + var(--flow-strength, 0) * 0.65);
+    transform: translateX(calc(var(--flow-strength, 0) * 32px));
+    transition: transform 180ms ease, opacity 180ms ease;
+}
+.return-flow {
+    fill: none;
+    stroke: #78d6bc;
+    stroke-width: calc(2px + var(--return-strength, 0) * 6px);
+    stroke-linecap: round;
+    stroke-dasharray: 7 6;
+    opacity: calc(0.2 + var(--return-strength, 0) * 0.8);
+}
+.ureter-shell {
+    fill: none;
+    stroke: rgba(218, 242, 234, 0.36);
+    stroke-width: 10;
+    stroke-linecap: round;
+}
+.ureter-flow {
+    fill: none;
+    stroke: #f4b84e;
+    stroke-width: calc(2px + var(--flow-strength, 0) * 6px);
+    stroke-linecap: round;
+    filter: drop-shadow(0 0 4px rgba(244, 184, 78, 0.62));
+    opacity: calc(0.2 + var(--flow-strength, 0) * 0.8);
+}
+.bladder-shell {
+    fill: rgba(106, 196, 204, 0.12);
+    stroke: #8bdde0;
+    stroke-width: 3;
+}
+.bladder-fluid {
+    fill: var(--urine-color, #e8a934);
+    opacity: 0.88;
+    transition: y 180ms ease, height 180ms ease, fill 180ms ease;
+}
+.urethra-flow {
+    fill: none;
+    stroke: #f0b241;
+    stroke-width: calc(2px + var(--release-strength, 0) * 6px);
+    stroke-linecap: round;
+    opacity: var(--release-strength, 0.15);
+}
+.excretion-readout {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    color: #efffff;
+    font-size: 10px;
+    font-weight: 800;
+    text-align: center;
+}
+.excretion-readout span { padding: 4px 5px; border-radius: 8px; background: rgba(255, 255, 255, 0.08); }
+.excretion-readout strong { color: #7ee1e3; }
+.excretion-readout b { color: #ffd16e; }
+.excretion-live-visual.is-success { border-color: rgba(119, 226, 220, 0.88); animation: excretion-success 800ms ease; }
+@keyframes excretion-success {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.025); box-shadow: 0 0 30px rgba(69, 201, 200, 0.46); }
+}
+
+.excretion-page .question-card,
+.excretion-page .simulation-card { border-color: rgba(31, 139, 151, 0.34); }
+.excretion-page .choice-button:hover,
+.excretion-page .choice-button:focus-visible { border-color: #2197a5; }
+.excretion-page .episode.active { background: #137f91; }
+.excretion-page .episode.available:hover,
+.excretion-page .episode.available:focus-visible { background: rgba(27, 88, 99, 0.9); }
+.excretion-page .teacher-hero {
+    background:
+        linear-gradient(90deg, rgba(4, 22, 31, 0.99), rgba(10, 71, 81, 0.74), rgba(218, 151, 55, 0.14)),
+        url("../../../assets/images/body-explorer/excretion-hero.webp") center / cover no-repeat;
+}
+.excretion-page .teacher-hero p:last-child { color: #e9ffff; }
+.excretion-page .teacher-room-card { border-color: #94ced0; background: #edfafa; }
+.excretion-page .teacher-room-card > span,
+.excretion-page .teacher-room-card > strong { color: #147c8b; }
+.excretion-page .stimulus-console { border-color: #bdd7d5; background: #eff9f8; }
+.excretion-page .stimulus-icon { background: linear-gradient(145deg, #dff7f5, #ffe2a8); box-shadow: inset 0 0 0 1px rgba(21, 116, 130, 0.16); }
+.excretion-page .intensity-control output { background: #147e8e; }
+.excretion-page .intensity-control input {
+    accent-color: #168b9b;
+    background: linear-gradient(90deg, #1a9aac var(--stimulus-level, 50%), #d5deda var(--stimulus-level, 50%));
+}
+.excretion-page .signal-path-step > button { border-color: #61aeb4; background: #eaf9f8; color: #155e68; }
+.excretion-page .signal-path-step > button:hover:not(:disabled),
+.excretion-page .signal-path-step > button:focus-visible:not(:disabled) { border-color: #d29835; background: #fff6d9; }
+.excretion-page .signal-path-step.is-signal > button { border-color: #d39228; background: #fff0b0; }
+.excretion-page .component-button { border-color: #bfd2ce; color: #315d60; }
+.excretion-page .component-button:hover:not(:disabled),
+.excretion-page .component-button:focus-visible:not(:disabled) { border-color: #198d9d; background: #eafbfb; }
+.excretion-page .sim-secondary-button { border-color: #a8c9c8; color: #315c60; }
+.excretion-page .sim-secondary-button:hover:not(:disabled),
+.excretion-page .sim-secondary-button:focus-visible:not(:disabled) { background: #eaf9f8; }
+.excretion-page .simulation-feedback { border-color: #bad5d1; background: #f0f9f7; color: #315d60; }
+
+@media (min-width: 740px) and (max-height: 820px) {
+    .excretion-page .journey-screen:not(.hidden) .simulation-card { padding: 11px 16px; overflow: hidden; }
+    .excretion-page .simulation-heading h2 { margin: 2px 0 7px; font-size: clamp(18px, 1.75vw, 22px); line-height: 1.22; }
+    .excretion-page .stimulus-console { padding: 7px 10px; }
+    .excretion-page .stimulus-icon { width: 38px; height: 38px; flex-basis: 38px; font-size: 21px; }
+    .excretion-page .path-builder { margin-top: 7px; }
+    .excretion-page .signal-path-step > button,
+    .excretion-page .signal-path-step > span { min-height: 42px; }
+    .excretion-page .component-bank { margin-top: 6px; gap: 4px; }
+    .excretion-page .component-button { min-height: 28px; padding: 3px 6px; font-size: 10px; }
+    .excretion-page .simulation-actions { margin-top: 7px; }
+    .excretion-page .simulation-actions button { min-height: 34px; padding-top: 5px; padding-bottom: 5px; }
+    .excretion-page .simulation-feedback { min-height: 76px; margin-top: 7px; padding: 8px 11px; overflow: hidden; }
+    .excretion-page .simulation-feedback p { margin-top: 2px; font-size: 11px; }
+    .excretion-page .location-card h2 { font-size: clamp(22px, 2.5vw, 32px); }
+    .excretion-page .excretion-live-visual { top: 146px; }
+    .excretion-page .excretion-live-visual svg { height: 126px; }
+}
+
+@media (max-width: 800px) {
+    .excretion-page .hero-copy { width: min(700px, 100%); }
+    .excretion-page .episode-switcher { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 560px) {
+    .excretion-page .hero-art { background-position: 68% center; }
+    .excretion-page .episode-switcher { grid-template-columns: 1fr; }
+    .excretion-page .excretion-explorer,
+    .excretion-page .signal-explorer { bottom: 144px; width: min(30vw, 120px); }
+    .excretion-live-visual { top: 202px; left: 4%; width: 92%; }
+    .excretion-live-visual svg { height: 128px; }
+    .excretion-readout { grid-template-columns: 1fr; font-size: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .waste-dots circle,
+    .return-flow,
+    .ureter-flow,
+    .bladder-fluid { transition: none; }
+}

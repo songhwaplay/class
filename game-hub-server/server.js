@@ -42,7 +42,8 @@ const MAX_ROOM_PLAYERS = {
   respiration: 61,
   nervous: 61,
   immune: 61,
-  movement: 61
+  movement: 61,
+  excretion: 61
 };
 
 const FINISHER_GAMES = new Set(["coinweighing", "hanoitower", "sphinx"]);
@@ -460,6 +461,47 @@ function movementError(socket, message) {
   safeSend(socket, { type: "MOVEMENT_ERROR", message });
 }
 
+function excretionPublicState(room) {
+  const game = room?.excretion;
+  if (!game) return null;
+
+  const finishers = game.players
+    .filter(player => game.results[player.id])
+    .map(player => ({
+      id: player.id,
+      name: player.name,
+      score: game.results[player.id].score,
+      elapsedMs: game.results[player.id].elapsedMs
+    }))
+    .sort((a, b) => b.score - a.score || a.elapsedMs - b.elapsedMs || a.name.localeCompare(b.name, "ko"))
+    .map((player, index) => ({ ...player, rank: index + 1 }));
+  const rankingById = new Map(finishers.map(player => [player.id, player]));
+
+  return {
+    phase: game.phase,
+    sessionId: game.sessionId,
+    startedAt: game.startedAt,
+    participants: game.players.map(player => ({
+      id: player.id,
+      name: player.name,
+      status: rankingById.has(player.id) ? "finished" : game.phase === "lobby" ? "waiting" : "playing"
+    })),
+    rankings: finishers
+  };
+}
+
+function excretionBroadcast(room) {
+  const state = excretionPublicState(room);
+  if (!state) return;
+  for (const client of room.clients.values()) {
+    safeSend(client, { type: "EXCRETION_STATE", state });
+  }
+}
+
+function excretionError(socket, message) {
+  safeSend(socket, { type: "EXCRETION_ERROR", message });
+}
+
 const AVALON_TEAM_SIZES = {
   5: [2, 3, 2, 3, 3], 6: [2, 3, 4, 3, 4], 7: [2, 3, 3, 4, 4],
   8: [3, 4, 4, 5, 5]
@@ -784,6 +826,7 @@ wss.on("connection", socket => {
         if (existingRoom.nervous) nervousBroadcast(existingRoom);
         if (existingRoom.immune) immuneBroadcast(existingRoom);
         if (existingRoom.movement) movementBroadcast(existingRoom);
+        if (existingRoom.excretion) excretionBroadcast(existingRoom);
         return;
       }
       if (resumeOnly) {
@@ -888,6 +931,15 @@ wss.on("connection", socket => {
           results: {}
         };
       }
+      if (gameId === "excretion") {
+        room.excretion = {
+          phase: "lobby",
+          sessionId: "",
+          startedAt: 0,
+          players: [],
+          results: {}
+        };
+      }
       rooms.set(key, room);
       socket.meta.roomKey = key;
       socket.meta.role = "host";
@@ -912,6 +964,7 @@ wss.on("connection", socket => {
       if (room.nervous) nervousBroadcast(room);
       if (room.immune) immuneBroadcast(room);
       if (room.movement) movementBroadcast(room);
+      if (room.excretion) excretionBroadcast(room);
       return;
     }
 
@@ -954,6 +1007,7 @@ wss.on("connection", socket => {
         if (room.nervous) nervousBroadcast(room);
         if (room.immune) immuneBroadcast(room);
         if (room.movement) movementBroadcast(room);
+        if (room.excretion) excretionBroadcast(room);
         return;
       }
       if (resumeOnly) {
@@ -1161,6 +1215,24 @@ wss.on("connection", socket => {
         }
         room.movement.players.push({ id: playerId, name });
       }
+      if (room.excretion) {
+        if (room.excretion.phase !== "lobby") {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "이미 출발한 배설 탐험입니다." });
+          return;
+        }
+        const name = cleanToken(message.name, 12);
+        if (!/^[가-힣]{2,6}$/.test(name)) {
+          room.clients.delete(playerId);
+          socket.meta.roomKey = null;
+          socket.meta.role = null;
+          safeSend(socket, { type: "ERROR", message: "메인 화면에서 한글 이름을 먼저 저장하세요." });
+          return;
+        }
+        room.excretion.players.push({ id: playerId, name });
+      }
 
       safeSend(socket, {
         type: "ROOM_JOINED",
@@ -1188,6 +1260,7 @@ wss.on("connection", socket => {
       if (room.nervous) nervousBroadcast(room);
       if (room.immune) immuneBroadcast(room);
       if (room.movement) movementBroadcast(room);
+      if (room.excretion) excretionBroadcast(room);
       return;
     }
 
@@ -1753,6 +1826,85 @@ wss.on("connection", socket => {
       return;
     }
 
+    if (type === "EXCRETION_ACTION") {
+      const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
+      const game = room?.excretion;
+      const action = cleanToken(message.action, 30);
+      if (!room || !game) {
+        excretionError(socket, "배설 학급 탐험에 참가하지 않았습니다.");
+        return;
+      }
+
+      if (action === "START") {
+        if (playerId !== room.hostId) {
+          excretionError(socket, "교사 화면에서만 탐험을 출발시킬 수 있습니다.");
+          return;
+        }
+        if (game.phase !== "lobby") {
+          excretionError(socket, "이미 탐험이 진행 중입니다.");
+          return;
+        }
+        if (game.players.length < 1) {
+          excretionError(socket, "학생이 한 명 이상 참가해야 합니다.");
+          return;
+        }
+        game.phase = "running";
+        game.sessionId = crypto.randomUUID();
+        game.startedAt = Date.now();
+        game.results = {};
+        excretionBroadcast(room);
+        return;
+      }
+
+      if (action === "SUBMIT") {
+        if (game.phase !== "running") {
+          excretionError(socket, "현재 진행 중인 탐험이 없습니다.");
+          return;
+        }
+        if (cleanToken(message.sessionId, 80) !== game.sessionId) {
+          excretionError(socket, "현재 탐험의 결과가 아닙니다.");
+          return;
+        }
+        if (!game.players.some(player => player.id === playerId)) {
+          excretionError(socket, "참가 학생만 결과를 제출할 수 있습니다.");
+          return;
+        }
+        const score = Number(message.score);
+        if (!Number.isInteger(score) || score < 0 || score > 10) {
+          excretionError(socket, "점수가 올바르지 않습니다.");
+          return;
+        }
+        if (!game.results[playerId]) {
+          game.results[playerId] = {
+            score,
+            elapsedMs: Math.max(0, Date.now() - game.startedAt)
+          };
+        }
+        if (game.players.length > 0 && game.players.every(player => game.results[player.id])) {
+          game.phase = "ended";
+        }
+        excretionBroadcast(room);
+        return;
+      }
+
+      if (action === "RESET") {
+        if (playerId !== room.hostId) {
+          excretionError(socket, "교사 화면에서만 새 탐험을 준비할 수 있습니다.");
+          return;
+        }
+        game.phase = "lobby";
+        game.sessionId = "";
+        game.startedAt = 0;
+        game.results = {};
+        game.players = game.players.filter(player => room.clients.has(player.id));
+        excretionBroadcast(room);
+        return;
+      }
+
+      excretionError(socket, "알 수 없는 배설 탐험 요청입니다.");
+      return;
+    }
+
     if (type === "LASTCARD_ACTION") {
       const room = socket.meta.roomKey ? rooms.get(socket.meta.roomKey) : null;
       const game = room?.lastcard;
@@ -2187,6 +2339,15 @@ wss.on("connection", socket => {
           movement.phase = "ended";
         }
       }
+      if (currentRoom.excretion) {
+        const excretion = currentRoom.excretion;
+        if (excretion.phase === "lobby" || !excretion.results[playerId]) {
+          excretion.players = excretion.players.filter(player => player.id !== playerId);
+        }
+        if (excretion.phase === "running" && excretion.players.length > 0 && excretion.players.every(player => excretion.results[player.id])) {
+          excretion.phase = "ended";
+        }
+      }
       safeSend(currentRoom.clients.get(currentRoom.hostId), {
         type: "PLAYER_LEFT",
         playerId
@@ -2205,6 +2366,7 @@ wss.on("connection", socket => {
       if (currentRoom.nervous) nervousBroadcast(currentRoom);
       if (currentRoom.immune) immuneBroadcast(currentRoom);
       if (currentRoom.movement) movementBroadcast(currentRoom);
+      if (currentRoom.excretion) excretionBroadcast(currentRoom);
 
       if (currentRoom.clients.size === 0) rooms.delete(key);
     };

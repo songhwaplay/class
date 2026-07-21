@@ -43,7 +43,7 @@ body.movement-page {
 
 .movement-page .hero-copy h1 span,
 .movement-page .hero-lead { color: #fff2dc; }
-.movement-page .episode-switcher { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.movement-page .episode-switcher { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .movement-page .episode-switcher a.active { background: rgba(174, 74, 50, 0.92); }
 
 .movement-page .mode-card:hover,
