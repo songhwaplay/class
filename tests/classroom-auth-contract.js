@@ -50,6 +50,10 @@ assert.match(indexScript, /user\?\.role === 'teacher'/,
   "Teacher and student routes must be selected from the server role.");
 assert.match(indexScript, /localStorage\.setItem\('classPlayerName'/,
   "Open development access should preserve only the device-local player name.");
+assert.match(indexScript, /guestNameInput\.addEventListener\('input', \(event\) => \{\s*if \(event\.isComposing\) return;/,
+  "Korean IME composition must not be cleared while a syllable is being typed.");
+assert.match(indexScript, /guestNameInput\.addEventListener\('compositionend'/,
+  "The completed Korean syllable should still be normalized after composition.");
 assert.doesNotMatch(indexScript, /localStorage\.setItem\([^)]*(auth|token|session)/i,
   "Authentication state must not be stored in browser storage.");
 

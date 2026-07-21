@@ -669,7 +669,11 @@
                 });
             }
 
-            guestNameInput.addEventListener('input', () => {
+            guestNameInput.addEventListener('input', (event) => {
+                if (event.isComposing) return;
+                guestNameInput.value = normalizePlayerName(guestNameInput.value);
+            });
+            guestNameInput.addEventListener('compositionend', () => {
                 guestNameInput.value = normalizePlayerName(guestNameInput.value);
             });
             guestForm.addEventListener('submit', (event) => {
