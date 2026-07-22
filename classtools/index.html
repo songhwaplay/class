@@ -397,11 +397,11 @@
             async function init() {
                 try {
                     const session = await api('/api/auth/me').catch(() => ({ signedIn: false }));
-                    if (session.signedIn && session.user) {
-                        userEmailBadge.textContent = `(${session.user.email})`;
-                    } else {
-                        userEmailBadge.textContent = '(개발/로컬 모드)';
+                    if (!session.signedIn || session.user?.role !== 'teacher') {
+                        location.replace('/');
+                        return;
                     }
+                    userEmailBadge.textContent = `(${session.user.email})`;
 
                     // 관리자 설정 교사 프로필 조회
                     const teacherProfile = await api('/api/teacher/profile').catch(() => null);

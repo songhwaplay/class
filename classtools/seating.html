@@ -210,6 +210,11 @@
 
             async function init() {
                 try {
+                    const session = await api('/api/auth/me').catch(() => ({ signedIn: false }));
+                    if (!session.signedIn || session.user?.role !== 'teacher') {
+                        location.replace('/');
+                        return;
+                    }
                     const classRes = await api('/api/teacher/class').catch(() => null);
                     if (classRes && classRes.classroom) {
                         const c = classRes.classroom;
