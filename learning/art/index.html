@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
     <title>명화 감상과 퀴즈 · 송화플레이</title>
-    <script src="../../assets/sound/music-control.js" defer></script>
     <style>
         :root {
             --bg-dark: #1a120b;
@@ -458,10 +457,46 @@
         }
 
         .hidden { display: none !important; }
+
+        .art-audio-control {
+            position: fixed;
+            top: 10px;
+            right: 12px;
+            z-index: 30000;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 7px 10px;
+            border: 1px solid #97751e;
+            border-radius: 9px;
+            background: rgba(25, 15, 8, .95);
+            box-shadow: 0 3px 12px rgba(0, 0, 0, .45);
+            color: #ffe08a;
+            font-weight: 800;
+        }
+        .art-audio-control button {
+            min-height: 30px;
+            padding: 4px 9px;
+            border: 1px solid #c79a2b;
+            border-radius: 6px;
+            background: #b68a28;
+            color: #1c1107;
+            font-weight: 900;
+            cursor: pointer;
+        }
+        .art-audio-control input { width: 86px; accent-color: #d8ae3b; }
+        @media (max-width: 600px) {
+            .art-audio-control { top: auto; bottom: 10px; right: 10px; }
+        }
     </style>
 </head>
 <body>
     <audio id="bgm" src="../../assets/sound/art-appreciation.mp3" autoplay loop preload="auto"></audio>
+    <div class="art-audio-control" aria-label="배경음악 조절">
+        <span>🎵 음악</span>
+        <button id="artMusicToggle" type="button" aria-pressed="false">재생</button>
+        <input id="artMusicVolume" type="range" min="0" max="1" step="0.05" value="0.6" aria-label="배경음악 음량">
+    </div>
 
     <header class="top-bar">
         <a href="../../index.html" class="back-link">← 메인 페이지로</a>
@@ -545,6 +580,27 @@
     </div>
 
     <script>
+        (() => {
+            const audio = document.getElementById('bgm');
+            const toggle = document.getElementById('artMusicToggle');
+            const volume = document.getElementById('artMusicVolume');
+            const update = () => {
+                const playing = !audio.paused && !audio.ended;
+                toggle.textContent = playing ? '일시정지' : '재생';
+                toggle.setAttribute('aria-pressed', String(playing));
+            };
+            const play = () => audio.play().catch(() => update());
+            audio.volume = Number(volume.value);
+            toggle.addEventListener('click', () => audio.paused ? play() : audio.pause());
+            volume.addEventListener('input', () => {
+                audio.volume = Number(volume.value);
+                if (audio.paused && audio.volume > 0) play();
+            });
+            audio.addEventListener('play', update);
+            audio.addEventListener('pause', update);
+            audio.addEventListener('error', () => { toggle.textContent = '음악 오류'; toggle.disabled = true; });
+            update();
+        })();
         (() => {
             'use strict';
 
