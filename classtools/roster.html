@@ -1008,7 +1008,7 @@
                             password: claimPasswordInput.value,
                         }),
                     });
-                    location.reload();
+                    location.replace("index.html");
                 } catch (error) {
                     claimStatus.textContent = error.message;
                     claimButton.disabled = false;
