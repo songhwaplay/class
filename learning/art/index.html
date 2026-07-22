@@ -330,8 +330,8 @@
         /* Glassmorphism Loupe Circle */
         .loupe-lens {
             position: absolute;
-            width: 220px;
-            height: 220px;
+            width: 240px;
+            height: 240px;
             border: 4px solid var(--gold-main);
             border-radius: 50%;
             box-shadow: 0 10px 30px rgba(0,0,0,0.85), inset 0 0 15px rgba(255,255,255,0.4);
@@ -725,40 +725,77 @@
                 }
             });
 
-            // Loupe Magnifier Hover / Touch Effect with high-precision pixel tracking
+            // Ultra-Smooth 60fps Loupe Magnifier with 100% Aspect-Ratio Protection
+            let loupeRafId = null;
+
             function updateLoupe(clientX, clientY) {
-                const containerRect = loupeContainer.getBoundingClientRect();
-                const imgRect = modalImg.getBoundingClientRect();
+                if (loupeRafId) cancelAnimationFrame(loupeRafId);
 
-                // Check if cursor is within image bounds
-                if (clientX < imgRect.left || clientX > imgRect.right || clientY < imgRect.top || clientY > imgRect.bottom) {
-                    loupeLens.style.display = 'none';
-                    return;
-                }
+                loupeRafId = requestAnimationFrame(() => {
+                    if (!modalImg.naturalWidth || !modalImg.naturalHeight) {
+                        loupeLens.style.display = 'none';
+                        return;
+                    }
 
-                const lensRadius = 110; // 220px lens diameter / 2
-                const zoomFactor = 2.8;  // 2.8x magnification
+                    const containerRect = loupeContainer.getBoundingClientRect();
+                    const cW = containerRect.width;
+                    const cH = containerRect.height;
 
-                // Position of lens relative to container
-                const lensX = clientX - containerRect.left - lensRadius;
-                const lensY = clientY - containerRect.top - lensRadius;
+                    const nW = modalImg.naturalWidth;
+                    const nH = modalImg.naturalHeight;
 
-                // Position relative to actual image
-                const imgX = clientX - imgRect.left;
-                const imgY = clientY - imgRect.top;
+                    // Calculate actual rendered image dimensions inside object-fit: contain container
+                    const containerRatio = cW / cH;
+                    const naturalRatio = nW / nH;
 
-                loupeLens.style.display = 'block';
-                loupeLens.style.left = `${lensX}px`;
-                loupeLens.style.top = `${lensY}px`;
+                    let actualW, actualH, actualLeft, actualTop;
+                    if (containerRatio > naturalRatio) {
+                        // Letterboxed horizontally (black bars on left/right)
+                        actualH = cH;
+                        actualW = actualH * naturalRatio;
+                        actualTop = 0;
+                        actualLeft = (cW - actualW) / 2;
+                    } else {
+                        // Letterboxed vertically (black bars on top/bottom)
+                        actualW = cW;
+                        actualH = actualW / naturalRatio;
+                        actualLeft = 0;
+                        actualTop = (cH - actualH) / 2;
+                    }
 
-                // Set exact background size and offset for 100% pixel accuracy
-                const bgW = imgRect.width * zoomFactor;
-                const bgH = imgRect.height * zoomFactor;
-                const bgX = -(imgX * zoomFactor - lensRadius);
-                const bgY = -(imgY * zoomFactor - lensRadius);
+                    // Cursor position relative to container
+                    const curX = clientX - containerRect.left;
+                    const curY = clientY - containerRect.top;
 
-                loupeLens.style.backgroundSize = `${bgW}px ${bgH}px`;
-                loupeLens.style.backgroundPosition = `${bgX}px ${bgY}px`;
+                    // Check if cursor is over actual painting area
+                    if (curX < actualLeft || curX > actualLeft + actualW || curY < actualTop || curY > actualTop + actualH) {
+                        loupeLens.style.display = 'none';
+                        return;
+                    }
+
+                    const lensRadius = 120; // 240px lens diameter
+                    const zoomFactor = 3.0;  // 3x high-resolution zoom
+
+                    // Position lens centered under cursor
+                    loupeLens.style.display = 'block';
+                    loupeLens.style.left = `${curX - lensRadius}px`;
+                    loupeLens.style.top = `${curY - lensRadius}px`;
+
+                    // Cursor position relative to actual painting
+                    const relX = curX - actualLeft;
+                    const relY = curY - actualTop;
+
+                    // Background size matching exact natural aspect ratio
+                    const bgW = actualW * zoomFactor;
+                    const bgH = actualH * zoomFactor;
+
+                    // Background position centered under lens
+                    const bgX = -(relX * zoomFactor - lensRadius);
+                    const bgY = -(relY * zoomFactor - lensRadius);
+
+                    loupeLens.style.backgroundSize = `${bgW}px ${bgH}px`;
+                    loupeLens.style.backgroundPosition = `${bgX}px ${bgY}px`;
+                });
             }
 
             loupeContainer.addEventListener('mousemove', (e) => {
@@ -772,10 +809,12 @@
             }, { passive: true });
 
             loupeContainer.addEventListener('mouseleave', () => {
+                if (loupeRafId) cancelAnimationFrame(loupeRafId);
                 loupeLens.style.display = 'none';
             });
 
             loupeContainer.addEventListener('touchend', () => {
+                if (loupeRafId) cancelAnimationFrame(loupeRafId);
                 loupeLens.style.display = 'none';
             });
 
