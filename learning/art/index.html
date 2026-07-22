@@ -471,13 +471,10 @@
     <!-- 모드 선택 헤더 -->
     <nav class="main-modes" aria-label="감상 및 퀴즈 모드">
         <button class="mode-btn active" id="btnModeGallery" type="button">
-            🔍 1. 돋보기 명화 감상관
+            🏛️ 1. 명화 박물관
         </button>
         <button class="mode-btn" id="btnModeQuiz" type="button">
-            ❓ 2. 명화 스피드 퀴즈
-        </button>
-        <button class="mode-btn" id="btnModeDetective" type="button">
-            🕵️ 3. 돋보기 탐정 퀴즈
+            ❓ 2. 명화 퀴즈
         </button>
     </nav>
 
@@ -608,7 +605,6 @@
             // UI Elements
             const btnModeGallery = document.getElementById('btnModeGallery');
             const btnModeQuiz = document.getElementById('btnModeQuiz');
-            const btnModeDetective = document.getElementById('btnModeDetective');
             const viewGallery = document.getElementById('viewGallery');
             const viewQuiz = document.getElementById('viewQuiz');
             const artGrid = document.getElementById('artGrid');
@@ -819,24 +815,17 @@
             });
 
             // 3. Quiz Game Modes
-            function startQuiz(mode) {
-                activeQuizMode = mode;
+            function startQuiz() {
                 quizIndex = 0;
                 quizScore = 0;
-                // Shuffle masterpieces for quiz
+                // Shuffle masterpieces for 10-question quiz
                 quizQueue = [...MASTERPIECES].sort(() => Math.random() - 0.5).slice(0, 10);
                 
                 viewGallery.classList.add('hidden');
                 viewQuiz.classList.remove('hidden');
 
                 btnModeGallery.classList.remove('active');
-                if (mode === 'speed') {
-                    btnModeQuiz.classList.add('active');
-                    btnModeDetective.classList.remove('active');
-                } else {
-                    btnModeQuiz.classList.remove('active');
-                    btnModeDetective.classList.add('active');
-                }
+                btnModeQuiz.classList.add('active');
 
                 renderQuizQuestion();
             }
@@ -860,19 +849,10 @@
                 quizImg.dataset.fallbackApplied = '';
                 quizImg.onerror = function() { handleImgError(this, current.title, current.artist); };
 
-                if (activeQuizMode === 'speed') {
-                    quizQuestionText.textContent = `[문제 ${quizIndex + 1}] 아래 명화의 제목과 화가는 무엇일까요?`;
-                    quizImg.src = current.img;
-                    quizImg.style.objectFit = 'contain';
-                    quizImg.style.transform = 'none';
-                } else {
-                    // Detective Mode (Zoomed Detail)
-                    quizQuestionText.textContent = `🕵️ [돋보기 탐정] 디테일을 보고 어떤 명화인지 맞혀보세요!`;
-                    quizImg.src = current.img;
-                    quizImg.style.objectFit = 'cover';
-                    quizImg.style.transform = 'scale(2.4)';
-                    quizImg.style.transformOrigin = `${Math.floor(Math.random()*60 + 20)}% ${Math.floor(Math.random()*60 + 20)}%`;
-                }
+                quizQuestionText.textContent = `[문제 ${quizIndex + 1}] 아래 명화의 제목과 화가는 무엇일까요?`;
+                quizImg.src = current.img;
+                quizImg.style.objectFit = 'contain';
+                quizImg.style.transform = 'none';
 
                 // Prepare 4 choices
                 const wrongChoices = MASTERPIECES.filter(m => m.id !== current.id).sort(() => Math.random() - 0.5).slice(0, 3);
@@ -908,17 +888,11 @@
                 viewQuiz.classList.add('hidden');
                 btnModeGallery.classList.add('active');
                 btnModeQuiz.classList.remove('active');
-                btnModeDetective.classList.remove('active');
             });
 
             btnModeQuiz.addEventListener('click', () => {
                 playSfx('click');
-                startQuiz('speed');
-            });
-
-            btnModeDetective.addEventListener('click', () => {
-                playSfx('click');
-                startQuiz('detective');
+                startQuiz();
             });
 
             // Category Filtering
