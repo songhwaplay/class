@@ -82,36 +82,44 @@
 
         .top-nav-bar {
             position: fixed;
-            top: 16px;
-            left: 18px;
-            z-index: 100;
+            top: 12px;
+            left: 14px;
+            z-index: 99999;
             display: flex;
-            gap: 8px;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            max-width: calc(100vw - 280px);
         }
 
         .class-tools-link {
             display: inline-flex;
             align-items: center;
-            padding: 6px 12px;
-            border: 1px solid var(--gold-dark);
-            outline: 1px solid var(--panel-dark);
-            background: #2d1607;
-            color: var(--gold);
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border: 2px solid #ffd18a;
+            outline: 2px solid #261204;
+            border-radius: 6px;
+            background: linear-gradient(180deg, #6e3d16, #361a07);
+            color: #ffffff;
             font-family: Pretendard, "Noto Sans KR", sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.03em;
             text-decoration: none;
-            box-shadow: inset 0 0 0 1px #1c0c02;
-            transition: all 0.15s ease-in-out;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 235, 180, 0.25);
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
         }
 
         .class-tools-link:hover,
         .class-tools-link:focus-visible {
-            background: linear-gradient(135deg, #b56d21, var(--gold-bright));
-            border-color: #ffd18a;
+            background: linear-gradient(180deg, #ca7d28, #7a4613);
+            border-color: #ffffff;
             color: #ffffff;
-            box-shadow: inset 0 0 0 1px #9f5918;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.4);
             outline: none;
         }
 
@@ -330,9 +338,9 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             margin: 0 auto 24px;
-            width: min(600px, 100%);
+            width: min(650px, 100%);
             flex-wrap: wrap;
         }
 
@@ -342,33 +350,44 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            padding: 12px 24px;
-            border: 2px solid var(--gold-dark);
+            padding: 14px 24px;
+            border: 2px solid #ffd18a;
             outline: 2px solid var(--panel-dark);
-            background: linear-gradient(180deg, #4a2b13, #291406);
-            color: #fff0c7;
+            background: linear-gradient(180deg, #7a4613, #3a1c06);
+            color: #ffffff;
             font-family: Pretendard, "Noto Sans KR", sans-serif;
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 16px;
+            font-weight: 800;
             text-decoration: none;
-            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 0 10px rgba(255, 181, 74, 0.15);
-            border-radius: 6px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6), inset 0 0 10px rgba(255, 181, 74, 0.2);
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
         }
 
         .teacher-link-btn:hover,
         .admin-link-btn:hover {
-            background: linear-gradient(180deg, #b56e20, #7d4a16);
-            border-color: var(--gold-bright);
+            background: linear-gradient(180deg, #c47726, #7a430e);
+            border-color: #ffffff;
             color: #ffffff;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6), inset 0 0 14px rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), inset 0 0 14px rgba(255, 255, 255, 0.35);
         }
 
-        @media (max-width: 520px) {
-            body { padding-top: 28px; }
-            .class-tools-link { top: 8px; right: 12px; }
+        @media (max-width: 600px) {
+            body { padding-top: 14px; }
+            .top-nav-bar {
+                position: relative;
+                top: 0;
+                left: 0;
+                justify-content: center;
+                margin: 0 auto 16px;
+                max-width: 100%;
+            }
+            .class-tools-link {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
             .music-control { gap: 7px; transform: scale(0.93); }
             .music-label { font-size: 14px; }
             .volume-step { width: 20px; }
@@ -389,9 +408,9 @@
     </style>
 </head>
 <body>
-    <div class="top-nav-bar">
-        <a id="classToolsLink" class="class-tools-link" href="classtools/roster.html">교사 페이지 (학급 관리)</a>
-        <a id="adminToolsLink" class="class-tools-link" href="admin/index.html">관리자 페이지</a>
+    <div class="top-nav-bar" aria-label="교사 및 관리자 메뉴">
+        <a id="classToolsLink" class="class-tools-link" href="classtools/roster.html">🏫 교사 페이지 (학급 관리)</a>
+        <a id="adminToolsLink" class="class-tools-link" href="admin/index.html">⚙️ 관리자 페이지</a>
     </div>
     <audio id="bgm" src="assets/sound/index.mp3" autoplay loop preload="auto"></audio>
 
