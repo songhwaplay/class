@@ -330,11 +330,11 @@
         /* Glassmorphism Loupe Circle */
         .loupe-lens {
             position: absolute;
-            width: 240px;
-            height: 240px;
-            border: 4px solid var(--gold-main);
+            width: 340px;
+            height: 340px;
+            border: 5px solid var(--gold-main);
             border-radius: 50%;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.85), inset 0 0 15px rgba(255,255,255,0.4);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 20px rgba(255,255,255,0.45);
             pointer-events: none;
             display: none;
             background-repeat: no-repeat;
@@ -773,8 +773,8 @@
                         return;
                     }
 
-                    const lensRadius = 120; // 240px lens diameter
-                    const zoomFactor = 3.0;  // 3x high-resolution zoom
+                    const lensRadius = 170; // 340px lens diameter (Giant Lens!)
+                    const zoomFactor = 3.2;  // 3.2x high-resolution zoom
 
                     // Position lens centered under cursor
                     loupeLens.style.display = 'block';
