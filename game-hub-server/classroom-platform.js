@@ -782,6 +782,32 @@ function createClassroomPlatform(options = {}) {
     }
   }));
 
+  router.post("/admin/teachers/:teacherId/unlink", asyncRoute(async (req, res) => {
+    await requireAdmin(req);
+    const teacherId = Number(req.params.teacherId);
+    if (!Number.isInteger(teacherId) || teacherId < 1) {
+      throw new HttpError(400, "INVALID_TEACHER", "Teacher not found.");
+    }
+    const client = await pool.connect();
+    try {
+      await client.query("BEGIN");
+      const result = await client.query("SELECT user_id FROM classroom_teachers WHERE id = $1 FOR UPDATE", [teacherId]);
+      const teacher = result.rows[0];
+      if (!teacher) throw new HttpError(404, "TEACHER_NOT_FOUND", "Teacher not found.");
+      if (teacher.user_id) {
+        await client.query("UPDATE classroom_users SET role = NULL, updated_at = NOW() WHERE id = $1 AND role = 'teacher'", [teacher.user_id]);
+        await client.query("UPDATE classroom_teachers SET user_id = NULL, google_email = NULL, updated_at = NOW() WHERE id = $1", [teacherId]);
+      }
+      await client.query("COMMIT");
+      res.json({ ok: true });
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }));
+
   router.delete("/admin/schools/:schoolId", asyncRoute(async (req, res) => {
     await requireAdmin(req);
     const schoolId = Number(req.params.schoolId);

@@ -468,12 +468,33 @@
                             setStatus("Teacher and class deleted.");
                         } catch (error) { setStatus(error.message, true); }
                     });
+
                     const classInfo = document.createElement("div");
                     classInfo.className = "teacher-class";
+                    const emailTag = teacher.email ? ` · Google linked (${teacher.email})` : (teacher.linked ? " · Google linked" : "");
                     classInfo.textContent = teacher.classroom
-                        ? `${teacher.classroom.academicYear} · Grade ${teacher.classroom.grade} Class ${teacher.classroom.classNumber} · ${teacher.classroom.studentCount} students${teacher.linked ? " · Google linked" : ""}`
-                        : `No class saved${teacher.linked ? " · Google linked" : ""}`;
-                    row.append(year, grade, classNumber, name, password, activeLabel, save, remove, classInfo);
+                        ? `${teacher.classroom.academicYear} · Grade ${teacher.classroom.grade} Class ${teacher.classroom.classNumber} · ${teacher.classroom.studentCount} students${emailTag}`
+                        : `No class saved${emailTag}`;
+
+                    if (teacher.linked || teacher.email) {
+                        const unlink = document.createElement("button");
+                        unlink.className = "action-button secondary";
+                        unlink.type = "button";
+                        unlink.style.marginLeft = "8px";
+                        unlink.textContent = "UNLINK GOOGLE";
+                        unlink.title = "Disconnect linked Google account";
+                        unlink.addEventListener("click", async () => {
+                            if (!confirm(`Unlink Google account (${teacher.email || 'linked account'}) from ${teacher.name}?`)) return;
+                            try {
+                                await api(`/api/admin/teachers/${teacher.id}/unlink`, { method: "POST" });
+                                await loadSchools(school.id);
+                                setStatus("Google account unlinked.");
+                            } catch (error) { setStatus(error.message, true); }
+                        });
+                        row.append(year, grade, classNumber, name, password, activeLabel, save, unlink, remove, classInfo);
+                    } else {
+                        row.append(year, grade, classNumber, name, password, activeLabel, save, remove, classInfo);
+                    }
                     teacherList.append(row);
                 });
             }
