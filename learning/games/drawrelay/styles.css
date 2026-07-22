@@ -24,7 +24,7 @@ body {
   padding: 18px;
   background:
     linear-gradient(rgba(12, 22, 26, .45), rgba(8, 16, 20, .68)),
-    url('../../../assets/images/drawrelaybg.png') center/cover fixed no-repeat,
+    url('../../../assets/images/drawrelaybg.webp') center/cover fixed no-repeat,
     #173f45;
 }
 body::before { content: ""; position: fixed; inset: 0; z-index: -1; background: radial-gradient(circle at 8% 5%, rgba(46,196,182,.12), transparent 25%), radial-gradient(circle at 92% 95%, rgba(239,71,111,.10), transparent 26%); pointer-events: none; }

@@ -21,7 +21,7 @@ const images = [
     path.join(root, "assets", "images", "body-explorer", "immune-hero.webp"),
     path.join(root, "assets", "images", "body-explorer", "immune-barrier.webp"),
     path.join(root, "assets", "images", "body-explorer", "immune-defense.webp"),
-    path.join(root, "assets", "images", "body-explorer", "immune-explorer.png")
+    path.join(root, "assets", "images", "body-explorer", "immune-explorer.webp")
 ];
 
 for (const file of [...Object.values(files), ...images]) {
@@ -110,7 +110,7 @@ assert.ok(html.includes("nigms.nih.gov/biobeat") && html.includes("cdc.gov/vacci
 assert.ok(html.includes('class="nervous-page immune-page"'), "Immune must reuse the tested responsive simulator layout.");
 
 const styles = fs.readFileSync(files.styles, "utf8");
-for (const asset of ["immune-hero.webp", "immune-barrier.webp", "immune-defense.webp", "immune-explorer.png"]) {
+for (const asset of ["immune-hero.webp", "immune-barrier.webp", "immune-defense.webp", "immune-explorer.webp"]) {
     assert.ok(html.includes(asset) || styles.includes(asset), `Generated visual is not wired: ${asset}`);
 }
 for (const episodeFile of ["index.html", "digestion.html", "respiration.html", "nervous.html"]) {

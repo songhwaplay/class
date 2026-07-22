@@ -23,7 +23,7 @@ const images = [
     path.join(root, "assets", "images", "body-explorer", "nervous-hero.webp"),
     path.join(root, "assets", "images", "body-explorer", "nervous-sensory.webp"),
     path.join(root, "assets", "images", "body-explorer", "nervous-response.webp"),
-    path.join(root, "assets", "images", "body-explorer", "signal-explorer.png")
+    path.join(root, "assets", "images", "body-explorer", "signal-explorer.webp")
 ];
 
 for (const file of [...Object.values(files), ...images]) {
@@ -108,7 +108,7 @@ assert.ok(html.includes("학급 순위 탐험"), "Class ranking mode is missing.
 assert.ok(html.includes("나의 오답노트"), "Personal wrong-answer notebook is missing.");
 assert.ok(html.includes('src="nervous-data.js"'), "Nervous data is not linked.");
 assert.ok(html.includes("nichd.nih.gov/health/topics/neuro"), "The official nervous-system source should be visible.");
-for (const asset of ["nervous-hero.webp", "nervous-sensory.webp", "nervous-response.webp", "signal-explorer.png"]) {
+for (const asset of ["nervous-hero.webp", "nervous-sensory.webp", "nervous-response.webp", "signal-explorer.webp"]) {
     assert.ok(html.includes(asset) || fs.readFileSync(files.styles, "utf8").includes(asset), `Generated visual is not wired: ${asset}`);
 }
 

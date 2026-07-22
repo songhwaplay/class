@@ -8,7 +8,7 @@ body {
     padding: 20px;
     background:
         linear-gradient(rgba(3, 8, 19, 0.64), rgba(3, 8, 19, 0.78)),
-        url("../../../assets/images/lastcard-cover.png") center / cover fixed,
+        url("../../../assets/images/lastcard-cover.webp") center / cover fixed,
         #071020;
 }
 
@@ -30,7 +30,7 @@ body {
 .game-board {
     background:
         linear-gradient(rgba(7, 12, 25, 0.86), rgba(7, 12, 25, 0.9)),
-        url("../../../assets/images/lastcard-cover.png") center / cover;
+        url("../../../assets/images/lastcard-cover.webp") center / cover;
 }
 
 .screen-panel {
@@ -55,7 +55,7 @@ body {
     gap: 36px;
     background:
         linear-gradient(110deg, rgba(7, 12, 26, 0.94), rgba(7, 12, 26, 0.68)),
-        url("../../../assets/images/lastcard-cover.png") center / cover;
+        url("../../../assets/images/lastcard-cover.webp") center / cover;
 }
 
 .lobby-hero h1,

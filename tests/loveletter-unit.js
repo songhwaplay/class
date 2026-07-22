@@ -112,7 +112,7 @@ const guestView = LoveLetter.stateFor(privacy, "guest1");
 assert.deepEqual(guestView.hand, [6], "각 플레이어에게 자기 손패만 전송해야 합니다.");
 
 const projectRoot = path.resolve(__dirname, "..");
-for (const file of ["guard.png", "wizard.png", "knight.png", "fairy.png", "prince.png", "king.png", "queen.png", "princess.png"]) {
+for (const file of ["guard.webp", "wizard.webp", "knight.webp", "fairy.webp", "prince.webp", "king.webp", "queen.webp", "princess.webp"]) {
     assert.equal(fs.existsSync(path.join(projectRoot, "assets", "images", "loveletter-cards", file)), true, `${file} 카드 이미지가 필요합니다.`);
 }
 const html = fs.readFileSync(path.join(projectRoot, "learning", "games", "loveletter", "loveletter.html"), "utf8");

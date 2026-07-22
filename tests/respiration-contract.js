@@ -22,7 +22,7 @@ const images = [
     path.join(root, "assets", "images", "body-explorer", "respiration-hero.webp"),
     path.join(root, "assets", "images", "body-explorer", "respiration-airway.webp"),
     path.join(root, "assets", "images", "body-explorer", "respiration-alveoli.webp"),
-    path.join(root, "assets", "images", "body-explorer", "oxygen-explorer.png")
+    path.join(root, "assets", "images", "body-explorer", "oxygen-explorer.webp")
 ];
 
 for (const file of [...Object.values(files), ...images]) {
@@ -84,7 +84,7 @@ assert.ok(html.includes("학급 순위 탐험"), "Class ranking mode is missing.
 assert.ok(html.includes("나의 오답노트"), "Personal wrong-answer notebook is missing.");
 assert.ok(html.includes('src="respiration-data.js"'), "Respiration data is not linked.");
 assert.ok(html.includes("nhlbi.nih.gov/health/lungs/breathing-benefits"), "The official breathing source should be visible.");
-for (const asset of ["respiration-hero.webp", "respiration-airway.webp", "respiration-alveoli.webp", "oxygen-explorer.png"]) {
+for (const asset of ["respiration-hero.webp", "respiration-airway.webp", "respiration-alveoli.webp", "oxygen-explorer.webp"]) {
     assert.ok(html.includes(asset) || fs.readFileSync(files.styles, "utf8").includes(asset), `Generated visual is not wired: ${asset}`);
 }
 

@@ -17,7 +17,7 @@ const files = {
     teacherApp: path.join(dir, "teacher.js"),
     server: path.join(root, "game-hub-server", "server.js")
 };
-const images = ["movement-hero.webp", "movement-joint.webp", "movement-load.webp", "movement-explorer.png"]
+const images = ["movement-hero.webp", "movement-joint.webp", "movement-load.webp", "movement-explorer.webp"]
     .map((name) => path.join(root, "assets", "images", "body-explorer", name));
 
 for (const file of [...Object.values(files), ...images]) {
@@ -95,7 +95,7 @@ assert.ok(html.includes("niams.nih.gov/health-topics/educational-resources/healt
 assert.ok(html.includes("ncbi.nlm.nih.gov/books/NBK613072"));
 
 const styles = fs.readFileSync(files.styles, "utf8");
-for (const asset of ["movement-hero.webp", "movement-joint.webp", "movement-load.webp", "movement-explorer.png"]) {
+for (const asset of ["movement-hero.webp", "movement-joint.webp", "movement-load.webp", "movement-explorer.webp"]) {
     assert.ok(html.includes(asset) || styles.includes(asset), `Generated visual is not wired: ${asset}`);
 }
 assert.ok(styles.includes(".motion-live-visual") && styles.includes("#motionForearm"));

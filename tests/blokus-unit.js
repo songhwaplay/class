@@ -122,7 +122,7 @@ if (fs.existsSync(htmlPath)) {
   assert.match(html, /assets\/images\/blokus-cover\.png/, "블로커스 표지 이미지를 사용해야 합니다.");
   assert.match(html, /assets\/sound\/blokus-bgm\.mp3/, "블로커스 배경음악을 사용해야 합니다.");
   assert.match(html, /assets\/sound\/music-control\.js/, "공통 음악 컨트롤을 연결해야 합니다.");
-  assert.ok(fs.statSync(path.resolve(__dirname, "..", "assets", "images", "blokus-cover.png")).size > 0);
+  assert.ok(fs.statSync(path.resolve(__dirname, "..", "assets", "images", "blokus-cover.webp")).size > 0);
   assert.ok(fs.statSync(path.resolve(__dirname, "..", "assets", "sound", "blokus-bgm.mp3")).size > 0);
   assert.doesNotMatch(html, /id=["']placeBtn["']/, "별도의 배치 확정 버튼이 없어야 합니다.");
   assert.match(

@@ -16,7 +16,7 @@ const files = {
     teacherApp: path.join(dir, "teacher.js"),
     server: path.join(root, "game-hub-server", "server.js")
 };
-const images = ["temperature-hero.webp", "temperature-hot.webp", "temperature-cold.webp", "temperature-explorer.png"]
+const images = ["temperature-hero.webp", "temperature-hot.webp", "temperature-cold.webp", "temperature-explorer.webp"]
     .map((name) => path.join(root, "assets", "images", "body-explorer", name));
 
 for (const file of [...Object.values(files), ...images]) {
@@ -82,7 +82,7 @@ assert.ok(html.includes("ncbi.nlm.nih.gov/books/NBK507838"));
 assert.ok(html.includes("ncbi.nlm.nih.gov/books/NBK541107"));
 
 const styles = fs.readFileSync(files.styles, "utf8");
-for (const asset of ["temperature-hero.webp", "temperature-hot.webp", "temperature-cold.webp", "temperature-explorer.png"]) {
+for (const asset of ["temperature-hero.webp", "temperature-hot.webp", "temperature-cold.webp", "temperature-explorer.webp"]) {
     assert.ok(html.includes(asset) || styles.includes(asset), `Generated visual is not wired: ${asset}`);
 }
 assert.ok(styles.includes(".temperature-live-visual") && styles.includes(".skin-vessel"));

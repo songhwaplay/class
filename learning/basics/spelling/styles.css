@@ -29,7 +29,7 @@ body {
     font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
     background:
         linear-gradient(rgba(28, 15, 8, 0.58), rgba(28, 15, 8, 0.76)),
-        url("../../../assets/images/indexbg.png") center / cover fixed no-repeat;
+        url("../../../assets/images/indexbg.webp") center / cover fixed no-repeat;
 }
 
 button,
