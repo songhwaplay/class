@@ -648,13 +648,44 @@
                 schoolInput.focus();
             }
 
+            async function showTeacherHome(state) {
+                authTitle.textContent = 'TEACHER';
+                authMessage.hidden = true;
+                googleSignInButton.hidden = true;
+                guestForm.hidden = true;
+                joinForm.hidden = true;
+                signedInArea.hidden = false;
+
+                const teacherProfile = await api('/api/teacher/profile').catch(() => null);
+                const profile = teacherProfile?.profile;
+
+                const teacherName = profile?.name || state.user?.name || '선생님';
+                const schoolName = profile?.schoolName || '학교';
+                const grade = profile?.grade;
+                const classNum = profile?.classNumber;
+                const classStr = (grade && classNum) ? ` · ${grade}학년 ${classNum}반` : '';
+
+                signedInName.textContent = `${teacherName} 선생님`;
+                classMembership.textContent = `${schoolName}${classStr} · 교사 계정`;
+
+                hubContent.hidden = false;
+
+                const playerName = normalizePlayerName(teacherName);
+                if (isValidPlayerName(playerName)) {
+                    currentPlayerName = playerName;
+                    localStorage.setItem('classPlayerName', playerName);
+                    updatePlayerLearningLinks(playerName);
+                }
+                setStatus('교사 로그인 상태입니다. 인덱스 화면에서 모든 기능과 게임에 바로 접근할 수 있습니다.');
+            }
+
             function routeSignedIn(state) {
                 if (state.user?.role === 'admin') {
                     location.replace('/admin/');
                     return;
                 }
                 if (state.user?.role === 'teacher') {
-                    location.replace('/classtools/index.html');
+                    showTeacherHome(state).catch(() => {});
                     return;
                 }
                 if (state.membership) showStudentHome(state);
@@ -757,7 +788,8 @@
                                 password: studentPasswordInput.value,
                             }),
                         });
-                        location.replace('/classtools/index.html');
+                        const state = await api('/api/auth/me');
+                        routeSignedIn(state);
                         return;
                     }
                     await api('/api/student/join', {
