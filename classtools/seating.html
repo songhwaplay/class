@@ -192,9 +192,10 @@
                     const desk = document.createElement('div');
                     desk.className = 'desk';
                     const student = students[i];
+                    const genderBadge = student && student.gender ? `<small style="opacity:0.7; font-size:0.8rem; margin-left:3px;">(${student.gender})</small>` : '';
                     desk.innerHTML = `
                         <span class="desk-num">${i + 1}번 좌석</span>
-                        <span class="desk-name">${student ? student.name : '빈자리'}</span>
+                        <span class="desk-name">${student ? student.name + genderBadge : '빈자리'}</span>
                     `;
                     seatingGrid.appendChild(desk);
                 }
@@ -219,7 +220,7 @@
                     if (classRes && classRes.classroom) {
                         const c = classRes.classroom;
                         classHeader.textContent = `${c.schoolName} ${c.grade}학년 ${c.classNumber}반 (${c.teacherName} 선생님)`;
-                        students = (c.students || []).map(s => ({ number: s.number, name: s.name }));
+                        students = (c.students || []).map(s => ({ number: s.number, name: s.name, gender: s.gender || '남' }));
                     } else {
                         classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
                         students = [

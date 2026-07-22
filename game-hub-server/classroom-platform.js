@@ -280,6 +280,8 @@ function createClassroomPlatform(options = {}) {
       )`,
       `ALTER TABLE classroom_students
         ADD COLUMN IF NOT EXISTS password_hash TEXT`,
+      `ALTER TABLE classroom_students
+        ADD COLUMN IF NOT EXISTS gender TEXT NOT NULL DEFAULT '남'`,
       `CREATE INDEX IF NOT EXISTS classroom_students_class_idx
         ON classroom_students (class_id)`,
       `ALTER TABLE classroom_classes
@@ -932,7 +934,7 @@ function createClassroomPlatform(options = {}) {
     if (!classroom) return res.json({ classroom: null });
 
     const studentsResult = await pool.query(
-      `SELECT student_number, roster_name, user_id IS NOT NULL AS linked,
+      `SELECT student_number, roster_name, COALESCE(gender, '남') AS gender, user_id IS NOT NULL AS linked,
               password_hash IS NOT NULL AS password_configured
        FROM classroom_students
        WHERE class_id = $1
@@ -951,6 +953,7 @@ function createClassroomPlatform(options = {}) {
         students: studentsResult.rows.map((student) => ({
           number: student.student_number,
           name: student.roster_name,
+          gender: student.gender === '여' ? '여' : '남',
           linked: student.linked,
           passwordConfigured: student.password_configured
         }))
@@ -994,11 +997,16 @@ function createClassroomPlatform(options = {}) {
       throw new HttpError(400, "INVALID_ROSTER_SIZE", "The roster must contain 1 to 60 students.");
     }
 
-    const cleanStudents = students.map((student) => ({
-      number: String(student?.number || "").trim(),
-      name: String(student?.name || "").normalize("NFC").trim(),
-      password: String(student?.password || "").trim()
-    }));
+    const cleanStudents = students.map((student) => {
+      const rawGender = String(student?.gender || "").trim().toLowerCase();
+      const gender = (rawGender.includes("여") || rawGender === "f" || rawGender === "female") ? "여" : "남";
+      return {
+        number: String(student?.number || "").trim(),
+        name: String(student?.name || "").normalize("NFC").trim(),
+        gender,
+        password: String(student?.password || "").trim()
+      };
+    });
     if (cleanStudents.some((student) => !/^\d{1,3}$/.test(student.number))) {
       throw new HttpError(400, "INVALID_STUDENT_NUMBER", "Student numbers must contain digits only.");
     }
@@ -1093,13 +1101,14 @@ function createClassroomPlatform(options = {}) {
           ? hashStudentPassword(student.password)
           : existingPasswords.get(student.number) || hashStudentPassword(DEFAULT_STUDENT_PASSWORD);
         await client.query(
-          `INSERT INTO classroom_students (class_id, student_number, roster_name, password_hash)
-           VALUES ($1, $2, $3, $4)
+          `INSERT INTO classroom_students (class_id, student_number, roster_name, gender, password_hash)
+           VALUES ($1, $2, $3, $4, $5)
            ON CONFLICT (class_id, student_number) DO UPDATE SET
              roster_name = EXCLUDED.roster_name,
+             gender = EXCLUDED.gender,
              password_hash = EXCLUDED.password_hash,
              updated_at = NOW()`,
-          [classroom.id, student.number, student.name, passwordHash]
+          [classroom.id, student.number, student.name, student.gender, passwordHash]
         );
       }
       await client.query("COMMIT");

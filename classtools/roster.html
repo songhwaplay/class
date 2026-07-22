@@ -191,8 +191,8 @@
 
         .paste-grid {
             display: grid;
-            grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
-            gap: 14px;
+            grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
+            gap: 12px;
         }
 
         .field {
@@ -456,8 +456,8 @@
             }
 
             .paste-grid {
-                grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-                gap: 9px;
+                grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
+                gap: 8px;
             }
 
             textarea {
@@ -586,23 +586,31 @@
             <div class="paste-grid">
                 <div class="field">
                     <div class="field-head">
-                        <label for="numbers">Numbers</label>
-                        <span class="line-count" id="number-count">0 rows</span>
+                        <label for="numbers">번호</label>
+                        <span class="line-count" id="number-count">0행</span>
                     </div>
                     <textarea id="numbers" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="1&#10;2&#10;3&#10;4" aria-describedby="input-status"></textarea>
                 </div>
 
                 <div class="field">
                     <div class="field-head">
-                        <label for="names">Names</label>
-                        <span class="line-count" id="name-count">0 rows</span>
+                        <label for="names">성명 (이름)</label>
+                        <span class="line-count" id="name-count">0행</span>
                     </div>
                     <textarea id="names" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="김민준&#10;이서연&#10;박지우&#10;최하늘" aria-describedby="input-status"></textarea>
+                </div>
+
+                <div class="field">
+                    <div class="field-head">
+                        <label for="genders">성별 (남/여)</label>
+                        <span class="line-count" id="gender-count">0행</span>
+                    </div>
+                    <textarea id="genders" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="남&#10;여&#10;남&#10;여" aria-describedby="input-status"></textarea>
                 </div>
             </div>
 
             <div class="actions">
-                <p class="status" id="input-status" role="status" aria-live="polite">Paste student numbers and names.</p>
+                <p class="status" id="input-status" role="status" aria-live="polite">엑셀에서 학번, 성명, 성별 열을 복사하여 붙여넣으세요.</p>
                 <button class="save-button" id="save-button" type="button" disabled>SAVE ROSTER</button>
             </div>
         </section>
@@ -622,6 +630,7 @@
                         <tr>
                             <th scope="col">NUMBER</th>
                             <th scope="col">NAME</th>
+                            <th scope="col">GENDER</th>
                             <th scope="col">PASSWORD</th>
                         </tr>
                     </thead>
@@ -660,8 +669,10 @@
             const classSummary = document.querySelector("#class-summary");
             const numbersInput = document.querySelector("#numbers");
             const namesInput = document.querySelector("#names");
+            const gendersInput = document.querySelector("#genders");
             const numberCount = document.querySelector("#number-count");
             const nameCount = document.querySelector("#name-count");
+            const genderCount = document.querySelector("#gender-count");
             const status = document.querySelector("#input-status");
             const saveButton = document.querySelector("#save-button");
             const rosterBody = document.querySelector("#roster-body");
@@ -670,6 +681,7 @@
             const studentTotal = document.querySelector("#student-total");
             const savedPasswordNumbers = new Set();
             const passwordDrafts = new Map();
+            const genderDrafts = new Map();
             let authorized = false;
             let saving = false;
 
@@ -693,9 +705,23 @@
                 return lines.map((line) => line.trim());
             }
 
+            function normalizeGenderValue(val) {
+                const s = String(val || "").trim().toLowerCase();
+                if (s.includes("여") || s === "f" || s === "female" || s === "girl") return "여";
+                return "남";
+            }
+
             function getRosterState() {
                 const numbers = splitLines(numbersInput.value);
                 const names = splitLines(namesInput.value);
+                let rawGenders = splitLines(gendersInput.value);
+                
+                const genders = numbers.map((num, idx) => {
+                    if (genderDrafts.has(num)) return genderDrafts.get(num);
+                    if (rawGenders[idx]) return normalizeGenderValue(rawGenders[idx]);
+                    return "남";
+                });
+
                 const hasBlank = numbers.some((value) => !value) || names.some((value) => !value);
                 const duplicateNumbers = numbers.filter((value, index) => value && numbers.indexOf(value) !== index);
                 const invalidNumbers = numbers.filter((value) => value && !/^\d{1,3}$/.test(value));
@@ -712,7 +738,7 @@
                     invalidNames.length === 0 &&
                     invalidPasswords.length === 0;
 
-                return { numbers, names, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidPasswords, isComplete };
+                return { numbers, names, genders, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidPasswords, isComplete };
             }
 
             function getStudentPassword(number) {
@@ -720,10 +746,11 @@
                 return savedPasswordNumbers.has(number) ? "" : DEFAULT_STUDENT_PASSWORD;
             }
 
-            function createRoster(numbers, names) {
+            function createRoster(numbers, names, genders) {
                 return numbers.map((number, index) => ({
                     number,
                     name: names[index],
+                    gender: genders[index] || "남",
                     password: getStudentPassword(number),
                 }));
             }
@@ -731,14 +758,31 @@
             function renderRoster(roster) {
                 rosterBody.replaceChildren();
 
-                roster.forEach(({ number, name, password }) => {
+                roster.forEach(({ number, name, gender, password }) => {
                     const row = document.createElement("tr");
                     const numberCell = document.createElement("td");
                     const nameCell = document.createElement("td");
+                    const genderCell = document.createElement("td");
                     const passwordCell = document.createElement("td");
-                    const passwordInput = document.createElement("input");
+
                     numberCell.textContent = number;
                     nameCell.textContent = name;
+
+                    const genderSelect = document.createElement("select");
+                    genderSelect.className = "student-gender-select";
+                    genderSelect.style.padding = "4px 8px";
+                    genderSelect.style.borderRadius = "4px";
+                    genderSelect.style.border = "1px solid #ccc";
+                    genderSelect.style.fontWeight = "bold";
+                    genderSelect.innerHTML = `<option value="남" ${gender === "남" ? "selected" : ""}>남</option><option value="여" ${gender === "여" ? "selected" : ""}>여</option>`;
+                    genderSelect.addEventListener("change", () => {
+                        genderDrafts.set(number, genderSelect.value);
+                        profileStatus.textContent = "Unsaved changes";
+                        update();
+                    });
+                    genderCell.append(genderSelect);
+
+                    const passwordInput = document.createElement("input");
                     passwordInput.className = "student-password";
                     passwordInput.type = "password";
                     passwordInput.inputMode = "numeric";
@@ -766,7 +810,7 @@
                         }
                     });
                     passwordCell.append(passwordInput);
-                    row.append(numberCell, nameCell, passwordCell);
+                    row.append(numberCell, nameCell, genderCell, passwordCell);
                     rosterBody.append(row);
                 });
 
@@ -839,10 +883,13 @@
                 teacherInput.value = classroom.teacherName;
                 numbersInput.value = classroom.students.map((student) => student.number).join("\n");
                 namesInput.value = classroom.students.map((student) => student.name).join("\n");
+                gendersInput.value = classroom.students.map((student) => student.gender || "남").join("\n");
                 savedPasswordNumbers.clear();
                 passwordDrafts.clear();
+                genderDrafts.clear();
                 classroom.students.forEach((student) => {
                     if (student.passwordConfigured) savedPasswordNumbers.add(student.number);
+                    genderDrafts.set(student.number, student.gender || "남");
                 });
                 profileStatus.textContent = "Saved on the server";
                 updateClassSummary(getProfile());
@@ -850,8 +897,9 @@
 
             function update() {
                 const state = getRosterState();
-                numberCount.textContent = `${state.numbers.length} rows`;
-                nameCount.textContent = `${state.names.length} rows`;
+                numberCount.textContent = `${state.numbers.length}행`;
+                nameCount.textContent = `${state.names.length}행`;
+                if (genderCount) genderCount.textContent = `${state.genders.length}행`;
 
                 const hasAnyInput = state.numbers.length > 0 || state.names.length > 0;
                 const hasMismatchedCounts = hasAnyInput && state.numbers.length !== state.names.length;
@@ -861,59 +909,58 @@
                 saveButton.disabled = saving || !authorized || !state.isComplete || !isProfileComplete();
 
                 if (!hasAnyInput) {
-                    setStatus("Paste student numbers and names.");
+                    setStatus("엑셀에서 학번, 성명, 성별 열을 복사하여 붙여넣으세요.");
                     renderRoster([]);
                     return;
                 }
 
                 if (hasMismatchedCounts) {
                     const difference = Math.abs(state.numbers.length - state.names.length);
-                    const shorterSide = state.numbers.length < state.names.length ? "number" : "name";
-                    setStatus(`The ${shorterSide} column is ${difference} ${difference === 1 ? "row" : "rows"} short.`, "error");
+                    const shorterSide = state.numbers.length < state.names.length ? "번호" : "이름";
+                    setStatus(`${shorterSide} 열이 ${difference}행 부족합니다.`, "error");
                     renderRoster([]);
                     return;
                 }
 
                 if (state.hasBlank) {
-                    setStatus("Remove blank rows in the middle of either column.", "error");
+                    setStatus("중간의 빈 행을 제거해주세요.", "error");
                     renderRoster([]);
                     return;
                 }
 
                 if (state.duplicateNumbers.length > 0) {
                     const duplicated = [...new Set(state.duplicateNumbers)].join(", ");
-                    setStatus(`Duplicate student numbers: ${duplicated}`, "error");
+                    setStatus(`중복된 학번: ${duplicated}`, "error");
                     renderRoster([]);
                     return;
                 }
 
                 if (state.invalidNumbers.length > 0) {
-                    setStatus("Student numbers must contain digits only.", "error");
+                    setStatus("학번은 숫자만 입력 가능합니다.", "error");
                     renderRoster([]);
                     return;
                 }
 
                 if (state.invalidNames.length > 0) {
-                    setStatus("Each student name must be 2 to 6 Korean characters.", "error");
+                    setStatus("이름은 2~6자의 한글이어야 합니다.", "error");
                     renderRoster([]);
                     return;
                 }
 
                 if (state.invalidPasswords.length > 0) {
-                    setStatus("Each new or changed password must contain exactly 6 digits.", "error");
-                    renderRoster(createRoster(state.numbers, state.names));
+                    setStatus("비밀번호는 6자리 숫자여야 합니다.", "error");
+                    renderRoster(createRoster(state.numbers, state.names, state.genders));
                     return;
                 }
 
                 if (!isProfileComplete()) {
-                    setStatus("Complete every class detail before saving.", "error");
-                    renderRoster(createRoster(state.numbers, state.names));
+                    setStatus("모든 학급 정보를 입력해 주세요.", "error");
+                    renderRoster(createRoster(state.numbers, state.names, state.genders));
                     return;
                 }
 
-                const noun = state.numbers.length === 1 ? "student is" : "students are";
-                setStatus(`${state.numbers.length} ${noun} ready to save.`, "success");
-                renderRoster(createRoster(state.numbers, state.names));
+                setStatus(`${state.numbers.length}명의 학생 명단이 준비되었습니다.`, "success");
+                renderRoster(createRoster(state.numbers, state.names, state.genders));
             }
 
             async function saveRoster() {
@@ -921,7 +968,7 @@
                 const profile = getProfile();
                 if (!authorized || !state.isComplete || !isProfileComplete(profile) || saving) return;
 
-                const roster = createRoster(state.numbers, state.names);
+                const roster = createRoster(state.numbers, state.names, state.genders);
                 saving = true;
                 saveButton.textContent = "SAVING…";
                 update();
