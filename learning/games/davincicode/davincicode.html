@@ -114,8 +114,8 @@ function openRules(){$("rulesOverlay").classList.add("show")}
 function closeRules(){$("rulesOverlay").classList.remove("show")}
 function closeRulesOnBackdrop(e){if(e.target===e.currentTarget)closeRules()}
 
-const MUSIC_VOLUME_KEY="davinciVolumeLevel";
-const MUSIC_MUTED_KEY="davinciMuted";
+const MUSIC_VOLUME_KEY="classMusicVolumeLevel";
+const MUSIC_MUTED_KEY="classMusicMuted";
 const bgm=$("bgm");
 let musicLevel=Number(localStorage.getItem(MUSIC_VOLUME_KEY));
 if(!Number.isInteger(musicLevel)||musicLevel<1||musicLevel>5)musicLevel=3;

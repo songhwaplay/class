@@ -261,8 +261,8 @@ document.addEventListener("keydown",event=>{
 
 
 
-const MUSIC_VOLUME_KEY="fruitbellVolumeLevel";
-const MUSIC_MUTED_KEY="fruitbellMuted";
+const MUSIC_VOLUME_KEY="classMusicVolumeLevel";
+const MUSIC_MUTED_KEY="classMusicMuted";
 const bgm=$("bgm");
 let musicLevel=Number(localStorage.getItem(MUSIC_VOLUME_KEY));
 if(!Number.isInteger(musicLevel)||musicLevel<1||musicLevel>5)musicLevel=3;

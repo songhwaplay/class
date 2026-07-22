@@ -563,7 +563,7 @@
 
             const APP_ORIGIN = 'https://songhwaplay.onrender.com';
             const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
-            const isLocal = ['localhost', '127.0.0.1'].includes(location.hostname);
+            const isLocal = ['localhost', '127.0.0.1', ''].includes(location.hostname) || location.protocol === 'file:';
             const isRenderApp = location.origin === APP_ORIGIN;
             const authTitle = document.getElementById('authTitle');
             const authMessage = document.getElementById('authMessage');
