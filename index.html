@@ -80,25 +80,38 @@
 
         h1 { margin-top: 0; }
 
-        .class-tools-link {
+        .top-nav-bar {
             position: fixed;
             top: 16px;
-            right: 18px;
-            z-index: 10;
-            padding: 5px 2px;
-            border-bottom: 1px solid rgba(215, 180, 122, 0.46);
-            color: rgba(255, 240, 199, 0.72);
-            font-family: Arial, sans-serif;
-            font-size: 10px;
+            left: 18px;
+            z-index: 100;
+            display: flex;
+            gap: 8px;
+        }
+
+        .class-tools-link {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border: 1px solid var(--gold-dark);
+            outline: 1px solid var(--panel-dark);
+            background: #2d1607;
+            color: var(--gold);
+            font-family: Pretendard, "Noto Sans KR", sans-serif;
+            font-size: 12px;
             font-weight: 700;
-            letter-spacing: 0.16em;
+            letter-spacing: 0.05em;
             text-decoration: none;
+            box-shadow: inset 0 0 0 1px #1c0c02;
+            transition: all 0.15s ease-in-out;
         }
 
         .class-tools-link:hover,
         .class-tools-link:focus-visible {
-            border-color: var(--gold-bright);
-            color: #fff0c7;
+            background: linear-gradient(135deg, #b56d21, var(--gold-bright));
+            border-color: #ffd18a;
+            color: #ffffff;
+            box-shadow: inset 0 0 0 1px #9f5918;
             outline: none;
         }
 
@@ -342,7 +355,10 @@
     </style>
 </head>
 <body>
-    <a id="classToolsLink" class="class-tools-link" href="classtools/roaster.html" hidden>CLASS TOOLS</a>
+    <div class="top-nav-bar">
+        <a id="classToolsLink" class="class-tools-link" href="classtools/roster.html">교사 페이지 (학급 관리)</a>
+        <a id="adminToolsLink" class="class-tools-link" href="admin/index.html">관리자 페이지</a>
+    </div>
     <audio id="bgm" src="assets/sound/index.mp3" autoplay loop preload="auto"></audio>
 
     <div class="auth-panel" aria-live="polite">
@@ -461,6 +477,20 @@
         <div class="worksheet-container">
             <a href="learning/training/music-studio/index.html">
                 <span class="worksheet-copy"><strong>화성학·리듬</strong><small>(Harmony &amp; Rhythm)</small></span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="hub-section admin-section" aria-labelledby="admin-tools-title">
+        <h2 id="admin-tools-title" class="section-title">교사 · 관리자 도구</h2>
+        <div class="worksheet-container">
+            <a href="classtools/roster.html">
+                <span class="worksheet-copy"><strong>학급 관리 (교사전용)</strong><small>(Class Roster)</small></span>
+                <span class="worksheet-arrow" aria-hidden="true">→</span>
+            </a>
+            <a href="admin/index.html">
+                <span class="worksheet-copy"><strong>관리자 포털</strong><small>(Admin Portal)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
         </div>
@@ -620,8 +650,7 @@
                     return;
                 }
                 if (state.user?.role === 'teacher') {
-                    classToolsLink.hidden = false;
-                    location.replace('/classtools/roaster.html');
+                    location.replace('/classtools/roster.html');
                     return;
                 }
                 if (state.membership) showStudentHome(state);
@@ -724,7 +753,7 @@
                                 password: studentPasswordInput.value,
                             }),
                         });
-                        location.replace('/classtools/roaster.html');
+                        location.replace('/classtools/roster.html');
                         return;
                     }
                     await api('/api/student/join', {
