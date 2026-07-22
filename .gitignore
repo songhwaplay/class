@@ -13,3 +13,6 @@ __pycache__/
 # Standalone nested repositories (commit/publish them separately)
 /learning/basics/arithmetics/
 /learning/basics/hanguksa-basic/
+
+# Deployment artifacts
+.deploy-worktree/
