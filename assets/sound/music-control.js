@@ -1,9 +1,12 @@
 (() => {
     "use strict";
 
-    const LEVEL_KEY = "classMusicVolumeLevel";
-    const MUTED_KEY = "classMusicMuted";
+    const MUSIC_LEVEL_KEY = "classMusicVolumeLevel";
+    const MUSIC_MUTED_KEY = "classMusicMuted";
+    const SFX_LEVEL_KEY = "classSfxVolumeLevel";
+    const SFX_MUTED_KEY = "classSfxMuted";
     const DEFAULT_LEVEL = 3;
+
     const currentScript = document.currentScript;
     if (!window.ClassGameSfx && !document.querySelector("script[data-class-game-sfx]")) {
         const sfxScript = document.createElement("script");
@@ -27,60 +30,98 @@
         document.head.appendChild(stylesheet);
     }
 
-    const savedLevel = Number(localStorage.getItem(LEVEL_KEY));
-    let level = Number.isInteger(savedLevel) && savedLevel >= 1 && savedLevel <= 5
-        ? savedLevel
+    // Load Music State
+    const savedMusicLevel = Number(localStorage.getItem(MUSIC_LEVEL_KEY));
+    let musicLevel = Number.isInteger(savedMusicLevel) && savedMusicLevel >= 1 && savedMusicLevel <= 5
+        ? savedMusicLevel
         : DEFAULT_LEVEL;
-    let muted = localStorage.getItem(MUTED_KEY) === "1";
+    let musicMuted = localStorage.getItem(MUSIC_MUTED_KEY) === "1";
+
+    // Load SFX State
+    const savedSfxLevel = Number(localStorage.getItem(SFX_LEVEL_KEY));
+    let sfxLevel = Number.isInteger(savedSfxLevel) && savedSfxLevel >= 1 && savedSfxLevel <= 5
+        ? savedSfxLevel
+        : musicLevel;
+    let sfxMuted = localStorage.getItem(SFX_MUTED_KEY) === "1";
+
     let applyingAudioState = false;
     let playbackUnlocked = false;
 
     const control = document.createElement("div");
     control.className = "unified-music-control";
     control.setAttribute("role", "group");
-    control.setAttribute("aria-label", "Music volume controls");
+    control.setAttribute("aria-label", "Audio volume controls");
     control.innerHTML = `
-        <span class="unified-music-label">MUSIC VOLUME:</span>
-        <button class="unified-music-mute" type="button">MUTE</button>
-        <div class="unified-music-levels" role="group" aria-label="Music volume level">
-            ${[1, 2, 3, 4, 5].map(value => `<button class="unified-music-segment" type="button" data-class-music-level="${value}" aria-label="Music volume ${value}"></button>`).join("")}
+        <div class="unified-audio-group">
+            <span class="unified-music-label">MUSIC:</span>
+            <button class="unified-music-mute" id="musicMuteBtn" type="button">MUTE</button>
+            <div class="unified-music-levels" role="group" aria-label="Music volume level">
+                ${[1, 2, 3, 4, 5].map(v => `<button class="unified-music-segment" type="button" data-class-music-level="${v}" aria-label="Music ${v}"></button>`).join("")}
+            </div>
+        </div>
+        <div class="unified-audio-divider"></div>
+        <div class="unified-audio-group">
+            <span class="unified-music-label">SFX:</span>
+            <button class="unified-music-mute" id="sfxMuteBtn" type="button">MUTE</button>
+            <div class="unified-music-levels" role="group" aria-label="SFX volume level">
+                ${[1, 2, 3, 4, 5].map(v => `<button class="unified-music-segment" type="button" data-class-sfx-level="${v}" aria-label="SFX ${v}"></button>`).join("")}
+            </div>
         </div>`;
+
     document.body.appendChild(control);
     document.body.classList.add("class-music-ready");
 
-    const muteButton = control.querySelector(".unified-music-mute");
-    const levelButtons = [...control.querySelectorAll("[data-class-music-level]")];
+    const musicMuteBtn = control.querySelector("#musicMuteBtn");
+    const musicLevelBtns = [...control.querySelectorAll("[data-class-music-level]")];
+    const sfxMuteBtn = control.querySelector("#sfxMuteBtn");
+    const sfxLevelBtns = [...control.querySelectorAll("[data-class-sfx-level]")];
 
     function storeState() {
-        localStorage.setItem(LEVEL_KEY, String(level));
-        localStorage.setItem(MUTED_KEY, muted ? "1" : "0");
+        localStorage.setItem(MUSIC_LEVEL_KEY, String(musicLevel));
+        localStorage.setItem(MUSIC_MUTED_KEY, musicMuted ? "1" : "0");
+        localStorage.setItem(SFX_LEVEL_KEY, String(sfxLevel));
+        localStorage.setItem(SFX_MUTED_KEY, sfxMuted ? "1" : "0");
     }
 
     function render() {
-        muteButton.textContent = muted ? "UNMUTE" : "MUTE";
-        muteButton.classList.toggle("is-muted", muted);
-        muteButton.setAttribute("aria-label", muted ? "Unmute music" : "Mute music");
-        levelButtons.forEach(button => {
-            const buttonLevel = Number(button.dataset.classMusicLevel);
-            button.classList.toggle("is-on", buttonLevel <= level);
-            button.setAttribute("aria-pressed", String(buttonLevel === level));
+        // Music UI
+        musicMuteBtn.textContent = musicMuted ? "UNMUTE" : "MUTE";
+        musicMuteBtn.classList.toggle("is-muted", musicMuted);
+        musicLevelBtns.forEach(btn => {
+            const val = Number(btn.dataset.classMusicLevel);
+            btn.classList.toggle("is-on", val <= musicLevel);
+        });
+
+        // SFX UI
+        sfxMuteBtn.textContent = sfxMuted ? "UNMUTE" : "MUTE";
+        sfxMuteBtn.classList.toggle("is-muted", sfxMuted);
+        sfxLevelBtns.forEach(btn => {
+            const val = Number(btn.dataset.classSfxLevel);
+            btn.classList.toggle("is-on", val <= sfxLevel);
         });
     }
 
     function applyAudioState() {
         if (applyingAudioState) return;
         applyingAudioState = true;
-        const targetVolume = level / 5;
+        const targetVolume = musicLevel / 5;
         if (Math.abs(audio.volume - targetVolume) > 0.001) audio.volume = targetVolume;
-        if (audio.muted !== muted) audio.muted = muted;
+        if (audio.muted !== musicMuted) audio.muted = musicMuted;
         audio.preload = "auto";
         applyingAudioState = false;
     }
 
     function announceState() {
         window.dispatchEvent(new CustomEvent("classmusicchange", {
-            detail: { level, muted, volume: level / 5 }
+            detail: { level: musicLevel, muted: musicMuted, volume: musicLevel / 5 }
         }));
+        window.dispatchEvent(new CustomEvent("classsfxchange", {
+            detail: { level: sfxLevel, muted: sfxMuted, volume: sfxLevel / 5 }
+        }));
+        if (window.ClassGameSfx) {
+            window.ClassGameSfx.setMuted(sfxMuted);
+            window.ClassGameSfx.setVolume(sfxLevel / 5);
+        }
     }
 
     async function startPlayback() {
@@ -93,28 +134,42 @@
         }
     }
 
-    function setLevel(nextLevel) {
-        level = Math.max(1, Math.min(5, Number(nextLevel) || DEFAULT_LEVEL));
-        muted = false;
+    musicMuteBtn.addEventListener("click", () => {
+        musicMuted = !musicMuted;
         storeState();
         render();
         applyAudioState();
         announceState();
         startPlayback();
-    }
+    });
 
-    function toggleMuted() {
-        muted = !muted;
+    musicLevelBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            musicLevel = Number(btn.dataset.classMusicLevel);
+            musicMuted = false;
+            storeState();
+            render();
+            applyAudioState();
+            announceState();
+            startPlayback();
+        });
+    });
+
+    sfxMuteBtn.addEventListener("click", () => {
+        sfxMuted = !sfxMuted;
         storeState();
         render();
-        applyAudioState();
         announceState();
-        startPlayback();
-    }
+    });
 
-    muteButton.addEventListener("click", toggleMuted);
-    levelButtons.forEach(button => {
-        button.addEventListener("click", () => setLevel(button.dataset.classMusicLevel));
+    sfxLevelBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            sfxLevel = Number(btn.dataset.classSfxLevel);
+            sfxMuted = false;
+            storeState();
+            render();
+            announceState();
+        });
     });
 
     audio.addEventListener("volumechange", () => {
@@ -123,17 +178,15 @@
     audio.addEventListener("play", applyAudioState);
     audio.addEventListener("loadeddata", () => {
         applyAudioState();
-        if (playbackUnlocked || muted) startPlayback();
+        if (playbackUnlocked || musicMuted) startPlayback();
     });
 
     const unlockPlayback = () => startPlayback();
     document.addEventListener("pointerdown", unlockPlayback, { capture: true, once: true });
     document.addEventListener("keydown", unlockPlayback, { capture: true, once: true });
-    document.addEventListener("visibilitychange", () => {
-        if (!document.hidden && playbackUnlocked && !audio.ended) startPlayback();
-    });
 
     render();
     applyAudioState();
+    announceState();
     startPlayback();
 })();

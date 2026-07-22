@@ -4,15 +4,15 @@
     if (window.ClassGameSfx) return;
 
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    const MUSIC_LEVEL_KEY = "classMusicVolumeLevel";
-    const MUSIC_MUTED_KEY = "classMusicMuted";
+    const SFX_LEVEL_KEY = "classSfxVolumeLevel";
+    const SFX_MUTED_KEY = "classSfxMuted";
     const DEFAULT_VOLUME = 0.6;
     const SOUND_NAMES = new Set(["click", "bell", "card", "stone", "success", "error", "tick"]);
 
     let context = null;
     let output = null;
     let noiseBuffer = null;
-    let muted = readStored(MUSIC_MUTED_KEY) === "1";
+    let muted = readStored(SFX_MUTED_KEY) === "1";
     let volume = readInitialVolume();
 
     function readStored(key) {
@@ -24,7 +24,9 @@
     }
 
     function readInitialVolume() {
-        const level = Number(readStored(MUSIC_LEVEL_KEY));
+        const storedSfx = readStored(SFX_LEVEL_KEY);
+        const storedMusic = readStored("classMusicVolumeLevel");
+        const level = Number(storedSfx || storedMusic);
         return Number.isInteger(level) && level >= 1 && level <= 5
             ? level / 5
             : DEFAULT_VOLUME;
@@ -268,7 +270,7 @@
         document.addEventListener("mousedown", handlePress, { capture: true, passive: true });
     }
     document.addEventListener("click", handleKeyboardClick, { capture: true });
-    window.addEventListener("classmusicchange", (event) => {
+    window.addEventListener("classsfxchange", (event) => {
         if (!event.detail) return;
         setMuted(event.detail.muted);
         setVolume(event.detail.volume);

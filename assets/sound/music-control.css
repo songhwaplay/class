@@ -14,39 +14,53 @@
     z-index: 100000;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
     width: max-content;
     max-width: calc(100vw - 20px);
     min-height: 36px;
-    padding: 4px 7px;
+    padding: 5px 10px;
     border: 2px solid #5f3f18;
-    border-radius: 2px;
+    border-radius: 4px;
     background: linear-gradient(180deg, #21160b 0%, #120c06 100%);
     box-shadow: 0 4px 14px rgba(0, 0, 0, .58), inset 0 1px rgba(255, 224, 156, .09);
     color: #d7c08d;
-    font: 800 13px/1 Georgia, "Times New Roman", serif;
+    font: 800 12px/1 Georgia, "Times New Roman", serif;
     letter-spacing: .4px;
+}
+
+.unified-audio-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.unified-audio-divider {
+    width: 1px;
+    height: 22px;
+    background: #5f3f18;
+    margin: 0 2px;
 }
 
 .unified-music-label {
     white-space: nowrap;
     color: #d7c08d;
+    font-weight: 900;
 }
 
 .unified-music-control .unified-music-mute {
     appearance: none;
     width: auto;
-    min-width: 64px;
-    min-height: 24px;
-    height: 24px;
+    min-width: 48px;
+    min-height: 22px;
+    height: 22px;
     margin: 0;
-    padding: 0 9px;
+    padding: 0 6px;
     border: 1px solid #704b1d;
     border-radius: 0;
     background: linear-gradient(180deg, #b18542 0%, #7c5523 100%);
     box-shadow: inset 0 1px rgba(255, 231, 173, .24);
     color: #1c1309;
-    font: 900 13px/22px Georgia, "Times New Roman", serif;
+    font: 900 11px/20px Georgia, "Times New Roman", serif;
     text-align: center;
     cursor: pointer;
 }
@@ -59,11 +73,11 @@
 .unified-music-levels {
     display: flex;
     align-items: center;
-    gap: 3px;
-    height: 29px;
+    gap: 2px;
+    height: 24px;
     margin: 0;
-    padding: 3px 5px;
-    border: 2px solid #624119;
+    padding: 2px 4px;
+    border: 1px solid #624119;
     background: #130d07;
     box-shadow: inset 0 2px 5px rgba(0, 0, 0, .82);
 }
@@ -71,10 +85,10 @@
 .unified-music-control .unified-music-segment {
     appearance: none;
     display: block;
-    width: 22px;
-    min-width: 22px;
-    height: 19px;
-    min-height: 19px;
+    width: 16px;
+    min-width: 16px;
+    height: 16px;
+    min-height: 16px;
     margin: 0;
     padding: 0;
     border: 1px solid #79501d;
