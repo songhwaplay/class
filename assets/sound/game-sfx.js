@@ -6,7 +6,7 @@
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
     const SFX_LEVEL_KEY = "classSfxVolumeLevel";
     const SFX_MUTED_KEY = "classSfxMuted";
-    const DEFAULT_VOLUME = 0.6;
+    const DEFAULT_VOLUME = 0.85;
     const SOUND_NAMES = new Set(["click", "bell", "card", "stone", "success", "error", "tick"]);
 
     let context = null;
@@ -113,8 +113,9 @@
 
     function playClick(ctx) {
         const now = ctx.currentTime;
-        tone(ctx, { start: now, from: 760, to: 470, duration: 0.045, gain: 0.075, type: "triangle" });
-        tone(ctx, { start: now + 0.004, from: 1320, to: 880, duration: 0.028, gain: 0.025 });
+        tone(ctx, { start: now, from: 920, to: 520, duration: 0.05, gain: 0.28, type: "triangle" });
+        tone(ctx, { start: now + 0.003, from: 1600, to: 980, duration: 0.03, gain: 0.18, type: "sine" });
+        noise(ctx, { start: now, duration: 0.02, frequency: 3200, q: 0.8, gain: 0.12 });
     }
 
     function playBell(ctx) {
