@@ -296,11 +296,10 @@
         <section class="profile-card">
             <div class="eyebrow">TEACHER CLASSROOM DASHBOARD</div>
             <h1 class="teacher-title" id="teacher-greeting">
-                <span id="school-disp">학교명</span> <span id="class-disp">학급 정보</span><br>
-                <span id="teacher-disp">교사명</span> 선생님, 환영합니다! 👋
+                <span id="school-disp">학교명</span> <span id="class-disp">학급 정보</span> · <span id="teacher-disp">교사명</span>
             </h1>
             <p style="margin: 0; color: #bde0dc; font-size: 1rem; line-height: 1.6;" id="profile-subtext">
-                사이트 관리자 페이지에서 세팅된 담당 학급 정보가 성공적으로 연결되었습니다.
+                학급 관리 포털
             </p>
             <div class="meta-chips">
                 <div class="chip chip-highlight">🏫 <span id="chip-school">학교명 불러오는 중...</span></div>
@@ -409,14 +408,12 @@
 
                     if (teacherProfile && teacherProfile.profile) {
                         applyProfileData(teacherProfile.profile);
-                        statusInfo.textContent = '✅ 사이트 관리자가 설정한 학급 정보가 연동되었습니다.';
                     } else {
                         // 학급 정보 API 조회 시도
                         const classData = await api('/api/teacher/class').catch(() => null);
                         if (classData && classData.classroom) {
                             applyProfileData(classData.classroom);
                             studentCountInfo.textContent = `학생 수: ${classData.classroom.students?.length || 0}명`;
-                            statusInfo.textContent = '✅ 등록된 학급 정보가 불러와졌습니다.';
                         } else {
                             // 로컬/예시 기본값
                             applyProfileData({
@@ -426,7 +423,6 @@
                                 classNumber: 2,
                                 name: '김선생님'
                             });
-                            statusInfo.textContent = 'ℹ️ 개발 예시 학급 정보가 표시되고 있습니다.';
                         }
                     }
 
