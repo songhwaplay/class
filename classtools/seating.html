@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#173f45">
+    <title>교실 자리 배치 · Classroom Seating</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #172033;
+            --muted: #5b6770;
+            --paper: #fffdf7;
+            --canvas: #f3eee3;
+            --line: #dcd5c7;
+            --brand: #173f45;
+            --brand-light: #2ec4b6;
+            --accent: #e79437;
+            --shadow: 0 16px 45px rgba(23, 32, 51, 0.10);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-width: 320px;
+            min-height: 100vh;
+            color: var(--ink);
+            background: var(--canvas);
+            font-family: Pretendard, "Malgun Gothic", system-ui, sans-serif;
+        }
+
+        main {
+            width: min(100% - 32px, 1080px);
+            margin: 0 auto;
+            padding: 40px 0 80px;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: var(--brand);
+            background: var(--paper);
+            font-weight: 800;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            border-color: #0d272b;
+            background: var(--brand);
+            color: white;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            padding: 28px;
+            background: var(--paper);
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .blackboard {
+            width: min(480px, 90%);
+            margin: 0 auto 32px;
+            padding: 14px;
+            border: 6px solid #6b4c2b;
+            border-radius: 8px;
+            background: #193b2d;
+            color: #e5f5ec;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 900;
+            letter-spacing: 0.2em;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .seating-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+
+        .desk {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90px;
+            border: 2px solid var(--line);
+            border-radius: 14px;
+            background: #fff;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .desk:hover {
+            border-color: var(--brand-light);
+            transform: translateY(-2px);
+        }
+
+        .desk-num {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .desk-name {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--brand);
+        }
+
+        .controls-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .seating-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media print {
+            .header-nav, .controls-row, .btn { display: none !important; }
+            main { padding: 0; }
+            .card { box-shadow: none; border: 0; }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div class="header-nav">
+            <div>
+                <a class="btn" href="index.html">← 교사 메인으로</a>
+            </div>
+            <div style="font-weight: 800; color: var(--muted);" id="class-header">
+                학급 정보 불러오는 중...
+            </div>
+        </div>
+
+        <section class="card">
+            <h1 style="margin: 0 0 16px; font-size: 1.8rem; font-weight: 900;">🪑 교실 자리 배치</h1>
+            
+            <!-- 칠판 위치 표시 -->
+            <div class="blackboard">칠 판 (앞)</div>
+
+            <!-- 자리 배치 배치도 그리드 -->
+            <div class="seating-grid" id="seating-grid"></div>
+
+            <div class="controls-row">
+                <button class="btn btn-primary" id="shuffle-btn" type="button">🎲 자리 무작위 섞기</button>
+                <button class="btn" onclick="window.print()" type="button">🖨️ 배치도 인쇄하기</button>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        (() => {
+            'use strict';
+            const seatingGrid = document.getElementById('seating-grid');
+            const classHeader = document.getElementById('class-header');
+            const shuffleBtn = document.getElementById('shuffle-btn');
+
+            let students = [];
+
+            async function api(path) {
+                const res = await fetch(path);
+                return res.json();
+            }
+
+            function renderDesks() {
+                seatingGrid.innerHTML = '';
+                const totalDesks = Math.max(30, students.length);
+                for (let i = 0; i < totalDesks; i++) {
+                    const desk = document.createElement('div');
+                    desk.className = 'desk';
+                    const student = students[i];
+                    desk.innerHTML = `
+                        <span class="desk-num">${i + 1}번 좌석</span>
+                        <span class="desk-name">${student ? student.name : '빈자리'}</span>
+                    `;
+                    seatingGrid.appendChild(desk);
+                }
+            }
+
+            function shuffleStudents() {
+                for (let i = students.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [students[i], students[j]] = [students[j], students[i]];
+                }
+                renderDesks();
+            }
+
+            async function init() {
+                try {
+                    const classRes = await api('/api/teacher/class').catch(() => null);
+                    if (classRes && classRes.classroom) {
+                        const c = classRes.classroom;
+                        classHeader.textContent = `${c.schoolName} ${c.grade}학년 ${c.classNumber}반 (${c.teacherName} 선생님)`;
+                        students = (c.students || []).map(s => ({ number: s.number, name: s.name }));
+                    } else {
+                        classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
+                        students = [
+                            { name: '김민준' }, { name: '이서연' }, { name: '박지우' }, { name: '최하늘' },
+                            { name: '정예준' }, { name: '강도윤' }, { name: '조은서' }, { name: '윤하은' },
+                            { name: '장민서' }, { name: '임주원' }, { name: '한지후' }, { name: '오서진' }
+                        ];
+                    }
+                } catch (_) {
+                    classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
+                }
+                renderDesks();
+            }
+
+            shuffleBtn.addEventListener('click', shuffleStudents);
+            init();
+        })();
+    </script>
+</body>
+</html>

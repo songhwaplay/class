@@ -409,14 +409,14 @@
 </head>
 <body>
     <div class="top-nav-bar" aria-label="교사 및 관리자 메뉴">
-        <a id="classToolsLink" class="class-tools-link" href="classtools/roster.html">🏫 교사 페이지 (학급 관리)</a>
+        <a id="classToolsLink" class="class-tools-link" href="classtools/index.html">🏫 교사 페이지 (학급 관리)</a>
         <a id="adminToolsLink" class="class-tools-link" href="admin/index.html">⚙️ 관리자 페이지</a>
     </div>
     <audio id="bgm" src="assets/sound/index.mp3" autoplay loop preload="auto"></audio>
 
     <!-- 교사 / 관리자 전용 바로가기 바 -->
     <div class="teacher-admin-bar">
-        <a class="teacher-link-btn" href="classtools/roster.html">🏫 교사 페이지 (학급 관리)</a>
+        <a class="teacher-link-btn" href="classtools/index.html">🏫 교사 페이지 (학급 관리)</a>
         <a class="admin-link-btn" href="admin/index.html">⚙️ 관리자 페이지</a>
     </div>
 
@@ -544,7 +544,7 @@
     <section class="hub-section admin-section" aria-labelledby="admin-tools-title">
         <h2 id="admin-tools-title" class="section-title">교사 · 관리자 도구</h2>
         <div class="worksheet-container">
-            <a href="classtools/roster.html">
+            <a href="classtools/index.html">
                 <span class="worksheet-copy"><strong>학급 관리 (교사전용)</strong><small>(Class Roster)</small></span>
                 <span class="worksheet-arrow" aria-hidden="true">→</span>
             </a>
@@ -709,7 +709,7 @@
                     return;
                 }
                 if (state.user?.role === 'teacher') {
-                    location.replace('/classtools/roster.html');
+                    location.replace('/classtools/index.html');
                     return;
                 }
                 if (state.membership) showStudentHome(state);
@@ -812,7 +812,7 @@
                                 password: studentPasswordInput.value,
                             }),
                         });
-                        location.replace('/classtools/roster.html');
+                        location.replace('/classtools/index.html');
                         return;
                     }
                     await api('/api/student/join', {

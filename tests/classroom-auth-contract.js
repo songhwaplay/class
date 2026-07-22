@@ -35,8 +35,8 @@ assert.match(indexScript, /studentNumberInput\.value === '0'/,
   "Number zero must select the teacher login flow.");
 assert.match(indexScript, /\/api\/teacher\/claim/,
   "Teacher number zero must verify the administrator-created teacher profile.");
-assert.match(indexScript, /location\.replace\('\/classtools\/roaster\.html'\)/,
-  "A verified teacher must be sent to the roster page.");
+assert.match(indexScript, /location\.replace\('\/classtools\/(?:roster|index)\.html'\)/,
+  "A verified teacher must be sent to the teacher page.");
 assert.doesNotMatch(indexHtml, /id="teacherSetupLink"/,
   "Teacher access should use number zero instead of a separate link.");
 assert.match(indexScript, /password: studentPasswordInput\.value/,
