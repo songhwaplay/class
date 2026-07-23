@@ -15,13 +15,20 @@ assert.match(server, /distanceXY\(player\.x, player\.y, player\.shipLandingX, pl
 assert.match(server, /socket\.on\('useShoreTransfer'/);
 assert.match(server, /kind: fromSea \? 'shoreDisembark' : 'shoreEmbark'/);
 assert.match(server, /shipMooringAfter: mooring/);
+assert.match(server, /shipAnchorX: Number\.isFinite\(p\.shipAnchorX\)/);
+assert.match(server, /shipAnchorDir: Number\.isInteger\(p\.shipAnchorDir\)/);
 assert.match(server, /같은 상륙 지점으로 돌아와야 다시 승선할 수 있습니다/);
 assert.match(student, /portInteraction\.kind==='shore'/);
 assert.match(student, /shore\?'useShoreTransfer':'useCatalogPort'/);
+assert.match(student, /function drawAnchoredShipAt\(p,isMine,cw,ch\)/);
+assert.match(student, /name:`⚓ \$\{p\.name\}의 배`/);
+assert.match(student, /drawAnchoredShipAt\(p,false,cw,ch\)/);
+assert.match(student, /drawAnchoredShipAt\(mine,true,cw,ch\)/);
 
 console.log(JSON.stringify({
   ok: true,
   landing: 'near-coast-only',
   embark: 'anchored-shore-only',
+  anchoredShipVisible: true,
   portPriority: true
 }));

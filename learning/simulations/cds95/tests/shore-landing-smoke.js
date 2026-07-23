@@ -33,9 +33,12 @@ function ack(socket, event, payload = {}) {
 
 (async () => {
   const student = io(BASE, { transports: ['websocket'], forceNew: true, reconnection: false });
-  await once(student, 'connect');
-  const joined = await ack(student, 'joinSolo', { name: '해안탐험가' });
+  const observer = io(BASE, { transports: ['websocket'], forceNew: true, reconnection: false });
+  await Promise.all([once(student, 'connect'), once(observer, 'connect')]);
+  const joined = await ack(student, 'joinSolo', { name: '해안탐험가', school: '송화초', grade: 6 });
   assert.equal(joined.ok, true, joined.error);
+  const observedJoin = await ack(observer, 'joinSolo', { name: '배관찰자', school: '송화초', grade: 6 });
+  assert.equal(observedJoin.ok, true, observedJoin.error);
 
   await once(student, 'snapshot', (snap) => snap.you.mode === 'sea' && !snap.you.transition);
   student.emit('setTarget', { x: 1182.5 * 16, y: 354.5 * 16 });
@@ -46,6 +49,16 @@ function ack(socket, event, payload = {}) {
   assert.equal(disembark.ok, true, disembark.error);
   const land = await once(student, 'snapshot', (snap) => snap.you.mode === 'land' && !snap.you.transition && snap.portInteraction?.kind === 'shore');
   assert.equal(land.you.shipAnchoredAtShore, true);
+  assert.ok(Number.isFinite(land.you.shipAnchorX));
+  assert.ok(Number.isFinite(land.you.shipAnchorY));
+  assert.ok(Number.isInteger(land.you.shipAnchorDir));
+  const observedShip = await once(observer, 'snapshot', (snap) => snap.nearby.some((player) =>
+    player.name === '해안탐험가'
+    && player.shipAnchoredAtShore
+    && Number.isFinite(player.shipAnchorX)
+    && Number.isFinite(player.shipAnchorY)
+  ));
+  assert.equal(observedShip.nearby.find((player) => player.name === '해안탐험가').shipAnchoredAtShore, true);
 
   const embark = await ack(student, 'useShoreTransfer');
   assert.equal(embark.ok, true, embark.error);
@@ -55,9 +68,11 @@ function ack(socket, event, payload = {}) {
   console.log(JSON.stringify({
     ok: true,
     disembarkedAtCoast: true,
+    anchoredShipPublished: true,
     returnedToSameShip: true
   }));
   student.disconnect();
+  observer.disconnect();
 })().catch((error) => {
   console.error(error);
   process.exit(1);

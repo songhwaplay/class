@@ -1405,6 +1405,9 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     shipPortName: RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name
       || (Number.isFinite(p.shipAnchorX) ? '해안 상륙 지점' : ''),
     shipAnchoredAtShore: Number.isFinite(p.shipAnchorX),
+    shipAnchorX: Number.isFinite(p.shipAnchorX) ? p.shipAnchorX : null,
+    shipAnchorY: Number.isFinite(p.shipAnchorY) ? p.shipAnchorY : null,
+    shipAnchorDir: Number.isInteger(p.shipAnchorDir) ? p.shipAnchorDir : 0,
     fatigue: Math.round(Fatigue.clamp(p.fatigue) * 10) / 10,
     fatigueSpeedMultiplier: Math.round(Fatigue.speedMultiplier(p.fatigue) * 1000) / 1000,
     transition
@@ -1482,6 +1485,7 @@ function updateTimedTransition(p, _nowGameMinutes, nowRealMs = Date.now()) {
     p.shipPortId = action.shipPortIdAfter;
     p.shipAnchorX = null;
     p.shipAnchorY = null;
+    p.shipAnchorDir = null;
     p.shipLandingX = null;
     p.shipLandingY = null;
     const activeMission = store.room(p.roomCode).activeMission;
@@ -1494,6 +1498,7 @@ function updateTimedTransition(p, _nowGameMinutes, nowRealMs = Date.now()) {
     p.shipPortId = null;
     p.shipAnchorX = Number.isFinite(mooring?.anchorPoint?.x) ? mooring.anchorPoint.x : null;
     p.shipAnchorY = Number.isFinite(mooring?.anchorPoint?.y) ? mooring.anchorPoint.y : null;
+    p.shipAnchorDir = Number.isInteger(mooring?.anchorDir) ? mooring.anchorDir : null;
     p.shipLandingX = Number.isFinite(mooring?.landingPoint?.x) ? mooring.landingPoint.x : null;
     p.shipLandingY = Number.isFinite(mooring?.landingPoint?.y) ? mooring.landingPoint.y : null;
   }
@@ -1679,6 +1684,7 @@ io.on('connection', (socket) => {
         shipPortId: startPlace?.id || 'lisbon',
         shipAnchorX: null,
         shipAnchorY: null,
+        shipAnchorDir: null,
         shipLandingX: null,
         shipLandingY: null,
         fatigue: 0,
@@ -1771,6 +1777,7 @@ io.on('connection', (socket) => {
         shipPortId: savedProgress?.shipPortId || savedRaceStart?.id || null,
         shipAnchorX: null,
         shipAnchorY: null,
+        shipAnchorDir: null,
         shipLandingX: null,
         shipLandingY: null,
         fatigue: 0,
@@ -2049,7 +2056,7 @@ io.on('connection', (socket) => {
     const destinationMode = fromSea ? 'land' : 'sea';
     const destinationPoint = safeSpawn(room, fromSea ? shore.landingPoint : shore.anchorPoint, destinationMode);
     const mooring = fromSea
-      ? { anchorPoint: shore.anchorPoint, landingPoint: destinationPoint }
+      ? { anchorPoint: shore.anchorPoint, anchorDir: p.dir, landingPoint: destinationPoint }
       : null;
     beginTimedTransition(p, {
       kind: fromSea ? 'shoreDisembark' : 'shoreEmbark',
