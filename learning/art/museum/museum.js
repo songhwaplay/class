@@ -220,7 +220,7 @@
   function buildSculptureModel(work) {
     const model=new THREE.Group();
     const bronze=new THREE.MeshStandardMaterial({color:0x38271d,roughness:.3,metalness:.78});
-    const marble=new THREE.MeshStandardMaterial({color:0xd8d1c2,roughness:.46,metalness:.04});
+    const marble=new THREE.MeshStandardMaterial({color:0xbab2a5,roughness:.58,metalness:.02});
     const gold=new THREE.MeshStandardMaterial({color:0xa77a2e,roughness:.34,metalness:.72});
     const celadon=new THREE.MeshStandardMaterial({color:0x6f9d8b,roughness:.2,metalness:.04});
     const mat=work.id==='d01'?bronze:work.id==='d03'?gold:work.id==='d04'?celadon:marble;
@@ -231,12 +231,12 @@
       const bandMat=new THREE.MeshStandardMaterial({color:0xd8ded1,roughness:.3,metalness:.05});
       for(const y of [.68,1.02,1.35])sculptureMesh(model,new THREE.TorusGeometry(.51-(y-1)*.12,.018,8,48),bandMat,[0,y,0],[1,1,1],[Math.PI/2,0,0]);
     }else if(work.id==='d01'){
-      ellipsoid(model,mat,[0,1.38,0],[.47,.62,.35],[.18,0,-.08]);ellipsoid(model,mat,[0,2.08,.24],[.27,.31,.25],[.18,0,0]);
-      ellipsoid(model,mat,[0,.72,-.03],[.48,.3,.38]);
-      limb(model,mat,[-.3,.83,.05],[-.55,.28,.24],.17);limb(model,mat,[.3,.83,.05],[.56,.28,.22],.17);
-      limb(model,mat,[-.55,.28,.24],[-.5,.02,-.25],.14);limb(model,mat,[.56,.28,.22],[.47,.02,-.28],.14);
-      limb(model,mat,[-.35,1.62,.05],[-.56,1.03,.27],.13);limb(model,mat,[-.56,1.03,.27],[-.12,.72,.34],.11);
-      limb(model,mat,[.34,1.62,.06],[.55,1.16,.32],.13);limb(model,mat,[.55,1.16,.32],[.12,1.88,.43],.1);
+      ellipsoid(model,mat,[0,1.34,0],[.42,.56,.32],[.18,0,-.08]);ellipsoid(model,mat,[0,1.98,.22],[.2,.24,.2],[.2,0,0]);
+      ellipsoid(model,mat,[0,.72,-.03],[.43,.27,.34]);
+      limb(model,mat,[-.28,.83,.04],[-.51,.28,.22],.135);limb(model,mat,[.28,.83,.04],[.52,.28,.21],.135);
+      limb(model,mat,[-.51,.28,.22],[-.46,.02,-.23],.11);limb(model,mat,[.52,.28,.21],[.44,.02,-.25],.11);
+      limb(model,mat,[-.31,1.58,.04],[-.5,1.03,.25],.105);limb(model,mat,[-.5,1.03,.25],[-.1,.74,.32],.09);
+      limb(model,mat,[.31,1.58,.05],[.5,1.15,.29],.105);limb(model,mat,[.5,1.15,.29],[.1,1.81,.37],.082);
     }else if(work.id==='d03'){
       ellipsoid(model,mat,[0,1.28,0],[.38,.7,.27]);ellipsoid(model,mat,[0,2.05,0],[.24,.3,.23]);
       sculptureMesh(model,new THREE.TorusGeometry(.28,.055,10,32),mat,[0,2.3,0],[1,1,1],[Math.PI/2,0,0]);
@@ -254,7 +254,7 @@
       const venus=work.id==='d05';
       limb(model,mat,[-.2,0,0],[-.17,.92,0],.17);limb(model,mat,[.2,0,0],[.18,.92,.02],.17);
       if(venus)sculptureMesh(model,new THREE.ConeGeometry(.52,1.15,28),mat,[0,.7,0],[1,1,.7]);
-      ellipsoid(model,mat,[0,1.48,0],[.38,.62,.25],venus?[0,0,.08]:[0,0,-.04]);ellipsoid(model,mat,[0,2.2,0],[.23,.29,.22]);
+      ellipsoid(model,mat,[0,1.48,0],[.36,.59,.24],venus?[0,0,.08]:[0,0,-.04]);ellipsoid(model,mat,[0,2.14,0],[.18,.22,.18]);
       if(!venus){limb(model,mat,[-.3,1.72,0],[-.5,1.08,.04],.12);limb(model,mat,[.3,1.74,0],[.53,1.25,.12],.12);limb(model,mat,[.53,1.25,.12],[.34,.88,.22],.1);}
     }
     model.rotation.y=(parseInt(work.id.slice(1),10)%2?-.28:.3);return model;
@@ -262,7 +262,8 @@
 
   function addSculpture(work,index,z) {
     const group=new THREE.Group();group.position.set(index%2===0?-.75:.75,0,z);gallery.add(group);
-    const dims=getDisplaySize(work),artH=clamp(dims.h*1.16,1.8,3.35),artW=artH*(work.size.w/work.size.h);
+    const dims=getDisplaySize(work),minH=work.id==='d04'?1.25:1.55,maxH=work.id==='d02'?3.15:work.id==='d04'?1.8:2.75;
+    const artH=clamp(dims.h*1.05,minH,maxH),artW=artH*(work.size.w/work.size.h);
     const baseW=clamp(artW*.82,.92,1.55),baseH=.68+(index%2)*.12;
     mesh([baseW+.24,.16,baseW+.24],materials.stone,[0,.08,0],group);mesh([baseW,baseH,baseW],new THREE.MeshStandardMaterial({color:index%2?0x4d453c:0x71675b,roughness:.58}),[0,.16+baseH/2,0],group);
     const model=buildSculptureModel(work);group.add(model);
