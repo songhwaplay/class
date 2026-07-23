@@ -71,18 +71,29 @@ assert.doesNotMatch(
 
 assert.match(html, /styles\.css\?v=20260724-2/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-4/);
+assert.match(html, /museum\.js\?v=20260724-5/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
 assert.match(css, /\.finale-modal/);
 assert.match(museumJs, /museumFinaleRoomsV2/);
 assert.match(museumJs, /addFinaleWall\(rooms\[index\],shell\)/);
 assert.doesNotMatch(museumJs, /userData\.finaleTexture=true/, 'generated textures must initialize userData for the bundled Three.js version');
-assert.equal((museumJs.match(/\{q:'/g)||[]).length, 30, 'five galleries should each provide a six-question finale bank');
+assert.equal((museumJs.match(/\{q:'/g)||[]).length, 60, 'every displayed artwork should contribute one finale-bank question');
+const finaleEntries = [...museumJs.matchAll(/\{q:'([^']+)',options:\[([^\]]+)\],answer:(\d),explain:'([^']+)'\}/g)];
+assert.equal(finaleEntries.length, 60, 'all finale questions must follow the validated question schema');
+assert.equal(new Set(finaleEntries.map(match => match[1])).size, 60, 'finale question text must not be duplicated');
+for (const [, question, rawOptions, rawAnswer, explanation] of finaleEntries) {
+  const options = [...rawOptions.matchAll(/'([^']+)'/g)].map(match => match[1]);
+  const answer = Number(rawAnswer);
+  assert.equal(options.length, 3, `${question} must have exactly three choices`);
+  assert.ok(answer >= 0 && answer < options.length, `${question} has an invalid answer index`);
+  assert.ok(explanation.length >= 20, `${question} needs a useful answer explanation`);
+}
 assert.match(museumJs, /finaleQuizCorrect===total/, 'a stamp must require every finale answer to be correct');
 assert.match(museumJs, /showFinaleRetry\(finaleQuizRoom\)/, 'an imperfect finale attempt must end in retry instead of a stamp');
-assert.match(museumJs, /finaleQuizQuestions=shuffled\.slice\(0,3\)/, 'each finale attempt must draw only three questions from its bank');
+assert.match(museumJs, /const selected=shuffled\.slice\(0,3\)/, 'each finale attempt must draw only three questions from its bank');
 assert.match(museumJs, /Math\.random\(\)\*\(i\+1\)/, 'the finale question bank must be shuffled for each attempt');
 assert.match(museumJs, /signature===finaleLastQuestionSet\[room\.id\]/, 'an immediate retry must not repeat the same question set');
+assert.match(museumJs, /choices\.findIndex\(choice=>choice\.correct\)/, 'answer positions must be shuffled without losing the correct choice');
 
 console.log('museum-modal-contract: 60 artworks, finale missions, and responsive modal safeguards verified');
