@@ -46,6 +46,8 @@ test("menu-specific asset groups live with their menu", () => {
     "learning/arts/art-appreciation/assets/sound/museum/gallery-03-story.mp3",
     "learning/arts/art-appreciation/assets/sound/museum/gallery-04-line-color-imagination.mp3",
     "learning/arts/art-appreciation/assets/sound/museum/gallery-05-form-space.mp3",
+    "learning/arts/classical-music/assets/images/background.webp",
+    "learning/arts/korean-music/assets/images/background.webp",
     "learning/games/omok/assets/images/background.webp",
     "learning/games/omok/assets/sound/bgm.mp3",
     "learning/games/connect6/assets/images/background.webp",
@@ -55,6 +57,19 @@ test("menu-specific asset groups live with their menu", () => {
   for (const relativePath of expected) {
     assert.equal(fs.existsSync(path.join(root, relativePath)), true, relativePath);
   }
+});
+
+test("music appreciation pages use owned backgrounds without promotional copy", () => {
+  const classicalIndex = read("learning/arts/classical-music/index.html");
+  const classicalBackground = read("learning/arts/classical-music/background.css");
+  const koreanIndex = read("learning/arts/korean-music/index.html");
+  const koreanBackground = read("learning/arts/korean-music/background.css");
+
+  assert.match(classicalIndex, /href="background\.css"/);
+  assert.match(koreanIndex, /href="background\.css"/);
+  assert.match(classicalBackground, /assets\/images\/background\.webp/);
+  assert.match(koreanBackground, /assets\/images\/background\.webp/);
+  assert.doesNotMatch(classicalIndex, /문제은행|300문|3<\/b>\s*난이도|QUESTION BANK/);
 });
 
 test("museum galleries switch to their matching background music", () => {

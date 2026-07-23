@@ -1,0 +1,21 @@
+body {
+  background:
+    linear-gradient(#26170f80, #2a170dcc),
+    url("assets/images/background.webp") center top / cover fixed no-repeat,
+    var(--ground);
+}
+
+header {
+  background: linear-gradient(90deg, #1b1915dc 0%, #2c2115a3 52%, #2f1c1059 100%);
+}
+
+main {
+  background: #f3efe5ed;
+  box-shadow: 0 0 45px #1d100a70;
+}
+
+@media (max-width: 650px) {
+  body {
+    background-attachment: scroll;
+  }
+}
