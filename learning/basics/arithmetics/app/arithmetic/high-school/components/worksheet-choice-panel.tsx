@@ -18,6 +18,7 @@ export type WorksheetChoiceProblem = {
 type Props = {
   title: string;
   problems: WorksheetChoiceProblem[];
+  displayStyle?: boolean;
   selected: Record<string, string>;
   results: Record<string, boolean>;
   onSelect: (problemId: string, choiceId: string) => void;
@@ -25,7 +26,7 @@ type Props = {
   onClose: () => void;
 };
 
-export default function WorksheetChoicePanel({ title, problems, selected, results, onSelect, onGrade, onClose }: Props) {
+export default function WorksheetChoicePanel({ title, problems, displayStyle = false, selected, results, onSelect, onGrade, onClose }: Props) {
   const completed = problems.filter((problem) => selected[problem.id] !== undefined).length;
   return (
     <div className="trig-derivative-answer-panel-backdrop" role="presentation" onClick={onClose}>
@@ -41,11 +42,11 @@ export default function WorksheetChoicePanel({ title, problems, selected, result
               <div className="trig-derivative-choices">
                 {problem.choices.map((choice, choiceIndex) => (
                   <button className={`trig-derivative-choice${selected[problem.id] === choice.id ? " is-selected" : ""}`} type="button" key={choice.id} aria-pressed={selected[problem.id] === choice.id} onClick={() => onSelect(problem.id, choice.id)}>
-                    <span>{choiceIndex + 1}</span><MathFormula latex={choice.latex} />
+                    <span>{choiceIndex + 1}</span><MathFormula latex={choice.latex} displayStyle={displayStyle} />
                   </button>
                 ))}
               </div>
-              {problem.id in results && <div className={`trig-derivative-panel-grade ${results[problem.id] ? "is-correct" : "is-wrong"}`}>{results[problem.id] ? "정답" : <>정답 <MathFormula latex={problem.correctLatex} /></>}</div>}
+              {problem.id in results && <div className={`trig-derivative-panel-grade ${results[problem.id] ? "is-correct" : "is-wrong"}`}>{results[problem.id] ? "정답" : <>정답 <MathFormula latex={problem.correctLatex} displayStyle={displayStyle} /></>}</div>}
             </section>
           ))}
         </div>

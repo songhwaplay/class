@@ -69,8 +69,8 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
               <div className="polynomial-question-number">{String(index + 1).padStart(2, "0")}</div>
               <div className="polynomial-question-body">
                 <span className="polynomial-focus-label">{problem.label}</span>
-                <div className="derivative-expression trig-derivative-expression geometry-choice-expression"><MathFormula latex={problem.latex} /></div>
-                {answerSheet && <div className="derivative-static-answer"><MathFormula latex={problem.correctLatex} /></div>}
+                <div className="derivative-expression trig-derivative-expression geometry-choice-expression"><MathFormula latex={problem.latex} displayStyle /></div>
+                {answerSheet && <div className="derivative-static-answer"><MathFormula latex={problem.correctLatex} displayStyle /></div>}
               </div>
             </article>
           ))}
@@ -92,7 +92,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
           <button className="button primary" onClick={checkAll}>전체 채점</button>
         </div>
       </div>
-      {panelOpen && <WorksheetChoicePanel title={title} problems={displayedProblems} selected={selected} results={results} onSelect={selectChoice} onGrade={checkAll} onClose={() => setPanelOpen(false)} />}
+      {panelOpen && <WorksheetChoicePanel title={title} problems={displayedProblems} displayStyle selected={selected} results={results} onSelect={selectChoice} onGrade={checkAll} onClose={() => setPanelOpen(false)} />}
       <div className="a4-stage counting-a4-stage worksheet-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(false)}</div>
       <div className="a4-stage counting-a4-stage answer-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(true)}</div>
     </main>
