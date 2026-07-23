@@ -872,6 +872,13 @@ function getTodayRecords(gameId) {
   });
 }
 
+// Some older pages still link to the physical entry file.  The deployed app
+// exposes the home screen at `/`, so normalize that legacy URL before serving
+// the page instead of returning Express's "Cannot GET /index.html" response.
+app.get("/index.html", (req, res) => {
+  res.redirect(308, "/");
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(SITE_ROOT, "index.html"));
 });
