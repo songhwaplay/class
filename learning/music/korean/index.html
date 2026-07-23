@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>한국 음악 감상실</title><link rel="stylesheet" href="styles.css">
+  <title>한국 음악 감상실</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="details.css">
 </head>
 <body>
   <header><nav><a href="../../../">← 수업 도구</a><a href="../classics/">클래식 음악</a></nav><h1>한국 음악 감상실</h1><p>전통 음악 · 민요 · 창작 국악</p></header>
@@ -11,5 +11,5 @@
     <div class="filters"><button class="active" data-group="all">전체</button><button data-group="court">궁중·정악</button><button data-group="folk">민속악</button><button data-group="song">민요·놀이</button><button data-group="creative">창작 국악</button></div>
     <div id="group-info" class="group-info"></div><section id="playlist" class="playlist"></section>
   </main>
-  <footer>한국 음악 감상실</footer><script src="app.js"></script>
+  <footer>한국 음악 감상실</footer><dialog id="detail-dialog"><button class="dialog-close" type="button" aria-label="해설 닫기">×</button><div id="detail-content"></div></dialog><script src="app.js"></script>
 </body></html>

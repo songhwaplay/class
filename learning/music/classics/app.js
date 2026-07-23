@@ -45,6 +45,7 @@ const composerOriginal={
   '생상스':'Camille Saint-Saëns','무소륵스키':'Modest Mussorgsky','드보르자크':'Antonín Dvořák','라벨':'Maurice Ravel','드뷔시':'Claude Debussy','홀스트':'Gustav Holst',
   '프로코피예프':'Sergei Prokofiev','브리튼':'Benjamin Britten','스메타나':'Bedřich Smetana','하차투리안':'Aram Khachaturian'
 };
+const workYears={'01':'1723년','02':'1730년경','03':'1721년','04':'1717년','05':'1680년경','06':'1808년','07':'1824년','08':'1787년','09':'1781~1782년','10':'1791년','11':'1796년','12':'1829년','13':'1819년','14':'1815년','15':'1832년','16':'1869년','17':'1892년','18':'1876년','19':'1886년','20':'1874년','21':'1893년','22':'1928년','23':'1894년','24':'1916년','25':'1936년','26':'1945년','27':'1741년','28':'1783년','29':'1874년','30':'1942년'};
 const paired=(ko,foreign)=>`${ko} (${foreign})`;
 const termMaps={
   period:{'바로크':paired('바로크','Baroque'),'고전':paired('고전','Classical'),'낭만':paired('낭만','Romantic'),'근현대':paired('근현대','Modern & Contemporary')},
@@ -56,6 +57,7 @@ const termMaps={
 const instrumentOriginal={'바이올린':'violin','현악 합주':'string ensemble','하프시코드':'harpsichord','금관악기':'brass instruments','관현악':'orchestra','합창과 관현악':'chorus & orchestra','피아노':'piano','트럼펫':'trumpet','피아노와 현악기':'piano & strings','성악과 피아노':'voice & piano','관현악과 하프':'orchestra & harp','오보에와 관현악':'oboe & orchestra','첼로와 피아노':'cello & piano','잉글리시 호른':'English horn','스네어드럼과 관현악':'snare drum & orchestra','플루트':'flute','관현악과 해설':'orchestra & narrator'};
 pieces.forEach((p,i)=>{
   p.originalTitle=originalTitles[i];
+  p.year=workYears[p.no];
   p.titleAnswer=paired(p.title,p.originalTitle);
   p.composer=paired(p.composer,composerOriginal[p.composer]);
   ['period','form','tempo','meter','concept'].forEach(key=>{p[key]=termMaps[key][p[key]]||p[key]});
@@ -86,7 +88,7 @@ const pickWrong=(piece,key,seed)=>{
 const shuffle=(arr)=>arr.map(v=>({v,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);
 const allQuestions=pieces.flatMap((p,pi)=>templates.map(([stem,key],ti)=>{
   const answer=p[key], choices=shuffle([answer,...pickWrong(p,key,pi*11+ti)]);
-  return {id:`${p.no}-${ti+1}`,piece:p,level:levels[ti],stem,choices,correct:choices.indexOf(answer),answer,explain:`제시곡은 ${p.title} (${p.originalTitle})입니다. ${answer}. ${p.note}`};
+  return {id:`${p.no}-${ti+1}`,piece:p,level:levels[ti],stem,choices,correct:choices.indexOf(answer),answer,explain:`제시곡은 ${p.title} (${p.originalTitle}, ${p.year})입니다. ${answer}. ${p.note}`};
 }));
 
 const $=s=>document.querySelector(s);
@@ -102,7 +104,7 @@ function renderEraInfo(era){const info=eraInfo[era];$('#era-info').innerHTML=`<s
 function renderPieces(filter='all'){
   playlist.innerHTML=pieces.filter(p=>filter==='all'||p.era===filter).map(p=>`<article class="piece" data-no="${p.no}">
     <div class="piece-top"><span class="era">${p.period}</span><span>${p.form}</span></div>
-    <h3>${p.title}</h3><p class="composer original-title">${p.originalTitle}</p><p class="composer">${p.composer}</p>
+    <h3>${p.title}</h3><p class="composer original-title">${p.originalTitle}</p><p class="composer">${p.composer} · ${p.year}</p>
     <div class="piece-actions"><a class="listen" href="${p.url}" target="_blank" rel="noopener">▶ 감상곡 찾아 듣기</a><button class="detail-button" type="button" data-detail="${p.no}">＋ 자세한 해설</button></div>
     <dl><div><dt>주요 악기</dt><dd>${p.lead}</dd></div><div><dt>빠르기·박자</dt><dd>${p.tempo} · ${p.meter}</dd></div></dl>
     <p class="listen-point"><b>귀 기울일 곳</b>${p.feature}</p><p class="note"><b>${p.concept}</b> · ${p.note}</p>
@@ -123,7 +125,7 @@ const eraGuide={
 const detailDialog=$('#detail-dialog'),detailContent=$('#detail-content');
 function openDetail(piece){
   detailContent.innerHTML=`<p class="dialog-era">${piece.period} · ${piece.form}</p>
-    <h2 id="detail-title">${piece.title}</h2><p class="dialog-original">${piece.originalTitle}</p><p class="dialog-composer">${piece.composer}</p>
+    <h2 id="detail-title">${piece.title}</h2><p class="dialog-original">${piece.originalTitle}</p><p class="dialog-composer">${piece.composer} · 작품 연도 ${piece.year}</p>
     <section><h3>곡을 만나기 전에</h3><p>${eraGuide[piece.era]} 이 곡은 ${piece.note}라는 점에 주목하면 성격을 쉽게 이해할 수 있습니다.</p></section>
     <section><h3>음악 속 핵심 장면</h3><p>${piece.feature}. ${piece.lead}의 음색이 이 장면을 어떻게 표현하는지 귀 기울여 보세요. 전체적인 분위기는 ‘${piece.mood}’에 가깝습니다.</p></section>
     <section><h3>이렇게 세 번 들어 보세요</h3><ol><li>첫 번째에는 제목만 보고 자유롭게 장면과 느낌을 떠올립니다.</li><li>두 번째에는 ${piece.lead}와 ${piece.meter}를 중심으로 듣습니다.</li><li>세 번째에는 ${piece.concept}이 음악에서 어떻게 나타나는지 찾아 말로 설명합니다.</li></ol></section>
