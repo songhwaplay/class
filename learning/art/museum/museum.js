@@ -128,18 +128,19 @@
     const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t;
   }
 
-  function applyCover(texture,targetAspect) {
+  function fitArtworkPlane(texture,plane,targetAspect) {
     const img=texture.image;if(!img)return;const imageAspect=img.width/img.height;
     texture.wrapS=texture.wrapT=THREE.ClampToEdgeWrapping;texture.repeat.set(1,1);texture.offset.set(0,0);
-    if(imageAspect>targetAspect){texture.repeat.x=targetAspect/imageAspect;texture.offset.x=(1-texture.repeat.x)/2;}
-    else{texture.repeat.y=imageAspect/targetAspect;texture.offset.y=(1-texture.repeat.y)/2;}
+    plane.scale.set(1,1,1);
+    if(imageAspect>targetAspect)plane.scale.y=targetAspect/imageAspect;
+    else plane.scale.x=imageAspect/targetAspect;
     texture.encoding=THREE.sRGBEncoding;texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());texture.needsUpdate=true;
   }
 
-  function loadArtTexture(work,material,aspect,transparent=false) {
+  function loadArtTexture(work,material,plane,aspect,transparent=false) {
     const cached=textureCache.get(work.image);
-    if(cached){applyCover(cached,aspect);material.map=cached;material.needsUpdate=true;markLoaded();return;}
-    textureLoader.load(work.image,(t)=>{applyCover(t,aspect);textureCache.set(work.image,t);material.map=t;material.needsUpdate=true;markLoaded();},undefined,()=>{material.map=placeholderTexture(work.title);material.needsUpdate=true;markLoaded();});
+    if(cached){fitArtworkPlane(cached,plane,aspect);material.map=cached;material.needsUpdate=true;markLoaded();return;}
+    textureLoader.load(work.image,(t)=>{fitArtworkPlane(t,plane,aspect);textureCache.set(work.image,t);material.map=t;material.needsUpdate=true;markLoaded();},undefined,()=>{material.map=placeholderTexture(work.title);material.needsUpdate=true;markLoaded();});
     material.transparent=transparent;
   }
 
@@ -169,7 +170,7 @@
     const ambient=new THREE.HemisphereLight(0xb6a58b,0x1b1009,.72);gallery.add(ambient);
     const entrance=new THREE.Group();gallery.add(entrance);
     mesh([2.2,5,.5],materials.wallInset,[-(width/2-1.1),2.5,5.7],entrance);mesh([2.2,5,.5],materials.wallInset,[(width/2-1.1),2.5,5.7],entrance);mesh([width-4.4,1.15,.5],materials.wallInset,[0,5.42,5.7],entrance);
-    const sign=makeLabel(room.subtitle,'12점의 작품 · 원작 비율 전시',4.2);sign.position.set(0,4.55,5.4);gallery.add(sign);
+    const sign=makeLabel(room.subtitle,`${room.works.length}점의 작품 · 원작 비율 전시`,4.2);sign.position.set(0,4.55,5.4);gallery.add(sign);
     return {width,length,height};
   }
 
@@ -199,7 +200,7 @@
     // 작품 이미지는 조명의 입사각 때문에 어두워지지 않도록 자체 색으로 표시한다.
     // 액자와 벽, 바닥에는 기존 스포트라이트가 그대로 반응한다.
     const artMat=new THREE.MeshBasicMaterial({color:0xffffff,map:placeholderTexture(work.title),side:THREE.DoubleSide,toneMapped:false});
-    const plane=new THREE.Mesh(new THREE.PlaneGeometry(display.w,display.h),artMat);plane.position.z=.255;plane.userData.work=work;plane.userData.room=rooms[activeRoom];plane.castShadow=true;group.add(plane);clickable.push(plane);loadArtTexture(work,artMat,display.w/display.h);
+    const plane=new THREE.Mesh(new THREE.PlaneGeometry(display.w,display.h),artMat);plane.position.z=.255;plane.userData.work=work;plane.userData.room=rooms[activeRoom];plane.castShadow=true;group.add(plane);clickable.push(plane);loadArtTexture(work,artMat,plane,display.w/display.h);
     const label=makeLabel(work.title,work.artist,Math.min(2.3,display.w+border*2));label.position.set(0,-display.h/2-.42,.24);group.add(label);
     const target=new THREE.Object3D();target.position.set(x,3.05,z);addSpotlight(x,3.12+display.h/2,z,side,index,target);
   }
@@ -321,20 +322,21 @@
   }
 
   function setRoom(index,instant=false) {
-    activeRoom=index;clickable.length=0;sculptureObstacles.length=0;nearest=null;prompt.hidden=true;loadDone=0;loadTotal=12;
+    activeRoom=index;clickable.length=0;sculptureObstacles.length=0;nearest=null;prompt.hidden=true;loadDone=0;loadTotal=rooms[index].works.length;
     loading.classList.remove('done');loadingBar.style.width='0';loadingText.textContent='0%';
     if(gallery){scene.remove(gallery);gallery.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&!Array.isArray(o.material)&&!o.material.map)o.material.dispose();});}
     gallery=new THREE.Group();scene.add(gallery);const shell=buildShell(rooms[index]);
     if(rooms[index].id==='space'){
-      rooms[index].works.slice(0,6).forEach((w,i)=>addSculpture(w,i,1-i*4.85));
-      rooms[index].works.slice(6).forEach((w,i)=>addFramedWork(w,i+6,i%2===0?-1:1,-2-Math.floor(i/2)*8.8,shell.width));
+      const sculptures=rooms[index].works.filter(w=>w.type==='sculpture'), wallWorks=rooms[index].works.filter(w=>w.type!=='sculpture');
+      sculptures.forEach((w,i)=>addSculpture(w,i,1-i*4.85));
+      wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*8.8,shell.width));
     }else{
       rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width));
     }
     camera.position.set(0,1.68,6.35);yaw=0;pitch=-.015;velocity.set(0,0,0);camera.rotation.set(pitch,yaw,0);
     document.getElementById('room-kicker').textContent='GALLERY '+rooms[index].number;
     document.getElementById('room-title').textContent=rooms[index].title;
-    document.getElementById('room-count').textContent='12 WORKS';
+    document.getElementById('room-count').textContent=rooms[index].works.length+' WORKS';
     [...roomTabs.children].forEach((b,i)=>{b.classList.toggle('active',i===index);b.setAttribute('aria-current',i===index?'page':'false');});
     if(instant)loading.classList.add('done');
   }
@@ -375,8 +377,8 @@
 
   addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='Escape'&&modal.open)modal.close();if(e.code==='Enter'&&nearest&&!modal.open)showWork(nearest.userData.work,nearest.userData.room);});
   addEventListener('keyup',e=>{keys[e.code]=false;});
-  canvas.addEventListener('pointerdown',e=>{dragging=true;pointerDown={x:e.clientX,y:e.clientY,time:performance.now()};canvas.classList.add('dragging');canvas.setPointerCapture(e.pointerId);});
-  canvas.addEventListener('pointermove',e=>{if(!dragging)return;yaw-=e.movementX*.0032;pitch=clamp(pitch-e.movementY*.0025,-1.15,1.15);});
+  canvas.addEventListener('pointerdown',e=>{dragging=true;pointerDown={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,time:performance.now()};canvas.classList.add('dragging');canvas.setPointerCapture(e.pointerId);});
+  canvas.addEventListener('pointermove',e=>{if(!dragging||!pointerDown)return;const dx=e.clientX-pointerDown.lastX,dy=e.clientY-pointerDown.lastY;pointerDown.lastX=e.clientX;pointerDown.lastY=e.clientY;yaw-=dx*.0032;pitch=clamp(pitch-dy*.0025,-1.15,1.15);});
   canvas.addEventListener('pointerup',e=>{dragging=false;canvas.classList.remove('dragging');if(!pointerDown)return;const moved=Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y);if(moved<8&&performance.now()-pointerDown.time<550){pointer.x=e.clientX/innerWidth*2-1;pointer.y=-(e.clientY/innerHeight)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(clickable,false).find(x=>x.distance<10);if(hit)showWork(hit.object.userData.work,hit.object.userData.room);}pointerDown=null;});
   canvas.addEventListener('pointercancel',()=>{dragging=false;pointerDown=null;canvas.classList.remove('dragging');});
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));});
