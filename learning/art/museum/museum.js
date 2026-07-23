@@ -19,8 +19,8 @@
   const presenceEl = document.getElementById('class-presence');
 
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x090806);
-  scene.fog = new THREE.FogExp2(0x0b0907, 0.018);
+  scene.background = new THREE.Color(0x191613);
+  scene.fog = new THREE.FogExp2(0x211d19, 0.014);
 
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.08, 130);
   camera.rotation.order = 'YXZ';
@@ -32,7 +32,7 @@
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.08;
+  renderer.toneMappingExposure = 1.17;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.physicallyCorrectLights = true;
 
@@ -96,33 +96,36 @@
   function makeWoodTexture() {
     const c = document.createElement('canvas'); c.width=1024; c.height=1024;
     const g = c.getContext('2d');
-    g.fillStyle='#26170f'; g.fillRect(0,0,c.width,c.height);
-    const boardW=128, boardH=440;
-    for(let row=0;row<3;row++) for(let col=-1;col<9;col++){
+    g.fillStyle='#4f301f'; g.fillRect(0,0,c.width,c.height);
+    const boardW=112, boardH=410;
+    for(let row=0;row<3;row++) for(let col=-1;col<11;col++){
       const x=col*boardW+(row%2?64:0), y=row*boardH;
       const grad=g.createLinearGradient(x,y,x+boardW,y);
-      const light=20+((col*13+row*7)%12);
-      grad.addColorStop(0,`hsl(25 38% ${light-6}%)`);grad.addColorStop(.5,`hsl(26 45% ${light+3}%)`);grad.addColorStop(1,`hsl(22 38% ${light-5}%)`);
-      g.fillStyle=grad;g.fillRect(x+2,y+2,boardW-4,boardH-4);
-      g.strokeStyle='rgba(8,3,1,.7)';g.strokeRect(x,y,boardW,boardH);
-      for(let k=0;k<12;k++){
-        const yy=y+18+k*34+Math.sin((col+k)*2)*8;
-        g.strokeStyle=`rgba(255,185,105,${.02+(k%3)*.008})`;g.beginPath();g.moveTo(x+6,yy);g.bezierCurveTo(x+40,yy+8,x+82,yy-7,x+boardW-5,yy+3);g.stroke();
+      const light=34+Math.abs((col*11+row*7)%8);
+      grad.addColorStop(0,`hsl(25 30% ${light-3}%)`);
+      grad.addColorStop(.42,`hsl(27 34% ${light+3}%)`);
+      grad.addColorStop(1,`hsl(23 29% ${light-2}%)`);
+      g.fillStyle=grad;g.fillRect(x+1,y+2,boardW-2,boardH-4);
+      g.strokeStyle='rgba(37,18,8,.42)';g.lineWidth=2;g.strokeRect(x,y,boardW,boardH);
+      for(let k=0;k<16;k++){
+        const yy=y+14+k*25+Math.sin((col+k)*1.7)*7;
+        g.strokeStyle=`rgba(255,220,166,${.022+(k%4)*.006})`;g.beginPath();g.moveTo(x+5,yy);g.bezierCurveTo(x+34,yy+7,x+76,yy-6,x+boardW-4,yy+2);g.stroke();
+        if(k%5===0){g.strokeStyle='rgba(62,28,12,.15)';g.beginPath();g.moveTo(x+8,yy+5);g.bezierCurveTo(x+42,yy-5,x+76,yy+9,x+boardW-7,yy);g.stroke();}
       }
     }
-    const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2.5,5.5);t.anisotropy=renderer.capabilities.getMaxAnisotropy();t.encoding=THREE.sRGBEncoding;return t;
+    const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3.2,6.2);t.anisotropy=renderer.capabilities.getMaxAnisotropy();t.encoding=THREE.sRGBEncoding;return t;
   }
 
   const woodTexture = makeWoodTexture();
   const materials = {
-    wall:new THREE.MeshStandardMaterial({color:0x1a1816,roughness:.92,metalness:.02}),
-    wallInset:new THREE.MeshStandardMaterial({color:0x151310,roughness:.86,metalness:.03}),
-    walnut:new THREE.MeshStandardMaterial({map:woodTexture,color:0x8d6042,roughness:.28,metalness:.08}),
-    ceiling:new THREE.MeshStandardMaterial({color:0x4a4035,roughness:.8}),
-    brass:new THREE.MeshStandardMaterial({color:0xa7803d,roughness:.26,metalness:.78}),
-    darkBrass:new THREE.MeshStandardMaterial({color:0x4d351b,roughness:.42,metalness:.65}),
-    black:new THREE.MeshStandardMaterial({color:0x080706,roughness:.7}),
-    stone:new THREE.MeshStandardMaterial({color:0x655b50,roughness:.67,metalness:.04})
+    wall:new THREE.MeshStandardMaterial({color:0x2b2926,roughness:.96,metalness:.01}),
+    wallInset:new THREE.MeshStandardMaterial({color:0x211f1c,roughness:.92,metalness:.02}),
+    walnut:new THREE.MeshStandardMaterial({map:woodTexture,color:0xd8c2aa,roughness:.64,metalness:.015,emissive:0x24180f,emissiveIntensity:.42}),
+    ceiling:new THREE.MeshStandardMaterial({color:0x81776d,roughness:.94}),
+    brass:new THREE.MeshStandardMaterial({color:0xb7904d,roughness:.3,metalness:.72}),
+    darkBrass:new THREE.MeshStandardMaterial({color:0x72532d,roughness:.45,metalness:.58}),
+    black:new THREE.MeshStandardMaterial({color:0x181512,roughness:.76}),
+    stone:new THREE.MeshStandardMaterial({color:0x8a8176,roughness:.72,metalness:.025})
   };
 
   function mesh(box, mat, position, parent=gallery) {
@@ -196,9 +199,9 @@
     for(let z=4;z>GALLERY_END;z-=6.2){
       mesh([width-1.1,.12,.28],materials.darkBrass,[0,6.05,z]);
       const strip=mesh([4.2,.05,.42],new THREE.MeshBasicMaterial({color:0xe5b870}),[0,5.88,z]);strip.castShadow=false;
-      const light=new THREE.PointLight(0xffd8a1,26,9,2);light.position.set(0,5.66,z);gallery.add(light);
+      const light=new THREE.PointLight(0xffdfb5,24,10,1.8);light.position.set(0,5.66,z);gallery.add(light);
     }
-    const ambient=new THREE.HemisphereLight(0xb6a58b,0x1b1009,.72);gallery.add(ambient);
+    const ambient=new THREE.HemisphereLight(0xc8b69e,0x2a2019,.78);gallery.add(ambient);
     const entrance=new THREE.Group();gallery.add(entrance);
     mesh([2.2,5,.5],materials.wallInset,[-(width/2-1.1),2.5,5.7],entrance);mesh([2.2,5,.5],materials.wallInset,[(width/2-1.1),2.5,5.7],entrance);mesh([width-4.4,1.15,.5],materials.wallInset,[0,5.42,5.7],entrance);
     const sign=makeLabel(room.subtitle,`${room.works.length}점의 작품 · 원작 비율 전시`,4.2);sign.position.set(0,4.55,5.4);gallery.add(sign);
@@ -212,7 +215,7 @@
   }
 
   function addSpotlight(x,y,z,side,index,target) {
-    const spot=new THREE.SpotLight(0xffc77e,105,8.5,Math.PI*.19,.5,1.7);spot.position.set(x-side*.85,Math.min(5.7,y+1.7),z+.05);spot.target=target;spot.castShadow=index%3===0;spot.shadow.mapSize.set(512,512);spot.shadow.bias=-.00015;gallery.add(spot,spot.target);
+    const spot=new THREE.SpotLight(0xffd29a,62,8.2,Math.PI*.18,.48,1.8);spot.position.set(x-side*.85,Math.min(5.7,y+1.7),z+.05);spot.target=target;spot.castShadow=index%3===0;spot.shadow.mapSize.set(512,512);spot.shadow.bias=-.00015;gallery.add(spot,spot.target);
     const stem=mesh([.08,.08,.8],materials.brass,[x-side*.42,Math.min(5.78,y+1.82),z]);stem.rotation.z=side*Math.PI/2;
     const head=mesh([.24,.18,.34],materials.darkBrass,[x-side*.82,Math.min(5.68,y+1.75),z]);head.rotation.z=side*Math.PI/2;
   }
