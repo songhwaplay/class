@@ -223,8 +223,16 @@
     const mat=sculptureMaterial(work);
 
     if(work.id==='d04'){
-      const profile=[[0,0],[.34,.04],[.52,.28],[.6,.76],[.5,1.45],[.27,1.75],[.19,1.9],[.2,2.08],[.1,2.16]].map(([x,y])=>new THREE.Vector2(x,y));
-      sculptureMesh(model,new THREE.LatheGeometry(profile,48),mat,[0,0,0]);
+      const controls=[[0,0],[.35,.025],[.5,.16],[.59,.48],[.61,.88],[.58,1.23],[.49,1.52],[.32,1.76],[.18,1.9],[.17,2.05],[.1,2.12],[.1,2.18]];
+      const profile=[];
+      for(let i=0;i<controls.length-1;i++){
+        const [x1,y1]=controls[i],[x2,y2]=controls[i+1];
+        for(let step=0;step<8;step++){
+          const t=step/8,s=t*t*(3-2*t);profile.push(new THREE.Vector2(THREE.MathUtils.lerp(x1,x2,s),THREE.MathUtils.lerp(y1,y2,t)));
+        }
+      }
+      profile.push(new THREE.Vector2(...controls[controls.length-1]));
+      const vase=sculptureMesh(model,new THREE.LatheGeometry(profile,128),mat,[0,0,0]);vase.geometry.computeVertexNormals();
       const bandMat=new THREE.MeshStandardMaterial({color:0xd8ded1,roughness:.3,metalness:.05});
       for(const y of [.68,1.02,1.35])sculptureMesh(model,new THREE.TorusGeometry(.51-(y-1)*.12,.018,8,48),bandMat,[0,y,0],[1,1,1],[Math.PI/2,0,0]);
     }else if(work.id==='d01'){
@@ -260,7 +268,7 @@
   function sculptureMaterial(work) {
     if(work.id==='d01')return new THREE.MeshStandardMaterial({color:0x38271d,roughness:.3,metalness:.78});
     if(work.id==='d03')return new THREE.MeshStandardMaterial({color:0xa77a2e,roughness:.34,metalness:.72});
-    if(work.id==='d04')return new THREE.MeshStandardMaterial({color:0x6f9d8b,roughness:.2,metalness:.04});
+    if(work.id==='d04')return new THREE.MeshStandardMaterial({color:0x416f63,roughness:.3,metalness:.03});
     return new THREE.MeshStandardMaterial({color:0xbab2a5,roughness:.58,metalness:.02});
   }
 
