@@ -688,15 +688,19 @@
       model.position.z=-center.z*modelScale;
     }
     model.position.y=pedestalTop-bounds.min.y*modelScale;
-    if(work.applyRoomOffset)model.position.z+=group.userData.placementZ;
+    if(work.hasBuiltInBase&&group.userData.label){
+      // Anchor the label to the scanned base itself instead of estimating its
+      // depth from the artwork dimensions. This keeps the Haechi label attached.
+      group.userData.label.position.set(0,.55,model.position.z+bounds.max.z*modelScale+.045);
+    }
     model.updateMatrix();
     model.traverse(part=>{if(part.isMesh){part.userData.work=work;part.userData.room=rooms[activeRoom];part.castShadow=true;part.receiveShadow=true;clickable.push(part);}});
   }
 
   function addSculpture(work,index,z,version,roomGallery) {
     const isGrand=rooms[activeRoom].id==='space';
-    const placementZ=z, placementX=work.applyRoomOffset?0:index%2===0?-.75:.75;
-    const group=new THREE.Group();group.position.set(placementX,0,work.applyRoomOffset?0:z);group.userData.placementZ=placementZ;gallery.add(group);
+    const placementZ=z, placementX=index%2===0?-.75:.75;
+    const group=new THREE.Group();group.position.set(placementX,0,z);group.userData.placementZ=placementZ;gallery.add(group);
     const dims=getDisplaySize(work),minH=work.id==='d04'?1.25:1.55,maxH=work.id==='d02'?3.15:work.id==='d04'?1.8:2.75;
     const artH=work.actualScale?work.size.h/100:clamp(dims.h*1.05,minH,maxH),artW=artH*(work.size.w/work.size.h);
     const baseW=work.actualScale?clamp(artW*1.05,1.4,3.1):clamp(artW*.82,.92,1.55),baseH=work.hasBuiltInBase ? .1 : .68+(index%2)*.12;
@@ -719,9 +723,9 @@
     const labelWidth=clamp(baseW*.9,1.45,2.25);
     const labelFront=baseW/2+.16;
     const label=makeLabel(work.title,work.artist,labelWidth);
-    label.position.set(0,work.hasBuiltInBase ? .32 : baseH*.55,work.applyRoomOffset?placementZ+labelFront:labelFront);
+    label.position.set(0,work.hasBuiltInBase ? .55 : baseH*.55,labelFront);
     label.rotation.x=-Math.PI*.04;
-    group.add(label);
+    group.userData.label=label;group.add(label);
     const sculptureLightY=isGrand?7.65:5.7;
     const spot=new THREE.SpotLight(0xffc77a,work.actualScale?105:175,isGrand?13:10,Math.PI*.2,.62,1.4);spot.position.set(-placementX*.35,sculptureLightY,placementZ+1.35);spot.target.position.set(placementX,pedestalTop+artH*.52,placementZ);spot.castShadow=index%2===0;spot.shadow.mapSize.set(512,512);gallery.add(spot,spot.target);
     const rim=new THREE.PointLight(0xffd6a0,work.actualScale?18:38,5.5,2);rim.position.set(-placementX*.45,pedestalTop+artH*.58,placementZ-1.15);gallery.add(rim);
@@ -742,7 +746,7 @@
       // 시야를 덜 가린다. 해태는 비너스가 있던 일반 조각 위치로 옮긴다.
       const sculptureOrder=['d05','d01','d02','d13','d06'];
       sculptures.sort((a,b)=>sculptureOrder.indexOf(a.id)-sculptureOrder.indexOf(b.id));
-      sculptures.forEach((w,i)=>addSculpture(w,i,w.id==='d05'?GALLERY_END+4.6:1-i*4.85,version,roomGallery));
+      sculptures.forEach((w,i)=>addSculpture(w,i,1-i*4.85,version,roomGallery));
       wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*7.1,shell.width,version,roomGallery));
     }else{
       rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width,version,roomGallery));
