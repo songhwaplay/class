@@ -10,6 +10,8 @@
   <script src="../../../assets/network/game-network.js"></script>
   <script src="../../../assets/network/multiplayer-lobby.js"></script>
   <script src="../../../assets/sound/game-sfx.js" defer></script>
+  <script src="../../../assets/sound/music-control.js" defer></script>
+  <script src="drawrelay-bgm.js" defer></script>
   <link rel="stylesheet" href="../../../assets/device-game.css">
 </head>
 <body>
@@ -90,7 +92,8 @@
         </div>
       </article>
     </section>
-  </main>
+</main>
+  <audio id="bgm" preload="auto" aria-label="그림 릴레이 배경음악"></audio>
 
   <main id="gameScreen" class="game-shell hidden">
     <header class="paper-panel game-header">
