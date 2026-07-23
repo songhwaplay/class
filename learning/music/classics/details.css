@@ -2,6 +2,8 @@
 .piece-actions .listen{margin:0}
 .detail-button{border:1px solid #a94536;background:transparent;color:#87392e;padding:6px 10px;font:700 .78rem 'Noto Sans KR',sans-serif;cursor:pointer}
 .detail-button:hover,.detail-button:focus-visible{background:#f3e4d8}
+.quiz-listen{display:inline-flex;align-items:center;gap:9px;margin:2px 0 12px;padding:8px 12px;background:#d0a14a;color:#182634;text-decoration:none;font-size:.82rem;font-weight:900}
+.quiz-listen small{padding-left:9px;border-left:1px solid #18263455;font-size:.68rem;font-weight:500}
 #detail-dialog{width:min(720px,calc(100% - 28px));max-height:88vh;margin:auto;padding:0;border:0;background:#fffdf8;color:#202329;box-shadow:0 24px 80px #0008}
 #detail-dialog::backdrop{background:#101722c9;backdrop-filter:blur(3px)}
 #detail-content{padding:42px 48px}

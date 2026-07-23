@@ -56,6 +56,7 @@ const termMaps={
 const instrumentOriginal={'바이올린':'violin','현악 합주':'string ensemble','하프시코드':'harpsichord','금관악기':'brass instruments','관현악':'orchestra','합창과 관현악':'chorus & orchestra','피아노':'piano','트럼펫':'trumpet','피아노와 현악기':'piano & strings','성악과 피아노':'voice & piano','관현악과 하프':'orchestra & harp','오보에와 관현악':'oboe & orchestra','첼로와 피아노':'cello & piano','잉글리시 호른':'English horn','스네어드럼과 관현악':'snare drum & orchestra','플루트':'flute','관현악과 해설':'orchestra & narrator'};
 pieces.forEach((p,i)=>{
   p.originalTitle=originalTitles[i];
+  p.titleAnswer=paired(p.title,p.originalTitle);
   p.composer=paired(p.composer,composerOriginal[p.composer]);
   ['period','form','tempo','meter','concept'].forEach(key=>{p[key]=termMaps[key][p[key]]||p[key]});
   p.lead=instrumentOriginal[p.lead]?paired(p.lead,instrumentOriginal[p.lead]):p.lead;
@@ -63,23 +64,29 @@ pieces.forEach((p,i)=>{
 
 const levels=['입문','입문','입문','기본','기본','기본','기본','도전','도전','도전'];
 const templates=[
-  ['이 곡의 작곡가는 누구일까요?','composer'],
-  ['이 곡이 속하는 시대는 언제일까요?','period'],
-  ['이 곡의 종류 또는 형식은 무엇일까요?','form'],
-  ['이 곡에서 중심적으로 들어볼 악기 편성은 무엇일까요?','lead'],
-  ['이 곡의 박자 특징은 무엇일까요?','meter'],
-  ['이 곡의 빠르기와 가장 가까운 것은 무엇일까요?','tempo'],
-  ['이 곡의 주된 분위기와 가장 가까운 것은 무엇일까요?','mood'],
-  ['감상할 때 가장 주목할 특징은 무엇일까요?','feature'],
-  ['이 곡과 연결되는 핵심 음악 개념은 무엇일까요?','concept'],
-  ['다음 중 이 곡에 알맞은 해설은 무엇일까요?','note']
+  ['제시곡의 제목은 무엇일까요?','titleAnswer'],
+  ['제시곡의 작곡가는 누구일까요?','composer'],
+  ['제시곡이 속하는 시대는 언제일까요?','period'],
+  ['제시곡의 종류 또는 형식은 무엇일까요?','form'],
+  ['가장 두드러지게 들리는 악기 편성은 무엇일까요?','lead'],
+  ['박자를 느끼며 들었을 때 가장 알맞은 것은 무엇일까요?','meter'],
+  ['빠르기를 가장 알맞게 표현한 것은 무엇일까요?','tempo'],
+  ['소리로 느껴지는 전체 분위기와 가장 가까운 것은 무엇일까요?','mood'],
+  ['실제로 들리는 음악적 특징과 가장 가까운 것은 무엇일까요?','feature'],
+  ['감상한 소리와 연결되는 핵심 음악 개념은 무엇일까요?','concept']
 ];
-const values=key=>[...new Set(pieces.map(p=>p[key]))];
-const pickWrong=(key,answer,seed)=>{const pool=values(key).filter(x=>x!==answer);return [pool[seed%pool.length],pool[(seed*3+5)%pool.length]]};
+const pickWrong=(piece,key,seed)=>{
+  const ranked=pieces.filter(other=>other!==piece&&other[key]!==piece[key]).sort((a,b)=>{
+    const score=item=>(item.era===piece.era?4:0)+(item.form===piece.form?2:0)+(item.lead===piece.lead?1:0);
+    return score(b)-score(a);
+  });
+  const pool=[...new Set(ranked.map(item=>item[key]))],start=seed%pool.length;
+  return [...pool.slice(start),...pool.slice(0,start)].slice(0,2);
+};
 const shuffle=(arr)=>arr.map(v=>({v,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);
 const allQuestions=pieces.flatMap((p,pi)=>templates.map(([stem,key],ti)=>{
-  const answer=p[key], choices=shuffle([answer,...pickWrong(key,answer,pi*11+ti)]);
-  return {id:`${p.no}-${ti+1}`,piece:p,level:levels[ti],stem:`${p.title} (${p.originalTitle}) — ${stem}`,choices,correct:choices.indexOf(answer),answer,explain:`${p.title}: ${key==='note'?p.note:`${answer}. ${p.note}`}`};
+  const answer=p[key], choices=shuffle([answer,...pickWrong(p,key,pi*11+ti)]);
+  return {id:`${p.no}-${ti+1}`,piece:p,level:levels[ti],stem,choices,correct:choices.indexOf(answer),answer,explain:`제시곡은 ${p.title} (${p.originalTitle})입니다. ${answer}. ${p.note}`};
 }));
 
 const $=s=>document.querySelector(s);
@@ -135,7 +142,7 @@ function renderStats(){
 renderStats();
 function makeQuiz(source){
   current=source;$('#quiz-empty').hidden=true;$('.quiz-actions').hidden=false;$('#result').innerHTML='';
-  $('#quiz-box').innerHTML=current.map((q,i)=>`<fieldset class="question" data-id="${q.id}"><legend><span>${q.level}</span>${i+1}. ${q.stem}</legend>${q.choices.map((a,j)=>`<label><input type="radio" name="q${i}" value="${j}"><i>${j+1}</i>${a}</label>`).join('')}<p class="feedback"></p></fieldset>`).join('');
+  $('#quiz-box').innerHTML=current.map((q,i)=>`<fieldset class="question" data-id="${q.id}"><legend><span>${q.level}</span>${i+1}. ${q.stem}</legend><a class="quiz-listen" href="${q.piece.url}" target="_blank" rel="noopener">▶ 제시곡 먼저 듣기 <small>제목을 보지 말고 귀로 도전!</small></a>${q.choices.map((a,j)=>`<label><input type="radio" name="q${i}" value="${j}"><i>${j+1}</i>${a}</label>`).join('')}<p class="feedback"></p></fieldset>`).join('');
 }
 function startRandom(){
   const era=$('#quiz-era').value,level=$('#quiz-level').value,count=+$('#quiz-count').value;
