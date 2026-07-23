@@ -1669,13 +1669,17 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .measurement-operation {
+  width: 100%;
   min-width: 0;
+  overflow: hidden;
   align-self: center;
   display: grid;
   gap: 8px;
 }
 
 .measurement-operand {
+  width: 100%;
+  min-width: 0;
   min-height: 34px;
   display: grid;
   grid-template-columns: 22px minmax(0, 1fr);
@@ -1688,16 +1692,21 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .measurement-operand:first-child {
-  padding-left: 22px;
+  grid-template-columns: 22px minmax(0, 1fr);
+}
+
+.measurement-operand:first-child::before {
+  content: "";
 }
 
 .measurement-quantity,
 .measurement-answer,
 .measurement-static-answer {
+  width: 100%;
+  min-width: 0;
   display: grid;
-  grid-template-columns: 43px 25px 56px 28px;
+  grid-template-columns: minmax(30px, 1fr) 24px minmax(42px, 1.25fr) 28px;
   align-items: center;
-  justify-content: end;
   gap: 2px;
   font-size: 17px;
   white-space: nowrap;
@@ -1719,7 +1728,14 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 
 .measurement-rule {
   height: 2px;
+  margin-left: 22px;
   background: #17233c;
+}
+
+.measurement-answer,
+.measurement-static-answer {
+  width: calc(100% - 22px);
+  margin-left: 22px;
 }
 
 .measurement-answer input {
