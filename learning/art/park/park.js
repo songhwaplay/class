@@ -236,11 +236,7 @@
   }
   function addPhotoMarker(zone,model) {
     const [x,,z]=zone.position,spec=PHOTO_EXHIBITS[zone.id];
-    const labelWidth=Math.min(12,Math.max(5,spec.board.w*.65));
-    const sideX=x+spec.board.w/2+labelWidth/2+2;
     const marker=makeScaleMarker(1.45,'어린이 1.45m');marker.position.set(x+spec.board.w/2+1.7,0,z);park.add(marker);
-    const label=makeLabel(zone.title,`실제 사진 전시 · ${zone.size}`,labelWidth);
-    label.position.set(sideX,2.5,z);label.userData.faceCamera=true;park.add(label);
     zoneObjects.push(model);
   }
   function makeMosaicMaterial() {
