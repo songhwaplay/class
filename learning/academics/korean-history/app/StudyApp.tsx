@@ -368,36 +368,26 @@ export function StudyApp() {
         </div>
       </header>
 
-      <section className="hero" id="top">
-        <div className="hero-copy">
-          <p className="eyebrow">{playerName ? `${playerName} 님의 ` : ""}한국사능력검정시험 기본</p>
-          <h1>단원을 선택해<br /><em>기출문제를 푸세요</em></h1>
-          <p className="hero-description">
-            기본 기출문제를 시대별로 분류했습니다.<br />문제 수를 선택한 뒤 단원을 고르세요.
-          </p>
-          <div className="count-picker" aria-label="한 번에 풀 문제 수">
-            <span>문제 수</span>
-            {[5, 10].map((count) => (
-              <button
-                key={count}
-                className={questionCount === count ? "active" : ""}
-                onClick={() => setQuestionCount(count)}
-                aria-pressed={questionCount === count}
-              >
-                {count}문제
-              </button>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="study-section" aria-labelledby="unit-title">
+      <section className="study-section" id="top" aria-labelledby="unit-title">
         <div className="section-heading">
           <div>
             <p className="eyebrow">단원별 기출문제</p>
             <h2 id="unit-title">단원 선택</h2>
           </div>
           <div className="section-actions">
+            <div className="count-picker" aria-label="한 번에 풀 문제 수">
+              <span>문제 수</span>
+              {[5, 10].map((count) => (
+                <button
+                  key={count}
+                  className={questionCount === count ? "active" : ""}
+                  onClick={() => setQuestionCount(count)}
+                  aria-pressed={questionCount === count}
+                >
+                  {count}문제
+                </button>
+              ))}
+            </div>
             <button
               className="explanation-quiz-button"
               onClick={() => beginQuiz(explainedQuestions, "해설 있는 문제")}
