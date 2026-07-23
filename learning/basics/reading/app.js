@@ -16,7 +16,7 @@
     for (let level = 1; level <= 8; level += 1) {
       const count = items.filter((item) => item.targetLevel === level).length;
       const card = node("button", "level-card", ""); card.type = "button"; card.disabled = !count;
-      card.append(node("span", "level-code", `${state.track === "en" ? "E" : "K"}${level}`), node("strong", "", `${level}단계`), node("span", "", count ? `${Math.min(5, count)}문제` : "준비 중"));
+      card.append(node("strong", "level-code", `${state.track === "en" ? "E" : "K"}${level}`), node("span", "", count ? "5문제" : "준비 중"));
       card.addEventListener("click", () => startSet(level)); list.append(card);
     }
   }
@@ -54,7 +54,7 @@
     state.answered = true; const item = state.set[state.index]; const correct = index === item.correctIndex;
     if (correct) state.score += 1;
     [...$("studentChoices").children].forEach((button, choiceIndex) => { button.disabled = true; if (choiceIndex === item.correctIndex) button.classList.add("correct"); else if (choiceIndex === index) button.classList.add("wrong"); });
-    const feedback = $("feedback"); feedback.className = `feedback ${correct ? "is-correct" : "is-wrong"}`; feedback.textContent = `${correct ? "정답이에요. " : "다시 읽어 봐요. "}${item.explanation}`; feedback.hidden = false;
+    const feedback = $("feedback"); feedback.className = `feedback ${correct ? "is-correct" : "is-wrong"}`; feedback.textContent = `${correct ? "정답 · " : "오답 · "}${item.explanation}`; feedback.hidden = false;
     $("nextButton").textContent = state.index === state.set.length - 1 ? "결과 보기" : "다음 문제";
   }
 
@@ -62,7 +62,7 @@
 
   async function start() {
     try { const response = await fetch("/api/reading/self-study"); if (!response.ok) throw new Error(); state.items = (await response.json()).items || []; renderLevels(); }
-    catch (_) { $("levelList").replaceChildren(node("p", "empty-pilots", "문제를 준비하지 못했어요. 잠시 후 다시 시도해 주세요.")); }
+    catch (_) { $("levelList").replaceChildren(node("p", "empty-pilots", "문제를 불러오지 못했습니다.")); }
   }
   document.querySelectorAll(".tab").forEach((tab) => tab.addEventListener("click", () => { state.track = tab.dataset.track; document.querySelectorAll(".tab").forEach((button) => button.classList.toggle("active", button === tab)); renderLevels(); }));
   $("backButton").addEventListener("click", () => show("dashboard")); $("restartButton").addEventListener("click", () => show("dashboard")); $("nextButton").addEventListener("click", () => {});

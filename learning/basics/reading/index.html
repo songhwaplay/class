@@ -13,14 +13,9 @@
       <div><h1>독해 자습</h1></div>
       <a href="/">학습 홈</a>
     </header>
-    <section class="student-band">
-      <div><strong>독해 문제</strong><span>로그인 없이 이용할 수 있습니다.</span></div>
-      <p>답을 선택하면 정답과 해설이 표시됩니다.</p>
-    </section>
     <main class="student-main">
       <section id="dashboardView">
-        <div class="hero-copy"><h2>단계 선택</h2><p>언어와 단계를 선택하세요. 한 세트는 5문제입니다.</p></div>
-        <div class="practice-tabs" role="tablist"><button class="tab active" data-track="ko" type="button">국어 독해</button><button class="tab" data-track="en" type="button">English reading</button></div>
+        <div class="practice-tabs" role="tablist"><button class="tab active" data-track="ko" type="button">국어</button><button class="tab" data-track="en" type="button">영어</button></div>
         <div id="levelList" class="level-list"></div>
       </section>
       <section id="questionView" class="question-view" hidden>
@@ -29,7 +24,7 @@
         <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
         <article class="reading-sheet"><div id="studentPassage" class="student-passage"></div><h2 id="studentPrompt" class="student-prompt"></h2><div id="studentChoices" class="student-choices"></div><div id="feedback" class="feedback" hidden></div><div class="answer-actions"><span id="answerStatus" role="status"></span><button id="nextButton" class="button primary" type="button" disabled>정답 확인</button></div></article>
       </section>
-      <section id="resultView" class="completion-view" hidden><div class="completion-mark">✓</div><h2 id="resultTitle">학습 결과</h2><p id="resultCopy"></p><button id="restartButton" class="button primary" type="button">단계 선택으로</button></section>
+      <section id="resultView" class="completion-view" hidden><h2 id="resultTitle"></h2><p id="resultCopy"></p><button id="restartButton" class="button primary" type="button">목록</button></section>
     </main>
   </div>
   <script src="./app.js"></script>

@@ -11,7 +11,7 @@
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-body { margin: 0; min-height: 100vh; color: var(--ink); background: radial-gradient(circle at 12% 2%, rgba(23,104,79,.09), transparent 24rem), var(--paper); font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif; }
+body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--paper); font-family: Pretendard, "Noto Sans KR", system-ui, sans-serif; }
 button, input { font: inherit; }
 [hidden] { display: none !important; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
@@ -26,28 +26,20 @@ button, input { font: inherit; }
 .button.secondary { color: var(--ink); border-color: var(--line); background: var(--white); }
 .button:disabled { opacity: .55; cursor: wait; }
 .text-button { border: 0; padding: 6px 0; color: var(--green); background: transparent; cursor: pointer; font-weight: 900; }
-.student-header { min-height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 16px clamp(18px, 5vw, 72px); border-bottom: 1px solid var(--line); background: rgba(243,239,228,.92); backdrop-filter: blur(15px); }
-.student-header h1 { margin: 4px 0 0; font-family: Georgia, "Noto Serif KR", serif; font-size: 1.35rem; }
+.student-header { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 12px clamp(18px, 5vw, 72px); border-bottom: 1px solid var(--line); background: var(--paper); }
+.student-header h1 { margin: 0; font-size: 1.25rem; }
 .student-header a { color: var(--green); font-size: 13px; font-weight: 900; text-decoration: none; }
-.student-band { display: flex; align-items: center; justify-content: space-between; gap: 22px; padding: 17px clamp(18px, 5vw, 72px); color: #fff; background: var(--green); }
-.student-band strong, .student-band span { display: block; }
-.student-band span { margin-top: 3px; color: rgba(255,255,255,.72); font-size: 12px; }
-.student-band p { max-width: 570px; margin: 0; color: rgba(255,255,255,.78); font-size: 12px; line-height: 1.55; text-align: right; }
-.student-main { width: min(980px, calc(100% - 32px)); margin: 0 auto; padding: 50px 0 90px; }
+.student-main { width: min(980px, calc(100% - 32px)); margin: 0 auto; padding: 32px 0 72px; }
 .view-heading h2 { margin: 7px 0 28px; font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(2rem, 6vw, 3.6rem); letter-spacing: -.05em; }
 .student-pilot-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.hero-copy { max-width: 640px; margin-bottom: 26px; }
-.hero-copy h2 { margin: 0 0 10px; font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.2; letter-spacing: -.04em; }
-.hero-copy > p:last-child { margin: 0; color: var(--muted); line-height: 1.65; }
 .practice-tabs { display: flex; gap: 8px; margin: 0 0 16px; }
-.tab { min-height: 42px; padding: 0 16px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); background: transparent; cursor: pointer; font-weight: 850; }
+.tab { min-height: 40px; padding: 0 18px; border: 1px solid var(--line); border-radius: 8px; color: var(--muted); background: transparent; cursor: pointer; font-weight: 850; }
 .tab.active { border-color: var(--green); color: #fff; background: var(--green); }
 .level-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
-.level-card { min-height: 166px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 18px; border: 1px solid var(--line); border-radius: 18px; color: var(--ink); background: var(--white); cursor: pointer; text-align: left; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
-.level-card:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--green); box-shadow: 0 14px 28px rgba(23,104,79,.12); }
+.level-card { min-height: 104px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 16px; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--white); cursor: pointer; text-align: left; }
+.level-card:hover:not(:disabled) { border-color: var(--green); }
 .level-card:disabled { opacity: .55; cursor: default; }
 .level-code { color: var(--green); font-size: 1.4rem; font-weight: 950; letter-spacing: .06em; }
-.level-card strong { font-size: 1.05rem; }
 .level-card > span:last-child { color: var(--muted); font-size: 12px; }
 .student-pilot-card { display: grid; gap: 14px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--white); box-shadow: 0 10px 32px rgba(56,45,26,.06); }
 .student-pilot-card h3 { margin: 0; font-family: Georgia, "Noto Serif KR", serif; font-size: 1.45rem; }
@@ -60,7 +52,7 @@ button, input { font: inherit; }
 .progress-copy span { color: var(--muted); font-size: 12px; }
 .progress-track { height: 6px; margin: 10px 0 24px; overflow: hidden; border-radius: 99px; background: var(--paper-deep); }
 .progress-fill { height: 100%; border-radius: inherit; background: var(--orange); transition: width .25s ease; }
-.reading-sheet { padding: clamp(22px, 5vw, 54px); border: 1px solid var(--line); border-radius: 20px; background: var(--white); box-shadow: 0 18px 55px rgba(56,45,26,.08); }
+.reading-sheet { padding: clamp(22px, 5vw, 54px); border: 1px solid var(--line); border-radius: 12px; background: var(--white); }
 .question-topic { margin: 0 0 20px; color: var(--green); font-size: 12px; font-weight: 900; }
 .student-passage { padding-bottom: 28px; border-bottom: 1px solid var(--line); font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(1.05rem, 2.1vw, 1.22rem); line-height: 1.95; white-space: pre-wrap; }
 .student-prompt { margin: 30px 0 18px; font-size: clamp(1.15rem, 2.5vw, 1.4rem); line-height: 1.55; }
@@ -81,12 +73,9 @@ button, input { font: inherit; }
 .answer-actions { margin-top: 24px; }
 #answerStatus { color: var(--orange); font-size: 12px; }
 .completion-view { min-height: 60vh; display: grid; place-content: center; justify-items: center; text-align: center; }
-.completion-mark { width: 72px; height: 72px; display: grid; place-items: center; margin-bottom: 18px; border-radius: 50%; color: #fff; background: var(--green); font-size: 2rem; }
-.completion-view h2 { margin: 7px 0 10px; font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(2rem, 7vw, 4rem); letter-spacing: -.05em; }
+.completion-view h2 { margin: 0 0 10px; font-size: clamp(2rem, 7vw, 4rem); letter-spacing: -.05em; }
 .completion-view > p:not(.eyebrow) { max-width: 540px; margin: 0 0 26px; color: var(--muted); line-height: 1.75; }
 @media (max-width: 680px) {
-  .student-band { align-items: flex-start; flex-direction: column; }
-  .student-band p { text-align: left; }
   .student-pilot-list { grid-template-columns: 1fr; }
   .level-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .student-main { padding-top: 34px; }
