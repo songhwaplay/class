@@ -220,7 +220,11 @@
   }
   function buildPhotoExhibit(zone) {
     const spec=PHOTO_EXHIBITS[zone.id],g=new THREE.Group();
-    const backing=box([spec.board.w+.55,spec.board.h+.55,.34],new THREE.MeshStandardMaterial({color:0x18392f,roughness:.74,metalness:.08}),g,[0,spec.board.h/2+.12,0]);
+    const frameMat=new THREE.MeshStandardMaterial({color:0x18392f,roughness:.74,metalness:.08});
+    box([spec.board.w+.5,.25,.28],frameMat,g,[0,.12,0]);
+    box([spec.board.w+.5,.25,.28],frameMat,g,[0,spec.board.h+.12,0]);
+    box([.25,spec.board.h,.28],frameMat,g,[-spec.board.w/2-.12,spec.board.h/2+.12,0]);
+    box([.25,spec.board.h,.28],frameMat,g,[spec.board.w/2+.12,spec.board.h/2+.12,0]);
     const material=new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide,toneMapped:false});
     const photo=addMesh(new THREE.PlaneGeometry(spec.board.w,spec.board.h),material,g,[0,spec.board.h/2+.12,.19],false);
     textureLoader.load(spec.file,t=>{t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());material.map=t;material.needsUpdate=true;});
@@ -232,9 +236,11 @@
   }
   function addPhotoMarker(zone,model) {
     const [x,,z]=zone.position,spec=PHOTO_EXHIBITS[zone.id];
-    const marker=makeScaleMarker(1.45,'어린이 1.45m');marker.position.set(x+Math.min(spec.board.w/2+2.2,8),0,z-2);park.add(marker);
-    const label=makeLabel(zone.title,`실제 사진 전시 · ${zone.size}`,Math.min(12,Math.max(5,spec.board.w*.65)));
-    label.position.set(x,Math.min(spec.board.h+2.2,10),z-2.1);label.userData.faceCamera=true;park.add(label);
+    const labelWidth=Math.min(12,Math.max(5,spec.board.w*.65));
+    const sideX=x+spec.board.w/2+labelWidth/2+2;
+    const marker=makeScaleMarker(1.45,'어린이 1.45m');marker.position.set(x+spec.board.w/2+1.7,0,z);park.add(marker);
+    const label=makeLabel(zone.title,`실제 사진 전시 · ${zone.size}`,labelWidth);
+    label.position.set(sideX,2.5,z);label.userData.faceCamera=true;park.add(label);
     zoneObjects.push(model);
   }
   function makeMosaicMaterial() {
