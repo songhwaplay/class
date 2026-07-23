@@ -36,6 +36,7 @@
   renderer.physicallyCorrectLights = true;
 
   const textureLoader = new THREE.TextureLoader();
+  const gltfLoader = new THREE.GLTFLoader();
   const textureCache = new Map();
   const raycaster = new THREE.Raycaster();
   const pointer = new THREE.Vector2();
@@ -219,11 +220,7 @@
 
   function buildSculptureModel(work) {
     const model=new THREE.Group();
-    const bronze=new THREE.MeshStandardMaterial({color:0x38271d,roughness:.3,metalness:.78});
-    const marble=new THREE.MeshStandardMaterial({color:0xbab2a5,roughness:.58,metalness:.02});
-    const gold=new THREE.MeshStandardMaterial({color:0xa77a2e,roughness:.34,metalness:.72});
-    const celadon=new THREE.MeshStandardMaterial({color:0x6f9d8b,roughness:.2,metalness:.04});
-    const mat=work.id==='d01'?bronze:work.id==='d03'?gold:work.id==='d04'?celadon:marble;
+    const mat=sculptureMaterial(work);
 
     if(work.id==='d04'){
       const profile=[[0,0],[.34,.04],[.52,.28],[.6,.76],[.5,1.45],[.27,1.75],[.19,1.9],[.2,2.08],[.1,2.16]].map(([x,y])=>new THREE.Vector2(x,y));
@@ -260,21 +257,47 @@
     model.rotation.y=(parseInt(work.id.slice(1),10)%2?-.28:.3);return model;
   }
 
+  function sculptureMaterial(work) {
+    if(work.id==='d01')return new THREE.MeshStandardMaterial({color:0x38271d,roughness:.3,metalness:.78});
+    if(work.id==='d03')return new THREE.MeshStandardMaterial({color:0xa77a2e,roughness:.34,metalness:.72});
+    if(work.id==='d04')return new THREE.MeshStandardMaterial({color:0x6f9d8b,roughness:.2,metalness:.04});
+    return new THREE.MeshStandardMaterial({color:0xbab2a5,roughness:.58,metalness:.02});
+  }
+
+  const sculptureScans={
+    d01:'assets/models/thinker.glb',
+    d05:'assets/models/venus-de-milo.glb',
+    d06:'assets/models/pieta.glb'
+  };
+
+  function installSculptureModel(model,group,work,artH,pedestalTop,isScan=false) {
+    if(isScan){
+      const material=sculptureMaterial(work);
+      model.rotation.y=work.id==='d01'?.16:work.id==='d05'?Math.PI:.08;
+      model.traverse(part=>{if(part.isMesh){part.geometry.computeVertexNormals();part.material=material;}});
+    }
+    group.add(model);
+    const bounds=new THREE.Box3().setFromObject(model),naturalH=Math.max(.01,bounds.max.y-bounds.min.y),modelScale=artH/naturalH;
+    model.scale.setScalar(modelScale);model.position.y=pedestalTop-bounds.min.y*modelScale;
+    model.traverse(part=>{if(part.isMesh){part.userData.work=work;part.userData.room=rooms[activeRoom];part.castShadow=true;part.receiveShadow=true;clickable.push(part);}});
+  }
+
   function addSculpture(work,index,z) {
     const group=new THREE.Group();group.position.set(index%2===0?-.75:.75,0,z);gallery.add(group);
     const dims=getDisplaySize(work),minH=work.id==='d04'?1.25:1.55,maxH=work.id==='d02'?3.15:work.id==='d04'?1.8:2.75;
     const artH=clamp(dims.h*1.05,minH,maxH),artW=artH*(work.size.w/work.size.h);
     const baseW=clamp(artW*.82,.92,1.55),baseH=.68+(index%2)*.12;
     mesh([baseW+.24,.16,baseW+.24],materials.stone,[0,.08,0],group);mesh([baseW,baseH,baseW],new THREE.MeshStandardMaterial({color:index%2?0x4d453c:0x71675b,roughness:.58}),[0,.16+baseH/2,0],group);
-    const model=buildSculptureModel(work);group.add(model);
-    const bounds=new THREE.Box3().setFromObject(model),naturalH=Math.max(.01,bounds.max.y-bounds.min.y),modelScale=artH/naturalH,pedestalTop=.16+baseH;
-    model.scale.setScalar(modelScale);model.position.y=pedestalTop-bounds.min.y*modelScale;
-    model.traverse(part=>{if(part.isMesh){part.userData.work=work;part.userData.room=rooms[activeRoom];clickable.push(part);}});
+    const pedestalTop=.16+baseH,scanPath=sculptureScans[work.id];
+    if(scanPath){
+      gltfLoader.load(scanPath,gltf=>{installSculptureModel(gltf.scene,group,work,artH,pedestalTop,true);markLoaded();},undefined,()=>{installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded();});
+    }else{
+      installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded();
+    }
     const label=makeLabel(work.title,work.artist,1.7);label.position.set(0,baseH*.55,.516);label.rotation.x=-Math.PI*.04;group.add(label);
     const spot=new THREE.SpotLight(0xffc77a,175,10,Math.PI*.2,.62,1.4);spot.position.set(-group.position.x*.35,5.7,z+1.35);spot.target.position.set(group.position.x,pedestalTop+artH*.52,z);spot.castShadow=index%2===0;spot.shadow.mapSize.set(512,512);gallery.add(spot,spot.target);
     const rim=new THREE.PointLight(0xffd6a0,38,5.5,2);rim.position.set(-group.position.x*.45,pedestalTop+artH*.58,z-1.15);gallery.add(rim);
     sculptureObstacles.push({x:group.position.x,z,r:baseW*.72+.42});
-    markLoaded();
   }
 
   function setRoom(index,instant=false) {
