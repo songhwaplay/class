@@ -61,6 +61,12 @@ function ack(socket, event, payload = {}) {
     && Number.isFinite(player.shipAnchorY)
   ));
   assert.equal(observedShip.nearby.find((player) => player.name === '해안탐험가').shipAnchoredAtShore, true);
+  observer.emit('setTarget', { x: anchoredX, y: anchoredY });
+  await once(observer, 'snapshot', (snap) =>
+    snap.you.mode === 'sea'
+    && Math.abs(snap.you.x - anchoredX) < 4
+    && Math.abs(snap.you.y - anchoredY) < 4
+  );
 
   const embark = await ack(student, 'useShoreTransfer');
   assert.equal(embark.ok, true, embark.error);
