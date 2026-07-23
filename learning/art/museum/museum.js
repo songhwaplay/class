@@ -48,6 +48,7 @@
   const sculptureObstacles = [];
   const remotePeople = new Map();
   const remoteLayer = new THREE.Group(); scene.add(remoteLayer);
+  const selfAvatar = makeSelfAvatar(); scene.add(selfAvatar);
   let presenceSocket = null, presenceTimer = 0, localPresenceId = null;
   const tmpDirection = new THREE.Vector3();
   const tmpRight = new THREE.Vector3();
@@ -67,9 +68,27 @@
   const GALLERY_END = -30;
 
   function personLabel(name){const c=document.createElement('canvas');c.width=300;c.height=64;const g=c.getContext('2d');g.fillStyle='rgba(9,7,5,.82)';g.fillRect(0,4,300,52);g.strokeStyle='#d6b66b';g.strokeRect(1,5,298,50);g.fillStyle='#fff0ca';g.textAlign='center';g.font='bold 25px sans-serif';g.fillText(name,150,39);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthTest:false}));}
+  function makeSelfAvatar(){
+    const group=new THREE.Group();
+    const cloth=new THREE.MeshStandardMaterial({color:0x547da6,roughness:.72});
+    const skin=new THREE.MeshStandardMaterial({color:0xe2ad88,roughness:.82});
+    const hair=new THREE.MeshStandardMaterial({color:0x241a15,roughness:.92});
+    const torso=new THREE.Mesh(new THREE.CylinderGeometry(.2,.27,.58,14),cloth);torso.position.y=.94;
+    const shoulders=new THREE.Mesh(new THREE.BoxGeometry(.58,.16,.22),cloth);shoulders.position.set(0,1.17,0);
+    const neck=new THREE.Mesh(new THREE.CylinderGeometry(.075,.085,.13,12),skin);neck.position.y=1.3;
+    const head=new THREE.Mesh(new THREE.SphereGeometry(.19,18,14),skin);head.position.y=1.47;
+    const hairCap=new THREE.Mesh(new THREE.SphereGeometry(.198,18,10,0,Math.PI*2,0,Math.PI*.58),hair);hairCap.position.set(0,1.5,.005);
+    const leftArm=new THREE.Mesh(new THREE.CylinderGeometry(.065,.075,.48,10),cloth);leftArm.position.set(-.28,.92,0);leftArm.rotation.z=-.08;
+    const rightArm=leftArm.clone();rightArm.position.x=.28;rightArm.rotation.z=.08;
+    group.add(torso,shoulders,neck,head,hairCap,leftArm,rightArm);
+    group.userData.cloth=cloth;
+    group.scale.setScalar(.92);
+    group.traverse(part=>{if(part.isMesh){part.castShadow=false;part.receiveShadow=false;part.renderOrder=3;}});
+    return group;
+  }
   function makePerson(visitor){const g=new THREE.Group(), colors=[0x547da6,0x9d5b4c,0x5a896a,0x886ca5];const color=colors[Number(visitor.userId)%colors.length], cloth=new THREE.MeshStandardMaterial({color,roughness:.7,transparent:true,opacity:.86});const skin=new THREE.MeshStandardMaterial({color:0xe4b18d,roughness:.8,transparent:true,opacity:.86});const head=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),skin);head.position.y=1.38;const body=new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.54,12),cloth);body.position.y=.93;const leg=new THREE.Mesh(new THREE.CylinderGeometry(.07,.08,.42,10),new THREE.MeshStandardMaterial({color:0x23252c,transparent:true,opacity:.86}));leg.position.set(-.09,.42,0);const leg2=leg.clone();leg2.position.x=.09;g.add(head,body,leg,leg2);const label=personLabel(visitor.name);label.position.y=1.78;label.scale.set(.9,.19,1);g.add(label);remoteLayer.add(g);return g;}
   function updatePeople(visitors){const visible=visitors.filter(v=>v.userId!==localPresenceId);const ids=new Set(visible.map(v=>v.userId));for(const [id,entry] of remotePeople){if(!ids.has(id)){remoteLayer.remove(entry.group);remotePeople.delete(id);}}for(const v of visible){let entry=remotePeople.get(v.userId);if(!entry){entry={group:makePerson(v)};remotePeople.set(v.userId,entry);}entry.room=v.room;entry.x=v.x;entry.z=v.z;entry.yaw=v.yaw;entry.group.position.set(v.x,0,v.z);entry.group.rotation.y=v.yaw;entry.group.visible=v.room===rooms[activeRoom].id;}}
-  async function connectClassPresence(){try{const response=await fetch('/api/museum/presence-ticket');if(!response.ok)return;const {ticket}=await response.json();const proto=location.protocol==='https:'?'wss':'ws';presenceSocket=new WebSocket(`${proto}://${location.host}`);presenceSocket.addEventListener('open',()=>presenceSocket.send(JSON.stringify({type:'MUSEUM_JOIN',ticket})));presenceSocket.addEventListener('message',event=>{const msg=JSON.parse(event.data);if(msg.type==='MUSEUM_JOINED')localPresenceId=msg.userId;if(msg.type==='MUSEUM_STATE'){updatePeople(msg.visitors);const here=msg.visitors.filter(v=>v.room===rooms[activeRoom].id).length;presenceEl.textContent=`우리 반 함께 관람 중 ${here}명`;presenceEl.hidden=false;}});}catch(_) {}}
+  async function connectClassPresence(){try{const response=await fetch('/api/museum/presence-ticket');if(!response.ok)return;const {ticket}=await response.json();const proto=location.protocol==='https:'?'wss':'ws';presenceSocket=new WebSocket(`${proto}://${location.host}`);presenceSocket.addEventListener('open',()=>presenceSocket.send(JSON.stringify({type:'MUSEUM_JOIN',ticket})));presenceSocket.addEventListener('message',event=>{const msg=JSON.parse(event.data);if(msg.type==='MUSEUM_JOINED'){localPresenceId=msg.userId;const colors=[0x547da6,0x9d5b4c,0x5a896a,0x886ca5];selfAvatar.userData.cloth.color.setHex(colors[Number(msg.userId)%colors.length]);}if(msg.type==='MUSEUM_STATE'){updatePeople(msg.visitors);const here=msg.visitors.filter(v=>v.room===rooms[activeRoom].id).length;presenceEl.textContent=`우리 반 함께 관람 중 ${here}명`;presenceEl.hidden=false;}});}catch(_) {}}
   function sendPresence(){if(!presenceSocket||presenceSocket.readyState!==WebSocket.OPEN)return;const now=performance.now();if(now-presenceTimer<100)return;presenceTimer=now;presenceSocket.send(JSON.stringify({type:'MUSEUM_MOVE',room:rooms[activeRoom].id,x:camera.position.x,z:camera.position.z,yaw}));}
 
   function makeWoodTexture() {
@@ -385,7 +404,14 @@
     for(const entry of remotePeople.values())entry.group.visible=entry.room===rooms[activeRoom].id&&!nearest;
   }
 
-  function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);updateMovement(dt);updateFocus();sendPresence();renderer.render(scene,camera);}
+  function updateSelfAvatar(){
+    const forwardX=-Math.sin(yaw),forwardZ=-Math.cos(yaw);
+    selfAvatar.position.set(camera.position.x+forwardX*.72,0,camera.position.z+forwardZ*.72);
+    selfAvatar.rotation.y=yaw;
+    selfAvatar.visible=!nearest&&!modal.open&&!helpModal.open;
+  }
+
+  function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);updateMovement(dt);updateFocus();updateSelfAvatar();sendPresence();renderer.render(scene,camera);}
 
   addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='Escape'&&modal.open)modal.close();if(e.code==='Enter'&&nearest&&!modal.open)showWork(nearest.userData.work,nearest.userData.room);});
   addEventListener('keyup',e=>{keys[e.code]=false;});
