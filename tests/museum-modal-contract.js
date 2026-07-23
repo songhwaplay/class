@@ -32,6 +32,8 @@ for (const work of works) {
     assert.equal(typeof work[key], 'string', `${work.id}.${key} must be text`);
     assert.ok(work[key].trim(), `${work.id}.${key} must not be empty`);
   }
+  assert.equal(typeof work.englishTitle, 'string', `${work.id}.englishTitle must support the restored image quiz`);
+  assert.ok(work.englishTitle.trim(), `${work.id}.englishTitle must not be empty`);
 
   for (const [key, limit] of Object.entries(limits)) {
     if (!work[key]) continue;
@@ -69,18 +71,21 @@ assert.doesNotMatch(
   'modal tags must not use a negative margin that can hide text'
 );
 
-assert.match(html, /styles\.css\?v=20260724-2/);
+assert.match(html, /styles\.css\?v=20260724-3/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-5/);
+assert.match(html, /museum\.js\?v=20260724-6/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
+assert.match(html, /id="finale-artwork-image"/);
 assert.match(css, /\.finale-modal/);
+assert.match(css, /\.finale-artwork img/);
 assert.match(museumJs, /museumFinaleRoomsV2/);
 assert.match(museumJs, /addFinaleWall\(rooms\[index\],shell\)/);
 assert.doesNotMatch(museumJs, /userData\.finaleTexture=true/, 'generated textures must initialize userData for the bundled Three.js version');
 assert.equal((museumJs.match(/\{q:'/g)||[]).length, 60, 'every displayed artwork should contribute one finale-bank question');
 const finaleEntries = [...museumJs.matchAll(/\{q:'([^']+)',options:\[([^\]]+)\],answer:(\d),explain:'([^']+)'\}/g)];
 assert.equal(finaleEntries.length, 60, 'all finale questions must follow the validated question schema');
+assert.equal(finaleEntries.length + works.length * 3, 240, 'observation plus title, artist, and English-title modes should provide 240 question variants');
 assert.equal(new Set(finaleEntries.map(match => match[1])).size, 60, 'finale question text must not be duplicated');
 for (const [, question, rawOptions, rawAnswer, explanation] of finaleEntries) {
   const options = [...rawOptions.matchAll(/'([^']+)'/g)].map(match => match[1]);
@@ -89,11 +94,18 @@ for (const [, question, rawOptions, rawAnswer, explanation] of finaleEntries) {
   assert.ok(answer >= 0 && answer < options.length, `${question} has an invalid answer index`);
   assert.ok(explanation.length >= 20, `${question} needs a useful answer explanation`);
 }
+for (const room of rooms) {
+  assert.equal(new Set(room.works.map(work => work.title)).size, room.works.length, `${room.id} title choices must be unique`);
+  assert.equal(new Set(room.works.map(work => work.englishTitle)).size, room.works.length, `${room.id} English-title choices must be unique`);
+}
 assert.match(museumJs, /finaleQuizCorrect===total/, 'a stamp must require every finale answer to be correct');
 assert.match(museumJs, /showFinaleRetry\(finaleQuizRoom\)/, 'an imperfect finale attempt must end in retry instead of a stamp');
-assert.match(museumJs, /const selected=shuffled\.slice\(0,3\)/, 'each finale attempt must draw only three questions from its bank');
+assert.match(museumJs, /buildImageQuestion\(room,imageModes\[0\],works\[0\]\)/, 'each finale attempt must include a visible artwork question');
+assert.match(museumJs, /buildImageQuestion\(room,imageModes\[1\],works\[1\]\)/, 'each finale attempt must include two visible artwork questions');
+assert.match(museumJs, /shuffledCopy\(\['title','artist','english'\]\)\.slice\(0,2\)/, 'restored title, artist, and English-title quiz modes must rotate');
+assert.match(museumJs, /options:\[correct,\.\.\.distractors\]/, 'image questions must restore four-choice answer construction');
 assert.match(museumJs, /Math\.random\(\)\*\(i\+1\)/, 'the finale question bank must be shuffled for each attempt');
 assert.match(museumJs, /signature===finaleLastQuestionSet\[room\.id\]/, 'an immediate retry must not repeat the same question set');
-assert.match(museumJs, /choices\.findIndex\(choice=>choice\.correct\)/, 'answer positions must be shuffled without losing the correct choice');
+assert.match(museumJs, /randomizedChoices\.findIndex\(choice=>choice\.correct\)/, 'answer positions must be shuffled without losing the correct choice');
 
 console.log('museum-modal-contract: 60 artworks, finale missions, and responsive modal safeguards verified');

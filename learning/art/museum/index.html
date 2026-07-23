@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0a09">
   <title>빛의 복도 · 어린이 미술관</title>
-  <link rel="stylesheet" href="styles.css?v=20260724-2">
+  <link rel="stylesheet" href="styles.css?v=20260724-3">
   <script src="../../../assets/sound/music-control.js?v=20260723-1" defer></script>
 </head>
 <body>
@@ -114,6 +114,10 @@
         <span id="finale-total">0 / 5 ROOMS</span>
       </div>
       <section class="finale-question" id="finale-question-wrap">
+        <figure class="finale-artwork" id="finale-artwork" hidden>
+          <img id="finale-artwork-image" alt="문제 작품">
+          <figcaption>작품을 자세히 보고 답을 골라보세요</figcaption>
+        </figure>
         <p id="finale-question"></p>
         <div class="finale-options" id="finale-options"></div>
         <p class="finale-feedback" id="finale-feedback" aria-live="polite"></p>
@@ -135,6 +139,6 @@
   <script src="vendor/three.min.js"></script>
   <script src="vendor/GLTFLoader.js"></script>
   <script src="art-data.js?v=20260723-11"></script>
-  <script src="museum.js?v=20260724-5"></script>
+  <script src="museum.js?v=20260724-6"></script>
 </body>
 </html>

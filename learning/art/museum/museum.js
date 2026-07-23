@@ -23,6 +23,8 @@
   const finaleOptions = document.getElementById('finale-options');
   const finaleFeedback = document.getElementById('finale-feedback');
   const finaleNext = document.getElementById('finale-next');
+  const finaleArtwork = document.getElementById('finale-artwork');
+  const finaleArtworkImage = document.getElementById('finale-artwork-image');
   const rooms = window.MUSEUM_ROOMS;
   const presenceEl = document.getElementById('class-presence');
 
@@ -320,6 +322,8 @@
   function renderFinaleQuestion() {
     const item=finaleQuizQuestions[finaleQuizIndex];
     finaleQuestionWrap.hidden=false;finaleComplete.hidden=true;finaleNext.hidden=true;
+    finaleArtwork.hidden=!item.image;
+    if(item.image){finaleArtworkImage.src=item.image;}else{finaleArtworkImage.removeAttribute('src');}
     finaleNext.textContent=finaleQuizIndex===finaleQuizQuestions.length-1?'결과 보기':'다음 관찰로';
     finaleFeedback.textContent='정답이라고 생각하는 장면을 골라보세요.';finaleFeedback.className='finale-feedback';
     document.getElementById('finale-step').textContent=`QUESTION ${String(finaleQuizIndex+1).padStart(2,'0')} / ${String(finaleQuizQuestions.length).padStart(2,'0')}`;
@@ -339,22 +343,51 @@
     }));
   }
 
+  function shuffledCopy(items) {
+    const result=[...items];
+    for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
+    return result;
+  }
+
+  function buildImageQuestion(room,mode,target) {
+    const allWorks=rooms.flatMap(item=>item.works);
+    const config={
+      title:{key:'title',question:'이 작품의 한글 제목은 무엇일까요?'},
+      artist:{key:'artist',question:'이 작품을 만든 작가는 누구일까요?'},
+      english:{key:'englishTitle',question:'이 작품의 영어 제목은 무엇일까요?'}
+    }[mode];
+    const correct=target[config.key];
+    const source=mode==='artist'?allWorks:room.works;
+    const distractors=shuffledCopy([...new Set(source.map(work=>work[config.key]).filter(value=>value&&value!==correct))]).slice(0,3);
+    const explanations={
+      title:`이 작품은 ${target.artist}의 〈${target.title}〉예요.`,
+      artist:`〈${target.title}〉를 만든 작가는 ${target.artist}예요.`,
+      english:`〈${target.title}〉의 영어 제목은 ‘${target.englishTitle}’이에요.`
+    };
+    return {kind:`image-${mode}`,image:target.image,q:config.question,options:[correct,...distractors],answer:0,explain:explanations[mode]};
+  }
+
   function startFinaleQuiz(room) {
     finaleQuizRoom=room;finaleQuizIndex=0;finaleQuizCorrect=0;
-    const shuffled=[...ROOM_QUIZZES[room.id].questions];
-    for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
-    const selected=shuffled.slice(0,3);
-    let signature=selected.map(item=>item.q).sort().join('|');
-    if(signature===finaleLastQuestionSet[room.id]&&shuffled[3]){selected[2]=shuffled[3];signature=selected.map(item=>item.q).sort().join('|');}
+    const observations=shuffledCopy(ROOM_QUIZZES[room.id].questions);
+    const works=shuffledCopy(room.works);
+    const imageModes=shuffledCopy(['title','artist','english']).slice(0,2);
+    const selected=[
+      buildImageQuestion(room,imageModes[0],works[0]),
+      buildImageQuestion(room,imageModes[1],works[1]),
+      observations[0]
+    ];
+    let signature=selected.map(item=>`${item.kind||'observation'}:${item.image||''}:${item.q}`).sort().join('|');
+    if(signature===finaleLastQuestionSet[room.id]&&observations[1]){selected[2]=observations[1];signature=selected.map(item=>`${item.kind||'observation'}:${item.image||''}:${item.q}`).sort().join('|');}
     finaleLastQuestionSet[room.id]=signature;
-    finaleQuizQuestions=selected.map(item=>{
+    finaleQuizQuestions=shuffledCopy(selected.map(item=>{
       const choices=item.options.map((label,index)=>({label,correct:index===item.answer}));
-      for(let i=choices.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[choices[i],choices[j]]=[choices[j],choices[i]];}
-      return {...item,options:choices.map(choice=>choice.label),answer:choices.findIndex(choice=>choice.correct)};
-    });
+      const randomizedChoices=shuffledCopy(choices);
+      return {...item,options:randomizedChoices.map(choice=>choice.label),answer:randomizedChoices.findIndex(choice=>choice.correct)};
+    }));
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=ROOM_QUIZZES[room.id].intro;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 작품 이미지 문제 2개와 관찰 문제 1개가 무작위로 출제됩니다.`;
     renderFinaleQuestion();
   }
 
@@ -362,7 +395,7 @@
     window.ClassGameSfx?.play('card');keysClear();
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=ROOM_QUIZZES[room.id].intro;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 작품 이미지 문제 2개와 관찰 문제 1개가 무작위로 출제됩니다.`;
     finaleQuizRoom=room;
     if(readFinaleProgress()[room.id])showFinaleCompletion(room);
     else startFinaleQuiz(room);
