@@ -73,7 +73,7 @@ assert.doesNotMatch(
 
 assert.match(html, /styles\.css\?v=20260724-3/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-7/);
+assert.match(html, /museum\.js\?v=20260724-8/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
 assert.match(html, /id="finale-artwork-image"/);
@@ -101,14 +101,26 @@ for (const room of rooms) {
 }
 assert.match(museumJs, /finaleQuizCorrect===total/, 'a stamp must require every finale answer to be correct');
 assert.match(museumJs, /showFinaleRetry\(finaleQuizRoom\)/, 'an imperfect finale attempt must end in retry instead of a stamp');
-assert.match(museumJs, /buildImageQuestion\(room,imageModes\[0\],works\[0\]\)/, 'each finale attempt must include a visible artwork question');
-assert.match(museumJs, /buildImageQuestion\(room,imageModes\[1\],works\[1\]\)/, 'each finale attempt must include two visible artwork questions');
-assert.match(museumJs, /buildImageQuestion\(room,imageModes\[2\],works\[2\]\)/, 'each finale attempt must include three visible artwork questions');
+assert.match(museumJs, /buildImageQuestion\(room,imageModes\[0\],imageWorks\[0\]\)/, 'each finale attempt must include a visible artwork question');
+assert.match(museumJs, /buildImageQuestion\(room,imageModes\[1\],imageWorks\[1\]\)/, 'each finale attempt must include two visible artwork questions');
+assert.match(museumJs, /buildImageQuestion\(room,imageModes\[2\],imageWorks\[2\]\)/, 'each finale attempt must include three visible artwork questions');
 assert.match(museumJs, /const imageModes=\['title','artist','english'\]/, 'every finale must include title, artist, and English-title modes');
 assert.match(museumJs, /observations\[0\],\s*observations\[1\]/, 'every finale must include two observation questions');
+assert.match(museumJs, /imageWorkIds\.has\(question\.workId\)/, 'observation questions must exclude all three image-question artworks');
 assert.match(museumJs, /options:\[correct,\.\.\.distractors\]/, 'image questions must restore four-choice answer construction');
-assert.match(museumJs, /총 5문제가 무작위 순서로 출제됩니다/, 'the finale instructions must explain the five-question format');
+assert.match(museumJs, /서로 다른 작품 5점에서/, 'the finale instructions must explain that all five artworks are distinct');
 assert.match(museumJs, /다섯 문제를 모두 맞혀야/, 'the retry message must explain the perfect-score stamp rule');
+
+const observationMapSource = museumJs.match(/const OBSERVATION_WORK_IDS = \{([\s\S]*?)\n  \};/);
+assert.ok(observationMapSource, 'observation questions must map explicitly to artwork ids');
+const observationRows = [...observationMapSource[1].matchAll(/(\w+):\[([^\]]+)\]/g)];
+assert.equal(observationRows.length, rooms.length, 'every gallery must map its observation questions to artworks');
+for (const [, roomId, rawIds] of observationRows) {
+  const mappedIds = [...rawIds.matchAll(/'([^']+)'/g)].map(match => match[1]);
+  const room = rooms.find(item => item.id === roomId);
+  assert.ok(room, `unknown observation mapping room ${roomId}`);
+  assert.deepEqual(new Set(mappedIds), new Set(room.works.map(work => work.id)), `${roomId} observation mapping must cover each artwork exactly once`);
+}
 assert.match(museumJs, /Math\.random\(\)\*\(i\+1\)/, 'the finale question bank must be shuffled for each attempt');
 assert.match(museumJs, /signature===finaleLastQuestionSet\[room\.id\]/, 'an immediate retry must not repeat the same question set');
 assert.match(museumJs, /randomizedChoices\.findIndex\(choice=>choice\.correct\)/, 'answer positions must be shuffled without losing the correct choice');

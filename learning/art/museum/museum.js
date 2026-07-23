@@ -116,6 +116,14 @@
     }
   };
 
+  const OBSERVATION_WORK_IDS = {
+    portrait:['p03','p01','p02','p05','p08','p12','p04','p06','p07','p09','p10','p11'],
+    nature:['n01','n02','n03','n04','n10','n05','n06','n07','n08','c12','n11','n12'],
+    story:['s01','s09','s07','s03','d09','s12','c11','s05','c10','s08','s10','s11'],
+    shape:['c01','c06','c09','c02','c03','c04','c07','c08','s02','s06','n09','c05'],
+    space:['d01','s04','d05','d02','d07','d08','d13','d06','d14','d10','d11','d12']
+  };
+
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x191613);
   scene.fog = new THREE.FogExp2(0x211d19, 0.014);
@@ -369,13 +377,17 @@
 
   function startFinaleQuiz(room) {
     finaleQuizRoom=room;finaleQuizIndex=0;finaleQuizCorrect=0;
-    const observations=shuffledCopy(ROOM_QUIZZES[room.id].questions);
     const works=shuffledCopy(room.works);
+    const imageWorks=works.slice(0,3);
+    const imageWorkIds=new Set(imageWorks.map(work=>work.id));
+    const observations=shuffledCopy(ROOM_QUIZZES[room.id].questions.map((question,index)=>({
+      ...question,workId:OBSERVATION_WORK_IDS[room.id][index]
+    })).filter(question=>!imageWorkIds.has(question.workId)));
     const imageModes=['title','artist','english'];
     const selected=[
-      buildImageQuestion(room,imageModes[0],works[0]),
-      buildImageQuestion(room,imageModes[1],works[1]),
-      buildImageQuestion(room,imageModes[2],works[2]),
+      buildImageQuestion(room,imageModes[0],imageWorks[0]),
+      buildImageQuestion(room,imageModes[1],imageWorks[1]),
+      buildImageQuestion(room,imageModes[2],imageWorks[2]),
       observations[0],
       observations[1]
     ];
@@ -389,7 +401,7 @@
     }));
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 한글 제목·화가·영어 제목 문제와 관찰 문제 2개, 총 5문제가 무작위 순서로 출제됩니다.`;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 서로 다른 작품 5점에서 한글 제목·화가·영어 제목 문제와 관찰 문제 2개가 무작위 순서로 출제됩니다.`;
     renderFinaleQuestion();
   }
 
@@ -397,7 +409,7 @@
     window.ClassGameSfx?.play('card');keysClear();
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 한글 제목·화가·영어 제목 문제와 관찰 문제 2개, 총 5문제가 무작위 순서로 출제됩니다.`;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 서로 다른 작품 5점에서 한글 제목·화가·영어 제목 문제와 관찰 문제 2개가 무작위 순서로 출제됩니다.`;
     finaleQuizRoom=room;
     if(readFinaleProgress()[room.id])showFinaleCompletion(room);
     else startFinaleQuiz(room);
