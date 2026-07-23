@@ -18,6 +18,14 @@ let correct = 0;
 let attempts = 0;
 const $ = (id) => document.getElementById(id);
 
+function updateNavigationLocale() {
+  const english = language === "en";
+  document.querySelector('[data-mode="study"]').textContent = english ? "Study" : "속담 공부";
+  document.querySelector('[data-mode="quiz"]').textContent = english ? "Quiz" : "문제 풀기";
+  document.querySelector('[data-language="ko"]').textContent = english ? "Korean Proverbs" : "한국 속담";
+  document.querySelector('[data-language="en"]').textContent = english ? "English Proverbs" : "영어 속담";
+}
+
 function renderStudy() {
   const item = decks[language][index];
   $("label").textContent = language === "ko"
@@ -30,6 +38,18 @@ function renderStudy() {
 
 function renderQuiz() {
   const item = decks[language][index];
+  const englishQuiz = language === "en";
+  $("quizKicker").textContent = englishQuiz ? "QUICK QUIZ" : "확인 퀴즈";
+  $("quiz-title").textContent = englishQuiz
+    ? "Which proverb best fits this situation?"
+    : "이 상황에 알맞은 속담은?";
+  $("reviewAnswer").textContent = englishQuiz
+    ? "Study this proverb again"
+    : "이 속담 다시 공부하기";
+  $("nextQuestion").textContent = englishQuiz ? "Next question" : "다음 문제";
+  $("score").textContent = englishQuiz
+    ? `Correct ${correct} / ${attempts}`
+    : `정답 ${correct} / ${attempts}`;
   $("question").textContent = item.question;
   $("feedback").textContent = "";
   $("reviewAnswer").hidden = true;
@@ -67,14 +87,20 @@ function answer(choiceIndex, selectedButton) {
   attempts += 1;
   if (choiceIndex === item.answer) {
     correct += 1;
-    $("feedback").textContent = "정답! 뜻과 상황을 잘 연결했어요.";
+    $("feedback").textContent = language === "en"
+      ? "Correct! You matched the proverb to the situation."
+      : "정답! 뜻과 상황을 잘 연결했어요.";
   } else {
     selectedButton.classList.add("wrong");
-    $("feedback").textContent = `정답은 “${item.proverb}”입니다.`;
+    $("feedback").textContent = language === "en"
+      ? `The correct answer is “${item.proverb}”`
+      : `정답은 “${item.proverb}”입니다.`;
     $("reviewAnswer").hidden = false;
   }
   $("nextQuestion").disabled = false;
-  $("score").textContent = `정답 ${correct} / ${attempts}`;
+  $("score").textContent = language === "en"
+    ? `Correct ${correct} / ${attempts}`
+    : `정답 ${correct} / ${attempts}`;
 }
 
 document.querySelectorAll(".mode-tab").forEach((button) => {
@@ -85,6 +111,7 @@ document.querySelectorAll(".language-tab").forEach((button) => {
     language = button.dataset.language;
     index = 0;
     document.querySelectorAll(".language-tab").forEach((tab) => tab.classList.toggle("active", tab === button));
+    updateNavigationLocale();
     mode === "study" ? renderStudy() : renderQuiz();
   });
 });
@@ -102,4 +129,5 @@ $("nextQuestion").addEventListener("click", () => {
 });
 $("reviewAnswer").addEventListener("click", () => setMode("study"));
 
+updateNavigationLocale();
 renderStudy();
