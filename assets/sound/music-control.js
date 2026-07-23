@@ -5,6 +5,11 @@
     const MUSIC_MUTED_KEY = "classMusicMuted";
     const SFX_LEVEL_KEY = "classSfxVolumeLevel";
     const SFX_MUTED_KEY = "classSfxMuted";
+    // This is session state: it follows a learner between menus, but does not
+    // unexpectedly start music again in a later browser session.
+    const PLAYBACK_STATE_KEY = "classMusicPlaybackState";
+    const PLAYBACK_SOURCE_KEY = "classMusicPlaybackSource";
+    const PLAYBACK_TIME_KEY = "classMusicPlaybackTime";
     const DEFAULT_LEVEL = 3;
 
     const currentScript = document.currentScript;
@@ -35,17 +40,42 @@
     let musicLevel = Number.isInteger(savedMusicLevel) && savedMusicLevel >= 1 && savedMusicLevel <= 5
         ? savedMusicLevel
         : DEFAULT_LEVEL;
-    let musicMuted = localStorage.getItem(MUSIC_MUTED_KEY) === "1";
+    // Older games stored booleans as "true" while newer menus use "1".
+    // Treat both as the same shared setting during the migration.
+    let musicMuted = ["1", "true"].includes(localStorage.getItem(MUSIC_MUTED_KEY));
 
     // Load SFX State
     const savedSfxLevel = Number(localStorage.getItem(SFX_LEVEL_KEY));
     let sfxLevel = Number.isInteger(savedSfxLevel) && savedSfxLevel >= 1 && savedSfxLevel <= 5
         ? savedSfxLevel
         : musicLevel;
-    let sfxMuted = localStorage.getItem(SFX_MUTED_KEY) === "1";
+    let sfxMuted = ["1", "true"].includes(localStorage.getItem(SFX_MUTED_KEY));
 
     let applyingAudioState = false;
     let playbackUnlocked = false;
+    let shouldResumePlayback = sessionStorage.getItem(PLAYBACK_STATE_KEY) !== "paused";
+
+    function savePlaybackState() {
+        const isPlaying = !audio.paused && !audio.ended;
+        sessionStorage.setItem(PLAYBACK_STATE_KEY, isPlaying ? "playing" : "paused");
+
+        if (!isPlaying || !Number.isFinite(audio.currentTime)) return;
+        sessionStorage.setItem(PLAYBACK_SOURCE_KEY, audio.currentSrc || audio.src);
+        sessionStorage.setItem(PLAYBACK_TIME_KEY, String(audio.currentTime));
+    }
+
+    function restorePlaybackPosition() {
+        const savedSource = sessionStorage.getItem(PLAYBACK_SOURCE_KEY);
+        const savedTime = Number(sessionStorage.getItem(PLAYBACK_TIME_KEY));
+        const source = audio.currentSrc || audio.src;
+        if (!savedSource || savedSource !== source || !Number.isFinite(savedTime) || savedTime < 0) return;
+
+        try {
+            audio.currentTime = savedTime;
+        } catch (_) {
+            // The metadata may not be ready yet; loadedmetadata retries below.
+        }
+    }
 
     const control = document.createElement("div");
     control.className = "unified-music-control";
@@ -125,10 +155,12 @@
     }
 
     async function startPlayback() {
+        if (!shouldResumePlayback) return false;
         applyAudioState();
         try {
             await audio.play();
             playbackUnlocked = true;
+            shouldResumePlayback = true;
             return true;
         } catch (_) {
             playbackUnlocked = false;
@@ -177,10 +209,25 @@
     audio.addEventListener("volumechange", () => {
         if (!applyingAudioState) queueMicrotask(applyAudioState);
     });
-    audio.addEventListener("play", applyAudioState);
+    audio.addEventListener("play", () => {
+        shouldResumePlayback = true;
+        applyAudioState();
+        savePlaybackState();
+    });
+    audio.addEventListener("pause", savePlaybackState);
+    audio.addEventListener("timeupdate", () => {
+        // Keep navigation seamless without writing to storage for every frame.
+        if (Math.floor(audio.currentTime) % 5 === 0) savePlaybackState();
+    });
+    audio.addEventListener("loadedmetadata", restorePlaybackPosition);
     audio.addEventListener("loadeddata", () => {
         applyAudioState();
         if (playbackUnlocked || musicMuted) startPlayback();
+    });
+
+    window.addEventListener("pagehide", savePlaybackState);
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "hidden") savePlaybackState();
     });
 
     const unlockEvents = ["pointerdown", "click", "touchstart", "keydown"];
@@ -193,5 +240,6 @@
     render();
     applyAudioState();
     announceState();
+    restorePlaybackPosition();
     startPlayback();
 })();
