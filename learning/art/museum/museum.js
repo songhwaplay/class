@@ -679,7 +679,8 @@
         }
       });
     }
-    group.add(model);
+    // Measure while the model is still detached. Once parented, Box3 uses
+    // world coordinates and the gallery placement would be subtracted again.
     const bounds=new THREE.Box3().setFromObject(model),naturalH=Math.max(.01,bounds.max.y-bounds.min.y),modelScale=artH/naturalH;
     model.scale.setScalar(modelScale);
     if(work.centerModel){
@@ -693,6 +694,7 @@
       // depth from the artwork dimensions. This keeps the Haechi label attached.
       group.userData.label.position.set(0,.55,model.position.z+bounds.max.z*modelScale+.045);
     }
+    group.add(model);
     model.updateMatrix();
     model.traverse(part=>{if(part.isMesh){part.userData.work=work;part.userData.room=rooms[activeRoom];part.castShadow=true;part.receiveShadow=true;clickable.push(part);}});
   }
