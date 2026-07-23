@@ -175,12 +175,12 @@ test("uses four worksheet cards per row on wide catalog screens", async () => {
   assert.match(css, /@media \(max-width: 820px\)[\s\S]*?\.worksheet-catalog\s*\{[^}]*repeat\(2, minmax\(0, 1fr\)\)/);
 });
 
-test("keeps geometry prompts and answer choices in separate usable columns", async () => {
+test("keeps geometry worksheet formulas compact without inline answer controls", async () => {
   const css = await readFile("app/globals.css", "utf8");
   assert.match(css, /\.geometry-choice-question\s*\{[^}]*display:\s*block/s);
   assert.match(css, /\.geometry-choice-expression\s*\{[^}]*font-size:\s*18px/s);
-  assert.match(css, /\.geometry-question-body\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) minmax\(190px, 44%\)/s);
   assert.match(css, /\.geometry-choice-question \.polynomial-focus-label\s*\{[^}]*white-space:\s*nowrap/s);
+  assert.doesNotMatch(css, /\.geometry-inline-choices\s*\{/);
 });
 
 test("hides repeated high-school instruction strips and uses one math font stack", async () => {
@@ -368,16 +368,16 @@ test("high-school worksheets omit the repeated instruction strip", async () => {
   assert.match(css, /\.polynomial-page \.polynomial-instruction\s*\{\s*display:\s*none;/);
 });
 
-test("vector projection worksheet shows all multiple-choice answers on the sheet", async () => {
+test("vector projection worksheet opens its multiple-choice answers in the answer panel", async () => {
   const response = await render("/arithmetic/high-school/vector-projections");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.equal((html.match(/geometry-inline-choice"/g) ?? []).length, 28);
+  assert.equal((html.match(/geometry-inline-choice"/g) ?? []).length, 0);
   assert.match(html, /comp/);
   assert.match(html, /proj/);
-  assert.doesNotMatch(html, />답안 입력<\/button>/);
-  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(css, /@media print[\s\S]*?\.geometry-inline-choices\s*\{[\s\S]*?display:\s*none\s*!important/);
+  assert.match(html, />답안 입력<\/button>/);
+  const highSchoolCss = await readFile(new URL("../app/arithmetic/high-school/high-school.css", import.meta.url), "utf8");
+  assert.match(highSchoolCss, /@media print[\s\S]*?\.trig-derivative-answer-panel-backdrop\s*\{[\s\S]*?display:\s*none\s*!important/);
 });
 
 test("formula-only integral worksheets omit redundant per-question directions", async () => {

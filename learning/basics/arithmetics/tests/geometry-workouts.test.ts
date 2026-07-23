@@ -35,14 +35,13 @@ test("covers the geometry workout sequence without duplicate answers", () => {
   assert.match(projectionProblems.find(({ id }) => id === "p6")?.latex ?? "", /a-\u005coperatorname\{proj\}/);
 });
 
-test("geometry worksheets render directly clickable multiple-choice answers", async () => {
+test("geometry worksheets use the shared slide-over answer panel", async () => {
   const source = await readFile(
     new URL("../app/arithmetic/high-school/components/geometry-choice-worksheet.tsx", import.meta.url),
     "utf8",
   );
-  assert.match(source, /className="geometry-inline-choices"/);
-  assert.match(source, /onClick=\{\(\) => selectChoice\(problem\.id, choice\.id\)\}/);
-  assert.match(source, /aria-pressed=\{selected\[problem\.id\] === choice\.id\}/);
-  assert.doesNotMatch(source, />답안 입력<\/button>/);
-  assert.doesNotMatch(source, /<WorksheetChoicePanel/);
+  assert.doesNotMatch(source, /className="geometry-inline-choices"/);
+  assert.match(source, />답안 입력<\/button>/);
+  assert.match(source, /<WorksheetChoicePanel/);
+  assert.match(source, /onClose=\{\(\) => setPanelOpen\(false\)\}/);
 });

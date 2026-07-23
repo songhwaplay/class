@@ -6473,94 +6473,9 @@ button.prime-number-question:focus-visible {
   line-height: 1.2;
 }
 
-.geometry-question-body {
-  width: 100%;
-  height: 100%;
-  min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(190px, 44%);
-  align-items: center;
-  gap: 12px;
-}
-
-.geometry-question-body.is-answer-sheet {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.geometry-question-prompt {
-  min-width: 0;
-}
-
-.geometry-inline-choices {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 5px;
-  margin-top: 0;
-}
-
-.geometry-inline-choice {
-  min-width: 0;
-  min-height: 32px;
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
-  align-items: center;
-  gap: 2px;
-  padding: 3px 5px;
-  border: 1px solid #b6c0d1;
-  border-radius: 6px;
-  background: #fff;
-  color: #17233c;
-  text-align: left;
-  cursor: pointer;
-}
-
-.geometry-inline-choice > span:first-child {
-  color: #53627d;
-  font-family: "Malgun Gothic", sans-serif;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.geometry-inline-choice .math-formula {
-  min-width: 0;
-  justify-self: start;
-  font-size: 12px;
-}
-
-.geometry-inline-choice:hover,
-.geometry-inline-choice:focus-visible {
-  border-color: #4b68b2;
-  outline: 2px solid rgba(75, 104, 178, 0.13);
-}
-
-.geometry-inline-choice.is-selected {
-  border-color: #4b68b2;
-  background: #eef1fb;
-}
-
-.geometry-inline-choice.is-correct-answer {
-  border-color: #31845f;
-  background: #edf8f2;
-}
-
-.geometry-inline-choice.is-wrong-answer {
-  border-color: #c35c4a;
-  background: #fff0ed;
-}
-
 .geometry-choice-question .derivative-static-answer {
   margin-top: 12px;
   font-size: 22px;
-}
-
-@media print {
-  .geometry-question-body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .geometry-inline-choices {
-    display: none !important;
-  }
 }
 
 .polynomial-page .polynomial-instruction {
