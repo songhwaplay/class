@@ -1,0 +1,2 @@
+.era-info{display:grid;grid-template-columns:auto auto 1fr;gap:8px 12px;align-items:baseline;margin:0 0 20px;padding:14px 16px;border:1px solid #ded4c2;background:#fffdf8;font-size:.86rem}
+.era-info strong{color:#a94536;font-size:1rem}.era-info span{color:#6e6255;font-size:.78rem}.era-info p{grid-column:1/-1;margin:0;line-height:1.55}.era-info small{grid-column:1/-1;color:#6e6255;font-size:.78rem}

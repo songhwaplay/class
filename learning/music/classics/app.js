@@ -91,6 +91,14 @@ const allQuestions=pieces.flatMap((p,pi)=>templates.map(([stem,key],ti)=>{
 
 const $=s=>document.querySelector(s);
 const playlist=$('#playlist');
+const eraInfo={
+  all:{title:'전체',period:'바로크~근현대',text:'시대별 감상곡 30개',names:'바흐 · 모차르트 · 베토벤 · 쇼팽 · 라벨'},
+  baroque:{title:'바로크',period:'약 1600–1750',text:'규칙적인 리듬, 장식적인 선율, 하프시코드와 대위법이 특징입니다.',names:'바흐 · 헨델 · 비발디'},
+  classical:{title:'고전',period:'약 1750–1820',text:'균형 잡힌 형식과 분명한 주제, 교향곡·협주곡이 발달했습니다.',names:'하이든 · 모차르트 · 베토벤'},
+  romantic:{title:'낭만',period:'약 1820–1900',text:'개인의 감정, 문학적 이야기, 풍부한 음색과 큰 셈여림 변화를 사용합니다.',names:'슈베르트 · 쇼팽 · 차이콥스키'},
+  modern:{title:'근현대',period:'약 1900 이후',text:'새로운 음색과 리듬, 민속 음악·재즈·영화 음악의 영향을 살펴볼 수 있습니다.',names:'드뷔시 · 라벨 · 거슈윈'}
+};
+function renderEraInfo(era){const info=eraInfo[era];$('#era-info').innerHTML=`<strong>${info.title}</strong><span>${info.period}</span><p>${info.text}</p><small>${info.names}</small>`}
 function renderPieces(filter='all'){
   playlist.innerHTML=pieces.filter(p=>filter==='all'||p.era===filter).map(p=>`<article class="piece" data-no="${p.no}">
     <div class="piece-top"><span class="era">${p.period}</span><span>${p.form}</span></div>
@@ -101,8 +109,9 @@ function renderPieces(filter='all'){
   </article>`).join('');
 }
 renderPieces();
+renderEraInfo('all');
 document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
-  $('.filters .active').classList.remove('active');b.classList.add('active');renderPieces(b.dataset.era);
+  $('.filters .active').classList.remove('active');b.classList.add('active');renderPieces(b.dataset.era);renderEraInfo(b.dataset.era);
 }));
 
 const eraGuide={
