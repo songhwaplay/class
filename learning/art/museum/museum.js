@@ -697,9 +697,9 @@
     model.traverse(part=>{if(part.isMesh){part.userData.work=work;part.userData.room=rooms[activeRoom];part.castShadow=true;part.receiveShadow=true;clickable.push(part);}});
   }
 
-  function addSculpture(work,index,z,version,roomGallery) {
+  function addSculpture(work,index,z,version,roomGallery,xOverride=null) {
     const isGrand=rooms[activeRoom].id==='space';
-    const placementZ=z, placementX=index%2===0?-.75:.75;
+    const placementZ=z, placementX=Number.isFinite(xOverride)?xOverride:index%2===0?-.75:.75;
     const group=new THREE.Group();group.position.set(placementX,0,z);group.userData.placementZ=placementZ;gallery.add(group);
     const dims=getDisplaySize(work),minH=work.id==='d04'?1.25:1.55,maxH=work.id==='d02'?3.15:work.id==='d04'?1.8:2.75;
     const artH=work.actualScale?work.size.h/100:clamp(dims.h*1.05,minH,maxH),artW=artH*(work.size.w/work.size.h);
@@ -742,11 +742,15 @@
     addFinaleWall(rooms[index],shell);
     if(rooms[index].id==='space'){
       const sculptures=rooms[index].works.filter(w=>w.type==='sculpture'), wallWorks=rooms[index].works.filter(w=>w.type!=='sculpture');
-      // 비너스는 가느다란 실루엣이라 전시실 맨뒤 중앙에 두어도 안내판과
-      // 시야를 덜 가린다. 해태는 비너스가 있던 일반 조각 위치로 옮긴다.
       const sculptureOrder=['d05','d01','d02','d13','d06'];
       sculptures.sort((a,b)=>sculptureOrder.indexOf(a.id)-sculptureOrder.indexOf(b.id));
-      sculptures.forEach((w,i)=>addSculpture(w,i,1-i*4.85,version,roomGallery));
+      // Venus occupies the previously empty spot where the detached Haechi
+      // label was seen. Haechi stays opposite it with its label on its base.
+      const sculptureLayout={d05:{x:-2.1,z:-12},d13:{x:2.1,z:-14.1}};
+      sculptures.forEach((w,i)=>{
+        const placement=sculptureLayout[w.id];
+        addSculpture(w,i,placement?.z??1-i*4.85,version,roomGallery,placement?.x??null);
+      });
       wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*7.1,shell.width,version,roomGallery));
     }else{
       rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width,version,roomGallery));
