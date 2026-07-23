@@ -275,9 +275,9 @@
   }
 
   function addFinaleWall(room,shell) {
-    // The spatial gallery has the widest end wall. Keep its final board at a
-    // full, readable scale even when the featured Venus overlaps its lower edge.
-    const grand=room.id==='space',panelW=grand?11.6:5.8,panelH=grand?4.0:3.65,panelY=grand?5.85:3.25,z=GALLERY_END+.38;
+    // Match the other galleries' substantial final-board proportions, scaled
+    // up to fill the spatial gallery's larger end wall. Venus may overlap it.
+    const grand=room.id==='space',panelW=grand?10.9:5.8,panelH=grand?6.85:3.65,panelY=grand?4.4:3.25,z=GALLERY_END+.38;
     const group=new THREE.Group();gallery.add(group);
     mesh([panelW+.62,panelH+.62,.18],materials.black,[0,panelY,z-.08],group);
     mesh([panelW+.76,.11,.24],materials.brass,[0,panelY+(panelH+.7)/2,z],group);
