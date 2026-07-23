@@ -10,9 +10,8 @@ __pycache__/
 # Locally generated reports and previews
 /outputs/
 
-# Standalone nested repositories (commit/publish them separately)
-/learning/basics/arithmetics/
-/learning/basics/hanguksa-basic/
+# Former standalone deployment metadata kept only as a local backup.
+/learning/basics/arithmetics/.sites-git-backup/
 
 # Deployment artifacts
 .deploy-worktree/

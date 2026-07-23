@@ -3,6 +3,7 @@ const http = require("http");
 const path = require("path");
 const fs = require("fs");
 const crypto = require("crypto");
+const { spawn } = require("child_process");
 const { WebSocketServer, WebSocket } = require("ws");
 const LoveLetter = require("./loveletter");
 const LastCard = require("./lastcard");
@@ -23,6 +24,92 @@ const classroomPlatform = createClassroomPlatform({
 });
 
 const PORT = Number(process.env.PORT) || 10000;
+const ARITHMETIC_PORT = Number(process.env.ARITHMETIC_PORT) || 10001;
+const HANGUKSA_PORT = Number(process.env.HANGUKSA_PORT) || 10002;
+const SITE_ROOT = path.resolve(__dirname, "..");
+
+function startLearningApp(relativeDirectory, port, label) {
+  const appDirectory = path.join(SITE_ROOT, relativeDirectory);
+  const cliPath = path.join(appDirectory, "node_modules", "vinext", "dist", "cli.js");
+  const child = spawn(
+    process.execPath,
+    [cliPath, "start", "--hostname", "127.0.0.1", "--port", String(port)],
+    {
+      cwd: appDirectory,
+      env: { ...process.env, PORT: String(port) },
+      stdio: ["ignore", "inherit", "inherit"],
+    },
+  );
+
+  child.on("exit", (code, signal) => {
+    console.error(`${label} stopped (code=${code}, signal=${signal})`);
+  });
+  return child;
+}
+
+function proxyToLearningApp(port) {
+  return (req, res) => {
+    const headers = { ...req.headers, host: `127.0.0.1:${port}` };
+    const proxyRequest = http.request(
+      {
+        hostname: "127.0.0.1",
+        port,
+        path: req.originalUrl,
+        method: req.method,
+        headers,
+      },
+      (proxyResponse) => {
+        res.writeHead(proxyResponse.statusCode || 502, proxyResponse.headers);
+        proxyResponse.pipe(res);
+      },
+    );
+
+    proxyRequest.on("error", () => {
+      if (!res.headersSent) {
+        res.status(503).send("학습 앱을 준비하고 있습니다. 잠시 후 다시 시도해 주세요.");
+      } else {
+        res.end();
+      }
+    });
+    req.pipe(proxyRequest);
+  };
+}
+
+const arithmeticApp = startLearningApp(
+  "learning/basics/arithmetics",
+  ARITHMETIC_PORT,
+  "Arithmetic app",
+);
+const hanguksaApp = startLearningApp(
+  "learning/basics/hanguksa-basic",
+  HANGUKSA_PORT,
+  "Hanguksa app",
+);
+
+const stopLearningApps = () => {
+  arithmeticApp.kill();
+  hanguksaApp.kill();
+};
+process.once("SIGTERM", stopLearningApps);
+process.once("SIGINT", stopLearningApps);
+
+app.use("/assets", express.static(path.join(SITE_ROOT, "assets"), { dotfiles: "ignore" }));
+app.use(
+  "/assets",
+  express.static(path.join(SITE_ROOT, "learning", "basics", "arithmetics", "dist", "client", "assets")),
+);
+app.use(
+  "/fonts",
+  express.static(path.join(SITE_ROOT, "learning", "basics", "arithmetics", "dist", "client", "fonts")),
+);
+app.use(
+  "/hanguksa/assets",
+  express.static(path.join(SITE_ROOT, "learning", "basics", "hanguksa-basic", "dist", "client", "assets")),
+);
+app.use(
+  "/questions",
+  express.static(path.join(SITE_ROOT, "learning", "basics", "hanguksa-basic", "dist", "client", "questions")),
+);
 const MAX_ROOM_PLAYERS = {
   setgame: 4,
   nimgame: 2,
@@ -52,6 +139,11 @@ const FINISHER_DATA_FILE =
   process.env.FINISHERS_DATA_PATH ||
   path.join(__dirname, "finishers.json");
 
+app.use("/arithmetic", proxyToLearningApp(ARITHMETIC_PORT));
+app.use("/fraction", proxyToLearningApp(ARITHMETIC_PORT));
+app.use("/api/arithmetic-race", proxyToLearningApp(ARITHMETIC_PORT));
+app.use("/hanguksa", proxyToLearningApp(HANGUKSA_PORT));
+
 app.use(express.json({ limit: "32kb" }));
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -63,8 +155,7 @@ app.use((req, res, next) => {
 
 app.use("/api", classroomPlatform.router);
 
-const SITE_ROOT = path.resolve(__dirname, "..");
-for (const directory of ["admin", "assets", "classtools", "css", "js", "learning"]) {
+for (const directory of ["admin", "classtools", "css", "js", "learning"]) {
   app.use(`/${directory}`, express.static(path.join(SITE_ROOT, directory), { dotfiles: "ignore" }));
 }
 

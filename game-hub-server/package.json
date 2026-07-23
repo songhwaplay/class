@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
+    "postinstall": "npm --prefix ../learning/basics/arithmetics ci && npm --prefix ../learning/basics/arithmetics run build && npm --prefix ../learning/basics/hanguksa-basic ci && npm --prefix ../learning/basics/hanguksa-basic run build",
     "build:reading-seed": "node ../scripts/build-reading-seed.js"
   },
   "dependencies": {

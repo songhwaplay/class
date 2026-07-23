@@ -1,0 +1,2 @@
+import assert from "node:assert/strict"; import test from "node:test"; import { createGradeSixCylinderSet } from "../lib/grade-six-cylinder.ts";
+test("6원기둥은 겉넓이와 부피 네 묶음을 만든다", () => { const problems = createGradeSixCylinderSet(20260723); assert.equal(problems.length, 4); assert.deepEqual(createGradeSixCylinderSet(20260723), problems); for (const p of problems) { assert.equal(p.surfaceArea, Number((2 * 3.14 * p.radius * p.radius + 2 * 3.14 * p.radius * p.height).toFixed(2))); assert.equal(p.volume, Number((3.14 * p.radius * p.radius * p.height).toFixed(2))); } });

@@ -3,16 +3,18 @@ import fs from "node:fs";
 import test from "node:test";
 
 const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
-const renderConfig = fs.readFileSync(new URL("../render-learning.yaml", import.meta.url), "utf8");
+const serverSource = fs.readFileSync(new URL("../game-hub-server/server.js", import.meta.url), "utf8");
+const serverPackage = fs.readFileSync(new URL("../game-hub-server/package.json", import.meta.url), "utf8");
 
-test("production learning links remain available until Render services are live", () => {
-  assert.match(html, /https:\/\/fraction-lab-20260720\.stimpack486443\.chatgpt\.site\/arithmetic/);
-  assert.match(html, /https:\/\/hanguksa-hanip\.stimpack486443\.chatgpt\.site\//);
+test("learning links stay on the main Render service", () => {
+  assert.doesNotMatch(html, /chatgpt\.site/);
+  assert.match(html, /href="\/arithmetic"/);
+  assert.match(html, /href="\/hanguksa"/);
 });
 
-test("Render blueprint contains both standalone learning services", () => {
-  assert.match(renderConfig, /name: songhwaplay-arithmetic/);
-  assert.match(renderConfig, /rootDir: learning\/basics\/arithmetics/);
-  assert.match(renderConfig, /name: songhwaplay-hanguksa/);
-  assert.match(renderConfig, /rootDir: learning\/basics\/hanguksa-basic/);
+test("the main service builds and proxies both learning apps", () => {
+  assert.match(serverPackage, /learning\/basics\/arithmetics run build/);
+  assert.match(serverPackage, /learning\/basics\/hanguksa-basic run build/);
+  assert.match(serverSource, /app\.use\("\/arithmetic", proxyToLearningApp\(ARITHMETIC_PORT\)\)/);
+  assert.match(serverSource, /app\.use\("\/hanguksa", proxyToLearningApp\(HANGUKSA_PORT\)\)/);
 });

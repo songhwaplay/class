@@ -1,0 +1,43 @@
+{
+  "name": "site-creator-vinext-starter",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "pretest": "node --experimental-strip-types --test tests/geometry-workouts.test.ts tests/high-school-foundation-workouts.test.ts tests/worksheet-choice-utils.test.ts",
+    "dev": "vinext dev",
+    "build": "vinext build",
+    "start": "vinext start",
+    "test": "npm run build && node --test tests/rendered-html.test.mjs && node --experimental-strip-types --test tests/high-school-layout.test.ts tests/definite-integral-workouts.test.ts tests/integration-technique-workouts.test.ts tests/definite-integral-application-workouts.test.ts tests/fraction-engine.test.ts tests/fraction-answer-navigation.test.ts tests/arithmetic-race-ranking.test.ts tests/polynomial-worksheet.test.ts tests/rational-expression-worksheet.test.ts tests/exponent-radical-worksheet.test.ts tests/complex-number-workouts.test.ts tests/equation-workouts.test.ts tests/inequality-workouts.test.ts tests/permutations-combinations-workouts.test.ts tests/coordinate-line-workouts.test.ts tests/circle-equation-workouts.test.ts tests/geometric-transform-workouts.test.ts tests/function-transformation-workouts.test.ts tests/derivative-workouts.test.ts tests/trigonometric-derivative-workouts.test.ts tests/trigonometric-derivative-two-workouts.test.ts tests/mixed-calculation.test.ts tests/grade-six-mixed-calculation.test.ts tests/natural-number-decomposition.test.ts tests/prime-number-hundred-chart.test.ts tests/divisors-multiples.test.ts tests/angle-estimation.test.ts tests/grade-five-fraction-one.test.ts tests/grade-five-fraction-two.test.ts tests/grade-five-fraction-three.test.ts tests/grade-five-decimals.test.ts tests/grade-six-fraction.test.ts tests/grade-six-decimal-one.test.ts tests/grade-six-decimal-two.test.ts tests/grade-six-decimal-three.test.ts",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
+    "db:generate": "drizzle-kit generate"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.2",
+    "katex": "^0.17.0",
+    "next": "16.2.6",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.37.1",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "drizzle-kit": "0.31.10",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.0.13",
+    "wrangler": "4.92.0"
+  },
+  "type": "module"
+}

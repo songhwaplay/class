@@ -1,0 +1,6 @@
+export type CylinderProblem = { id: string; radius: number; height: number; unit: "cm" | "mm" | "m"; surfaceArea: number; volume: number };
+function random(seed: number) { let value = seed >>> 0; return () => { value += 0x6d2b79f5; let next = value; next = Math.imul(next ^ (next >>> 15), next | 1); next ^= next + Math.imul(next ^ (next >>> 7), next | 61); return ((next ^ (next >>> 14)) >>> 0) / 4294967296; }; }
+function integer(next: () => number, minimum: number, maximum: number) { return minimum + Math.floor(next() * (maximum - minimum + 1)); }
+function rounded(value: number) { return Number(value.toFixed(2)); }
+export function createGradeSixCylinderSet(seed: number): CylinderProblem[] { const next = random(seed); return (["cm", "cm", "mm", "m"] as const).map((unit, index) => { const radius = integer(next, 1, 9), height = integer(next, 1, 9); return { id: `grade-six-cylinder-${index + 1}`, radius, height, unit, surfaceArea: rounded(radius * radius * 6.28 + radius * height * 6.28), volume: rounded(radius * radius * 3.14 * height) }; }); }
+export function normalizeCylinderAnswer(input: string) { const value = Number(input.replace(/[^0-9.-]/g, "")); return input.trim() && Number.isFinite(value) ? value : null; }

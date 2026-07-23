@@ -1,0 +1,1175 @@
+.polynomial-page {
+  --high-school-korean-font: "KoPubWorld Batang", "Noto Serif KR", "Batang", serif;
+  --high-school-math-font: "Suneung Math", "STIX Two Math", "KoPubWorld Batang", "Cambria Math", "Times New Roman", serif;
+}
+
+/* Every high-school prompt starts at the upper-left; the remaining row is working space. */
+.polynomial-page .polynomial-question {
+  align-items: start;
+  align-content: start;
+  padding-left: 14px;
+  padding-top: 16px;
+  padding-bottom: 12px;
+}
+
+.polynomial-page .worksheet-stage .polynomial-question {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+.polynomial-page .polynomial-question-number {
+  top: 16px;
+}
+
+.polynomial-page .polynomial-question-body {
+  width: 100%;
+  justify-self: start;
+  text-align: left;
+}
+
+.polynomial-page.polynomial-drill-page .worksheet-stage .polynomial-question {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.polynomial-page.rational-page .worksheet-stage .rational-question {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.polynomial-page.complex-page .worksheet-stage .complex-question {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.polynomial-page.exponent-radical-page .worksheet-stage .exponent-radical-question {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.polynomial-page.equation-page .worksheet-stage .equation-question {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.polynomial-page .polynomial-focus-label {
+  margin-left: 32px;
+  margin-bottom: 5px;
+}
+
+.polynomial-page .polynomial-expression,
+.polynomial-page .rational-expression,
+.polynomial-page .exponent-radical-expression,
+.polynomial-page .equation-expression,
+.polynomial-page .inequality-expression,
+.polynomial-page .function-expression,
+.polynomial-page .derivative-expression {
+  justify-content: flex-start;
+  text-align: left;
+}
+
+.polynomial-page .polynomial-response-area,
+.polynomial-page .rational-response-area,
+.polynomial-page .exponent-radical-response-area,
+.polynomial-page .equation-response-area,
+.polynomial-page .inequality-response-area,
+.polynomial-page .function-response-area,
+.polynomial-page .derivative-response-area {
+  align-self: start;
+  padding-top: 30px;
+}
+
+.polynomial-page .polynomial-question-body,
+.polynomial-page .polynomial-instruction b,
+.polynomial-page .derivative-answer-template {
+  font-family: var(--high-school-math-font);
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+}
+
+/* 반복 안내보다 풀이 공간을 우선한다. 필요한 조건은 각 문항 안에 둔다. */
+.polynomial-page .polynomial-instruction {
+  display: none;
+}
+
+.polynomial-page.combinatorics-page .combinatorics-question {
+  grid-template-columns: minmax(0, 1fr) 150px;
+  min-height: 170px;
+}
+
+.combinatorics-prompt {
+  max-width: 500px;
+  margin: 4px 0 10px 32px;
+  font-family: var(--high-school-korean-font);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+.worksheet-stage .combinatorics-prompt {
+  max-width: 515px;
+  margin-top: 0;
+}
+
+.polynomial-page.combinatorics-page .combinatorics-expression {
+  margin-left: 32px;
+  font-family: var(--high-school-math-font);
+  font-size: 20px;
+  text-align: left;
+}
+
+.polynomial-page.combinatorics-page .combinatorics-expression .katex-display {
+  margin: 0;
+  text-align: left;
+}
+
+.combinatorics-response-area {
+  align-self: start;
+  justify-self: end;
+  padding: 31px 18px 0 0;
+}
+
+.combinatorics-response-area label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--high-school-korean-font);
+}
+
+.combinatorics-response-area input {
+  width: 104px;
+  height: 42px;
+  border: 1px solid #aeb7c7;
+  border-radius: 6px;
+  background: #fff;
+  color: #0e203b;
+  font-family: var(--high-school-math-font);
+  font-size: 21px;
+  text-align: center;
+}
+
+.combinatorics-response-area .counting-result {
+  display: block;
+  margin-top: 8px;
+  text-align: right;
+}
+
+.combinatorics-static-answer {
+  align-self: start;
+  justify-self: end;
+  padding: 36px 26px 0 0;
+  font-family: var(--high-school-math-font);
+  font-size: 22px;
+}
+
+.polynomial-page.coordinate-page .coordinate-question {
+  grid-template-columns: minmax(0, 1fr) 180px;
+  min-height: 170px;
+}
+.coordinate-prompt {
+  max-width: 500px;
+  margin: 2px 0 8px 32px;
+  font-family: var(--high-school-korean-font);
+  font-size: 14px;
+  line-height: 1.5;
+}
+.coordinate-expression {
+  margin-left: 32px;
+  font-family: var(--high-school-math-font);
+  font-size: 20px;
+}
+.coordinate-expression .katex-display { margin: 0; text-align: left; }
+.coordinate-response-area { align-self: start; justify-self: end; padding: 29px 18px 0 0; }
+.coordinate-answer-fields { display: flex; gap: 5px; align-items: center; }
+.coordinate-answer-fields label { display: flex; align-items: center; gap: 3px; font-family: var(--high-school-math-font); }
+.coordinate-answer-fields input {
+  width: 48px;
+  height: 40px;
+  border: 1px solid #aeb7c7;
+  border-radius: 5px;
+  font-family: var(--high-school-math-font);
+  font-size: 18px;
+  text-align: center;
+}
+.coordinate-answer-scalar input { width: 84px; }
+.coordinate-response-area .counting-result { display: block; margin-top: 8px; text-align: right; }
+.coordinate-static-answer { align-self: start; justify-self: end; padding: 37px 20px 0 0; font-family: var(--high-school-math-font); font-size: 20px; }
+
+.polynomial-page.circle-page .circle-question { grid-template-columns: minmax(0, 1fr) 205px; min-height: 170px; }
+.circle-prompt { max-width: 480px; margin: 2px 0 8px 32px; font-family: var(--high-school-korean-font); font-size: 14px; line-height: 1.5; }
+.circle-expression { margin-left: 32px; font-family: var(--high-school-math-font); font-size: 19px; }
+.circle-expression .katex-display { margin: 0; text-align: left; }
+.circle-response-area { align-self: start; justify-self: end; padding: 29px 16px 0 0; }
+.circle-answer-fields { display: flex; gap: 4px; align-items: center; }
+.circle-answer-fields label { display: flex; align-items: center; gap: 2px; font-family: var(--high-school-math-font); }
+.circle-answer-fields input { width: 42px; height: 40px; border: 1px solid #aeb7c7; border-radius: 5px; font-family: var(--high-school-math-font); font-size: 17px; text-align: center; }
+.circle-answer-scalar input { width: 78px; }
+.circle-answer-two-points { display: grid; grid-template-columns: repeat(2, auto); gap: 5px 8px; }
+.circle-response-area .counting-result { display: block; margin-top: 8px; text-align: right; }
+.circle-static-answer { align-self: start; justify-self: end; padding: 37px 18px 0 0; font-family: var(--high-school-math-font); font-size: 18px; }
+
+.polynomial-page .polynomial-focus-label {
+  font-family: var(--high-school-korean-font);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.polynomial-page .math-formula {
+  display: inline-block;
+  max-width: 100%;
+  color: inherit;
+  line-height: 1;
+}
+
+.polynomial-page .math-formula-display,
+.polynomial-page .math-formula-display .katex-display {
+  display: block;
+  width: 100%;
+  margin: 0;
+  text-align: left;
+}
+
+.polynomial-page .math-formula .katex {
+  font-size: 1em;
+  line-height: 1.2;
+}
+
+.polynomial-page .function-static-answer .math-formula,
+.polynomial-page .derivative-static-answer .math-formula {
+  width: auto;
+}
+
+.polynomial-page .polynomial-expression,
+.polynomial-page .polynomial-coefficient-field > b,
+.polynomial-page .polynomial-answer-preview span,
+.polynomial-page .polynomial-static-answer,
+.polynomial-page .rational-expression,
+.polynomial-page .rational-coefficient-field > b,
+.polynomial-page .rational-static-answer,
+.polynomial-page .exponent-radical-expression,
+.polynomial-page .exponent-radical-static-answer,
+.polynomial-page .equation-expression,
+.polynomial-page .inequality-expression,
+.polynomial-page .function-expression,
+.polynomial-page .derivative-expression,
+.polynomial-page .trig-derivative-function-select,
+.polynomial-page .equation-static-answer,
+.polynomial-page .inequality-static-answer,
+.polynomial-page .function-static-answer,
+.polynomial-page .derivative-static-answer,
+.polynomial-page .polynomial-coefficient-input,
+.polynomial-page .rational-coefficient-input {
+  font-family: var(--high-school-math-font);
+  font-synthesis: style;
+}
+
+.polynomial-page .polynomial-expression,
+.polynomial-page .rational-expression,
+.polynomial-page .exponent-radical-expression,
+.polynomial-page .equation-expression,
+.polynomial-page .inequality-expression,
+.polynomial-page .function-expression,
+.polynomial-page .derivative-expression,
+.polynomial-page .polynomial-static-answer,
+.polynomial-page .rational-static-answer,
+.polynomial-page .exponent-radical-static-answer,
+.polynomial-page .equation-static-answer,
+.polynomial-page .inequality-static-answer,
+.polynomial-page .function-static-answer {
+  font-weight: 400;
+}
+
+.polynomial-page .exponent-radical-field > small,
+.polynomial-page .equation-response-area > small {
+  color: #465166;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.polynomial-page.rational-page .rational-expression {
+  width: 100%;
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.polynomial-page.rational-page .rational-expression .math-formula-display,
+.polynomial-page.rational-page .rational-expression .katex-display {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0;
+  text-align: left;
+}
+
+.polynomial-page.rational-page .rational-coefficient-input,
+.polynomial-page.rational-page .rational-input-shell button {
+  font-family: "KaTeX_Main", "Suneung Math", "STIX Two Math", serif;
+  font-synthesis: none;
+}
+
+.polynomial-page.rational-page .rational-coefficient-input {
+  font-size: 17px;
+}
+
+.polynomial-page.rational-page .rational-coefficient-field > b {
+  min-width: 18px;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.polynomial-page.rational-page .rational-coefficient-field > b .katex {
+  font-size: 1em;
+}
+
+.polynomial-page.rational-page .rational-answer-bar {
+  height: 2px;
+  background: #273f92;
+}
+
+.polynomial-page.rational-page .polynomial-answer-preview .math-formula {
+  font-size: 15px;
+}
+
+.polynomial-page.complex-page .complex-question {
+  grid-template-columns: minmax(0, 1fr) 300px;
+}
+
+.polynomial-page.complex-page .complex-expression {
+  width: 100%;
+  color: #17233c;
+  font-size: 24px;
+  line-height: 1.25;
+}
+
+.polynomial-page.complex-page .complex-expression .math-formula-display,
+.polynomial-page.complex-page .complex-expression .katex-display {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0;
+  text-align: left;
+}
+
+.polynomial-page.complex-page .complex-response-area {
+  position: relative;
+  align-self: start;
+  padding-top: 28px;
+}
+
+.complex-answer-fields {
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-start;
+  gap: 7px;
+  color: #17233c;
+  font-size: 18px;
+}
+
+.complex-answer-part {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.complex-answer-field {
+  display: grid;
+  justify-items: center;
+  gap: 5px;
+}
+
+.complex-answer-field > small {
+  color: #59657a;
+  font-family: var(--high-school-korean-font);
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.complex-input-shell,
+.complex-input {
+  width: 78px;
+  height: 42px;
+}
+
+.polynomial-page.complex-page .complex-input,
+.polynomial-page.complex-page .complex-input-shell button {
+  font-family: "KaTeX_Main", "Suneung Math", "STIX Two Math", serif;
+  font-size: 17px;
+  font-synthesis: none;
+}
+
+.complex-static-answer {
+  align-self: start;
+  min-height: 62px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: #eef1fb;
+  color: #27386e;
+  font-size: 22px;
+}
+
+/* Keep each prompt at the top so the lower half of the row remains scratch space. */
+.polynomial-page.exponent-radical-page .exponent-radical-question {
+  align-items: start;
+  align-content: start;
+  padding-top: 16px;
+  padding-bottom: 12px;
+}
+
+.polynomial-page.exponent-radical-page .exponent-radical-question .polynomial-question-number {
+  top: 16px;
+}
+
+.polynomial-page.exponent-radical-page .exponent-radical-expression {
+  width: 100%;
+  font-size: 24px;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.polynomial-page.exponent-radical-page .exponent-radical-expression .math-formula-display,
+.polynomial-page.exponent-radical-page .exponent-radical-expression .katex-display {
+  display: flex;
+  justify-content: flex-start;
+  margin: 0;
+  text-align: left;
+}
+
+.polynomial-page.exponent-radical-page .exponent-radical-expression .katex-display > .katex {
+  text-align: left;
+}
+
+.polynomial-page.exponent-radical-page .exponent-radical-response-area {
+  align-self: start;
+  padding-top: 30px;
+}
+
+.polynomial-page.exponent-radical-page .exponent-radical-static-answer {
+  align-self: start;
+  min-height: 58px;
+  font-size: 22px;
+}
+
+.polynomial-page.function-page .function-question {
+  grid-template-columns: minmax(0, 1fr) 326px;
+  align-items: start;
+  padding-top: 22px;
+  padding-bottom: 18px;
+}
+
+.polynomial-page.function-page .function-question-number {
+  top: 14px;
+}
+
+.polynomial-page.function-page .polynomial-focus-label {
+  margin-bottom: 12px;
+}
+
+.polynomial-page.function-page .function-expression {
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  color: #111827;
+  font-size: 20px;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.3;
+}
+
+.polynomial-page.function-page .function-expression i {
+  font-style: italic;
+}
+
+.polynomial-page.function-page .function-expression sup {
+  position: relative;
+  top: -0.08em;
+  margin-left: 0.04em;
+  font-size: 0.68em;
+  line-height: 0;
+}
+
+.function-expression-given {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.function-expression-divider {
+  margin-left: -2px;
+}
+
+.function-expression-target {
+  color: #111827;
+  font-size: 1.08em;
+  font-weight: 400;
+}
+
+.function-display-fraction {
+  display: inline-grid;
+  grid-template-rows: auto auto;
+  align-items: center;
+  justify-items: stretch;
+  min-width: 74px;
+  text-align: center;
+  line-height: 1.1;
+}
+
+.function-display-fraction > span {
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.function-display-fraction > span:first-child {
+  border-bottom: 1.25px solid currentColor;
+}
+
+.polynomial-page.function-page .function-response-area {
+  margin-top: 30px;
+}
+
+.polynomial-page.function-page .function-coefficient-field > small {
+  color: #3d485e;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.polynomial-page.function-page .function-coefficient-field > small .math-formula {
+  font-family: var(--high-school-math-font);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.polynomial-page.function-page .function-input-shell,
+.polynomial-page.function-page .function-coefficient-input {
+  width: 78px;
+}
+
+.polynomial-page.function-page .polynomial-sheet-5 .function-expression {
+  gap: 5px;
+  font-size: 17px;
+}
+
+.polynomial-page.function-page .polynomial-sheet-5 .function-question {
+  padding-top: 12px;
+  padding-bottom: 8px;
+}
+
+.polynomial-page.function-page .polynomial-sheet-5 .function-response-area {
+  margin-top: 12px;
+}
+
+.polynomial-page.derivative-page .derivative-question {
+  grid-template-columns: minmax(0, 1fr) 330px;
+  align-items: start;
+  padding-top: 20px;
+  padding-bottom: 16px;
+}
+
+.polynomial-page.derivative-page .derivative-question .polynomial-question-number {
+  top: 13px;
+}
+
+.polynomial-page.derivative-page .polynomial-focus-label {
+  margin-bottom: 10px;
+}
+
+.derivative-expression {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  color: #111827;
+  font-size: 20px;
+  line-height: 1.35;
+}
+
+.derivative-expression i,
+.derivative-answer-template i,
+.derivative-static-answer i {
+  font-style: italic;
+}
+
+.derivative-expression-target {
+  color: #354372;
+  font-size: 1.05em;
+}
+
+.derivative-response-area {
+  position: relative;
+  min-width: 0;
+  margin-top: 27px;
+}
+
+.derivative-coefficient-fields {
+  display: grid;
+  align-items: end;
+  gap: 8px;
+}
+
+.derivative-coefficient-fields-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.derivative-coefficient-fields-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding-inline: 35px;
+}
+
+.derivative-coefficient-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.derivative-coefficient-field > small {
+  color: #3d485e;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
+  white-space: nowrap;
+}
+
+.derivative-input-shell,
+.derivative-coefficient-input {
+  width: 82px;
+}
+
+.derivative-answer-template {
+  margin-top: 10px;
+  color: #566071;
+  font-family: var(--high-school-math-font);
+  font-size: 14px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.derivative-static-answer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 92px;
+  margin-top: 26px;
+  border-radius: 8px;
+  background: #eef1fb;
+  color: #17233c;
+  padding: 11px;
+  font-family: var(--high-school-math-font);
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.polynomial-page.derivative-page .polynomial-sheet-5 .derivative-question,
+.polynomial-page.derivative-page .polynomial-sheet-6 .derivative-question {
+  padding-top: 9px;
+  padding-bottom: 7px;
+}
+
+.polynomial-page.derivative-page .polynomial-sheet-5 .derivative-expression,
+.polynomial-page.derivative-page .polynomial-sheet-6 .derivative-expression {
+  gap: 4px;
+  font-size: 16px;
+}
+
+.polynomial-page.derivative-page .polynomial-sheet-5 .derivative-response-area,
+.polynomial-page.derivative-page .polynomial-sheet-6 .derivative-response-area {
+  margin-top: 8px;
+}
+
+@media print {
+  .worksheet-stage .derivative-coefficient-input {
+    color: transparent;
+    text-shadow: none;
+  }
+
+  .derivative-static-answer {
+    background: white;
+    color: black;
+  }
+}
+
+.trig-value-editor { display: grid; grid-template-columns: 30px 46px 64px; grid-template-rows: 34px 1px 34px; align-items: center; gap: 3px 5px; }
+.trig-value-editor button { grid-row: 1 / 4; width: 30px; height: 34px; border: 1px solid #aab8cf; border-radius: 6px; background: #fff; font-family: var(--high-school-math-font); font-size: 17px; }
+.trig-value-editor input, .trig-value-editor select { height: 34px; border: 1px solid #aab8cf; border-radius: 5px; background: #fff; color: #10213d; font-family: var(--high-school-math-font); font-size: 16px; text-align: center; }
+.trig-value-editor select { grid-column: 3; grid-row: 1; }
+.trig-value-editor input:first-of-type { grid-column: 2; grid-row: 1; }
+.trig-value-editor input:last-of-type { grid-column: 2 / 4; grid-row: 3; }
+.trig-value-fraction-bar { grid-column: 2 / 4; grid-row: 2; height: 1px; background: #10213d; }
+.trig-graph-answer-fields { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.trig-graph-answer-fields label { display: flex; align-items: center; gap: 5px; }
+.trig-graph-answer-fields input { width: 58px; height: 34px; border: 1px solid #aab8cf; border-radius: 5px; font-family: var(--high-school-math-font); font-size: 16px; text-align: center; }
+.pi-answer-list{display:grid;grid-template-columns:repeat(2,max-content);gap:5px}.pi-answer-list label{display:flex;align-items:center;gap:3px}.pi-answer-list input{width:34px;height:30px;border:1px solid #aab8cf;border-radius:5px;font-family:var(--high-school-math-font);font-size:15px;text-align:center}
+
+.polynomial-page.transform-page .transform-question {
+  grid-template-columns: minmax(0, 1fr) 205px;
+  align-content: start;
+  min-height: 174px;
+  padding: 14px 16px 12px;
+}
+
+.transform-prompt {
+  margin: 0 0 0 32px;
+  color: #152542;
+  font-family: var(--high-school-serif-font);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.transform-expression {
+  display: flex;
+  justify-content: flex-start;
+  margin: 10px 0 0 32px;
+  min-height: 38px;
+  font-size: 18px;
+}
+
+.transform-response-area,
+.transform-static-answer {
+  grid-column: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.polynomial-page.logic-page .logic-question {
+  display: block;
+  min-height: 174px;
+  padding: 13px 18px 10px 46px;
+}
+.logic-prompt { margin: 0; font-family: var(--high-school-korean-font); font-size: 14px; font-weight: 700; line-height: 1.5; }
+.logic-expression { display: flex; justify-content: flex-start; min-height: 30px; margin-top: 7px; font-size: 17px; }
+.logic-expression .katex-display { margin: 0; text-align: left; }
+.logic-choices { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px 8px; margin-top: 8px; }
+.logic-choices button { display: flex; align-items: center; gap: 7px; min-height: 31px; padding: 4px 8px; border: 1px solid #cbd3df; border-radius: 6px; background: #fff; color: #142440; font-family: var(--high-school-math-font); text-align: left; }
+.logic-choices button > span:first-child { color: #70809a; font-family: var(--high-school-sans-font); font-size: 11px; font-weight: 800; }
+.logic-choices button.is-selected { border-color: #4b68b2; background: #eef2ff; box-shadow: inset 0 0 0 1px #4b68b2; }
+.logic-choices button.is-answer { border-color: #3a8b67; background: #edf8f2; }
+.logic-question .counting-result { position: absolute; right: 16px; top: 13px; }
+
+.polynomial-page.rr-page .rr-question { grid-template-columns: minmax(0, 1fr) 185px; align-items: start; min-height: 174px; padding: 14px 16px 12px 46px; }
+.rr-prompt { margin: 0; font-family: var(--high-school-korean-font); font-size: 14px; font-weight: 700; line-height: 1.5; }
+.rr-expression { display: flex; width: 100%; justify-content: flex-start; margin-top: 10px; font-size: 19px; }
+.polynomial-page.rr-page .rr-expression .math-formula-display,
+.polynomial-page.rr-page .rr-expression .katex-display {
+  display: flex;
+  width: 100%;
+  justify-content: flex-start;
+  margin: 0;
+  text-align: left;
+}
+.polynomial-page.rr-page .rr-expression .katex-display > .katex {
+  display: inline-block;
+  margin: 0;
+  text-align: left;
+}
+.rr-response { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding-top: 34px; }
+.rr-response label { display: flex; align-items: center; gap: 5px; font-family: var(--high-school-math-font); }
+.rr-response input { width: 58px; height: 38px; border: 1px solid #aab8cf; border-radius: 6px; color: #10213d; font-family: var(--high-school-math-font); font-size: 17px; text-align: center; }
+
+.polynomial-page.logarithm-page .logarithm-question { grid-template-columns: minmax(0, 1fr) 150px; align-items: start; min-height: 174px; padding: 14px 16px 12px 46px; }
+.logarithm-prompt { margin: 0; font-family: var(--high-school-korean-font); font-size: 14px; font-weight: 700; line-height: 1.5; }
+.logarithm-expression { display: flex; width: 100%; justify-content: flex-start; margin-top: 10px; font-size: 20px; }
+.polynomial-page.logarithm-page .logarithm-expression .math-formula-display,
+.polynomial-page.logarithm-page .logarithm-expression .katex-display { display: flex; width: 100%; justify-content: flex-start; margin: 0; text-align: left; }
+.logarithm-response { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding-top: 34px; }
+.logarithm-response label { display: flex; align-items: center; gap: 6px; }
+.logarithm-response input { width: 68px; height: 38px; border: 1px solid #aab8cf; border-radius: 6px; color: #10213d; font-family: var(--high-school-math-font); font-size: 17px; text-align: center; }
+
+.transform-answer-fields {
+  display: flex;
+  gap: 10px;
+}
+
+.transform-answer-fields label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.transform-answer-fields input {
+  width: 48px;
+  height: 36px;
+  border: 1px solid #aab8cf;
+  border-radius: 6px;
+  background: #fff;
+  color: #10213d;
+  font-family: var(--high-school-math-font);
+  font-size: 17px;
+  text-align: center;
+}
+
+.transform-static-answer {
+  color: #315aa1;
+  font-size: 17px;
+}
+
+.polynomial-page.trig-derivative-page .trig-derivative-question {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.polynomial-page.trig-derivative-page .trig-derivative-question.is-answer-sheet {
+  grid-template-columns: minmax(0, 1fr) 330px;
+}
+
+.trig-derivative-term-fields {
+  display: grid;
+  align-items: end;
+  justify-content: end;
+  gap: 8px;
+}
+
+.trig-derivative-term-fields-1 {
+  grid-template-columns: 92px;
+}
+
+.trig-derivative-term-fields-2 {
+  grid-template-columns: repeat(2, 92px);
+}
+
+.trig-two-structured-fields {
+  display: grid;
+  grid-template-columns: 90px 126px;
+  align-items: end;
+  justify-content: center;
+  gap: 12px;
+}
+
+.trig-two-pattern-select {
+  width: 118px;
+}
+
+.trig-derivative-term-field {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.trig-derivative-term-field > small {
+  color: #3d485e;
+  font-size: 13px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.trig-derivative-term-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+}
+
+.trig-derivative-input-shell,
+.trig-derivative-coefficient-input {
+  width: 82px;
+}
+
+.trig-derivative-answer-template {
+  margin-top: 7px;
+  font-size: 13px;
+}
+
+.trig-derivative-static-answer {
+  min-height: 82px;
+  font-size: 15px;
+}
+
+.trig-derivative-answer-panel-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  background: rgba(15, 23, 42, 0.2);
+}
+
+.trig-derivative-answer-panel {
+  width: min(420px, 100vw);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #fbfaf6;
+  border-left: 1px solid #d9d2c6;
+  box-shadow: -12px 0 32px rgba(15, 23, 42, 0.16);
+}
+
+.trig-derivative-answer-panel > header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 22px 22px 16px;
+  border-bottom: 1px solid #d9d2c6;
+}
+
+.trig-derivative-answer-panel > header > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.trig-derivative-answer-panel > header strong {
+  color: #10213d;
+  font-size: 23px;
+}
+
+.trig-derivative-answer-panel > header small {
+  color: #667085;
+  font-size: 13px;
+}
+
+.trig-derivative-answer-panel > header > button {
+  width: 34px;
+  height: 34px;
+  border: 1px solid #c9c2b7;
+  border-radius: 50%;
+  background: #fff;
+  color: #24324a;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.trig-derivative-answer-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 18px 20px;
+}
+
+.trig-derivative-answer-item {
+  position: relative;
+  display: grid;
+  gap: 12px;
+  padding: 16px 4px;
+  border-bottom: 1px dashed #d7d0c5;
+}
+
+.trig-derivative-answer-item-heading {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.trig-derivative-answer-item-heading > strong {
+  color: #667085;
+  font-size: 12px;
+}
+
+.trig-derivative-answer-item-heading > span {
+  color: #31416a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.trig-derivative-answer-panel .trig-derivative-term-fields {
+  justify-content: start;
+}
+
+.trig-derivative-answer-panel .trig-derivative-choices {
+  grid-template-columns: 1fr;
+}
+
+.trig-derivative-answer-panel .trig-derivative-choice {
+  min-height: 44px;
+}
+
+.trig-derivative-panel-grade {
+  margin: 14px 18px 18px;
+}
+
+.trig-derivative-choices {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.trig-derivative-choice {
+  min-width: 0;
+  min-height: 49px;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  align-items: center;
+  gap: 3px;
+  border: 1px solid #b6c0d1;
+  border-radius: 8px;
+  background: #fff;
+  color: #17233c;
+  padding: 5px 7px;
+  font-family: var(--high-school-math-font);
+  text-align: left;
+  cursor: pointer;
+}
+
+.trig-derivative-choice > span:first-child {
+  color: #53627d;
+  font-family: var(--high-school-sans-font);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.trig-derivative-choice .math-formula {
+  min-width: 0;
+  justify-self: start;
+  font-size: 13px;
+}
+
+.trig-derivative-choice:hover,
+.trig-derivative-choice:focus-visible {
+  border-color: #4b68b2;
+  outline: 3px solid rgba(75, 104, 178, 0.13);
+}
+
+.trig-derivative-choice.is-selected {
+  border-color: #4b68b2;
+  background: #eef2ff;
+  box-shadow: inset 0 0 0 1px #4b68b2;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-5 .trig-derivative-question {
+  padding-top: 11px;
+  padding-bottom: 9px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-5 .trig-derivative-expression {
+  gap: 5px;
+  font-size: 17px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-5 .trig-derivative-response-area {
+  margin-top: 11px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-question,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-question {
+  padding-top: 6px;
+  padding-bottom: 5px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .polynomial-focus-label,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .polynomial-focus-label {
+  margin-bottom: 5px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-expression,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-expression {
+  gap: 2px;
+  font-size: 15px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-response-area,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-response-area {
+  margin-top: 4px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-term-field,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-term-field {
+  gap: 2px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-term-field > small,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-term-field > small {
+  font-size: 11px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-answer-template,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-answer-template {
+  margin-top: 3px;
+  font-size: 11px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-choice,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-choice {
+  min-height: 39px;
+  padding: 3px 5px;
+}
+
+.polynomial-page.trig-derivative-page .polynomial-sheet-6 .trig-derivative-choice .math-formula,
+.polynomial-page.trig-derivative-page .polynomial-sheet-7 .trig-derivative-choice .math-formula {
+  font-size: 11px;
+}
+
+@media print {
+  .trig-derivative-answer-panel-backdrop {
+    display: none !important;
+  }
+
+  .worksheet-stage .trig-derivative-coefficient-input,
+  .worksheet-stage .trig-derivative-function-select {
+    color: transparent;
+    text-shadow: none;
+  }
+
+  .worksheet-stage .trig-derivative-choice {
+    background: white;
+    box-shadow: none;
+  }
+}
+
+/* Shared high-school worksheet rhythm: keep type and writing space consistent. */
+.polynomial-page {
+  --high-school-title-size: 27px;
+  --high-school-subject-size: 13px;
+  --high-school-prompt-size: 14px;
+  --high-school-math-size: 19px;
+  --high-school-label-size: 10px;
+}
+
+.polynomial-page .polynomial-sheet-header .counting-sheet-title > span {
+  font-size: var(--high-school-subject-size) !important;
+}
+
+.polynomial-page .polynomial-sheet-header .counting-sheet-title > strong {
+  font-size: var(--high-school-title-size) !important;
+  line-height: 1.15;
+}
+
+.polynomial-page .worksheet-stage .polynomial-question {
+  isolation: isolate;
+}
+
+.polynomial-page .worksheet-stage .polynomial-question-body {
+  position: relative;
+  z-index: 1;
+  max-width: 46%;
+  font-size: var(--high-school-prompt-size) !important;
+}
+
+.polynomial-page .polynomial-sheet-7 .polynomial-problem-grid {
+  grid-template-rows: repeat(7, minmax(0, 1fr));
+}
+
+.polynomial-page .polynomial-sheet-8 .polynomial-problem-grid {
+  grid-template-rows: repeat(8, minmax(0, 1fr));
+}
+
+.polynomial-page .polynomial-sheet-9 .polynomial-problem-grid {
+  grid-template-rows: repeat(9, minmax(0, 1fr));
+}
+
+.polynomial-page .worksheet-stage .polynomial-focus-label {
+  font-size: var(--high-school-label-size) !important;
+  line-height: 1.25;
+}
+
+.polynomial-page .worksheet-stage .polynomial-expression,
+.polynomial-page .worksheet-stage .rational-expression,
+.polynomial-page .worksheet-stage .complex-expression,
+.polynomial-page .worksheet-stage .exponent-radical-expression,
+.polynomial-page .worksheet-stage .equation-expression,
+.polynomial-page .worksheet-stage .inequality-expression,
+.polynomial-page .worksheet-stage .function-expression,
+.polynomial-page .worksheet-stage .coordinate-expression,
+.polynomial-page .worksheet-stage .circle-expression,
+.polynomial-page .worksheet-stage .logic-expression,
+.polynomial-page .worksheet-stage .rr-expression,
+.polynomial-page .worksheet-stage .logarithm-expression,
+.polynomial-page .worksheet-stage .derivative-expression,
+.polynomial-page .worksheet-stage .trig-derivative-expression {
+  font-size: var(--high-school-math-size) !important;
+  line-height: 1.35;
+}
+
+/* Word-heavy and diagram-led questions need the full row width. */
+.polynomial-page.combinatorics-page .worksheet-stage .polynomial-question-body,
+.polynomial-page.logic-page .worksheet-stage .polynomial-question-body,
+.polynomial-page.coordinate-page .worksheet-stage .polynomial-question-body,
+.polynomial-page.circle-page .worksheet-stage .polynomial-question-body {
+  max-width: 100%;
+}

@@ -1,0 +1,193 @@
+export type ArithmeticWorksheet = {
+  name: string;
+  route: string | null;
+  grade: string;
+  title: string;
+};
+
+const readyRoutes: Record<string, string> = {
+  "1수세기①": "/arithmetic/counting-1",
+  "1덧셈뺄셈①": "/arithmetic/add-subtract-1",
+  "1덧셈뺄셈②": "/arithmetic/add-subtract-2",
+  "1주고받기": "/arithmetic/give-and-take-1",
+  "1보수": "/arithmetic/complements-1",
+  "1덧셈뺄셈③": "/arithmetic/add-subtract-3",
+  "1덧셈뺄셈④": "/arithmetic/add-subtract-4",
+  "1수읽기": "/arithmetic/number-reading-1",
+  "1뛰어세기": "/arithmetic/skip-counting-1",
+  "2덧셈뺄셈①": "/arithmetic/grade-2-add-subtract-1",
+  "2덧셈뺄셈②": "/arithmetic/grade-2-add-subtract-2",
+  "2덧셈뺄셈③": "/arithmetic/grade-2-add-subtract-3",
+  "2묶어세기": "/arithmetic/group-counting-1",
+  "2구구단①": "/arithmetic/multiplication-1",
+  "2구구단②": "/arithmetic/multiplication-2",
+  "2구구단③": "/arithmetic/multiplication-3",
+  "2구구단④": "/arithmetic/multiplication-4",
+  "2구구단⑤": "/arithmetic/multiplication-5",
+  "2시계": "/arithmetic/clock-1",
+  "3덧셈뺄셈": "/arithmetic/grade-3-add-subtract",
+  "3덧셈뺄셈빈칸": "/arithmetic/grade-3-add-subtract-blanks",
+  "3보수뺄셈100": "/arithmetic/grade-3-complement-subtraction-100",
+  "3보수뺄셈1000": "/arithmetic/grade-3-complement-subtraction-1000",
+  "3덧셈뺄셈②": "/arithmetic/grade-3-add-subtract-2",
+  "3나눗셈①": "/arithmetic/grade-3-division-1",
+  "3곱셈①": "/arithmetic/grade-3-multiplication-1",
+  "3곱셈②": "/arithmetic/grade-3-multiplication-2",
+  "3길이": "/arithmetic/grade-3-length",
+  "3시간①": "/arithmetic/grade-3-time-1",
+  "3시간②": "/arithmetic/grade-3-time-2",
+  "3곱셈③": "/arithmetic/grade-3-multiplication-3",
+  "19단": "/arithmetic/nineteen-times-table",
+  "제곱수": "/arithmetic/square-numbers",
+  "3나눗셈②": "/arithmetic/grade-3-division-2",
+  "3나눗셈③": "/arithmetic/grade-3-division-3",
+  "3분수①": "/arithmetic/grade-3-fraction-1",
+  "3분수②": "/fraction",
+  "3무게,들이": "/arithmetic/grade-3-measurement",
+  "3분수③": "/arithmetic/grade-3-fraction-3",
+  "4숫자읽기": "/arithmetic/grade-4-number-reading",
+  "4각도어림": "/arithmetic/grade-4-angle-estimation",
+  "4곱셈": "/arithmetic/grade-4-multiplication",
+  "4큰수곱셈": "/arithmetic/grade-4-large-number-multiplication",
+  "4나눗셈": "/arithmetic/grade-4-division",
+  "4분수": "/arithmetic/grade-4-fraction",
+  "4소수": "/arithmetic/grade-4-decimals",
+  "단위변환": "/arithmetic/unit-conversion",
+  "5혼합계산": "/arithmetic/grade-5-mixed-calculation",
+  "자연수분해": "/arithmetic/grade-5-natural-number-decomposition",
+  "프라임넘버": "/arithmetic/grade-5-prime-numbers",
+  "5약수,배수": "/arithmetic/grade-5-divisors-multiples",
+  "5분수①": "/arithmetic/grade-5-fraction-1",
+  "5분수②": "/arithmetic/grade-5-fraction-2",
+  "5분수③": "/arithmetic/grade-5-fraction-3",
+  "5소수": "/arithmetic/grade-5-decimals",
+  "6분수": "/arithmetic/grade-6-fraction",
+  "6소수①": "/arithmetic/grade-6-decimals-1",
+  "6소수②": "/arithmetic/grade-6-decimals-2",
+  "6소수③": "/arithmetic/grade-6-decimals-3",
+  "6혼합계산": "/arithmetic/grade-6-mixed-calculation",
+  "6비례식": "/arithmetic/grade-6-proportion",
+  "6원": "/arithmetic/grade-6-circle",
+  "6원기둥": "/arithmetic/grade-6-cylinder",
+};
+
+const worksheetNames = [
+  "1수세기①", "1덧셈뺄셈①", "1덧셈뺄셈②", "1주고받기", "1보수", "1덧셈뺄셈③", "1덧셈뺄셈④", "1수읽기", "1뛰어세기",
+  "2덧셈뺄셈①", "2덧셈뺄셈②", "2덧셈뺄셈③", "2묶어세기", "2구구단①", "2구구단②", "2구구단③", "2구구단④", "2구구단⑤", "2시계",
+  "3덧셈뺄셈", "3덧셈뺄셈빈칸", "3보수뺄셈100", "3보수뺄셈1000", "3덧셈뺄셈②", "3나눗셈①", "3곱셈①", "3곱셈②", "3길이", "3시간①", "3시간②", "3곱셈③", "19단", "제곱수", "3나눗셈②", "3나눗셈③", "3분수①", "3분수②", "3무게,들이", "3분수③",
+  "4숫자읽기", "4각도어림", "4곱셈", "4큰수곱셈", "4나눗셈", "4분수", "4소수", "단위변환",
+  "5혼합계산", "자연수분해", "프라임넘버", "5약수,배수", "5분수①", "5분수②", "5분수③", "5소수",
+  "6분수", "6소수①", "6소수②", "6소수③", "6혼합계산", "6비례식", "6원", "6원기둥",
+] as const;
+
+const explicitGrades: Record<string, string> = {
+  "19단": "3",
+  "제곱수": "3",
+  "단위변환": "4",
+  "자연수분해": "5",
+  "프라임넘버": "5",
+};
+
+export const arithmeticWorksheetCatalog: ArithmeticWorksheet[] = worksheetNames.map((name) => {
+  const gradeMatch = name.match(/^([1-6])(?!\d)(.+)$/);
+  const grade = explicitGrades[name] ?? gradeMatch?.[1] ?? "";
+  return {
+    name,
+    route: readyRoutes[name] ?? null,
+    grade: `초${grade}`,
+    title: explicitGrades[name] ? name : gradeMatch ? gradeMatch[2] : name,
+  };
+});
+
+export const middleSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
+  { grade: "중1", name: "소인수분해", title: "소인수분해", route: null },
+  { grade: "중1", name: "최대공약수와 최소공배수", title: "최대공약수와 최소공배수", route: null },
+  { grade: "중1", name: "정수와 유리수의 덧셈·뺄셈", title: "정수와 유리수의 덧셈·뺄셈", route: "/arithmetic/middle-school/rational-add-subtract" },
+  { grade: "중1", name: "정수와 유리수의 곱셈·나눗셈", title: "정수와 유리수의 곱셈·나눗셈", route: "/arithmetic/middle-school/rational-multiply-divide" },
+  { grade: "중1", name: "정수와 유리수의 혼합계산", title: "정수와 유리수의 혼합계산", route: "/arithmetic/middle-school/rational-mixed" },
+  { grade: "중1", name: "문자식과 식의 값", title: "문자식과 식의 값", route: "/arithmetic/middle-school/expression-values" },
+  { grade: "중1", name: "일차식의 계산", title: "일차식의 계산", route: null },
+  { grade: "중1", name: "일차방정식", title: "일차방정식", route: null },
+  { grade: "중1", name: "좌표와 정비례·반비례", title: "좌표와 정비례·반비례", route: null },
+
+  { grade: "중2", name: "유리수와 순환소수", title: "유리수와 순환소수", route: null },
+  { grade: "중2", name: "지수법칙", title: "지수법칙", route: null },
+  { grade: "중2", name: "단항식의 곱셈·나눗셈", title: "단항식의 곱셈·나눗셈", route: null },
+  { grade: "중2", name: "다항식의 덧셈·뺄셈", title: "다항식의 덧셈·뺄셈", route: null },
+  { grade: "중2", name: "일차부등식", title: "일차부등식", route: null },
+  { grade: "중2", name: "연립일차방정식", title: "연립일차방정식", route: null },
+  { grade: "중2", name: "일차함수와 그래프", title: "일차함수와 그래프", route: null },
+  { grade: "중2", name: "일차함수와 일차방정식", title: "일차함수와 일차방정식", route: null },
+  { grade: "중2", name: "닮음과 피타고라스 정리", title: "닮음과 피타고라스 정리", route: null },
+  { grade: "중2", name: "경우의 수와 확률", title: "경우의 수와 확률", route: null },
+
+  { grade: "중3", name: "제곱근과 실수", title: "제곱근과 실수", route: null },
+  { grade: "중3", name: "근호를 포함한 식의 계산", title: "근호를 포함한 식의 계산", route: null },
+  { grade: "중3", name: "다항식의 곱셈", title: "다항식의 곱셈", route: null },
+  { grade: "중3", name: "인수분해", title: "인수분해", route: null },
+  { grade: "중3", name: "이차방정식", title: "이차방정식", route: null },
+  { grade: "중3", name: "이차함수와 그래프", title: "이차함수와 그래프", route: null },
+  { grade: "중3", name: "삼각비", title: "삼각비", route: null },
+  { grade: "중3", name: "원의 성질", title: "원의 성질", route: null },
+  { grade: "중3", name: "대푯값과 산포도", title: "대푯값과 산포도", route: null },
+];
+
+export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
+  { grade: "공수1", name: "다항식", title: "다항식", route: "/arithmetic/high-school/polynomial-add-subtract" },
+  { grade: "공수1", name: "인수분해와 분수식", title: "인수분해와 분수식", route: "/arithmetic/high-school/factorization-rational" },
+  { grade: "공수1", name: "복소수", title: "복소수", route: "/arithmetic/high-school/complex-numbers" },
+  { grade: "공수1", name: "지수와 근호", title: "지수와 근호", route: "/arithmetic/high-school/exponents-radicals" },
+  { grade: "공수1", name: "방정식", title: "방정식", route: "/arithmetic/high-school/equation-transformations" },
+  { grade: "공수1", name: "부등식", title: "부등식", route: "/arithmetic/high-school/inequality-intervals" },
+  { grade: "공수1", name: "순열", title: "순열", route: "/arithmetic/high-school/permutations-combinations" },
+  { grade: "공수1", name: "조합", title: "조합", route: "/arithmetic/high-school/combinations" },
+  { grade: "공수2", name: "좌표와 직선의 방정식", title: "좌표와 직선의 방정식", route: "/arithmetic/high-school/coordinate-lines" },
+  { grade: "공수2", name: "원의 방정식", title: "원의 방정식", route: "/arithmetic/high-school/circle-equations" },
+  { grade: "공수2", name: "도형의 이동", title: "도형의 이동", route: "/arithmetic/high-school/geometric-transformations" },
+  { grade: "공수2", name: "집합과 명제", title: "집합과 명제", route: "/arithmetic/high-school/sets-propositions" },
+  { grade: "공수2", name: "합성함수와 역함수", title: "합성함수와 역함수", route: "/arithmetic/high-school/function-transformations" },
+  { grade: "공수2", name: "유리함수와 무리함수", title: "유리함수와 무리함수", route: "/arithmetic/high-school/rational-radical-functions" },
+  { grade: "대수", name: "로그의 값과 성질", title: "로그의 값과 성질", route: "/arithmetic/high-school/logarithms" },
+  { grade: "대수", name: "지수·로그 방정식", title: "지수·로그 방정식", route: "/arithmetic/high-school/exponential-log-equations" },
+  { grade: "대수", name: "지수·로그 부등식", title: "지수·로그 부등식", route: "/arithmetic/high-school/exponential-log-inequalities" },
+  { grade: "대수", name: "일반각과 호도법", title: "일반각과 호도법", route: "/arithmetic/high-school/radian-measure" },
+  { grade: "대수", name: "호의 길이와 부채꼴", title: "호의 길이와 부채꼴", route: "/arithmetic/high-school/arc-sector" },
+  { grade: "대수", name: "삼각함수의 값과 관계", title: "삼각함수의 값과 관계", route: "/arithmetic/high-school/trigonometric-values" },
+  { grade: "대수", name: "삼각함수 그래프의 성질", title: "삼각함수 그래프의 성질", route: "/arithmetic/high-school/trigonometric-graphs" },
+  { grade: "대수", name: "삼각방정식·부등식", title: "삼각방정식·부등식", route: "/arithmetic/high-school/trigonometric-equations" },
+  { grade: "대수", name: "등차수열과 등비수열", title: "등차수열과 등비수열", route: "/arithmetic/high-school/sequences" },
+  { grade: "대수", name: "시그마와 점화식", title: "시그마와 점화식", route: "/arithmetic/high-school/sigma-recurrence" },
+  { grade: "미적1", name: "함수의 극한과 연속", title: "함수의 극한과 연속", route: "/arithmetic/high-school/limits-continuity" },
+  { grade: "미적1", name: "미분", title: "미분", route: "/arithmetic/high-school/derivative-practice" },
+  { grade: "미적1", name: "미분의 활용", title: "미분의 활용", route: "/arithmetic/high-school/derivative-applications" },
+  { grade: "미적1", name: "다항함수의 적분", title: "다항함수의 적분", route: "/arithmetic/high-school/polynomial-integrals" },
+  { grade: "미적2", name: "지수·로그함수 미분", title: "지수·로그함수 미분", route: "/arithmetic/high-school/exponential-log-derivatives" },
+  { grade: "미적2", name: "삼각함수 미분 1", title: "삼각함수 미분 1", route: "/arithmetic/high-school/trigonometric-derivatives" },
+  { grade: "미적2", name: "삼각함수 미분 2", title: "삼각함수 미분 2", route: "/arithmetic/high-school/trigonometric-derivatives-2" },
+  { grade: "미적2", name: "여러 함수의 부정적분", title: "여러 함수의 부정적분", route: "/arithmetic/high-school/transcendental-integrals" },
+  { grade: "미적2", name: "치환적분과 부분적분", title: "치환적분과 부분적분", route: "/arithmetic/high-school/integration-techniques" },
+  { grade: "미적2", name: "정적분 계산", title: "정적분 계산", route: "/arithmetic/high-school/definite-integrals" },
+  { grade: "미적2", name: "정적분의 활용", title: "정적분의 활용", route: "/arithmetic/high-school/definite-integral-applications" },
+  { grade: "기하", name: "이차곡선의 방정식", title: "이차곡선의 방정식", route: "/arithmetic/high-school/conic-sections" },
+  { grade: "기하", name: "이차곡선의 이동과 접선", title: "이차곡선의 이동과 접선", route: "/arithmetic/high-school/conic-transformations-tangents" },
+  { grade: "기하", name: "평면벡터의 연산", title: "평면벡터의 연산", route: "/arithmetic/high-school/plane-vectors" },
+  { grade: "기하", name: "벡터의 내적과 정사영", title: "벡터의 내적과 정사영", route: "/arithmetic/high-school/vector-projections" },
+  { grade: "기하", name: "도형과 벡터", title: "도형과 벡터", route: "/arithmetic/high-school/vector-geometry" },
+  { grade: "기하", name: "공간좌표", title: "공간좌표", route: "/arithmetic/high-school/space-coordinates" },
+  { grade: "확통", name: "확률의 계산", title: "확률의 계산", route: "/arithmetic/high-school/probability-rules" },
+  { grade: "확통", name: "확률분포와 통계", title: "확률분포와 통계", route: "/arithmetic/high-school/probability-distributions" },
+];
+
+export const learningWorksheetCatalog = [
+  ...arithmeticWorksheetCatalog,
+  ...middleSchoolWorksheetCatalog,
+  ...highSchoolWorksheetCatalog,
+];
+
+export const raceReadyWorksheets = arithmeticWorksheetCatalog.filter(
+  (worksheet): worksheet is ArithmeticWorksheet & { route: string } => Boolean(worksheet.route?.startsWith("/arithmetic/")),
+);
+
+export function raceWorksheetByRoute(route: string) {
+  return raceReadyWorksheets.find((worksheet) => worksheet.route === route) ?? null;
+}
