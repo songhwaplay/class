@@ -177,10 +177,12 @@ test("uses four worksheet cards per row on wide catalog screens", async () => {
 
 test("keeps geometry worksheet formulas compact without inline answer controls", async () => {
   const css = await readFile("app/globals.css", "utf8");
+  const highSchoolCss = await readFile("app/arithmetic/high-school/high-school.css", "utf8");
   assert.match(css, /\.geometry-choice-question\s*\{[^}]*display:\s*block/s);
   assert.match(css, /\.geometry-choice-expression\s*\{[^}]*font-size:\s*18px/s);
   assert.match(css, /\.geometry-choice-question \.polynomial-focus-label\s*\{[^}]*white-space:\s*nowrap/s);
   assert.doesNotMatch(css, /\.geometry-inline-choices\s*\{/);
+  assert.match(highSchoolCss, /\.trig-derivative-answer-panel \.math-formula \.katex \.mathnormal\s*\{[^}]*font-family:\s*"KaTeX_Math"[^}]*font-style:\s*italic/s);
 });
 
 test("hides repeated high-school instruction strips and uses one math font stack", async () => {

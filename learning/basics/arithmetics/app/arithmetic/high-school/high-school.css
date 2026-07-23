@@ -970,6 +970,15 @@
   min-height: 44px;
 }
 
+.trig-derivative-answer-panel .math-formula .katex .mathnormal {
+  font-family: "KaTeX_Math", "STIX Two Math", "Cambria Math", serif;
+  font-style: italic;
+}
+
+.trig-derivative-answer-panel .math-formula .katex .mathrm {
+  font-family: "KaTeX_Main", "STIX Two Math", "Cambria Math", serif;
+}
+
 .trig-derivative-panel-grade {
   margin: 14px 18px 18px;
 }
