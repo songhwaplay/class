@@ -9,7 +9,7 @@
   const ZONES = [
     {
       id:'sphinx', order:'01', title:'카프라 왕의 스핑크스', short:'기자의 대스핑크스',
-      subtitle:'고대 이집트 · 석회암 조각', position:[-145,0,-18], arrival:[-145,1.62,33], lookAt:[-145,8,-18],
+      subtitle:'고대 이집트 · 석회암 조각', position:[-145,0,-18], arrival:[-145,1.62,-76], lookAt:[-145,8,-48],
       facts:[['길이','73.5m'],['너비','19m'],['높이','20m']],
       size:'길이 73.5m × 너비 19m × 높이 20m',
       scale:'모형의 전체 경계가 실제 치수와 일치합니다.',
@@ -33,7 +33,7 @@
     },
     {
       id:'guell', order:'03', title:'구엘 공원의 도마뱀', short:'엘 드락',
-      subtitle:'안토니 가우디 · 1900–1914', position:[-72,0,-142], arrival:[-72,1.62,-133], lookAt:[-72,1,-142],
+      subtitle:'안토니 가우디 · 1900–1914', position:[-72,0,-142], arrival:[-72,1.62,-146], lookAt:[-72,1,-142],
       facts:[['실제 길이','약 2.4m'],['기법','트렌카디스'],['장소','용의 계단']],
       size:'길이 약 2.4m',
       scale:'공식 안내가 확인해 주는 대상과 공개 자료의 길이를 적용했습니다. 너비·높이는 공식 실측이 공개되지 않아 실제 사진 비례를 참고했습니다.',
@@ -45,7 +45,7 @@
     },
     {
       id:'haetae', order:'04', title:'광화문 해치상', short:'광화문 해치',
-      subtitle:'조선 · 1860년대 · 석조', position:[72,0,-142], arrival:[72,1.62,-132], lookAt:[72,1.8,-142],
+      subtitle:'조선 · 1860년대 · 석조', position:[72,0,-142], arrival:[72,1.62,-148], lookAt:[72,1.8,-142],
       facts:[['길이','2.756m'],['너비','1.862m'],['높이','3.507m']],
       size:'길이 275.6cm × 너비 186.2cm × 높이 350.7cm',
       scale:'국립문화유산연구원 3D 기록의 실측 치수와 일치합니다.',
@@ -57,7 +57,7 @@
     },
     {
       id:'dol', order:'05', title:'제주 돌하르방', short:'제주목 계열',
-      subtitle:'제주 민속 석조 조형물', position:[-142,0,112], arrival:[-142,1.62,119], lookAt:[-142,1,112],
+      subtitle:'제주 민속 석조 조형물', position:[-142,0,112], arrival:[-142,1.62,107], lookAt:[-142,1,112],
       facts:[['대표 높이','1.87m'],['성읍 평균','1.41m'],['대정 평균','1.34m']],
       size:'제주목 계열 평균 높이 1.87m',
       scale:'돌하르방은 개체마다 다릅니다. 이 전시는 국가유산 설명의 제주 지역 평균 높이를 사용했습니다.',
@@ -121,8 +121,8 @@
   let yaw = 0, pitch = -.06, dragging = false, dragStart = null, activeZone = null;
 
   const MAT = {
-    grass:new THREE.MeshStandardMaterial({color:0x557b43,roughness:.98}),
-    path:new THREE.MeshStandardMaterial({color:0xc2b397,roughness:.92}),
+    grass:new THREE.MeshStandardMaterial({color:0x315b36,roughness:.98}),
+    path:new THREE.MeshStandardMaterial({color:0xa29378,roughness:.92}),
     pathEdge:new THREE.MeshStandardMaterial({color:0x8a806d,roughness:.86}),
     limestone:new THREE.MeshStandardMaterial({color:0xb89a61,roughness:.93}),
     sandstone:new THREE.MeshStandardMaterial({color:0xc8ad78,roughness:.9}),
@@ -132,7 +132,7 @@
     patina:new THREE.MeshStandardMaterial({color:0x5c9582,roughness:.72,metalness:.24}),
     copper:new THREE.MeshStandardMaterial({color:0xb9793d,roughness:.48,metalness:.3}),
     white:new THREE.MeshStandardMaterial({color:0xf0eadc,roughness:.84}),
-    water:new THREE.MeshStandardMaterial({color:0x4f9eb0,roughness:.28,metalness:.08,transparent:true,opacity:.82}),
+    water:new THREE.MeshStandardMaterial({color:0x236f80,roughness:.28,metalness:.08,transparent:true,opacity:.88}),
     wood:new THREE.MeshStandardMaterial({color:0x68452f,roughness:.9}),
     leaf:new THREE.MeshStandardMaterial({color:0x2e6740,roughness:.94}),
     leaf2:new THREE.MeshStandardMaterial({color:0x6c8d45,roughness:.94})
@@ -317,7 +317,8 @@
     const modelBounds=new THREE.Box3().setFromObject(model);
     model.position.y+=groundY-modelBounds.min.y;
     const marker=makeScaleMarker(1.45,'어린이 1.45m');marker.position.set(x+4.5,0,z+4);park.add(marker);
-    const label=makeLabel(zone.title,zone.size,9);label.position.set(x,3.8,z+6);label.lookAt(camera.position.x,3.8,camera.position.z);label.userData.faceCamera=true;park.add(label);
+    const labelSide=zone.id==='liberty'||zone.id==='parthenon'?1:-1;
+    const label=makeLabel(zone.title,zone.size,9);label.position.set(x,3.8,z+labelSide*6);label.lookAt(camera.position.x,3.8,camera.position.z);label.userData.faceCamera=true;park.add(label);
     model.userData.zone=zone;zoneObjects.push(model);
   }
 
