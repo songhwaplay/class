@@ -69,7 +69,7 @@ assert.doesNotMatch(
 );
 
 assert.match(html, /styles\.css\?v=20260723-9/);
-assert.match(html, /art-data\.js\?v=20260723-10/);
+assert.match(html, /art-data\.js\?v=20260723-11/);
 assert.match(html, /museum\.js\?v=20260723-33/);
 
 console.log('museum-modal-contract: 60 artworks and responsive modal safeguards verified');
