@@ -399,7 +399,8 @@
   function nearestZone() {
     let best=null,dist=Infinity;
     ZONES.forEach(z=>{const d=Math.hypot(camera.position.x-z.position[0],camera.position.z-z.position[2]);if(d<dist){dist=d;best=z;}});
-    return dist<62?best:null;
+    const monumental=best&&['sphinx','liberty','parthenon'].includes(best.id);
+    return dist<(monumental?108:34)?best:null;
   }
   function updateCamera(){camera.rotation.y=yaw;camera.rotation.x=pitch;}
   function updateMovement(dt) {
