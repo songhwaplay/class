@@ -88,7 +88,7 @@ function renderPieces(filter='all'){
   playlist.innerHTML=pieces.filter(p=>filter==='all'||p.era===filter).map(p=>`<article class="piece" data-no="${p.no}">
     <div class="piece-top"><span class="era">${p.period}</span><span>${p.form}</span></div>
     <h3>${p.title}</h3><p class="composer original-title">${p.originalTitle}</p><p class="composer">${p.composer}</p>
-    <a class="listen" href="${p.url}" target="_blank" rel="noopener">▶ 감상곡 찾아 듣기</a>
+    <div class="piece-actions"><a class="listen" href="${p.url}" target="_blank" rel="noopener">▶ 감상곡 찾아 듣기</a><button class="detail-button" type="button" data-detail="${p.no}">＋ 자세한 해설</button></div>
     <dl><div><dt>주요 악기</dt><dd>${p.lead}</dd></div><div><dt>빠르기·박자</dt><dd>${p.tempo} · ${p.meter}</dd></div></dl>
     <p class="listen-point"><b>귀 기울일 곳</b>${p.feature}</p><p class="note"><b>${p.concept}</b> · ${p.note}</p>
   </article>`).join('');
@@ -97,6 +97,31 @@ renderPieces();
 document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
   $('.filters .active').classList.remove('active');b.classList.add('active');renderPieces(b.dataset.era);
 }));
+
+const eraGuide={
+  baroque:'바로크 시대에는 규칙적인 박자, 화려한 꾸밈, 여러 선율이 겹치는 짜임이 발달했습니다.',
+  classical:'고전 시대에는 균형 잡힌 형식과 분명한 주제, 대비가 중요한 표현 원리가 되었습니다.',
+  romantic:'낭만 시대에는 개인의 감정과 문학적 이야기, 풍부한 음색과 큰 셈여림 변화가 강조되었습니다.',
+  modern:'근현대 음악에서는 새로운 음색과 리듬을 탐구하고 민속 음악·재즈·영화 등 다양한 재료를 받아들였습니다.'
+};
+const detailDialog=$('#detail-dialog'),detailContent=$('#detail-content');
+function openDetail(piece){
+  detailContent.innerHTML=`<p class="dialog-era">${piece.period} · ${piece.form}</p>
+    <h2 id="detail-title">${piece.title}</h2><p class="dialog-original">${piece.originalTitle}</p><p class="dialog-composer">${piece.composer}</p>
+    <section><h3>곡을 만나기 전에</h3><p>${eraGuide[piece.era]} 이 곡은 ${piece.note}라는 점에 주목하면 성격을 쉽게 이해할 수 있습니다.</p></section>
+    <section><h3>음악 속 핵심 장면</h3><p>${piece.feature}. ${piece.lead}의 음색이 이 장면을 어떻게 표현하는지 귀 기울여 보세요. 전체적인 분위기는 ‘${piece.mood}’에 가깝습니다.</p></section>
+    <section><h3>이렇게 세 번 들어 보세요</h3><ol><li>첫 번째에는 제목만 보고 자유롭게 장면과 느낌을 떠올립니다.</li><li>두 번째에는 ${piece.lead}와 ${piece.meter}를 중심으로 듣습니다.</li><li>세 번째에는 ${piece.concept}이 음악에서 어떻게 나타나는지 찾아 말로 설명합니다.</li></ol></section>
+    <section class="detail-summary"><h3>한 줄 정리</h3><p><b>${piece.title}</b>은(는) ${piece.feature}을(를) 중심으로, ${piece.mood} 들려주는 ${piece.form}입니다.</p></section>
+    <div class="dialog-actions"><a href="${piece.url}" target="_blank" rel="noopener">▶ 해설을 떠올리며 감상하기</a><button type="button" data-close-detail>닫기</button></div>`;
+  detailDialog.showModal();
+}
+playlist.addEventListener('click',event=>{
+  const button=event.target.closest('[data-detail]');if(!button)return;
+  openDetail(pieces.find(piece=>piece.no===button.dataset.detail));
+});
+detailDialog.addEventListener('click',event=>{
+  if(event.target===detailDialog||event.target.closest('.dialog-close')||event.target.closest('[data-close-detail]'))detailDialog.close();
+});
 
 const storeKey='classics-bank-progress-v1';
 let progress=JSON.parse(localStorage.getItem(storeKey)||'{"solved":0,"correct":0,"wrong":[]}');

@@ -1,0 +1,22 @@
+.piece-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin:14px 0}
+.piece-actions .listen{margin:0}
+.detail-button{border:1px solid #a94536;background:transparent;color:#87392e;padding:6px 10px;font:700 .78rem 'Noto Sans KR',sans-serif;cursor:pointer}
+.detail-button:hover,.detail-button:focus-visible{background:#f3e4d8}
+#detail-dialog{width:min(720px,calc(100% - 28px));max-height:88vh;margin:auto;padding:0;border:0;background:#fffdf8;color:#202329;box-shadow:0 24px 80px #0008}
+#detail-dialog::backdrop{background:#101722c9;backdrop-filter:blur(3px)}
+#detail-content{padding:42px 48px}
+.dialog-close{position:sticky;float:right;top:12px;margin:12px 12px 0 0;width:38px;height:38px;border:1px solid #ded4c2;border-radius:50%;background:#fffdf8;color:#202329;font-size:1.5rem;cursor:pointer;z-index:2}
+.dialog-era{margin:0;color:#a94536;font-size:.74rem;font-weight:900;letter-spacing:.06em}
+#detail-title{margin:6px 0 0;font:2.25rem/1.2 'DM Serif Display','Noto Sans KR',serif;letter-spacing:-.03em}
+.dialog-original{margin:4px 0;color:#8b5c43;font:italic .92rem Georgia,serif}
+.dialog-composer{margin:3px 0 28px;color:#666;font-size:.88rem}
+#detail-content section{padding:18px 0;border-top:1px solid #ded4c2}
+#detail-content section h3{margin:0 0 7px;color:#87392e;font-size:.95rem}
+#detail-content section p,#detail-content section ol{margin:0;font-size:.92rem}
+#detail-content section ol{padding-left:22px}
+#detail-content section li{margin:6px 0}
+.detail-summary{margin-top:4px;padding:17px!important;border:0!important;background:#f3ecdf}
+.dialog-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:24px}
+.dialog-actions a,.dialog-actions button{padding:10px 14px;border:0;font:700 .85rem 'Noto Sans KR',sans-serif;text-decoration:none;cursor:pointer}
+.dialog-actions a{background:#a94536;color:#fff}.dialog-actions button{background:#e9e0d1;color:#202329}
+@media(max-width:580px){#detail-content{padding:34px 22px 28px}#detail-title{font-size:1.75rem}.dialog-close{top:8px;margin:8px 8px 0 0}}

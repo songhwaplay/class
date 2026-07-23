@@ -6,6 +6,7 @@
   <meta name="description" content="교과서 필수 클래식 30곡을 감상하고 300문제 문제은행으로 익히는 음악 감상실">
   <title>클래식 음악 감상실 · 300문제은행</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="details.css">
 </head>
 <body>
   <header class="hero">
@@ -53,6 +54,10 @@
     </section>
   </main>
   <footer>음악은 정답보다 발견이 먼저입니다. 한 번 더 들으면 새로운 것이 들려요.</footer>
+  <dialog id="detail-dialog" aria-labelledby="detail-title">
+    <button class="dialog-close" type="button" aria-label="해설 닫기">×</button>
+    <div id="detail-content"></div>
+  </dialog>
   <script src="app.js"></script>
 </body>
 </html>
