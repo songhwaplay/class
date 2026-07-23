@@ -20,6 +20,9 @@ test("정적분의 활용은 넓이와 이동거리 여섯 유형을 만든다",
     assert.ok(problem.answers[0] > 0);
     assert.ok(problem.prompt.length > 0);
   }
+  assert.equal(set.problems[0].label, "𝑥축과 둘러싸인 넓이");
+  assert.match(set.problems[0].prompt, /𝑥축/);
+  assert.doesNotMatch(`${set.problems[0].label} ${set.problems[0].prompt}`, /\bx축/);
 });
 
 test("정적분 활용 보충 문제는 중복 유형을 제거한다", () => {

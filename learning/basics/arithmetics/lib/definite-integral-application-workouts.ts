@@ -48,8 +48,8 @@ function build(
 
   if (kind === "axis-crossing-area") {
     return {
-      id, kind, label: "x축과 둘러싸인 넓이",
-      prompt: "곡선과 x축으로 둘러싸인 부분의 넓이를 구하세요.",
+      id, kind, label: "𝑥축과 둘러싸인 넓이",
+      prompt: "곡선과 𝑥축으로 둘러싸인 부분의 넓이를 구하세요.",
       latex: `y=${scale}(x^2-9)\\quad(-3\\le x\\le3)`,
       answerLabels: ["넓이"], answers: [36 * scale],
     };
