@@ -77,7 +77,7 @@ export default function DefiniteIntegralsPage() {
           <button className="button primary" onClick={checkAll}>전체 채점</button>
         </div>
       </div>
-      {panelOpen && <WorksheetChoicePanel title="정적분 계산" problems={choiceProblems} selected={selected} results={results} onSelect={(problemId, choiceId) => { setSelected((current) => ({ ...current, [problemId]: choiceId })); setResults((current) => { const next = { ...current }; delete next[problemId]; return next; }); }} onClose={() => setPanelOpen(false)} />}
+      {panelOpen && <WorksheetChoicePanel title="정적분 계산" problems={choiceProblems} selected={selected} results={results} onSelect={(problemId, choiceId) => { setSelected((current) => ({ ...current, [problemId]: choiceId })); setResults((current) => { const next = { ...current }; delete next[problemId]; return next; }); }} onGrade={checkAll} onClose={() => setPanelOpen(false)} />}
       <div className="a4-stage counting-a4-stage worksheet-stage" style={{ width: 794 * scale, height: 1123 * scale }} aria-label="A4 정적분 계산 문제지">{sheet(false)}</div>
       <div className="a4-stage counting-a4-stage answer-stage" style={{ width: 794 * scale, height: 1123 * scale }} aria-label="A4 정적분 계산 정답지">{sheet(true)}</div>
     </main>

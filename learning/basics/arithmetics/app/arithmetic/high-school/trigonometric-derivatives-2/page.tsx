@@ -54,6 +54,13 @@ export default function TrigonometricDerivativesTwoPage() {
     });
   }
 
+  function checkAll() {
+    setResults(Object.fromEntries(choiceProblems.map((problem) => [
+      problem.id,
+      problem.choices.find((choice) => choice.id === selected[problem.id])?.correct === true,
+    ])));
+  }
+
   function row(problem: TrigonometricDerivativeTwoProblem, index: number, answerSheet: boolean) {
     return (
       <article className="polynomial-question derivative-question trig-derivative-question" data-testid="trigonometric-derivative-two-question" key={problem.id}>
@@ -91,12 +98,12 @@ export default function TrigonometricDerivativesTwoPage() {
           {reviews.length === 0 && wrong.length > 0 && <button className="button secondary" onClick={() => setReviews(createTrigonometricDerivativeTwoReviewProblems(wrong.map(({ kind }) => kind), questionSet.seed ^ 0x9e3779b9))}>틀린 유형 {Math.min(wrong.length, 2)}문제 더</button>}
           <button className="button secondary" onClick={() => setPanelOpen(true)}>답안 입력</button>
           <button className="button ghost" onClick={() => window.print()}>인쇄</button>
-          <button className="button primary" onClick={() => setResults(Object.fromEntries(choiceProblems.map((problem) => [problem.id, problem.choices.find((choice) => choice.id === selected[problem.id])?.correct === true])))}>전체 채점</button>
+          <button className="button primary" onClick={checkAll}>전체 채점</button>
         </div>
       </div>
       <div className="a4-stage counting-a4-stage worksheet-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(false)}</div>
       <div className="a4-stage counting-a4-stage answer-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(true)}</div>
-      {panelOpen && <WorksheetChoicePanel title="삼각함수 미분 ②" problems={choiceProblems} selected={selected} results={results} onSelect={choose} onClose={() => setPanelOpen(false)} />}
+      {panelOpen && <WorksheetChoicePanel title="삼각함수 미분 ②" problems={choiceProblems} selected={selected} results={results} onSelect={choose} onGrade={checkAll} onClose={() => setPanelOpen(false)} />}
     </main>
   );
 }

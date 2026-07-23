@@ -39,13 +39,13 @@ export const planeVectorProblems: GeometryChoiceItem[] = [
 ];
 
 export const projectionProblems: GeometryChoiceItem[] = [
-  item("p1", "내적", String.raw`(2,3)\cdot(4,-1)`, String.raw`5`, [String.raw`11`, String.raw`8`, String.raw`-5`]),
-  item("p2", "수직 조건", String.raw`(k,2)\perp(3,-6)`, String.raw`k=4`, [String.raw`k=-4`, String.raw`k=2`, String.raw`k=12`]),
-  item("p3", "두 벡터가 이루는 각", String.raw`\vec a=(1,0),\quad\vec b=(1,\sqrt3)`, String.raw`\frac{\pi}{3}`, [String.raw`\frac{\pi}{6}`, String.raw`\frac{\pi}{4}`, String.raw`\frac{2\pi}{3}`]),
-  item("p4", "스칼라 정사영", String.raw`\vec a=(3,4),\quad\vec b=(4,0),\quad \operatorname{comp}_{\vec b}\vec a`, String.raw`3`, [String.raw`4`, String.raw`\frac{12}{5}`, String.raw`12`]),
-  item("p5", "벡터 정사영", String.raw`\vec a=(2,3),\quad\vec b=(1,1),\quad \operatorname{proj}_{\vec b}\vec a`, String.raw`\left(\frac52,\frac52\right)`, [String.raw`(5,5)`, String.raw`\left(1,\frac32\right)`, String.raw`\left(-\frac12,\frac12\right)`]),
-  item("p6", "평행·수직 성분 분해", String.raw`\vec a=(5,2),\quad\vec b=(1,1),\quad \vec a=\vec a_{\parallel}+\vec a_{\perp}`, String.raw`\vec a_{\perp}=\left(\frac32,-\frac32\right)`, [String.raw`\vec a_{\perp}=\left(\frac72,\frac72\right)`, String.raw`\vec a_{\perp}=(3,-3)`, String.raw`\vec a_{\perp}=\left(-\frac32,\frac32\right)`]),
-  item("p7", "좌표축과 이루는 각", String.raw`\vec a=(3,4),\quad \cos\theta_x`, String.raw`\frac35`, [String.raw`\frac45`, String.raw`\frac34`, String.raw`\frac53`]),
+  item("p1", "내적", String.raw`\vec a=(2,3),\quad\vec b=(4,-1),\quad \vec a\cdot\vec b=?`, String.raw`5`, [String.raw`11`, String.raw`8`, String.raw`-5`]),
+  item("p2", "수직 조건", String.raw`(k,2)\perp(3,-6)\text{일 때}\quad k=?`, String.raw`k=4`, [String.raw`k=-4`, String.raw`k=2`, String.raw`k=12`]),
+  item("p3", "두 벡터가 이루는 각", String.raw`\vec a=(1,0),\quad\vec b=(1,\sqrt3),\quad \theta=?`, String.raw`\frac{\pi}{3}`, [String.raw`\frac{\pi}{6}`, String.raw`\frac{\pi}{4}`, String.raw`\frac{2\pi}{3}`]),
+  item("p4", "스칼라 정사영", String.raw`\vec a=(3,4),\quad\vec b=(4,0),\quad \frac{\vec a\cdot\vec b}{|\vec b|}=?`, String.raw`3`, [String.raw`4`, String.raw`\frac{12}{5}`, String.raw`12`]),
+  item("p5", "벡터 정사영", String.raw`\vec a=(2,3),\quad\vec b=(1,1),\quad \frac{\vec a\cdot\vec b}{|\vec b|^2}\vec b=?`, String.raw`\left(\frac52,\frac52\right)`, [String.raw`(5,5)`, String.raw`\left(1,\frac32\right)`, String.raw`\left(-\frac12,\frac12\right)`]),
+  item("p6", "평행·수직 성분 분해", String.raw`\vec a=(5,2),\quad\vec b=(1,1),\quad \vec a=\vec a_{\parallel}+\vec a_{\perp},\quad \vec a_{\perp}=?`, String.raw`\vec a_{\perp}=\left(\frac32,-\frac32\right)`, [String.raw`\vec a_{\perp}=\left(\frac72,\frac72\right)`, String.raw`\vec a_{\perp}=(3,-3)`, String.raw`\vec a_{\perp}=\left(-\frac32,\frac32\right)`]),
+  item("p7", "좌표축과 이루는 각", String.raw`\vec a=(3,4)\text{가 }x\text{축과 이루는 각을 }\theta_x\text{라 할 때}\quad \cos\theta_x=?`, String.raw`\frac35`, [String.raw`\frac45`, String.raw`\frac34`, String.raw`\frac53`]),
 ];
 
 export const vectorGeometryProblems: GeometryChoiceItem[] = [

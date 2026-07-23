@@ -125,7 +125,7 @@ export default function InequalityIntervalsPage() {
       </div>
       <div className="a4-stage counting-a4-stage worksheet-stage" style={{ width: 794 * sheetScale, height: 1123 * sheetScale }} aria-label="A4 부등식 문제지">{renderSheet(false)}</div>
       <div className="a4-stage counting-a4-stage answer-stage" style={{ width: 794 * sheetScale, height: 1123 * sheetScale }} aria-label="A4 부등식 정답지">{renderSheet(true)}</div>
-      {answerPanelOpen && <WorksheetChoicePanel title="부등식" problems={choiceProblems} selected={selected} results={results} onSelect={choose} onClose={() => setAnswerPanelOpen(false)} />}
+      {answerPanelOpen && <WorksheetChoicePanel title="부등식" problems={choiceProblems} selected={selected} results={results} onSelect={choose} onGrade={checkAll} onClose={() => setAnswerPanelOpen(false)} />}
     </main>
   );
 }

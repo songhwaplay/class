@@ -21,10 +21,11 @@ type Props = {
   selected: Record<string, string>;
   results: Record<string, boolean>;
   onSelect: (problemId: string, choiceId: string) => void;
+  onGrade: () => void;
   onClose: () => void;
 };
 
-export default function WorksheetChoicePanel({ title, problems, selected, results, onSelect, onClose }: Props) {
+export default function WorksheetChoicePanel({ title, problems, selected, results, onSelect, onGrade, onClose }: Props) {
   const completed = problems.filter((problem) => selected[problem.id] !== undefined).length;
   return (
     <div className="trig-derivative-answer-panel-backdrop" role="presentation" onClick={onClose}>
@@ -39,7 +40,7 @@ export default function WorksheetChoicePanel({ title, problems, selected, result
               <div className="trig-derivative-answer-item-heading"><strong>{String(problemIndex + 1).padStart(2, "0")}</strong><span>{problem.label}</span></div>
               <div className="trig-derivative-choices">
                 {problem.choices.map((choice, choiceIndex) => (
-                  <button className={selected[problem.id] === choice.id ? "is-selected" : ""} type="button" key={choice.id} onClick={() => onSelect(problem.id, choice.id)}>
+                  <button className={`trig-derivative-choice${selected[problem.id] === choice.id ? " is-selected" : ""}`} type="button" key={choice.id} aria-pressed={selected[problem.id] === choice.id} onClick={() => onSelect(problem.id, choice.id)}>
                     <span>{choiceIndex + 1}</span><MathFormula latex={choice.latex} />
                   </button>
                 ))}
@@ -48,6 +49,7 @@ export default function WorksheetChoicePanel({ title, problems, selected, result
             </section>
           ))}
         </div>
+        <button className="button primary trig-derivative-panel-grade" type="button" disabled={completed === 0} onClick={onGrade}>전체 채점</button>
       </aside>
     </div>
   );

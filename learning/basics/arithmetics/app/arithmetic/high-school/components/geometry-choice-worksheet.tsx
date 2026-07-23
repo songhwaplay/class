@@ -86,7 +86,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
       {panelOpen && <WorksheetChoicePanel title={title} problems={displayedProblems} selected={selected} results={results} onSelect={(problemId, choiceId) => {
         setSelected((current) => ({ ...current, [problemId]: choiceId }));
         setResults((current) => { const next = { ...current }; delete next[problemId]; return next; });
-      }} onClose={() => setPanelOpen(false)} />}
+      }} onGrade={checkAll} onClose={() => setPanelOpen(false)} />}
       <div className="a4-stage counting-a4-stage worksheet-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(false)}</div>
       <div className="a4-stage counting-a4-stage answer-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(true)}</div>
     </main>
