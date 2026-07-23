@@ -17,6 +17,36 @@ let mode = "study";
 let correct = 0;
 let attempts = 0;
 const $ = (id) => document.getElementById(id);
+const backgroundMusic = $("backgroundMusic");
+const musicToggle = $("musicToggle");
+backgroundMusic.volume = 0.28;
+
+function updateMusicButton(playing) {
+  musicToggle.textContent = playing ? "♫ 음악 끄기" : "♫ 음악 켜기";
+  musicToggle.setAttribute("aria-pressed", String(playing));
+  musicToggle.setAttribute("aria-label", playing ? "배경음악 끄기" : "배경음악 켜기");
+}
+
+async function startMusic() {
+  try {
+    await backgroundMusic.play();
+    updateMusicButton(true);
+  } catch {
+    updateMusicButton(false);
+  }
+}
+
+musicToggle.addEventListener("click", async () => {
+  if (backgroundMusic.paused) await startMusic();
+  else {
+    backgroundMusic.pause();
+    updateMusicButton(false);
+  }
+});
+
+document.addEventListener("pointerdown", (event) => {
+  if (!event.target.closest("#musicToggle") && backgroundMusic.paused) startMusic();
+}, { once: true });
 
 function updateNavigationLocale() {
   const english = language === "en";
