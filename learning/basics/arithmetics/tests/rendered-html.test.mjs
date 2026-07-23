@@ -361,6 +361,15 @@ test("high-school worksheets omit the repeated instruction strip", async () => {
   assert.match(css, /\.polynomial-page \.polynomial-instruction\s*\{\s*display:\s*none;/);
 });
 
+test("vector projection worksheet shows all multiple-choice answers on the sheet", async () => {
+  const response = await render("/arithmetic/high-school/vector-projections");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.equal((html.match(/geometry-inline-choice"/g) ?? []).length, 28);
+  assert.match(html, /comp/);
+  assert.match(html, /proj/);
+});
+
 test("formula-only integral worksheets omit redundant per-question directions", async () => {
   for (const route of ["integration-techniques", "definite-integrals"]) {
     const response = await render(`/arithmetic/high-school/${route}`);

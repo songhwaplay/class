@@ -29,7 +29,10 @@ test("covers the geometry workout sequence without duplicate answers", () => {
   }
   assert.ok(projectionProblems.some(({ label }) => label === "스칼라 정사영"));
   assert.ok(projectionProblems.some(({ label }) => label === "벡터 정사영"));
-  assert.ok(projectionProblems.some(({ label }) => label === "평행·수직 성분 분해"));
+  assert.ok(projectionProblems.some(({ label }) => label === "수직 성분"));
+  assert.match(projectionProblems.find(({ id }) => id === "p4")?.latex ?? "", /comp/);
+  assert.match(projectionProblems.find(({ id }) => id === "p5")?.latex ?? "", /proj/);
+  assert.match(projectionProblems.find(({ id }) => id === "p6")?.latex ?? "", /a-\u005coperatorname\{proj\}/);
 });
 
 test("geometry worksheets render directly clickable multiple-choice answers", async () => {
