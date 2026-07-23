@@ -56,10 +56,29 @@
                     <div class="foundation-intro">
                         <div>
                             <span class="course-badge">왕초보 코스 · 1단계</span>
-                            <h3 id="harmonyFoundationTitle">화성학은 ‘음 사이의 관계’를 듣는 것부터!</h3>
-                            <p>여기서 ‘도’는 C로 고정된 음이 아니라 지금 음악의 출발점이에요. 시작 높이가 바뀌어도 도·레·미의 관계는 같습니다.</p>
+                            <h3 id="harmonyFoundationTitle">장조를 고르고 음 사이의 관계를 들어요</h3>
+                            <p>학교에서 배우는 장조를 직접 골라 보세요. 선택한 장조의 으뜸음이 ‘도’가 되고 도·레·미의 관계는 그대로 유지됩니다.</p>
                         </div>
                         <span class="course-time">약 3분</span>
+                    </div>
+                    <div class="basic-key-picker">
+                        <label for="basicKeySelect"><span>연습할 장조</span>
+                            <select id="basicKeySelect">
+                                <optgroup label="초등 핵심">
+                                    <option value="C">다장조 (C Major)</option>
+                                    <option value="F">바장조 (F Major)</option>
+                                    <option value="G">사장조 (G Major)</option>
+                                </optgroup>
+                                <optgroup label="일부 교과서 확장">
+                                    <option value="Bb">내림나장조 (B♭ Major)</option>
+                                </optgroup>
+                            </select>
+                        </label>
+                        <div>
+                            <strong id="basicKeyName">다장조 · C Major</strong>
+                            <span id="basicKeySignature">조표가 없어요.</span>
+                        </div>
+                        <button id="listenBasicTonicButton" type="button"><span aria-hidden="true">♪</span> 으뜸음 ‘도’ 듣기</button>
                     </div>
                     <div class="foundation-steps">
                         <section class="foundation-step">
@@ -67,14 +86,12 @@
                             <div>
                                 <p class="step-kicker">계이름과 관계</p>
                                 <h4>도 · 레 · 미를 눌러 보세요</h4>
-                                <p>지금 들리는 첫 음을 ‘도’로 삼아요. 오른쪽으로 갈수록 차례로 높아져요.</p>
+                                <p>선택한 장조의 으뜸음을 ‘도’로 불러요. 오른쪽으로 갈수록 차례로 높아져요.</p>
                                 <div class="sound-buttons" aria-label="도레미 소리 듣기">
                                     <button type="button" data-basic-offset="0">도</button>
                                     <button type="button" data-basic-offset="2">레</button>
                                     <button type="button" data-basic-offset="4">미</button>
                                 </div>
-                                <button id="changeBasicTonicButton" class="change-tonic-button" type="button">다른 높이에서 시작 ↻</button>
-                                <small id="basicTonicStatus" class="tonic-status" aria-live="polite">첫 음을 ‘도’로 듣고 관계를 익혀요.</small>
                             </div>
                         </section>
                         <section class="foundation-step">

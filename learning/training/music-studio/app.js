@@ -19,6 +19,12 @@
     };
     const MINOR_VARIANT_LABEL = { natural: "자연단조", harmonic: "화성단조", melodic: "가락단조" };
     const INVERSION_LABELS = ["기본형", "1전위", "2전위", "3전위"];
+    const BASIC_MAJOR_KEYS = {
+        C: { midi: 60, ko: "다장조", en: "C Major", signature: "조표가 없어요." },
+        F: { midi: 53, ko: "바장조", en: "F Major", signature: "시♭이 붙어요." },
+        G: { midi: 55, ko: "사장조", en: "G Major", signature: "파♯이 붙어요." },
+        Bb: { midi: 58, ko: "내림나장조", en: "B♭ Major", signature: "시♭과 미♭이 붙어요." }
+    };
 
     const state = {
         audioContext: null,
@@ -64,6 +70,7 @@
         dictationCorrect: 0,
         dictationListens: 0,
         practiceCount: 0,
+        basicKey: "C",
         basicTonicMidi: 60
     };
 
@@ -910,15 +917,12 @@
         });
     }
 
-    function chooseBasicTonic(initial) {
-        const choices = [55, 57, 59, 60, 62, 64];
-        const available = choices.filter(function (midi) { return midi !== state.basicTonicMidi; });
-        const pool = initial ? choices : available;
-        state.basicTonicMidi = pool[Math.floor(Math.random() * pool.length)];
-        const status = document.getElementById("basicTonicStatus");
-        if (status) status.textContent = initial
-            ? "첫 음을 ‘도’로 듣고 관계를 익혀요."
-            : "출발 높이가 바뀌었어요. 새 첫 음이 이제 ‘도’예요.";
+    function setBasicMajorKey(key) {
+        const selected = BASIC_MAJOR_KEYS[key] || BASIC_MAJOR_KEYS.C;
+        state.basicKey = key in BASIC_MAJOR_KEYS ? key : "C";
+        state.basicTonicMidi = selected.midi;
+        elements.basicKeyName.textContent = selected.ko + " · " + selected.en;
+        elements.basicKeySignature.textContent = selected.signature;
     }
 
     function bindEvents() {
@@ -951,10 +955,15 @@
                 });
             });
         });
-        elements.changeBasicTonicButton = document.getElementById("changeBasicTonicButton");
-        elements.basicTonicStatus = document.getElementById("basicTonicStatus");
-        elements.changeBasicTonicButton.addEventListener("click", function () {
-            chooseBasicTonic(false);
+        elements.basicKeySelect = document.getElementById("basicKeySelect");
+        elements.basicKeyName = document.getElementById("basicKeyName");
+        elements.basicKeySignature = document.getElementById("basicKeySignature");
+        elements.listenBasicTonicButton = document.getElementById("listenBasicTonicButton");
+        elements.basicKeySelect.addEventListener("change", function () {
+            setBasicMajorKey(elements.basicKeySelect.value);
+            playPianoTone(core.midiToFrequency(state.basicTonicMidi), 0, .7, .08);
+        });
+        elements.listenBasicTonicButton.addEventListener("click", function () {
             playPianoTone(core.midiToFrequency(state.basicTonicMidi), 0, .7, .08);
         });
         document.querySelectorAll("[data-basic-beats]").forEach(function (button) {
@@ -1103,7 +1112,10 @@
 
     function init() {
         cacheElements();
-        chooseBasicTonic(true);
+        elements.basicKeySelect = document.getElementById("basicKeySelect");
+        elements.basicKeyName = document.getElementById("basicKeyName");
+        elements.basicKeySignature = document.getElementById("basicKeySignature");
+        setBasicMajorKey("C");
         bindEvents();
         loadPracticeCount();
         renderKeyOptions();

@@ -30,9 +30,14 @@ assert.match(html, /data-dictation-symbol="tie"/);
 assert.match(html, /왕초보 코스/);
 assert.match(html, /data-basic-offset="0"/);
 assert.match(html, /data-basic-chord-offsets="0,4,7"/);
-assert.match(html, /C로 고정된 음이 아니라 지금 음악의 출발점/);
-assert.match(html, /id="changeBasicTonicButton"/);
-assert.match(app, /chooseBasicTonic/);
+assert.match(html, /id="basicKeySelect"/);
+["다장조 \\(C Major\\)", "바장조 \\(F Major\\)", "사장조 \\(G Major\\)", "내림나장조 \\(B♭ Major\\)"].forEach((label) => {
+    assert.match(html, new RegExp(label));
+});
+assert.match(html, /초등 핵심/);
+assert.match(html, /일부 교과서 확장/);
+assert.match(app, /BASIC_MAJOR_KEYS/);
+assert.match(app, /setBasicMajorKey/);
 assert.match(app, /state\.basicTonicMidi \+ Number\(button\.dataset\.basicOffset\)/);
 assert.match(html, /장3화음과 단3화음의 정서가 항상 정해지는 것은 아니에요/);
 assert.doesNotMatch(html, /밝은 화음|어두운 화음|밝은 느낌|어두운 느낌/);

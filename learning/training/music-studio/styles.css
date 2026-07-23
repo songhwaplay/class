@@ -141,6 +141,15 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .course-badge.coral-badge { color: #29120e; background: var(--coral); }
 .course-time { flex: 0 0 auto; padding: 8px 11px; border: 1px solid var(--line); border-radius: 50px; color: var(--muted); font-size: 10px; font-weight: 800; }
 .foundation-steps { display: grid; grid-template-columns: repeat(3, 1fr); }
+.basic-key-picker { display: grid; grid-template-columns: minmax(220px, .9fr) 1fr auto; align-items: end; gap: 18px; padding: 18px 30px; border-bottom: 1px solid var(--line); background: rgba(108,229,202,.04); }
+.basic-key-picker label { display: grid; gap: 7px; }
+.basic-key-picker label > span { color: var(--mint); font-size: 9px; font-weight: 900; letter-spacing: 1px; }
+.basic-key-picker select { width: 100%; height: 45px; padding: 0 38px 0 13px; border: 1px solid rgba(108,229,202,.45); border-radius: 8px; color: var(--ink); background: var(--panel-2); font-size: 12px; font-weight: 800; }
+.basic-key-picker > div { min-height: 45px; display: flex; flex-direction: column; justify-content: center; }
+.basic-key-picker strong, .basic-key-picker > div span { display: block; }
+.basic-key-picker strong { font-size: 13px; }
+.basic-key-picker > div span { margin-top: 4px; color: var(--muted); font-size: 10px; }
+.basic-key-picker > button { height: 45px; padding: 0 15px; border: 1px solid var(--mint); border-radius: 8px; color: #10201c; background: var(--mint); font-size: 11px; font-weight: 900; cursor: pointer; }
 .foundation-step { position: relative; min-width: 0; display: grid; grid-template-columns: auto 1fr; gap: 15px; padding: 27px 24px 29px; }
 .foundation-step + .foundation-step { border-left: 1px solid var(--line); }
 .step-number { width: 31px; height: 31px; display: grid; place-items: center; border-radius: 50%; color: #10201c; background: var(--mint); font: 900 12px Montserrat, sans-serif; }
@@ -155,9 +164,6 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .sound-buttons button, .feeling-buttons button, .try-button { min-height: 40px; border: 1px solid rgba(108,229,202,.5); border-radius: 8px; color: var(--mint); background: rgba(108,229,202,.07); font-size: 11px; font-weight: 900; cursor: pointer; }
 .sound-buttons button { min-width: 44px; }
 .sound-buttons button:hover, .feeling-buttons button:hover, .try-button:hover { color: var(--bg); background: var(--mint); }
-.change-tonic-button { margin-top: 9px; padding: 7px 0; border: 0; color: var(--purple); background: transparent; font-size: 10px; font-weight: 900; cursor: pointer; }
-.change-tonic-button:hover { text-decoration: underline; }
-.tonic-status { display: block; color: #8f90a6; font-size: 9px; line-height: 1.5; }
 .feeling-buttons button { flex: 1; padding: 0 10px; }
 .try-button { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 13px; }
 .try-button.coral-button { border-color: rgba(255,118,95,.55); color: var(--coral); background: rgba(255,118,95,.07); }
@@ -397,6 +403,7 @@ footer b { color: var(--ink); font: 800 11px Montserrat, sans-serif; letter-spac
     .chord-bank { grid-template-columns: repeat(4, 1fr); }
     .pattern-list { grid-template-columns: 1fr 1fr; gap: 0 15px; }
     .foundation-steps { grid-template-columns: 1fr; }
+    .basic-key-picker { grid-template-columns: 1fr 1fr; }.basic-key-picker > button { grid-column: 1 / -1; }
     .foundation-step + .foundation-step { border-left: 0; border-top: 1px solid var(--line); }
     .foundation-step p:not(.step-kicker) { min-height: 0; }
     .practice-heading { align-items: start; }
@@ -409,7 +416,7 @@ footer b { color: var(--ink); font: 800 11px Montserrat, sans-serif; letter-spac
     .hero h1 { font-size: 36px; letter-spacing: -2px; }.hero-copy > p:last-child { font-size: 14px; }
     .lab-tab { min-height: 85px; gap: 10px; padding: 14px 8px; }.tab-number { display: none; }.lab-tab b { font-size: 15px; }.lab-tab small { font-size: 9px; }
     .lab-panel { padding: 38px 15px; }.section-heading { display: grid; }.section-heading h2 { font-size: 32px; }.harmony-controls { width: 100%; justify-content: flex-start; }.harmony-controls label, .harmony-controls .control-stack { flex: 1 1 130px; }.harmony-controls select { width: 100%; }
-    .foundation-intro { padding: 22px 19px; }.course-time { display: none; }.foundation-step { padding: 23px 18px; }.foundation-summary { display: grid; gap: 4px; padding: 15px 19px; }.practice-gate { min-height: 72px; padding: 14px 18px; }.practice-heading { display: grid; }.practice-heading h3 { font-size: 24px; }
+    .foundation-intro { padding: 22px 19px; }.course-time { display: none; }.basic-key-picker { grid-template-columns: 1fr; padding: 17px 19px; }.basic-key-picker > button { grid-column: auto; }.foundation-step { padding: 23px 18px; }.foundation-summary { display: grid; gap: 4px; padding: 15px 19px; }.practice-gate { min-height: 72px; padding: 14px 18px; }.practice-heading { display: grid; }.practice-heading h3 { font-size: 24px; }
     .progression-card, .function-card, .chord-bank-card, .ear-quiz-card, .voicing-quiz-card, .rhythm-player-card, .pattern-list-card, .dictation-card, .dictation-bank-card { padding: 18px; }
     .progression-slots { grid-template-columns: 1fr 1fr; }.chord-slot { min-height: 104px; }
     .function-flow b { font-size: 9px; }
