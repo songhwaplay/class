@@ -3239,11 +3239,11 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 .angle-ray {
   position: absolute;
   left: 50%;
-  bottom: 17px;
+  bottom: 18px;
   width: 83px;
-  height: 3px;
-  border-radius: 999px;
-  background: #17233c;
+  height: 0;
+  /* Use a border, not a background fill: browsers may omit backgrounds when printing. */
+  border-top: 3px solid #17233c;
   transform-origin: left center;
 }
 
@@ -3269,10 +3269,9 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
   bottom: 13px;
   width: 10px;
   height: 10px;
-  border: 2px solid white;
+  border: 2px solid #0070c0;
   border-radius: 50%;
-  background: #0070c0;
-  box-shadow: 0 0 0 1px #0070c0;
+  background: white;
 }
 
 .angle-answer-wrap {
