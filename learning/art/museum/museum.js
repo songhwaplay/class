@@ -62,6 +62,7 @@
   let nearest = null;
   let loadTotal = 12;
   let loadDone = 0;
+  let roomLoadVersion = 0;
 
   const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
   const GALLERY_START = 8;
@@ -162,14 +163,29 @@
     texture.encoding=THREE.sRGBEncoding;texture.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());texture.needsUpdate=true;
   }
 
-  function loadArtTexture(work,material,plane,aspect,transparent=false) {
+  function isCurrentRoomLoad(version,roomGallery) {
+    return version===roomLoadVersion&&gallery===roomGallery;
+  }
+
+  function loadArtTexture(work,material,plane,aspect,version,roomGallery,transparent=false) {
     const cached=textureCache.get(work.image);
-    if(cached){fitArtworkPlane(cached,plane,aspect);material.map=cached;material.needsUpdate=true;markLoaded();return;}
-    textureLoader.load(work.image,(t)=>{fitArtworkPlane(t,plane,aspect);textureCache.set(work.image,t);material.map=t;material.needsUpdate=true;markLoaded();},undefined,()=>{material.map=placeholderTexture(work.title);material.needsUpdate=true;markLoaded();});
+    if(cached){if(isCurrentRoomLoad(version,roomGallery)){fitArtworkPlane(cached,plane,aspect);material.map=cached;material.needsUpdate=true;markLoaded(version,roomGallery);}return;}
+    textureLoader.load(work.image,(t)=>{
+      textureCache.set(work.image,t);
+      if(!isCurrentRoomLoad(version,roomGallery))return;
+      fitArtworkPlane(t,plane,aspect);material.map=t;material.needsUpdate=true;markLoaded(version,roomGallery);
+    },undefined,()=>{
+      if(!isCurrentRoomLoad(version,roomGallery))return;
+      material.map=placeholderTexture(work.title);material.needsUpdate=true;markLoaded(version,roomGallery);
+    });
     material.transparent=transparent;
   }
 
-  function markLoaded(){loadDone++;const pct=Math.round(loadDone/loadTotal*100);loadingBar.style.width=pct+'%';loadingText.textContent=pct+'%';if(loadDone>=loadTotal)setTimeout(()=>loading.classList.add('done'),420);}
+  function markLoaded(version,roomGallery){
+    if(!isCurrentRoomLoad(version,roomGallery))return;
+    loadDone++;const pct=Math.round(loadDone/loadTotal*100);loadingBar.style.width=pct+'%';loadingText.textContent=pct+'%';
+    if(loadDone>=loadTotal)setTimeout(()=>{if(isCurrentRoomLoad(version,roomGallery))loading.classList.add('done');},420);
+  }
 
   function buildShell(room) {
     const isGrand=room.id==='space';
@@ -245,7 +261,7 @@
     const head=mesh([.24,.18,.34],materials.darkBrass,[x-side*.82,Math.min(5.68,y+1.75),z]);head.rotation.z=side*Math.PI/2;
   }
 
-  function addFramedWork(work,index,side,z,width) {
+  function addFramedWork(work,index,side,z,width,version,roomGallery) {
     const display=getDisplaySize(work), group=new THREE.Group();
     const x=side*(width/2-.31);group.position.set(x,3.12,z);group.rotation.y=side<0?Math.PI/2:-Math.PI/2;gallery.add(group);
     const border=work.type==='mural'?.11:clamp(Math.min(display.w,display.h)*.09,.1,.2),depth=work.type==='mural'?.08:.2,mat=frameMaterials(index,work.type);
@@ -259,7 +275,7 @@
     // 작품 이미지는 조명의 입사각 때문에 어두워지지 않도록 자체 색으로 표시한다.
     // 액자와 벽, 바닥에는 기존 스포트라이트가 그대로 반응한다.
     const artMat=new THREE.MeshBasicMaterial({color:0xffffff,map:placeholderTexture(work.title),side:THREE.DoubleSide,toneMapped:false});
-    const plane=new THREE.Mesh(new THREE.PlaneGeometry(display.w,display.h),artMat);plane.position.z=.255;plane.userData.work=work;plane.userData.room=rooms[activeRoom];plane.castShadow=true;group.add(plane);clickable.push(plane);loadArtTexture(work,artMat,plane,display.w/display.h);
+    const plane=new THREE.Mesh(new THREE.PlaneGeometry(display.w,display.h),artMat);plane.position.z=.255;plane.userData.work=work;plane.userData.room=rooms[activeRoom];plane.castShadow=true;group.add(plane);clickable.push(plane);loadArtTexture(work,artMat,plane,display.w/display.h,version,roomGallery);
     const label=makeLabel(work.title,work.artist,Math.min(2.3,display.w+border*2));label.position.set(0,-display.h/2-.42,.24);group.add(label);
     const target=new THREE.Object3D();target.position.set(x,3.05,z);addSpotlight(x,3.12+display.h/2,z,side,index,target);
   }
@@ -351,6 +367,17 @@
     d13:'assets/models/gwanghwamun-haetae.glb'
   };
 
+  function disposeDetachedModel(model) {
+    model.traverse(part=>{
+      if(part.geometry)part.geometry.dispose();
+      const modelMaterials=Array.isArray(part.material)?part.material:[part.material];
+      modelMaterials.filter(Boolean).forEach(material=>{
+        Object.values(material).forEach(value=>{if(value&&value.isTexture)value.dispose();});
+        material.dispose();
+      });
+    });
+  }
+
   function installSculptureModel(model,group,work,artH,pedestalTop,isScan=false) {
     if(isScan){
       model.matrixAutoUpdate=true;
@@ -382,7 +409,7 @@
     model.traverse(part=>{if(part.isMesh){part.userData.work=work;part.userData.room=rooms[activeRoom];part.castShadow=true;part.receiveShadow=true;clickable.push(part);}});
   }
 
-  function addSculpture(work,index,z) {
+  function addSculpture(work,index,z,version,roomGallery) {
     const isGrand=rooms[activeRoom].id==='space';
     const placementZ=z, placementX=work.applyRoomOffset?0:index%2===0?-.75:.75;
     const group=new THREE.Group();group.position.set(placementX,0,work.applyRoomOffset?0:z);group.userData.placementZ=placementZ;gallery.add(group);
@@ -395,9 +422,15 @@
     }
     const pedestalTop=work.hasBuiltInBase?0:.16+baseH,scanPath=sculptureScans[work.id];
     if(scanPath){
-      gltfLoader.load(scanPath,gltf=>{installSculptureModel(gltf.scene,group,work,artH,pedestalTop,true);markLoaded();},undefined,()=>{installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded();});
+      gltfLoader.load(scanPath,gltf=>{
+        if(!isCurrentRoomLoad(version,roomGallery)){disposeDetachedModel(gltf.scene);return;}
+        installSculptureModel(gltf.scene,group,work,artH,pedestalTop,true);markLoaded(version,roomGallery);
+      },undefined,()=>{
+        if(!isCurrentRoomLoad(version,roomGallery))return;
+        installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded(version,roomGallery);
+      });
     }else{
-      installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded();
+      installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded(version,roomGallery);
     }
     const labelWidth=clamp(baseW*.9,1.45,2.25);
     const labelFront=baseW/2+.16;
@@ -412,18 +445,19 @@
   }
 
   function setRoom(index,instant=false) {
+    const version=++roomLoadVersion;
     activeRoom=index;clickable.length=0;sculptureObstacles.length=0;nearest=null;prompt.hidden=true;loadDone=0;loadTotal=rooms[index].works.length;
     loading.classList.remove('done');loadingBar.style.width='0';loadingText.textContent='0%';
     if(gallery){scene.remove(gallery);gallery.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&!Array.isArray(o.material)&&!o.material.map)o.material.dispose();});}
-    gallery=new THREE.Group();scene.add(gallery);const shell=buildShell(rooms[index]);
+    gallery=new THREE.Group();scene.add(gallery);const roomGallery=gallery,shell=buildShell(rooms[index]);
     if(rooms[index].id==='space'){
       const sculptures=rooms[index].works.filter(w=>w.type==='sculpture'), wallWorks=rooms[index].works.filter(w=>w.type!=='sculpture');
       // 광화문 해치는 실제 크기가 큰 독립 석조물이므로, 입구가 아닌
       // 전시실 맨뒤의 넓은 중앙 공간에 둔다.
-      sculptures.forEach((w,i)=>addSculpture(w,i,w.id==='d13'?GALLERY_END+4.6:1-i*4.85));
-      wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*8.8,shell.width));
+      sculptures.forEach((w,i)=>addSculpture(w,i,w.id==='d13'?GALLERY_END+4.6:1-i*4.85,version,roomGallery));
+      wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*8.8,shell.width,version,roomGallery));
     }else{
-      rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width));
+      rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width,version,roomGallery));
     }
     camera.position.set(0,1.68,6.35);yaw=0;pitch=-.015;velocity.set(0,0,0);camera.rotation.set(pitch,yaw,0);
     document.getElementById('room-kicker').textContent='GALLERY '+rooms[index].number;
