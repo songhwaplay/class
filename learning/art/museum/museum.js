@@ -223,18 +223,29 @@
     const mat=sculptureMaterial(work);
 
     if(work.id==='d04'){
-      const controls=[[0,0],[.35,.025],[.5,.16],[.59,.48],[.61,.88],[.58,1.23],[.49,1.52],[.32,1.76],[.18,1.9],[.17,2.05],[.1,2.12],[.1,2.18]];
-      const profile=[];
-      for(let i=0;i<controls.length-1;i++){
-        const [x1,y1]=controls[i],[x2,y2]=controls[i+1];
-        for(let step=0;step<8;step++){
-          const t=step/8,s=t*t*(3-2*t);profile.push(new THREE.Vector2(THREE.MathUtils.lerp(x1,x2,s),THREE.MathUtils.lerp(y1,y2,t)));
+      const outline=[
+        {y:.03,x:.31},{y:.1,x:.34},{y:.24,x:.35},{y:.5,x:.4},
+        {y:.9,x:.5},{y:1.3,x:.59},{y:1.55,x:.58},{y:1.72,x:.48},
+        {y:1.84,x:.28},{y:1.92,x:.18},{y:2.04,x:.18},{y:2.08,x:.25},
+        {y:2.13,x:.25},{y:2.16,x:.18}
+      ];
+      const delta=outline.slice(0,-1).map((p,i)=>(outline[i+1].x-p.x)/(outline[i+1].y-p.y));
+      const slope=outline.map((p,i)=>{
+        if(i===0)return delta[0];if(i===outline.length-1)return delta[delta.length-1];
+        const before=delta[i-1],after=delta[i];if(before*after<=0)return 0;
+        const h0=p.y-outline[i-1].y,h1=outline[i+1].y-p.y;return (h0+h1)/(h0/before+h1/after);
+      });
+      const profile=[new THREE.Vector2(0,0),new THREE.Vector2(.31,0)];
+      for(let i=0;i<outline.length-1;i++){
+        const a=outline[i],b=outline[i+1],h=b.y-a.y;
+        for(let step=0;step<12;step++){
+          const t=step/12,t2=t*t,t3=t2*t;
+          const x=(2*t3-3*t2+1)*a.x+(t3-2*t2+t)*h*slope[i]+(-2*t3+3*t2)*b.x+(t3-t2)*h*slope[i+1];
+          profile.push(new THREE.Vector2(x,THREE.MathUtils.lerp(a.y,b.y,t)));
         }
       }
-      profile.push(new THREE.Vector2(...controls[controls.length-1]));
-      const vase=sculptureMesh(model,new THREE.LatheGeometry(profile,128),mat,[0,0,0]);vase.geometry.computeVertexNormals();
-      const bandMat=new THREE.MeshStandardMaterial({color:0xd8ded1,roughness:.3,metalness:.05});
-      for(const y of [.68,1.02,1.35])sculptureMesh(model,new THREE.TorusGeometry(.51-(y-1)*.12,.018,8,48),bandMat,[0,y,0],[1,1,1],[Math.PI/2,0,0]);
+      const last=outline[outline.length-1];profile.push(new THREE.Vector2(last.x,last.y));
+      const vase=sculptureMesh(model,new THREE.LatheGeometry(profile,160),mat,[0,0,0]);vase.geometry.computeVertexNormals();
     }else if(work.id==='d01'){
       ellipsoid(model,mat,[0,1.34,0],[.42,.56,.32],[.18,0,-.08]);ellipsoid(model,mat,[0,1.98,.22],[.2,.24,.2],[.2,0,0]);
       ellipsoid(model,mat,[0,.72,-.03],[.43,.27,.34]);
