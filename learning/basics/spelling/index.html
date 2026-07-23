@@ -12,15 +12,15 @@
     <script src="questions.js" defer></script>
     <script src="questions-extra.js" defer></script>
     <script src="question-deck.js" defer></script>
+    <script src="../../../assets/sound/music-control.js" defer></script>
     <script src="app.js" defer></script>
 </head>
 <body>
-    <audio id="spellingBgm" src="/learning/basics/spelling/assets/sound/bgm.mp3" loop preload="auto"></audio>
+    <audio id="bgm" src="/learning/basics/spelling/assets/sound/bgm.mp3" loop preload="auto"></audio>
     <div class="page-shell">
         <header class="topbar">
             <a class="back-link" href="../../../index.html" aria-label="메인 화면으로 돌아가기">← 메인</a>
             <div class="topbar-actions">
-                <button id="bgmToggle" class="audio-toggle hidden" type="button" aria-pressed="false">음악 켜기</button>
                 <div class="record" aria-label="개인 모드 최고 기록">
                     <span>개인 최고 기록</span>
                     <strong id="headerBestScore">0/10</strong>

@@ -68,8 +68,7 @@ button {
 }
 
 .back-link,
-.record,
-.audio-toggle {
+.record {
     min-height: 44px;
     border: 1px solid rgba(244, 215, 154, 0.7);
     background: rgba(48, 23, 10, 0.88);
@@ -87,28 +86,6 @@ button {
 
 .back-link:hover,
 .back-link:focus-visible,
-.audio-toggle:hover,
-.audio-toggle:focus-visible {
-    background: #6e3a19;
-}
-
-.audio-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 92px;
-    padding: 0 14px;
-    color: #fff4d8;
-    font-size: 13px;
-    font-weight: 900;
-    cursor: pointer;
-}
-
-.audio-toggle[aria-pressed="true"] {
-    border-color: var(--gold-light);
-    color: var(--gold-light);
-}
-
 .record {
     display: flex;
     align-items: baseline;
@@ -903,11 +880,6 @@ footer a {
     .topbar-actions,
     .topbar-links {
         gap: 7px;
-    }
-
-    .audio-toggle {
-        min-width: 82px;
-        padding: 0 10px;
     }
 
     .start-panel,

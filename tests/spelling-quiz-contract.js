@@ -71,8 +71,7 @@ for (const requiredId of [
     "choiceList",
     "feedback",
     "nextButton",
-    "spellingBgm",
-    "bgmToggle",
+    "bgm",
     "classRankArea",
     "classRankingList",
     "missedList"
@@ -84,6 +83,7 @@ assert.ok(html.includes('href="styles.css"'), "Quiz stylesheet is not linked.");
 assert.ok(html.includes('src="questions.js"'), "Question bank is not linked.");
 assert.ok(html.includes('src="questions-extra.js"'), "Expanded question bank is not linked.");
 assert.ok(html.includes('src="question-deck.js"'), "No-repeat question deck is not linked.");
+assert.ok(html.includes('src="../../../assets/sound/music-control.js"'), "Shared MUSIC/SFX control is not linked.");
 assert.ok(html.includes('src="app.js"'), "Quiz app is not linked.");
 assert.ok(html.includes('src="/learning/basics/spelling/assets/sound/bgm.mp3"'), "Personal mode background music is not linked.");
 assert.ok(html.includes("loop preload=\"auto\""), "Spelling background music should loop.");
@@ -103,22 +103,20 @@ assert.ok(appSource.includes('GAME_ID = "spelling"'), "Class ranking mode needs 
 assert.ok(appSource.includes('action: "SUBMIT"'), "Class results must be submitted to the ranking server.");
 assert.ok(appSource.includes("renderClassRanking"), "Students need a live class ranking view.");
 assert.ok(appSource.includes("PERSONAL_DECK_KEY"), "Personal mode should avoid repeats until the question deck is exhausted.");
-assert.ok(appSource.includes('state.mode !== "personal"'), "Student music must be limited to personal mode.");
-assert.ok(appSource.includes('if (state.mode === "class")'), "Class ranking mode must explicitly stop music on student devices.");
-assert.ok(appSource.includes("elements.bgmToggle.classList.add(\"hidden\")"), "The music control must be hidden from students in class mode.");
+assert.ok(!appSource.includes("bgmToggle"), "Spelling must not keep a separate legacy music toggle.");
 
 const teacherHtml = fs.readFileSync(teacherHtmlPath, "utf8");
-for (const requiredId of ["roomCode", "copyBtn", "lobbyPlayers", "teacherStartButton", "teacherRankingList", "resetRaceButton", "spellingBgm", "bgmToggle"]) {
+for (const requiredId of ["roomCode", "copyBtn", "lobbyPlayers", "teacherStartButton", "teacherRankingList", "resetRaceButton", "bgm"]) {
     assert.ok(teacherHtml.includes(`id="${requiredId}"`), `Teacher page is missing #${requiredId}`);
 }
 assert.ok(teacherHtml.includes('src="/learning/basics/spelling/assets/sound/bgm.mp3"'), "Teacher ranking page background music is not linked.");
+assert.ok(teacherHtml.includes('src="../../../assets/sound/music-control.js"'), "Teacher page must use shared MUSIC/SFX control.");
 const teacherSource = fs.readFileSync(teacherAppPath, "utf8");
 new vm.Script(teacherSource, { filename: teacherAppPath });
 assert.ok(teacherSource.includes('action: "START"'), "Teacher must be able to start all students together.");
 assert.ok(teacherSource.includes('action: "RESET"'), "Teacher must be able to prepare a new ranking round.");
 assert.ok(teacherSource.includes("TEACHER_DECK_KEY"), "Class rounds should avoid repeats until the teacher deck is exhausted.");
-assert.ok(teacherSource.includes("startBgm();"), "The teacher computer must start music with the class competition.");
-assert.ok(teacherSource.includes("stopBgm();"), "Resetting the class competition must stop and rewind the music.");
+assert.ok(!teacherSource.includes("bgmToggle"), "Teacher page must not keep a separate legacy music toggle.");
 
 const serverSource = fs.readFileSync(serverPath, "utf8");
 new vm.Script(serverSource, { filename: serverPath });

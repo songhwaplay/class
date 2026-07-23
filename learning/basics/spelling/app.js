@@ -24,8 +24,6 @@
         restartButton: document.getElementById("restartButton"),
         resultModeButton: document.getElementById("resultModeButton"),
         nextButton: document.getElementById("nextButton"),
-        bgm: document.getElementById("spellingBgm"),
-        bgmToggle: document.getElementById("bgmToggle"),
         playerGreeting: document.getElementById("playerGreeting"),
         headerBestScore: document.getElementById("headerBestScore"),
         classWaitingPanel: document.getElementById("classWaitingPanel"),
@@ -80,38 +78,6 @@
     };
 
     let lobby = null;
-
-    function updateBgmToggle() {
-        const isPlaying = Boolean(elements.bgm && !elements.bgm.paused);
-        elements.bgmToggle.textContent = isPlaying ? "음악 끄기" : "음악 켜기";
-        elements.bgmToggle.setAttribute("aria-pressed", String(isPlaying));
-    }
-
-    async function startBgm() {
-        if (state.mode !== "personal" || !elements.bgm) return;
-        elements.bgm.volume = 0.4;
-        try {
-            await elements.bgm.play();
-        } catch (error) {
-            // Some browsers require one more direct tap before audio can begin.
-        }
-        updateBgmToggle();
-    }
-
-    function stopBgm({ rewind = true } = {}) {
-        if (!elements.bgm) return;
-        elements.bgm.pause();
-        if (rewind) elements.bgm.currentTime = 0;
-        updateBgmToggle();
-    }
-
-    function toggleBgm() {
-        if (elements.bgm.paused) {
-            startBgm();
-        } else {
-            stopBgm({ rewind: false });
-        }
-    }
 
     function readStoredValue(key) {
         try {
@@ -189,8 +155,6 @@
             lobby.destroy();
             lobby = null;
         }
-        stopBgm();
-        elements.bgmToggle.classList.add("hidden");
         state.mode = "";
         state.classSessionId = "";
         state.classState = null;
@@ -200,16 +164,12 @@
 
     function selectPersonalMode() {
         state.mode = "personal";
-        elements.bgmToggle.classList.remove("hidden");
-        startBgm();
         setScreen(elements.personalScreen);
         elements.personalStartButton.focus({ preventScroll: true });
     }
 
     function selectClassMode() {
         state.mode = "class";
-        stopBgm();
-        elements.bgmToggle.classList.add("hidden");
         if (!hasValidPlayerName()) {
             setScreen(elements.missingScreen);
             return;
@@ -288,11 +248,6 @@
     }
 
     function startQuiz(questionIds) {
-        if (state.mode === "class") {
-            stopBgm();
-        } else {
-            startBgm();
-        }
         const session = buildSession(questionIds);
         if (session.length !== SESSION_SIZE) {
             const target = state.mode === "class" ? elements.joinStatus : elements.personalStartButton;
@@ -528,9 +483,6 @@
     elements.restartButton.addEventListener("click", () => startQuiz());
     elements.resultModeButton.addEventListener("click", showModeScreen);
     elements.nextButton.addEventListener("click", goToNextQuestion);
-    elements.bgmToggle.addEventListener("click", toggleBgm);
-    elements.bgm.addEventListener("play", updateBgmToggle);
-    elements.bgm.addEventListener("pause", updateBgmToggle);
     document.querySelectorAll(".mode-back-button").forEach((button) => button.addEventListener("click", showModeScreen));
     document.addEventListener("keydown", handleKeyboard);
 

@@ -12,8 +12,6 @@
         raceRoomCode: document.getElementById("raceRoomCode"),
         lobbyStudentCount: document.getElementById("lobbyStudentCount"),
         teacherStartButton: document.getElementById("teacherStartButton"),
-        bgm: document.getElementById("spellingBgm"),
-        bgmToggle: document.getElementById("bgmToggle"),
         teacherNotice: document.getElementById("teacherNotice"),
         raceNotice: document.getElementById("raceNotice"),
         racePhaseBadge: document.getElementById("racePhaseBadge"),
@@ -27,38 +25,6 @@
 
     let lobby = null;
     let spellingState = null;
-
-    function updateBgmToggle() {
-        const isPlaying = Boolean(elements.bgm && !elements.bgm.paused);
-        elements.bgmToggle.textContent = isPlaying ? "음악 끄기" : "음악 켜기";
-        elements.bgmToggle.setAttribute("aria-pressed", String(isPlaying));
-    }
-
-    async function startBgm() {
-        if (!elements.bgm) return;
-        elements.bgm.volume = 0.4;
-        try {
-            await elements.bgm.play();
-        } catch (error) {
-            elements.teacherNotice.textContent = "음악 켜기를 눌러 배경음악을 시작해 주세요.";
-        }
-        updateBgmToggle();
-    }
-
-    function stopBgm({ rewind = true } = {}) {
-        if (!elements.bgm) return;
-        elements.bgm.pause();
-        if (rewind) elements.bgm.currentTime = 0;
-        updateBgmToggle();
-    }
-
-    function toggleBgm() {
-        if (elements.bgm.paused) {
-            startBgm();
-        } else {
-            stopBgm({ rewind: false });
-        }
-    }
 
     function takeQuestionIds() {
         return window.SpellingQuestionDeck.take({
@@ -105,7 +71,6 @@
         elements.teacherStartButton.disabled = true;
         elements.teacherStartButton.textContent = "시작하는 중...";
         elements.teacherNotice.textContent = "";
-        startBgm();
         lobby.sendServer({ type: "SPELLING_ACTION", action: "START", questionIds });
     }
 
@@ -114,7 +79,6 @@
             ? "진행 중인 순위와 결과를 지우고 새 순위전을 준비할까요?"
             : "현재 순위와 결과를 지우고 새 순위전을 준비할까요?";
         if (!window.confirm(message)) return;
-        stopBgm();
         lobby.sendServer({ type: "SPELLING_ACTION", action: "RESET" });
     }
 
@@ -237,8 +201,5 @@
 
     elements.teacherStartButton.addEventListener("click", startCompetition);
     elements.resetRaceButton.addEventListener("click", resetCompetition);
-    elements.bgmToggle.addEventListener("click", toggleBgm);
-    elements.bgm.addEventListener("play", updateBgmToggle);
-    elements.bgm.addEventListener("pause", updateBgmToggle);
     initialize();
 })();
