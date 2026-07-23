@@ -30,7 +30,7 @@ body.digestion-page {
 }
 
 .digestion-page .hero-art {
-    background-image: url("../../../assets/images/body-explorer/digestion-hero.webp");
+    background-image: url("assets/images/digestion-hero.webp");
     background-position: center;
 }
 
@@ -68,7 +68,7 @@ body.digestion-page {
 .digestion-briefing-art {
     background:
         linear-gradient(155deg, rgba(46, 14, 5, 0.14), rgba(77, 22, 5, 0.76)),
-        url("../../../assets/images/body-explorer/digestion-hero.webp") center / cover;
+        url("assets/images/digestion-hero.webp") center / cover;
 }
 
 .digestion-briefing-art img {
@@ -122,7 +122,7 @@ body.digestion-page {
 .digestion-page .scene-panel[data-scene="mouth"] .scene-image,
 .digestion-page .scene-panel[data-scene="esophagus"] .scene-image,
 .digestion-page .scene-panel[data-scene="large"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/digestion-hero.webp");
+    background-image: url("assets/images/digestion-hero.webp");
 }
 
 .digestion-page .scene-panel[data-scene="esophagus"] .scene-image {
@@ -130,12 +130,12 @@ body.digestion-page {
 }
 
 .digestion-page .scene-panel[data-scene="stomach"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/digestion-stomach.webp");
+    background-image: url("assets/images/digestion-stomach.webp");
 }
 
 .digestion-page .scene-panel[data-scene="intestine"] .scene-image,
 .digestion-page .scene-panel[data-scene="absorption"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/digestion-villi.webp");
+    background-image: url("assets/images/digestion-villi.webp");
 }
 
 .digestion-page .scene-panel[data-scene="large"] .scene-image {
@@ -175,7 +175,7 @@ body.digestion-page {
 .digestion-page .teacher-hero {
     background:
         linear-gradient(90deg, rgba(35, 9, 4, 0.96), rgba(123, 48, 13, 0.66), rgba(74, 30, 7, 0.28)),
-        url("../../../assets/images/body-explorer/digestion-hero.webp") center / cover no-repeat;
+        url("assets/images/digestion-hero.webp") center / cover no-repeat;
 }
 
 .digestion-page .teacher-hero p:last-child {

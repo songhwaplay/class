@@ -218,7 +218,7 @@ body.series-premium.journey-active .anatomy-gallery-room { display: block; }
 body.series-premium.journey-active .anatomy-gallery-room {
     background:
         linear-gradient(0deg, rgba(20, 12, 8, .06), rgba(255, 245, 226, .02)),
-        url("../../../assets/images/body-explorer/anatomy-gallery-room-v2.webp") center / cover no-repeat;
+        url("assets/images/anatomy-gallery-room-v2.webp") center / cover no-repeat;
 }
 
 body.series-premium.journey-active .gallery-ceiling,

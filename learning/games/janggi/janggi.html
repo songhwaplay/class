@@ -7,7 +7,7 @@
 <style>
 :root{--bg:#090c12;--panel:#111722;--gold:#c6aa55;--gold2:#f0d77c;--red:#b9362f;--blue:#245d9b;--text:#eee6d2;--muted:#93a0b1;--wood:#d5a65c;--line:#3f2412}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:"Malgun Gothic",sans-serif;background:#080b10;color:var(--text)}
-body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:14px;background:linear-gradient(rgba(5,8,12,.46),rgba(5,8,12,.62)),url('../../../assets/images/janggibg.webp') center/cover fixed}
+body{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:14px;background:linear-gradient(rgba(5,8,12,.46),rgba(5,8,12,.62)),url('/learning/games/janggi/assets/images/background.webp') center/cover fixed}
 button,input,select{font:inherit}.hidden{display:none!important}
 .shell{width:min(1100px,100%);background:linear-gradient(rgba(18,25,37,.88),rgba(8,13,20,.92)),url('../../../assets/images/mainbg2.webp') center/cover;border:2px solid #6b5520;box-shadow:0 20px 70px #000;padding:20px;min-height:min(760px,calc(100vh - 28px))}
 .title{text-align:center;color:var(--gold2);font:700 clamp(28px,5vw,44px) Georgia,serif;letter-spacing:4px;margin:4px 0 5px}.sub{text-align:center;color:#8d7a45;font-size:13px;letter-spacing:2px;margin-bottom:18px}
@@ -34,7 +34,7 @@ button,input,select{font:inherit}.hidden{display:none!important}
 <link rel="stylesheet" href="../../../assets/device-game.css">
 </head>
 <body>
-<audio id="bgm" src="../../../assets/sound/janggi.mp3" loop></audio>
+<audio id="bgm" src="/learning/games/janggi/assets/sound/bgm.mp3" loop></audio>
 <div class="shell">
 <section id="missingScreen" class="hidden"><h1 class="title">장기</h1><div class="panel"><strong>이름이 없습니다.</strong><br>이름 변경은 메인 화면에서만 가능합니다.<div class="row"><button class="btn primary" type="button" onclick="location.href='../../../index.html'">메인 화면으로</button></div></div></section>
 <section id="lobby" class="hidden mp-lobby-compact" data-multiplayer-lobby>

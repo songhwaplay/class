@@ -4,7 +4,8 @@ const assert = require("node:assert");
 const fs = require("node:fs");
 const path = require("node:path");
 
-const dataPath = path.join(__dirname, "..", "assets", "data", "english-vocabulary-3000-v2.json");
+const vocabularyAssets = path.join(__dirname, "..", "learning", "basics", "vocabulary", "assets");
+const dataPath = path.join(vocabularyAssets, "data", "english-vocabulary-3000-v2.json");
 const payload = JSON.parse(fs.readFileSync(dataPath, "utf8"));
 
 assert.strictEqual(payload.version, "v2");
@@ -83,7 +84,7 @@ const to = payload.words.find((word) => word.word === "to");
 assert.strictEqual(to.example.en, "She walked to school with her brother.");
 assert.strictEqual(to.example.ko, "그녀는 남동생과 함께 학교에 걸어갔다.");
 
-const imageManifestPath = path.join(__dirname, "..", "assets", "data", "vocabulary-word-images-v1.json");
+const imageManifestPath = path.join(vocabularyAssets, "data", "vocabulary-word-images-v1.json");
 const imageManifest = JSON.parse(fs.readFileSync(imageManifestPath, "utf8"));
 const imageEntries = Object.entries(imageManifest.images);
 assert.strictEqual(imageManifest.version, 1);
@@ -95,12 +96,12 @@ imageEntries.forEach(([id, image]) => {
     assert.strictEqual(word.word, image.word);
     assert.strictEqual(word.stageCode, "elementary");
     assert.match(image.file, /^[a-z0-9-]+\.webp$/);
-    const imagePath = path.join(__dirname, "..", "assets", "images", "vocabulary", image.file);
+    const imagePath = path.join(vocabularyAssets, "images", image.file);
     assert.ok(fs.existsSync(imagePath), `${image.word}: image file is missing`);
     assert.ok(fs.statSync(imagePath).size < 100_000, `${image.word}: image file is too large`);
 });
 
-const spellingGamePath = path.join(__dirname, "..", "assets", "data", "vocabulary-spelling-game-v1.json");
+const spellingGamePath = path.join(vocabularyAssets, "data", "vocabulary-spelling-game-v1.json");
 const spellingGame = JSON.parse(fs.readFileSync(spellingGamePath, "utf8"));
 const spellingIds = new Set(spellingGame.wordIds.map(String));
 assert.strictEqual(spellingGame.version, 1);
@@ -124,7 +125,7 @@ payload.words.forEach((word) => {
     if (spellingIds.has(String(word.id))) assert.ok(!ambiguousSpellingWords.has(word.word));
 });
 
-const imageCandidatesPath = path.join(__dirname, "..", "assets", "data", "vocabulary-image-candidates-v1.json");
+const imageCandidatesPath = path.join(vocabularyAssets, "data", "vocabulary-image-candidates-v1.json");
 const imageCandidates = JSON.parse(fs.readFileSync(imageCandidatesPath, "utf8"));
 assert.strictEqual(imageCandidates.elementaryWords, 800);
 assert.strictEqual(imageCandidates.targetImages, 214);
@@ -153,7 +154,7 @@ assert.strictEqual(reviewIds.size, imageCandidates.meaningReview.length);
 reviewIds.forEach((id) => assert.ok(!candidateIds.has(id), `review item ${id} must not be image-ready`));
 assert.ok(!imageCandidates.candidates.some((candidate) => ["chance", "death", "luck", "power"].includes(candidate.word)));
 
-const meaningOverridesPath = path.join(__dirname, "..", "assets", "data", "vocabulary-meaning-overrides.json");
+const meaningOverridesPath = path.join(vocabularyAssets, "data", "vocabulary-meaning-overrides.json");
 const meaningOverrides = JSON.parse(fs.readFileSync(meaningOverridesPath, "utf8"));
 assert.strictEqual(Object.keys(meaningOverrides).length, 24);
 Object.entries(meaningOverrides).forEach(([wordText, override]) => {

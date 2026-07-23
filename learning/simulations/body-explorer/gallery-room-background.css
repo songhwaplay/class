@@ -17,7 +17,7 @@ body.journey-active .ambient-cells {
     z-index: 0;
     display: none;
     overflow: hidden;
-    background: url("../../../assets/images/body-explorer/anatomy-gallery-room-v2.webp") center / cover no-repeat;
+    background: url("assets/images/anatomy-gallery-room-v2.webp") center / cover no-repeat;
     pointer-events: none;
 }
 

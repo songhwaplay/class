@@ -162,7 +162,7 @@ button {
 }
 
 .hero-art {
-    background: url("../../../assets/images/body-explorer/circulation-hero.webp") center / cover no-repeat;
+    background: url("assets/images/circulation-hero.webp") center / cover no-repeat;
     transform: scale(1.015);
 }
 
@@ -381,7 +381,7 @@ button {
     overflow: hidden;
     background:
         linear-gradient(rgba(22, 6, 24, 0.06), rgba(22, 6, 24, 0.48)),
-        url("../../../assets/images/body-explorer/circulation-hero.webp") 28% center / cover no-repeat;
+        url("assets/images/circulation-hero.webp") 28% center / cover no-repeat;
 }
 
 .briefing-art img {
@@ -760,15 +760,15 @@ button {
 }
 
 .scene-panel[data-scene="body"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/circulation-hero.webp");
+    background-image: url("assets/images/circulation-hero.webp");
 }
 
 .scene-panel[data-scene="heart"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/heart-interior.webp");
+    background-image: url("assets/images/heart-interior.webp");
 }
 
 .scene-panel[data-scene="lung"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/alveoli.webp");
+    background-image: url("assets/images/alveoli.webp");
 }
 
 .scene-overlay {

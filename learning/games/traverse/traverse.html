@@ -8,7 +8,7 @@
 <style>
 :root{--bg:#070b10;--panel:#111923;--gold:#c9a956;--gold2:#f4dc87;--text:#eee7d6;--muted:#9eabba;--line:rgba(201,169,86,.28)}
 *{box-sizing:border-box}html,body{margin:0;width:100%;min-height:100%;font-family:"Malgun Gothic",sans-serif;color:var(--text)}
-body{min-height:100vh;background:linear-gradient(rgba(4,8,12,.58),rgba(4,8,12,.76)),url("../../../assets/images/traversebg.webp") center/cover fixed no-repeat}
+body{min-height:100vh;background:linear-gradient(rgba(4,8,12,.58),rgba(4,8,12,.76)),url("/learning/games/traverse/assets/images/background.webp") center/cover fixed no-repeat}
 button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
 .panel,.game-shell{width:min(1040px,100%);border:3px solid var(--gold);background:linear-gradient(rgba(10,18,25,.78),rgba(7,13,19,.88)),url("../../../assets/images/mainbg2.webp") center/cover no-repeat;box-shadow:0 18px 55px rgba(0,0,0,.58);border-radius:16px;padding:22px}
 .title{margin:0;text-align:center;color:var(--gold2);font:900 clamp(38px,7vw,64px)/1 Georgia,serif;letter-spacing:5px}.subtitle{text-align:center;color:var(--muted);margin:8px 0 20px}
@@ -41,7 +41,7 @@ button,input{font:inherit}.hidden{display:none!important}.screen{min-height:100v
 <link rel="stylesheet" href="../../../assets/device-game.css">
 </head>
 <body>
-<audio id="bgm" src="../../../assets/sound/traverse.mp3" loop preload="auto"></audio>
+<audio id="bgm" src="/learning/games/traverse/assets/sound/bgm.mp3" loop preload="auto"></audio>
 <section id="missingScreen" class="screen hidden"><div class="panel name-missing"><h2>이름이 없습니다</h2><p>메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</p><button class="btn primary" type="button" onclick="location.href='../../../index.html'">메인 화면으로</button></div></section>
 <section id="lobbyScreen" class="screen hidden mp-lobby-compact" data-multiplayer-lobby><div class="panel">
 <h1 class="title">SHAPE CROSSING</h1><div class="subtitle">도형 건너기 · 2인 또는 4인 · 3인 플레이 금지</div>

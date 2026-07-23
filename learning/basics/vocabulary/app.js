@@ -1,10 +1,10 @@
 (function vocabularyStudyApp() {
     "use strict";
 
-    const DATA_URL = "../../../assets/data/english-vocabulary-3000-v2.json";
-    const IMAGE_MANIFEST_URL = "../../../assets/data/vocabulary-word-images-v1.json";
-    const SPELLING_GAME_URL = "../../../assets/data/vocabulary-spelling-game-v1.json";
-    const IMAGE_BASE_URL = "../../../assets/images/vocabulary/";
+    const DATA_URL = "assets/data/english-vocabulary-3000-v2.json";
+    const IMAGE_MANIFEST_URL = "assets/data/vocabulary-word-images-v1.json";
+    const SPELLING_GAME_URL = "assets/data/vocabulary-spelling-game-v1.json";
+    const IMAGE_BASE_URL = "assets/images/";
     const PROGRESS_KEY = "englishVocabulary3000ProgressV1";
     const IMAGE_PREFERENCE_KEY = "englishVocabularyImagesVisibleV1";
     const SPELLING_WRONG_KEY = "englishVocabularySpellingWrongV1";

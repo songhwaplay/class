@@ -34,7 +34,7 @@ body.immune-page {
 }
 
 .immune-page .hero-art {
-    background-image: url("../../../assets/images/body-explorer/immune-hero.webp");
+    background-image: url("assets/images/immune-hero.webp");
     background-position: center;
 }
 
@@ -72,7 +72,7 @@ body.immune-page {
 .immune-briefing-art {
     background:
         linear-gradient(155deg, rgba(3, 42, 49, 0.1), rgba(2, 35, 47, 0.7)),
-        url("../../../assets/images/body-explorer/immune-hero.webp") center / cover;
+        url("assets/images/immune-hero.webp") center / cover;
 }
 
 .immune-briefing-art img {
@@ -122,13 +122,13 @@ body.immune-page {
 }
 
 .immune-page .scene-panel[data-scene="barrier"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/immune-barrier.webp");
+    background-image: url("assets/images/immune-barrier.webp");
     background-position: 52% center;
 }
 
 .immune-page .scene-panel[data-scene="defense"] .scene-image,
 .immune-page .scene-panel[data-scene="antibody"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/immune-defense.webp");
+    background-image: url("assets/images/immune-defense.webp");
 }
 
 .immune-page .scene-panel[data-scene="defense"] .scene-image {
@@ -141,7 +141,7 @@ body.immune-page {
 
 .immune-page .scene-panel[data-scene="memory"] .scene-image,
 .immune-page .scene-panel[data-scene="vaccine"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/immune-hero.webp");
+    background-image: url("assets/images/immune-hero.webp");
 }
 
 .immune-page .scene-panel[data-scene="memory"] .scene-image {
@@ -186,7 +186,7 @@ body.immune-page {
 .immune-page .teacher-hero {
     background:
         linear-gradient(90deg, rgba(2, 27, 34, 0.98), rgba(16, 111, 104, 0.7), rgba(212, 160, 50, 0.2)),
-        url("../../../assets/images/body-explorer/immune-hero.webp") center / cover no-repeat;
+        url("assets/images/immune-hero.webp") center / cover no-repeat;
 }
 
 .immune-page .teacher-hero p:last-child {

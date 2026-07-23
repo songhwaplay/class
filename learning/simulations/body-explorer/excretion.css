@@ -22,7 +22,7 @@ body.excretion-page {
 
 .excretion-page .hero-copy { width: min(850px, 100%); }
 .excretion-page .hero-art {
-    background-image: url("../../../assets/images/body-explorer/excretion-hero.webp");
+    background-image: url("assets/images/excretion-hero.webp");
     background-position: center;
 }
 .excretion-page .hero-shade {
@@ -46,7 +46,7 @@ body.excretion-page {
 .excretion-briefing-art {
     background:
         linear-gradient(155deg, rgba(7, 40, 51, 0.08), rgba(5, 29, 40, 0.67)),
-        url("../../../assets/images/body-explorer/excretion-hero.webp") center / cover;
+        url("assets/images/excretion-hero.webp") center / cover;
 }
 .excretion-briefing-art img { width: min(62%, 318px); }
 .excretion-page .excretion-orb {
@@ -70,13 +70,13 @@ body.excretion-page {
 
 .excretion-page .scene-panel[data-scene="filter"] .scene-image,
 .excretion-page .scene-panel[data-scene="reclaim"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/excretion-kidney.webp");
+    background-image: url("assets/images/excretion-kidney.webp");
     background-position: 60% center;
 }
 .excretion-page .scene-panel[data-scene="pathway"] .scene-image,
 .excretion-page .scene-panel[data-scene="balance"] .scene-image,
 .excretion-page .scene-panel[data-scene="bladder"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/excretion-path.webp");
+    background-image: url("assets/images/excretion-path.webp");
     background-position: 57% center;
 }
 .excretion-page .scene-overlay {
@@ -195,7 +195,7 @@ body.excretion-page {
 .excretion-page .teacher-hero {
     background:
         linear-gradient(90deg, rgba(4, 22, 31, 0.99), rgba(10, 71, 81, 0.74), rgba(218, 151, 55, 0.14)),
-        url("../../../assets/images/body-explorer/excretion-hero.webp") center / cover no-repeat;
+        url("assets/images/excretion-hero.webp") center / cover no-repeat;
 }
 .excretion-page .teacher-hero p:last-child { color: #e9ffff; }
 .excretion-page .teacher-room-card { border-color: #94ced0; background: #edfafa; }

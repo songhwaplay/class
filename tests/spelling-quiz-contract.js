@@ -14,7 +14,7 @@ const stylesPath = path.join(spellingDir, "styles.css");
 const teacherHtmlPath = path.join(spellingDir, "teacher.html");
 const teacherAppPath = path.join(spellingDir, "teacher.js");
 const teacherStylesPath = path.join(spellingDir, "teacher.css");
-const bgmPath = path.join(root, "assets", "sound", "spelling-bg.mp3");
+const bgmPath = path.join(spellingDir, "assets", "sound", "bgm.mp3");
 const hubPath = path.join(root, "index.html");
 const serverPath = path.join(root, "game-hub-server", "server.js");
 
@@ -85,7 +85,7 @@ assert.ok(html.includes('src="questions.js"'), "Question bank is not linked.");
 assert.ok(html.includes('src="questions-extra.js"'), "Expanded question bank is not linked.");
 assert.ok(html.includes('src="question-deck.js"'), "No-repeat question deck is not linked.");
 assert.ok(html.includes('src="app.js"'), "Quiz app is not linked.");
-assert.ok(html.includes('src="../../../assets/sound/spelling-bg.mp3"'), "Personal mode background music is not linked.");
+assert.ok(html.includes('src="/learning/basics/spelling/assets/sound/bgm.mp3"'), "Personal mode background music is not linked.");
 assert.ok(html.includes("loop preload=\"auto\""), "Spelling background music should loop.");
 assert.ok(html.includes("game-network.js"), "Class ranking mode must load the classroom network.");
 assert.ok(html.includes("multiplayer-lobby.js"), "Class ranking mode must load the shared lobby.");
@@ -111,7 +111,7 @@ const teacherHtml = fs.readFileSync(teacherHtmlPath, "utf8");
 for (const requiredId of ["roomCode", "copyBtn", "lobbyPlayers", "teacherStartButton", "teacherRankingList", "resetRaceButton", "spellingBgm", "bgmToggle"]) {
     assert.ok(teacherHtml.includes(`id="${requiredId}"`), `Teacher page is missing #${requiredId}`);
 }
-assert.ok(teacherHtml.includes('src="../../../assets/sound/spelling-bg.mp3"'), "Teacher ranking page background music is not linked.");
+assert.ok(teacherHtml.includes('src="/learning/basics/spelling/assets/sound/bgm.mp3"'), "Teacher ranking page background music is not linked.");
 const teacherSource = fs.readFileSync(teacherAppPath, "utf8");
 new vm.Script(teacherSource, { filename: teacherAppPath });
 assert.ok(teacherSource.includes('action: "START"'), "Teacher must be able to start all students together.");

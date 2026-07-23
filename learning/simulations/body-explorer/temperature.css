@@ -22,7 +22,7 @@ body.temperature-page {
 
 .temperature-page .hero-copy { width: min(880px, 100%); }
 .temperature-page .hero-art {
-    background-image: url("../../../assets/images/body-explorer/temperature-hero.webp");
+    background-image: url("assets/images/temperature-hero.webp");
     background-position: center;
 }
 .temperature-page .hero-shade {
@@ -46,7 +46,7 @@ body.temperature-page {
 .temperature-briefing-art {
     background:
         linear-gradient(155deg, rgba(7, 34, 57, 0.08), rgba(5, 24, 43, 0.7)),
-        url("../../../assets/images/body-explorer/temperature-hero.webp") center / cover;
+        url("assets/images/temperature-hero.webp") center / cover;
 }
 .temperature-briefing-art img { width: min(58%, 302px); }
 .temperature-page .temperature-orb {
@@ -70,16 +70,16 @@ body.temperature-page {
 
 .temperature-page .scene-panel[data-scene="sense"] .scene-image,
 .temperature-page .scene-panel[data-scene="balance"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/temperature-hero.webp");
+    background-image: url("assets/images/temperature-hero.webp");
     background-position: 59% center;
 }
 .temperature-page .scene-panel[data-scene="cool"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/temperature-hot.webp");
+    background-image: url("assets/images/temperature-hot.webp");
     background-position: 58% center;
 }
 .temperature-page .scene-panel[data-scene="conserve"] .scene-image,
 .temperature-page .scene-panel[data-scene="shiver"] .scene-image {
-    background-image: url("../../../assets/images/body-explorer/temperature-cold.webp");
+    background-image: url("assets/images/temperature-cold.webp");
     background-position: 58% center;
 }
 .temperature-page .scene-overlay {
@@ -184,7 +184,7 @@ body.temperature-page {
 .temperature-page .teacher-hero {
     background:
         linear-gradient(90deg, rgba(4, 19, 35, 0.99), rgba(12, 71, 93, 0.74), rgba(213, 119, 52, 0.15)),
-        url("../../../assets/images/body-explorer/temperature-hero.webp") center / cover no-repeat;
+        url("assets/images/temperature-hero.webp") center / cover no-repeat;
 }
 .temperature-page .teacher-hero p:last-child { color: #edfaff; }
 .temperature-page .teacher-room-card { border-color: #96ceda; background: #edf9fb; }
