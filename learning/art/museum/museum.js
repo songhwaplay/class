@@ -82,7 +82,7 @@
     const rightArm=leftArm.clone();rightArm.position.x=.28;rightArm.rotation.z=.08;
     group.add(torso,shoulders,neck,head,hairCap,leftArm,rightArm);
     group.userData.cloth=cloth;
-    group.scale.setScalar(.92);
+    group.scale.setScalar(.72);
     group.traverse(part=>{if(part.isMesh){part.castShadow=false;part.receiveShadow=false;part.renderOrder=3;}});
     return group;
   }
@@ -406,7 +406,7 @@
 
   function updateSelfAvatar(){
     const forwardX=-Math.sin(yaw),forwardZ=-Math.cos(yaw);
-    selfAvatar.position.set(camera.position.x+forwardX*.72,0,camera.position.z+forwardZ*.72);
+    selfAvatar.position.set(camera.position.x+forwardX*1.05,-.12,camera.position.z+forwardZ*1.05);
     selfAvatar.rotation.y=yaw;
     selfAvatar.visible=!nearest&&!modal.open&&!helpModal.open;
   }
