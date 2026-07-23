@@ -51,7 +51,7 @@
     c04:{englishTitle:'The Persistence of Memory',tags:['초현실주의','꿈의 이미지','변형'],styleNote:'초현실주의는 꿈과 무의식에서 떠오른 낯선 이미지를 사실적인 기법으로 그려 현실의 익숙한 질서를 흔들었어요.'},
     c05:{englishTitle:'Golconda',tags:['초현실주의','반복','낯설게 하기'],styleNote:'마그리트는 평범한 사물과 사람을 예상 밖의 크기·장소·배열로 옮겨 익숙한 현실을 수수께끼처럼 바꾸었어요.'},
     c09:{englishTitle:'The Treachery of Images',tags:['초현실주의','이미지와 언어','개념 미술'],styleNote:'사실적으로 그린 이미지와 이를 부정하는 문장을 충돌시켜 그림·말·실제 사물이 같은 것인지 질문해요.'},
-    d13:{englishTitle:'Gwanghwamun Haechi (West)',tags:['조선 후기','석조 조각','수호 상징'],styleNote:'궁궐 앞 석조 조각은 건축과 주변 공간을 함께 이루며, 상상의 동물에 정의와 벽사의 의미를 담아 세웠어요.'},
+    d13:{englishTitle:'Gwanghwamun Haechi',tags:['조선 후기','석조 조각','수호 상징'],styleNote:'궁궐 앞 석조 조각은 건축과 주변 공간을 함께 이루며, 상상의 동물에 정의와 벽사의 의미를 담아 세웠어요.'},
     d01:{englishTitle:'The Thinker',tags:['근대 조각','청동 조각','인체 표현'],styleNote:'근대 조각가 로댕은 매끈한 이상미보다 거친 표면과 긴장된 근육을 통해 인물의 내면과 에너지를 드러냈어요.'},
     d02:{englishTitle:'David',tags:['성기 르네상스','대리석 조각','콘트라포스토'],styleNote:'성기 르네상스 조각은 고대 조각을 연구해 이상적인 인체 비례와 자연스러운 자세, 정신적 긴장을 결합했어요.'},
     d05:{englishTitle:'Venus de Milo',tags:['헬레니즘','대리석 조각','콘트라포스토'],styleNote:'헬레니즘 조각은 몸의 무게 이동과 비틀림, 옷주름의 대비로 정지한 인체 안에 부드러운 움직임을 만들었어요.'},
@@ -145,7 +145,7 @@
       id:'space', number:'05', title:'입체·공간', subtitle:'조각과 거대한 장면의 방', accent:0xb7a493,
       intro:'조각의 앞과 옆을 걷고, 거대한 그림 속 깊이를 따라가며 부피와 공간을 느껴보세요.',
       works:[
-        art('d13','광화문 해치(서쪽)','작자 미상','조선 후기','화강암',{w:275.6,h:350.7,d:186.2,label:'길이 275.6cm × 너비 186.2cm × 높이 350.7cm'},'d13.jpg?v=2','광화문 앞을 지키는 상상의 동물 해치예요. 옳고 그름을 가리고 불과 나쁜 기운을 막는 수호 동물로 여겨졌습니다.','옆으로 돌아가며 둥근 눈과 코, 갈기와 몸을 덮은 소용돌이무늬가 어떻게 이어지는지 살펴보세요.',{type:'sculpture',actualScale:true,hasBuiltInBase:true,centerModel:true,preserveMaterials:true,materialTint:0x817d75,modelRotationY:0,rights:'3D 모델: 국가유산청, CC BY 4.0 · 사진: hyolee2, CC BY-SA 3.0',source:'https://sketchfab.com/3d-models/gwanghwamun-gate-haetaea-e11f9ee66df74288be83f9fede578bd4'}),
+        art('d13','광화문 해치','작자 미상','조선 후기','화강암',{w:275.6,h:350.7,d:186.2,label:'길이 275.6cm × 너비 186.2cm × 높이 350.7cm'},'d13.jpg?v=2','광화문 앞 좌우에는 해치상이 한 쌍으로 서 있어요. 해치는 옳고 그름을 가리고 불과 나쁜 기운을 막는다고 여긴 상상의 수호 동물이에요.','옆으로 돌아가며 둥근 눈과 코, 갈기와 몸을 덮은 소용돌이무늬가 어떻게 이어지는지 살펴보세요.',{type:'sculpture',actualScale:true,hasBuiltInBase:true,centerModel:true,preserveMaterials:true,materialTint:0x817d75,modelRotationY:0,rights:'3D 모델: 국가유산청, CC BY 4.0 · 사진: hyolee2, CC BY-SA 3.0',source:'https://sketchfab.com/3d-models/gwanghwamun-gate-haetaea-e11f9ee66df74288be83f9fede578bd4'}),
         art('d01','생각하는 사람','오귀스트 로댕','1903년 대형상','청동',{w:98,h:189,d:140,label:'높이 189cm (대형 청동 주조본 기준)'},'d01.png','온몸의 근육에 힘을 준 채 깊이 생각하는 사람을 입체로 표현했어요.','정면과 옆면을 오가며 팔·등·다리가 만드는 큰 덩어리를 비교해 보세요.',{type:'sculpture',rights:'원작 Public Domain · 3D Scan: Scan the World, CC BY-SA 4.0',source:'https://www.musee-rodin.fr/en/musee/collections/oeuvres/thinker'}),
         art('d02','다비드','미켈란젤로','1501–1504년','대리석',{w:199,h:517,d:110,label:'높이 517cm (좌대 제외)'},'d02.jpg','싸움을 시작하기 전 집중한 다윗을 사람보다 세 배 가까이 크게 조각했어요.','커다란 머리와 손이 아래에서 올려다볼 때 자연스럽게 보이는지 살펴보세요.',{type:'sculpture',actualScale:true,rights:'원작 Public Domain · 3D Scan: Scan the World, CC BY-SA 4.0',source:'https://www.galleriaaccademiafirenze.it/en/artworks/david-michelangelo/'}),
         art('d05','밀로의 비너스','알렉산드로스 추정','기원전 150–125년경','대리석',{w:80,h:204,d:65,label:'높이 204cm'},'d05.jpg','몸의 무게를 한쪽 다리에 싣고 상체를 반대로 틀어 부드러운 S자 균형을 만들었어요.','어깨와 골반이 서로 어느 방향으로 기울었는지 비교해 보세요.',{type:'sculpture',centerModel:true,rights:'원작 Public Domain · 3D Scan: Scan the World, CC BY-SA 4.0',source:'https://collections.louvre.fr/en/ark:/53355/cl010277627'}),
