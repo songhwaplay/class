@@ -84,6 +84,10 @@ async function run() {
 
     try {
         await waitForServer(server);
+        const accessResponse = await fetch(`http://127.0.0.1:${port}/api/site/access`);
+        assert.equal(accessResponse.status, 200, "개발 환경의 메인 화면 접근 설정을 읽을 수 있어야 합니다.");
+        assert.deepEqual(await accessResponse.json(), { mode: "open" });
+
         const host = await connectClient();
         clients.push(host);
         await host.waitFor((message) => message.type === "CONNECTED", "교사 연결");

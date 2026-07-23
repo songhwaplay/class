@@ -1,0 +1,1140 @@
+/* Shared exhibit-grade presentation for every body-explorer system. */
+body.series-premium {
+    --system-accent: #e95b68;
+    --system-accent-soft: rgba(233, 91, 104, .18);
+    --system-cyan: #6bd5e8;
+}
+
+body[data-body-system="digestion"] { --system-accent: #ef9a55; --system-accent-soft: rgba(239, 154, 85, .2); }
+body[data-body-system="respiration"] { --system-accent: #61c9dc; --system-accent-soft: rgba(97, 201, 220, .2); }
+body[data-body-system="nervous"] { --system-accent: #f2c35b; --system-accent-soft: rgba(242, 195, 91, .2); }
+body[data-body-system="immune"] { --system-accent: #8bd275; --system-accent-soft: rgba(139, 210, 117, .2); }
+body[data-body-system="movement"] { --system-accent: #ef8065; --system-accent-soft: rgba(239, 128, 101, .2); }
+body[data-body-system="excretion"] { --system-accent: #69b7e7; --system-accent-soft: rgba(105, 183, 231, .2); }
+body[data-body-system="temperature"] { --system-accent: #f06a55; --system-accent-soft: rgba(240, 106, 85, .2); }
+
+body.series-premium.journey-active {
+    background: #151412;
+}
+
+body.series-premium.journey-active .ambient-cells { display: none; }
+body.series-premium .page-shell { position: relative; z-index: 2; }
+
+.anatomy-gallery-room {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: none;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 28%, rgba(255, 229, 193, .11), transparent 24%),
+        linear-gradient(#24221e, #161411);
+    pointer-events: none;
+}
+
+body.series-premium.journey-active .anatomy-gallery-room { display: block; }
+
+.gallery-ceiling,
+.gallery-back-wall,
+.gallery-side-wall,
+.gallery-floor,
+.gallery-room-vignette {
+    position: absolute;
+}
+
+.gallery-ceiling {
+    top: 0;
+    right: 0;
+    left: 0;
+    z-index: 1;
+    height: 34%;
+    clip-path: polygon(0 0, 100% 0, 76% 100%, 24% 100%);
+    background:
+        radial-gradient(ellipse at 50% 104%, rgba(34, 29, 24, .72), transparent 30%),
+        repeating-linear-gradient(90deg, transparent 0 24.8%, rgba(78, 70, 62, .2) 25%, transparent 25.2%),
+        linear-gradient(180deg, #57524b, #38342f 76%, #25231f);
+    box-shadow: inset 0 -18px 34px rgba(0,0,0,.42);
+}
+
+.gallery-ceiling::after {
+    position: absolute;
+    inset: 0;
+    background:
+        repeating-linear-gradient(12deg, rgba(255,255,255,.012) 0 1px, transparent 1px 4px),
+        repeating-linear-gradient(101deg, rgba(0,0,0,.018) 0 1px, transparent 1px 5px);
+    content: "";
+    opacity: .85;
+}
+
+.gallery-ceiling i {
+    position: absolute;
+    bottom: 17%;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff0c8;
+    box-shadow: 0 0 8px #fff1cf, 0 0 30px 13px rgba(255, 226, 181, .16);
+}
+.gallery-ceiling i:nth-child(1) { left: 32%; }
+.gallery-ceiling i:nth-child(2) { left: 50%; }
+.gallery-ceiling i:nth-child(3) { right: 32%; }
+
+.gallery-back-wall {
+    top: 21%;
+    right: 23%;
+    bottom: 35%;
+    left: 23%;
+    z-index: 0;
+    border-top: 5px solid #1a1815;
+    background:
+        repeating-linear-gradient(90deg, transparent 0 119px, rgba(0,0,0,.26) 120px, rgba(255,255,255,.025) 122px),
+        repeating-linear-gradient(6deg, rgba(255,255,255,.012) 0 1px, transparent 1px 5px),
+        linear-gradient(90deg, #302d28, #3a3630 50%, #2b2925);
+    box-shadow: inset 0 0 60px rgba(0,0,0,.42);
+}
+
+.gallery-back-wall span {
+    position: absolute;
+    top: 12%;
+    bottom: 0;
+    left: 50%;
+    width: 22%;
+    border: 8px solid #211e1a;
+    border-bottom: 0;
+    background:
+        linear-gradient(90deg, rgba(0,0,0,.35), transparent 45%, rgba(0,0,0,.35)),
+        linear-gradient(#625a50, #2b2824);
+    box-shadow: 0 0 32px rgba(0,0,0,.72), inset 0 18px 25px rgba(255,255,255,.035);
+    transform: translateX(-50%);
+}
+
+.gallery-side-wall {
+    top: 17%;
+    bottom: 28%;
+    z-index: 2;
+    width: 57%;
+    background:
+        repeating-linear-gradient(90deg, transparent 0 102px, rgba(0,0,0,.34) 103px, rgba(255,255,255,.025) 105px),
+        repeating-linear-gradient(7deg, rgba(255,255,255,.011) 0 1px, transparent 1px 4px),
+        linear-gradient(90deg, #25231f, #38342f);
+    box-shadow: inset 0 -30px 45px rgba(0,0,0,.34), 0 12px 24px rgba(0,0,0,.4);
+}
+
+.gallery-side-left {
+    left: 0;
+    clip-path: polygon(0 0, 53% 10%, 71% 100%, 0 100%);
+}
+
+.gallery-side-right {
+    right: 0;
+    clip-path: polygon(47% 10%, 100% 0, 100% 100%, 29% 100%);
+    background:
+        repeating-linear-gradient(90deg, transparent 0 102px, rgba(0,0,0,.34) 103px, rgba(255,255,255,.025) 105px),
+        repeating-linear-gradient(-7deg, rgba(255,255,255,.011) 0 1px, transparent 1px 4px),
+        linear-gradient(90deg, #38342f, #25231f);
+}
+
+.gallery-frame {
+    position: absolute;
+    display: block;
+    width: clamp(48px, 7vw, 98px);
+    aspect-ratio: .72;
+    padding: 5px;
+    border: 3px ridge #9b7445;
+    background: #241b15;
+    box-shadow: 9px 13px 19px rgba(0,0,0,.58), inset 0 0 0 2px #352718;
+}
+
+.gallery-frame b {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(255,226,174,.26);
+    background:
+        radial-gradient(circle at 50% 42%, var(--system-accent) 0 7%, transparent 8%),
+        radial-gradient(ellipse at 50% 54%, var(--system-accent-soft) 0 29%, transparent 31%),
+        linear-gradient(145deg, #18211f, #131015 65%);
+    box-shadow: inset 0 0 22px rgba(0,0,0,.75);
+}
+
+.gallery-side-left .gallery-frame { transform: perspective(360px) rotateY(20deg); }
+.gallery-side-right .gallery-frame { transform: perspective(360px) rotateY(-20deg); }
+.gallery-side-left .frame-one,
+.gallery-side-right .frame-one { top: 15%; }
+.gallery-side-left .frame-two,
+.gallery-side-right .frame-two { top: 23%; }
+.gallery-side-left .frame-three,
+.gallery-side-right .frame-three { top: 31%; }
+.gallery-side-left .frame-one { left: 5%; }
+.gallery-side-left .frame-two { left: 22%; }
+.gallery-side-left .frame-three { left: 39%; }
+.gallery-side-right .frame-one { right: 5%; }
+.gallery-side-right .frame-two { right: 22%; }
+.gallery-side-right .frame-three { right: 39%; }
+
+.gallery-floor {
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    height: 47%;
+    clip-path: polygon(26% 0, 74% 0, 100% 100%, 0 100%);
+    background:
+        linear-gradient(90deg, transparent 49.8%, rgba(255,224,181,.07) 50%, transparent 50.2%),
+        repeating-linear-gradient(90deg, transparent 0 69px, rgba(24, 12, 7, .45) 70px, rgba(192, 132, 79, .08) 72px),
+        repeating-linear-gradient(2deg, #5c3824 0 2px, #68412a 3px 6px, #4e2f20 7px 10px, #744a30 11px 15px);
+    background-size: 100% 100%, 100% 100%, 210px 26px;
+    box-shadow: inset 0 24px 40px rgba(0,0,0,.36);
+}
+
+.gallery-floor::before {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(105deg, transparent 0 30%, rgba(255,221,172,.055) 43%, transparent 54%),
+        linear-gradient(255deg, transparent 0 34%, rgba(255,221,172,.04) 46%, transparent 57%);
+    content: "";
+}
+
+.gallery-floor i {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 34%;
+    background: linear-gradient(90deg, transparent, rgba(255,230,197,.045), transparent);
+    transform: translateX(-50%);
+}
+
+.gallery-room-vignette {
+    inset: 0;
+    z-index: 4;
+    background:
+        linear-gradient(90deg, rgba(4,3,3,.62), transparent 13%, transparent 87%, rgba(4,3,3,.62)),
+        linear-gradient(0deg, rgba(4,3,3,.32), transparent 30%, rgba(4,3,3,.16));
+}
+
+body.series-premium.journey-active .anatomy-gallery-room {
+    background:
+        linear-gradient(0deg, rgba(20, 12, 8, .06), rgba(255, 245, 226, .02)),
+        url("../../../assets/images/body-explorer/anatomy-gallery-room-v2.webp") center / cover no-repeat;
+}
+
+body.series-premium.journey-active .gallery-ceiling,
+body.series-premium.journey-active .gallery-back-wall,
+body.series-premium.journey-active .gallery-side-wall,
+body.series-premium.journey-active .gallery-floor {
+    display: none;
+}
+
+body.series-premium.journey-active .gallery-room-vignette {
+    background:
+        linear-gradient(90deg, rgba(12, 8, 6, .12), transparent 12%, transparent 88%, rgba(12, 8, 6, .12)),
+        linear-gradient(0deg, rgba(16, 9, 5, .08), transparent 28%, rgba(255, 239, 214, .025));
+}
+
+body.series-premium.journey-active .journey-status > div {
+    border-color: color-mix(in srgb, var(--system-accent) 32%, transparent);
+    background: linear-gradient(135deg, rgba(19, 10, 27, .94), rgba(18, 20, 39, .82));
+    box-shadow: inset 0 1px rgba(255,255,255,.04);
+}
+
+body.series-premium.journey-active .route-node.current::before {
+    border-color: #ffe3b7;
+    background: var(--system-accent);
+    color: #fff;
+    box-shadow: 0 0 22px var(--system-accent-soft);
+}
+
+body.series-premium.journey-active .route-node.passed::before,
+body.series-premium.journey-active .route-node.passed:not(:last-child)::after {
+    border-color: var(--system-accent);
+    background: color-mix(in srgb, var(--system-accent) 74%, #4d1730);
+}
+
+body.series-premium .scene-panel {
+    border-color: color-mix(in srgb, var(--system-accent) 35%, transparent);
+    background: #100b19;
+    box-shadow: inset 0 0 70px rgba(2, 4, 14, .5), 0 24px 70px rgba(3, 2, 12, .52);
+}
+
+body.series-premium .scene-panel::before {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size: 28px 28px;
+    content: "";
+    pointer-events: none;
+}
+
+body.series-premium .scene-panel::after {
+    position: absolute;
+    right: 16px;
+    bottom: 15px;
+    z-index: 4;
+    color: color-mix(in srgb, var(--system-accent) 78%, white);
+    content: "LIVE ANATOMY · SYSTEM VIEW";
+    font-family: Consolas, monospace;
+    font-size: 7px;
+    font-weight: 900;
+    letter-spacing: .13em;
+    opacity: .72;
+}
+
+body.series-premium .question-card,
+body.series-premium .simulation-card {
+    position: relative;
+    border: 1px solid color-mix(in srgb, var(--system-accent) 30%, transparent);
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        radial-gradient(circle at 50% 10%, var(--system-accent-soft), transparent 40%),
+        linear-gradient(145deg, #211021, #100b1a 72%);
+    background-size: 24px 24px, 24px 24px, auto, auto;
+    color: #f9ece8;
+    box-shadow: inset 0 1px rgba(255,255,255,.05), 0 24px 70px rgba(3, 2, 12, .52);
+}
+
+body.series-premium .question-card::before,
+body.series-premium .simulation-card::before {
+    display: block;
+    margin-bottom: 7px;
+    color: var(--system-accent);
+    content: "INTERACTIVE SYSTEM LAB";
+    font-family: Consolas, monospace;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .15em;
+}
+
+body.series-premium .question-card h2,
+body.series-premium .simulation-card h2 {
+    color: white;
+    font-family: Georgia, "Nanum Myeongjo", serif;
+}
+
+body.series-premium .question-kicker { color: var(--system-accent); }
+
+body.series-premium .choice-button {
+    border: 1px solid rgba(255, 226, 207, .2);
+    background: linear-gradient(135deg, rgba(255,255,255,.075), rgba(255,255,255,.025));
+    color: #f7e7e3;
+    box-shadow: inset 0 1px rgba(255,255,255,.035);
+    text-align: left;
+}
+
+body.series-premium .choice-button:hover:not(:disabled),
+body.series-premium .choice-button:focus-visible:not(:disabled) {
+    border-color: var(--system-accent);
+    background: var(--system-accent-soft);
+    color: white;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--system-accent) 12%, transparent), 0 12px 30px rgba(0,0,0,.18);
+}
+
+body.series-premium .choice-number {
+    background: color-mix(in srgb, var(--system-accent) 24%, #231322);
+    color: #ffe7d0;
+}
+
+body.series-premium .choice-button.is-correct {
+    border-color: #78d39e;
+    background: rgba(44, 129, 89, .25);
+    color: #dffff0;
+}
+
+body.series-premium .choice-button.is-wrong {
+    border-color: #e26c78;
+    background: rgba(148, 43, 64, .24);
+    color: #ffd9dd;
+}
+
+body.series-premium .feedback {
+    border-color: rgba(112, 205, 153, .35);
+    background: rgba(29, 97, 71, .2);
+    color: #dcf9ea;
+}
+
+body.series-premium .feedback.is-wrong {
+    border-color: rgba(226, 108, 120, .4);
+    background: rgba(129, 35, 55, .22);
+    color: #ffe0e2;
+}
+
+.system-process-atlas {
+    position: absolute;
+    right: clamp(12px, 2vw, 24px);
+    bottom: 44px;
+    z-index: 3;
+    width: min(52%, 290px);
+    aspect-ratio: 1 / 1.05;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--system-accent) 36%, transparent);
+    border-radius: 20px;
+    background:
+        radial-gradient(circle, var(--system-accent-soft), transparent 63%),
+        rgba(9, 8, 19, .72);
+    box-shadow: inset 0 0 35px rgba(0,0,0,.34), 0 18px 40px rgba(0,0,0,.28);
+    backdrop-filter: blur(10px);
+    perspective: 800px;
+    cursor: grab;
+    transition: width 420ms cubic-bezier(.2,.8,.2,1), inset 420ms cubic-bezier(.2,.8,.2,1), box-shadow 300ms ease;
+}
+
+.system-process-atlas.is-rotating { cursor: grabbing; }
+
+.system-process-atlas::before {
+    position: absolute;
+    top: 10px;
+    left: 12px;
+    z-index: 2;
+    color: color-mix(in srgb, var(--system-accent) 80%, white);
+    content: attr(data-title);
+    font-family: Consolas, monospace;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: .12em;
+}
+
+.system-process-atlas svg {
+    width: 100%;
+    height: 100%;
+    transform: rotateX(var(--system-rotate-x, -2deg)) rotateY(var(--system-rotate-y, 0deg)) scale(var(--system-atlas-scale, 1));
+    transform-origin: 50% 52%;
+    transform-style: preserve-3d;
+    filter: drop-shadow(var(--system-shadow-x, 0) 14px 16px rgba(0,0,0,.24));
+    transition: transform 240ms cubic-bezier(.2,.8,.2,1);
+}
+.system-process-atlas.is-rotating svg { transition: none; }
+.system-process-atlas .atlas-organ { opacity: .26; transition: opacity 350ms ease, filter 350ms ease; }
+.system-process-atlas .atlas-organ.is-active { opacity: 1; filter: drop-shadow(0 0 9px var(--system-accent)); }
+.system-process-atlas .atlas-label { fill: #f7e8e0; font-size: 9px; font-weight: 900; paint-order: stroke; stroke: #160b18; stroke-width: 4px; }
+.system-process-atlas .atlas-route { fill: none; stroke: rgba(255,255,255,.18); stroke-width: 6; stroke-linecap: round; }
+.system-process-atlas .atlas-flow { fill: none; stroke: var(--system-accent); stroke-width: 4; stroke-linecap: round; stroke-dasharray: 8 7; animation: system-flow 2.2s linear infinite; }
+.system-process-atlas.is-reacting { animation: atlas-react 800ms ease; }
+
+.atlas-live-marker {
+    --marker-x: 150px;
+    --marker-y: 52px;
+    pointer-events: none;
+    transform: translate(var(--marker-x), var(--marker-y));
+    transition: transform 720ms cubic-bezier(.2,.85,.2,1);
+}
+.atlas-marker-wave {
+    fill: none;
+    stroke: #ffe7a0;
+    stroke-width: 2;
+    transform-origin: center;
+    animation: atlas-marker-wave 1.8s ease-out infinite;
+}
+.atlas-marker-core {
+    fill: #fff0a8;
+    stroke: #fff;
+    stroke-width: 2;
+    filter: drop-shadow(0 0 7px #ffd96a);
+}
+.atlas-marker-text {
+    fill: #241318;
+    font: 900 5px Consolas, monospace;
+    letter-spacing: -.04em;
+}
+.atlas-live-marker[data-material="NUTRIENT"] .atlas-marker-core,
+.atlas-live-marker[data-material="O₂"] .atlas-marker-core { fill: #7be4ef; filter: drop-shadow(0 0 7px #58d7e6); }
+.atlas-live-marker[data-material="NUTRIENT"] .atlas-marker-wave,
+.atlas-live-marker[data-material="O₂"] .atlas-marker-wave { stroke: #80e8f0; }
+.atlas-live-marker[data-material="CO₂"] .atlas-marker-core,
+.atlas-live-marker[data-material="WASTE"] .atlas-marker-core { fill: #ee837b; filter: drop-shadow(0 0 7px #ec6c6c); }
+.atlas-live-marker[data-material="CO₂"] .atlas-marker-wave,
+.atlas-live-marker[data-material="WASTE"] .atlas-marker-wave { stroke: #f08c85; }
+.atlas-live-marker[data-material="ENZYME"] .atlas-marker-core { fill: #d9bcff; filter: drop-shadow(0 0 7px #b88be9); }
+.atlas-live-marker[data-material="ENZYME"] .atlas-marker-wave { stroke: #d9bcff; }
+.atlas-live-marker[data-material="SIGNAL"] .atlas-marker-core,
+.atlas-live-marker[data-material="COOL"] .atlas-marker-core,
+.atlas-live-marker[data-material="FILTRATE"] .atlas-marker-core { fill: #72dce9; filter: drop-shadow(0 0 7px #52cada); }
+.atlas-live-marker[data-material="SIGNAL"] .atlas-marker-wave,
+.atlas-live-marker[data-material="COOL"] .atlas-marker-wave,
+.atlas-live-marker[data-material="FILTRATE"] .atlas-marker-wave { stroke: #72dce9; }
+.atlas-live-marker[data-material="MOTOR"] .atlas-marker-core,
+.atlas-live-marker[data-material="FORCE"] .atlas-marker-core,
+.atlas-live-marker[data-material="TEMP"] .atlas-marker-core { fill: #f29b61; filter: drop-shadow(0 0 7px #ed7d4f); }
+.atlas-live-marker[data-material="MOTOR"] .atlas-marker-wave,
+.atlas-live-marker[data-material="FORCE"] .atlas-marker-wave,
+.atlas-live-marker[data-material="TEMP"] .atlas-marker-wave { stroke: #f29b61; }
+.atlas-live-marker[data-material="PATHOGEN"] .atlas-marker-core,
+.atlas-live-marker[data-material="LOAD"] .atlas-marker-core,
+.atlas-live-marker[data-material="HEAT"] .atlas-marker-core { fill: #ee716f; filter: drop-shadow(0 0 7px #e8515b); }
+.atlas-live-marker[data-material="PATHOGEN"] .atlas-marker-wave,
+.atlas-live-marker[data-material="LOAD"] .atlas-marker-wave,
+.atlas-live-marker[data-material="HEAT"] .atlas-marker-wave { stroke: #ee716f; }
+.atlas-live-marker[data-material="CELL"] .atlas-marker-core,
+.atlas-live-marker[data-material="RECLAIM"] .atlas-marker-core { fill: #8bd073; filter: drop-shadow(0 0 7px #68ba58); }
+.atlas-live-marker[data-material="CELL"] .atlas-marker-wave,
+.atlas-live-marker[data-material="RECLAIM"] .atlas-marker-wave { stroke: #8bd073; }
+.atlas-live-marker[data-material="ANTIBODY"] .atlas-marker-core,
+.atlas-live-marker[data-material="JOINT"] .atlas-marker-core,
+.atlas-live-marker[data-material="TENDON"] .atlas-marker-core,
+.atlas-live-marker[data-material="URINE"] .atlas-marker-core { fill: #f3d477; filter: drop-shadow(0 0 7px #deb751); }
+.atlas-live-marker[data-material="ANTIBODY"] .atlas-marker-wave,
+.atlas-live-marker[data-material="JOINT"] .atlas-marker-wave,
+.atlas-live-marker[data-material="TENDON"] .atlas-marker-wave,
+.atlas-live-marker[data-material="URINE"] .atlas-marker-wave { stroke: #f3d477; }
+.atlas-live-marker[data-material="MEMORY"] .atlas-marker-core,
+.atlas-live-marker[data-material="VACCINE"] .atlas-marker-core { fill: #bfa0ef; filter: drop-shadow(0 0 7px #9c79d7); }
+.atlas-live-marker[data-material="MEMORY"] .atlas-marker-wave,
+.atlas-live-marker[data-material="VACCINE"] .atlas-marker-wave { stroke: #bfa0ef; }
+
+.atlas-telemetry {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    left: 8px;
+    z-index: 6;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(76px, .72fr);
+    gap: 2px 9px;
+    padding: 8px 10px;
+    border: 1px solid rgba(255,255,255,.13);
+    border-radius: 11px;
+    background: linear-gradient(135deg, rgba(6, 8, 18, .92), rgba(14, 12, 25, .8));
+    box-shadow: 0 9px 24px rgba(0,0,0,.3), inset 0 1px rgba(255,255,255,.05);
+    backdrop-filter: blur(8px);
+}
+.atlas-telemetry > div:first-child { min-width: 0; }
+.atlas-telemetry span {
+    display: flex;
+    justify-content: space-between;
+    color: var(--system-accent);
+    font: 900 6px/1 Consolas, monospace;
+    letter-spacing: .09em;
+}
+.atlas-telemetry span em { overflow: hidden; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.atlas-telemetry span b { color: #fff; letter-spacing: .04em; }
+.atlas-telemetry strong {
+    display: block;
+    overflow: hidden;
+    margin-top: 4px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1.1;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.atlas-telemetry p {
+    align-self: center;
+    margin: 0;
+    color: #cfc6cc;
+    font-size: 7px;
+    line-height: 1.35;
+}
+.atlas-journey-rail {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(10, 1fr);
+    gap: 3px;
+    margin: 1px -2px -3px;
+}
+.atlas-journey-rail button {
+    min-width: 0;
+    height: 24px;
+    padding: 11px 2px;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    cursor: pointer;
+}
+.atlas-journey-rail button:hover,
+.atlas-journey-rail button:focus-visible {
+    outline: none;
+    background: var(--system-accent-soft);
+}
+.atlas-journey-rail i {
+    display: block;
+    width: 100%;
+    height: 2px;
+    border-radius: 99px;
+    background: rgba(255,255,255,.13);
+}
+.atlas-journey-rail i.is-passed { background: color-mix(in srgb, var(--system-accent) 55%, transparent); }
+.atlas-journey-rail i.is-current {
+    height: 3px;
+    margin-top: -.5px;
+    background: var(--system-accent);
+    box-shadow: 0 0 7px var(--system-accent);
+}
+.atlas-return-live {
+    display: none;
+    grid-column: 1 / -1;
+    justify-self: end;
+    margin-top: 1px;
+    padding: 3px 7px;
+    border: 1px solid color-mix(in srgb, var(--system-accent) 45%, transparent);
+    border-radius: 7px;
+    background: var(--system-accent-soft);
+    color: #fff;
+    font: 900 7px/1.2 sans-serif;
+    cursor: pointer;
+}
+.atlas-telemetry.is-previewing {
+    border-color: color-mix(in srgb, var(--system-accent) 65%, white);
+    box-shadow: 0 9px 24px rgba(0,0,0,.3), 0 0 18px var(--system-accent-soft);
+}
+.atlas-telemetry.is-previewing strong {
+    display: -webkit-box;
+    line-height: 1.25;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+.atlas-telemetry.is-previewing .atlas-return-live { display: block; }
+.atlas-telemetry.is-previewing > div:first-child span em { color: #fff; }
+.system-process-atlas.is-free-explore .atlas-telemetry,
+.system-process-atlas.is-free-explore .atlas-live-marker { display: none; }
+
+.system-atlas-toolbar {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    z-index: 8;
+    display: flex;
+    gap: 2px;
+    padding: 3px;
+    border: 1px solid rgba(255,255,255,.11);
+    border-radius: 9px;
+    background: rgba(5, 8, 17, .76);
+    backdrop-filter: blur(9px);
+}
+
+.system-atlas-toolbar button {
+    min-width: 32px;
+    min-height: 32px;
+    padding: 5px 7px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #c9bfc5;
+    font: 900 8px/1 Consolas, monospace;
+    cursor: pointer;
+}
+.system-atlas-toolbar button:hover,
+.system-atlas-toolbar button:focus-visible { background: rgba(255,255,255,.09); color: #fff; }
+.system-atlas-toolbar [data-system-atlas="explore"] { display: inline-flex; align-items: center; gap: 4px; }
+.system-atlas-toolbar [data-system-atlas="explore"] i {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: #69747c;
+}
+.system-atlas-toolbar [data-system-atlas="explore"][aria-pressed="true"] {
+    background: var(--system-accent-soft);
+    color: #fff;
+}
+.system-atlas-toolbar [data-system-atlas="explore"][aria-pressed="true"] i {
+    background: var(--system-accent);
+    box-shadow: 0 0 8px var(--system-accent);
+}
+
+.system-atlas-inspector {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    z-index: 7;
+    display: none;
+    padding: 11px 13px;
+    border: 1px solid color-mix(in srgb, var(--system-accent) 42%, transparent);
+    border-radius: 13px;
+    background: rgba(8, 8, 18, .88);
+    box-shadow: 0 13px 35px rgba(0,0,0,.35);
+    backdrop-filter: blur(10px);
+}
+.system-atlas-inspector span { color: var(--system-accent); font: 900 7px Consolas, monospace; letter-spacing: .13em; }
+.system-atlas-inspector strong { display: block; margin: 3px 0; color: #fff; font-size: 14px; }
+.system-atlas-inspector p { margin: 0; color: #d5c9cf; font-size: 10px; line-height: 1.45; }
+
+.system-process-atlas.is-free-explore {
+    top: 24px;
+    right: 4%;
+    bottom: 24px;
+    width: 62%;
+    height: auto;
+    max-width: 360px;
+    aspect-ratio: auto;
+    border-color: color-mix(in srgb, var(--system-accent) 68%, white);
+    box-shadow: inset 0 0 45px rgba(0,0,0,.3), 0 24px 70px rgba(0,0,0,.46), 0 0 0 1px var(--system-accent-soft);
+}
+.system-process-atlas.is-free-explore svg {
+    height: calc(100% - 88px);
+}
+.system-process-atlas.is-free-explore .system-atlas-inspector { display: block; }
+.system-process-atlas.is-free-explore .atlas-organ { opacity: .58; cursor: help; }
+.system-process-atlas.is-free-explore .atlas-organ:hover,
+.system-process-atlas.is-free-explore .atlas-organ:focus,
+.system-process-atlas.is-free-explore .atlas-organ.is-inspected {
+    opacity: 1;
+    outline: none;
+    filter: drop-shadow(0 0 10px var(--system-accent));
+}
+.system-process-atlas.is-free-explore .atlas-organ.is-inspected { animation: atlas-organ-inspect 1.5s ease-in-out infinite; }
+@keyframes atlas-organ-inspect { 50% { opacity: .74; } }
+
+@keyframes system-flow { to { stroke-dashoffset: -30; } }
+@keyframes atlas-react { 45% { transform: scale(1.025); box-shadow: 0 0 0 4px var(--system-accent-soft), 0 20px 60px var(--system-accent-soft); } }
+@keyframes atlas-marker-wave {
+    0% { opacity: .95; transform: scale(.4); }
+    80%, 100% { opacity: 0; transform: scale(1.35); }
+}
+
+body.has-system-atlas .scene-panel .cell-explorer { display: none; }
+body.has-system-atlas .scene-panel .fact-card { right: auto; width: min(53%, 300px); }
+
+.direct-manipulation-active > .choice-list { display: none; }
+
+.organ-manipulation-lab {
+    --lab-progress: 0%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(210px, .75fr);
+    gap: 16px 22px;
+    margin-top: 18px;
+    padding: clamp(15px, 3vw, 24px);
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--system-accent) 45%, transparent);
+    border-radius: 22px;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(145deg, rgba(11, 10, 22, .94), color-mix(in srgb, var(--system-accent) 8%, #130b18));
+    background-size: 20px 20px, 20px 20px, auto;
+    box-shadow: inset 0 1px rgba(255,255,255,.06), 0 18px 50px rgba(0,0,0,.28);
+}
+
+.organ-manipulation-lab header span {
+    color: var(--system-accent);
+    font: 900 9px/1.2 Consolas, monospace;
+    letter-spacing: .14em;
+}
+
+.organ-manipulation-lab header h3 {
+    margin: 6px 0 5px;
+    color: #fff;
+    font: 800 clamp(20px, 3vw, 28px)/1.15 Georgia, "Nanum Myeongjo", serif;
+}
+
+.organ-manipulation-lab header p,
+.organ-lab-status span {
+    margin: 0;
+    color: #d7cbd3;
+    font-size: 13px;
+    line-height: 1.55;
+}
+
+.organ-lab-visual {
+    position: relative;
+    grid-row: span 2;
+    min-height: 176px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.1);
+    border-radius: 18px;
+    background:
+        radial-gradient(circle at 50% 45%, var(--system-accent-soft), transparent 44%),
+        rgba(2, 5, 13, .52);
+}
+
+.organ-lab-visual::before,
+.organ-lab-visual::after {
+    position: absolute;
+    content: "";
+    pointer-events: none;
+}
+
+.organ-lab-visual::before {
+    inset: 10px;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 50%;
+}
+
+.organ-lab-visual::after {
+    top: 0;
+    bottom: 0;
+    left: var(--lab-progress);
+    width: 1px;
+    background: linear-gradient(transparent, var(--system-accent), transparent);
+    box-shadow: 0 0 18px var(--system-accent);
+    transition: left 180ms ease;
+}
+
+.lab-specimen {
+    position: absolute;
+    inset: 26px 34px 38px;
+    display: grid;
+    place-items: center;
+}
+
+.lab-specimen > span {
+    width: var(--lab-size, 32px);
+    max-width: 86px;
+    aspect-ratio: 1;
+    border: 2px solid color-mix(in srgb, var(--system-accent) 80%, white);
+    border-radius: 48% 52% 58% 42%;
+    background: radial-gradient(circle at 35% 30%, #fff7, transparent 22%), var(--system-accent-soft);
+    box-shadow: inset 0 0 20px var(--system-accent-soft), 0 0 24px var(--system-accent-soft);
+    transform: rotate(var(--lab-rotation, 0deg));
+    transition: width 180ms ease, transform 180ms ease;
+}
+
+.lab-specimen i {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--system-accent);
+    box-shadow: 0 0 12px var(--system-accent);
+}
+.lab-specimen i:nth-child(1) { left: 18%; top: calc(75% - var(--particle-rise, 0%)); }
+.lab-specimen i:nth-child(2) { right: 20%; top: calc(80% - var(--particle-rise, 0%)); }
+.lab-specimen i:nth-child(3) { left: 48%; top: calc(72% - var(--particle-rise, 0%)); }
+
+.lab-readout {
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+    display: flex;
+    align-items: baseline;
+    gap: 7px;
+}
+.lab-readout small { color: #7f929e; font: 700 7px Consolas, monospace; letter-spacing: .12em; }
+.lab-readout strong { color: #fff; font: 900 17px Consolas, monospace; }
+
+.organ-lab-controls {
+    align-self: end;
+}
+
+.organ-range-control,
+.organ-dual-control label {
+    display: grid;
+    gap: 8px;
+}
+
+.organ-range-control > span,
+.organ-dual-control label > span {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: #f7e7e3;
+    font-size: 12px;
+}
+
+.organ-range-control output,
+.organ-dual-control output {
+    color: var(--system-accent);
+    font: 900 13px Consolas, monospace;
+}
+
+.organ-range-control input,
+.organ-dual-control input {
+    width: 100%;
+    accent-color: var(--system-accent);
+    cursor: ew-resize;
+}
+
+.organ-range-control small {
+    color: #887c87;
+    font-size: 10px;
+}
+.organ-range-control.is-target small { color: #8ce0af; }
+
+.organ-pump-control button,
+.organ-toggle-control button {
+    width: 100%;
+    min-height: 52px;
+    border: 1px solid color-mix(in srgb, var(--system-accent) 45%, transparent);
+    border-radius: 14px;
+    background: linear-gradient(135deg, var(--system-accent-soft), rgba(255,255,255,.035));
+    color: #fff;
+    cursor: pointer;
+}
+.organ-pump-control button span { display: block; font-weight: 900; }
+.organ-pump-control button small { color: #d6bfc8; }
+.organ-pump-control button:active { transform: scale(.985); }
+
+.pulse-track {
+    display: flex;
+    gap: 7px;
+    margin-top: 9px;
+}
+.pulse-track i {
+    flex: 1;
+    height: 4px;
+    border-radius: 9px;
+    background: rgba(255,255,255,.1);
+}
+.pulse-track i.is-on { background: var(--system-accent); box-shadow: 0 0 9px var(--system-accent); }
+
+.organ-toggle-control {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+.organ-toggle-control button {
+    display: grid;
+    grid-template-columns: 12px 1fr;
+    align-items: center;
+    gap: 0 8px;
+    padding: 10px;
+    text-align: left;
+}
+.organ-toggle-control button i {
+    grid-row: span 2;
+    width: 10px;
+    height: 10px;
+    border: 2px solid #846f79;
+    border-radius: 50%;
+}
+.organ-toggle-control button small { color: #8f8188; }
+.organ-toggle-control button.is-open { border-color: #7bd9a4; background: rgba(62, 153, 104, .18); }
+.organ-toggle-control button.is-open i { border-color: #a9f0c7; background: #68d294; box-shadow: 0 0 9px #68d294; }
+.organ-toggle-control button.is-open small { color: #9ae4ba; }
+
+.organ-dual-control {
+    display: grid;
+    gap: 12px;
+}
+.organ-dual-control label.is-target b { color: #93e4b6; }
+
+.organ-lab-status {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+.organ-lab-status b {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.07);
+    color: #b6aab1;
+    font-size: 10px;
+}
+.organ-manipulation-lab.is-complete {
+    border-color: rgba(112, 213, 154, .6);
+    box-shadow: inset 0 0 35px rgba(61, 158, 102, .12), 0 20px 50px rgba(0,0,0,.28);
+}
+.organ-manipulation-lab.is-complete .organ-lab-status b {
+    background: rgba(63, 164, 105, .25);
+    color: #a7efc5;
+}
+.organ-manipulation-lab.is-pulsing .lab-specimen > span { animation: lab-pulse 480ms ease; }
+@keyframes lab-pulse { 50% { transform: scale(1.2) rotate(10deg); } }
+
+.simulation-card.physiology-direct-active .path-builder,
+.simulation-card.physiology-direct-active .simulation-actions {
+    display: none;
+}
+
+.physiology-direct-console {
+    --physiology-response: 12%;
+    --physiology-stimulus: 0%;
+    display: grid;
+    grid-template-columns: minmax(150px, .72fr) minmax(240px, 1.28fr);
+    gap: 14px 18px;
+    margin-top: 12px;
+    padding: 16px;
+    border: 1px solid color-mix(in srgb, var(--system-accent) 38%, transparent);
+    border-radius: 20px;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        rgba(7, 8, 18, .66);
+    background-size: 18px 18px;
+}
+
+.physiology-visual {
+    position: relative;
+    grid-row: span 2;
+    min-height: 154px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,.09);
+    border-radius: 16px;
+    background: radial-gradient(circle, var(--system-accent-soft), transparent 63%);
+}
+
+.physiology-visual::before,
+.physiology-visual::after {
+    position: absolute;
+    content: "";
+}
+.physiology-visual::before {
+    top: 50%;
+    left: 8%;
+    width: var(--physiology-stimulus);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--system-accent));
+    box-shadow: 0 0 12px var(--system-accent);
+    transition: width 180ms ease;
+}
+.physiology-visual::after {
+    inset: 18px;
+    border: 1px solid rgba(255,255,255,.07);
+    border-radius: 50%;
+}
+
+.physiology-core {
+    position: absolute;
+    inset: 30px;
+    display: grid;
+    place-items: center;
+}
+.physiology-core span {
+    width: var(--physiology-size, 32px);
+    max-width: 78px;
+    aspect-ratio: 1;
+    border: 2px solid color-mix(in srgb, var(--system-accent) 75%, white);
+    border-radius: 45% 55% 53% 47%;
+    background: var(--system-accent-soft);
+    box-shadow: inset 0 0 18px var(--system-accent-soft), 0 0 22px var(--system-accent-soft);
+}
+.physiology-core i {
+    position: absolute;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--system-accent);
+    box-shadow: 0 0 9px var(--system-accent);
+}
+.physiology-core i:nth-child(1) { top: calc(78% - var(--physiology-rise, 0%)); left: 20%; }
+.physiology-core i:nth-child(2) { top: calc(70% - var(--physiology-rise, 0%)); right: 18%; }
+.physiology-core i:nth-child(3) { top: calc(82% - var(--physiology-rise, 0%)); left: 49%; }
+.physiology-visual > small {
+    position: absolute;
+    right: 9px;
+    bottom: 8px;
+    color: rgba(220,232,232,.45);
+    font: 800 7px Consolas, monospace;
+    letter-spacing: .12em;
+}
+
+.physiology-kicker {
+    color: var(--system-accent);
+    font: 900 8px Consolas, monospace;
+    letter-spacing: .14em;
+}
+.physiology-control h3 { margin: 5px 0 4px; color: #fff; font: 800 21px Georgia, serif; }
+.physiology-control > p { margin: 0 0 13px; color: #d8ccd2; font-size: 12px; line-height: 1.45; }
+.physiology-control label { display: grid; gap: 7px; }
+.physiology-control label > span { display: flex; justify-content: space-between; color: #f7e9e6; font-size: 12px; }
+.physiology-control output { color: var(--system-accent); font: 900 13px Consolas, monospace; }
+.physiology-control input {
+    width: 100%;
+    height: 36px;
+    margin: -6px 0;
+    padding: 12px 0;
+    accent-color: var(--system-accent);
+    background-clip: content-box;
+    cursor: ew-resize;
+}
+
+body.series-premium .intensity-control input {
+    height: 36px;
+    margin: -11px 0;
+    padding: 14px 0;
+    background-clip: content-box;
+}
+.physiology-control label small { color: #8f858c; font-size: 10px; }
+
+.physiology-status {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(255,255,255,.08);
+}
+.physiology-status b {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    border-radius: 7px;
+    background: rgba(255,255,255,.07);
+    color: #d9cbd1;
+    font-size: 10px;
+}
+.physiology-status span { color: #bcb0b7; font-size: 11px; line-height: 1.4; }
+.physiology-direct-console.has-stimulus { border-color: color-mix(in srgb, var(--system-accent) 58%, transparent); }
+.physiology-direct-console.has-response .physiology-core span { animation: physiology-beat 900ms ease-in-out infinite; }
+.physiology-direct-console.is-complete {
+    border-color: rgba(112, 213, 154, .56);
+    box-shadow: inset 0 0 35px rgba(56, 161, 101, .12);
+}
+.physiology-direct-console.is-complete .physiology-status b { background: rgba(58, 166, 103, .24); color: #a8efc5; }
+@keyframes physiology-beat { 50% { transform: scale(1.12) rotate(8deg); } }
+
+@media (min-width: 740px) {
+    body.series-premium.journey-active main {
+        padding-right: clamp(8px, 1.4vw, 20px);
+        padding-bottom: clamp(18px, 3.4vh, 34px);
+        padding-left: clamp(8px, 1.4vw, 20px);
+    }
+}
+
+@media (min-width: 740px) and (max-height: 820px) {
+    .journey-screen:not(.hidden) .question-card.direct-manipulation-active {
+        padding: 12px 18px;
+    }
+    .journey-screen:not(.hidden) .question-card.direct-manipulation-active h2 {
+        margin-bottom: 6px;
+        font-size: clamp(17px, 1.8vw, 23px);
+    }
+    .organ-manipulation-lab {
+        grid-template-columns: minmax(0, 1fr) 210px;
+        gap: 9px 16px;
+        margin-top: 6px;
+        padding: 12px 15px;
+    }
+    .organ-manipulation-lab header h3 { margin: 3px 0; font-size: 19px; }
+    .organ-manipulation-lab header p { font-size: 12px; line-height: 1.35; }
+    .organ-lab-visual { min-height: 128px; }
+    .organ-lab-status { padding-top: 7px; }
+    .journey-screen:not(.hidden) .question-card.direct-manipulation-active .feedback {
+        min-height: 92px;
+        margin-top: 7px;
+        padding: 10px 13px;
+        flex-basis: auto;
+    }
+}
+
+@media (max-width: 739px) {
+    .gallery-ceiling { height: 25%; clip-path: polygon(0 0, 100% 0, 88% 100%, 12% 100%); }
+    .gallery-side-wall { top: 15%; bottom: 24%; width: 64%; opacity: .68; }
+    .gallery-back-wall { right: 12%; left: 12%; }
+    .gallery-floor { height: 39%; clip-path: polygon(14% 0, 86% 0, 100% 100%, 0 100%); }
+    .gallery-frame { display: none; }
+    .system-process-atlas { width: min(58%, 250px); bottom: 116px; }
+    .system-process-atlas.is-free-explore {
+        top: 32px;
+        right: 7%;
+        bottom: 54px;
+        width: 86%;
+        max-width: none;
+    }
+    .atlas-journey-rail {
+        grid-template-columns: repeat(5, 1fr);
+        row-gap: 1px;
+    }
+    .organ-manipulation-lab { grid-template-columns: 1fr; }
+    .physiology-direct-console { grid-template-columns: 1fr; }
+    .physiology-visual { grid-row: auto; min-height: 140px; }
+    .organ-lab-visual { grid-row: auto; min-height: 150px; }
+    .organ-lab-status { align-items: flex-start; flex-direction: column; gap: 5px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .system-process-atlas .atlas-flow { animation: none; }
+    .atlas-marker-wave { animation: none; opacity: .55; }
+    .atlas-live-marker { transition: none; }
+    .system-process-atlas.is-reacting,
+    .organ-manipulation-lab.is-pulsing .lab-specimen > span,
+    .physiology-direct-console.has-response .physiology-core span { animation: none; }
+}

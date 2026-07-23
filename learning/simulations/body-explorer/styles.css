@@ -1128,8 +1128,8 @@ button {
 
 .atlas-3d-toolbar button,
 .atlas-layer-controls button {
-    min-width: 30px;
-    min-height: 28px;
+    min-width: 34px;
+    min-height: 34px;
     padding: 4px 7px;
     border: 0;
     border-radius: 7px;
@@ -1286,8 +1286,8 @@ button {
     }
     .atlas-3d-toolbar button,
     .atlas-layer-controls button {
-        min-width: 27px;
-        min-height: 26px;
+        min-width: 32px;
+        min-height: 32px;
         padding: 3px 5px;
         font-size: 8px;
     }
@@ -1545,7 +1545,7 @@ button {
 
 .anatomy-map[data-focus="body"] [data-target="body-return"] { left: 40%; top: 69%; }
 .anatomy-map[data-focus="body"] [data-target="aorta"] { left: 57%; top: 34%; }
-.anatomy-map[data-focus="body"] [data-target="tissue-exchange"] { left: 57%; top: 76%; }
+.anatomy-map[data-focus="body"] [data-target="tissue-exchange"] { left: 57%; top: 60%; }
 
 .anatomy-map[data-focus="heart"] [data-target="right-atrium"] { left: 36%; top: 43%; }
 .anatomy-map[data-focus="heart"] [data-target="tricuspid"] { left: 43%; top: 53%; }
@@ -1792,6 +1792,13 @@ button {
     transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
 }
 
+.anatomy-hotspot::before {
+    position: absolute;
+    inset: -9px;
+    border-radius: 50%;
+    content: "";
+}
+
 .anatomy-hotspot span {
     position: absolute;
     top: 50%;
@@ -1839,6 +1846,10 @@ button {
     width: 14px;
     height: 14px;
     border-width: 2px;
+}
+
+.anatomy-hotspot.detail::before {
+    inset: -11px;
 }
 
 .anatomy-hotspot:hover:not(:disabled),

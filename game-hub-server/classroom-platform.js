@@ -389,6 +389,7 @@ function createClassroomPlatform(options = {}) {
   });
 
   async function getSiteAccessMode() {
+    if (!pool && !isProduction) return "open";
     requireDatabase();
     const result = await pool.query(
       "SELECT setting_value FROM classroom_settings WHERE setting_key = 'site_access_mode'"

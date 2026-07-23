@@ -9,10 +9,12 @@
     <link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="digestion.css">
+    <link rel="stylesheet" href="series-premium.css?v=20260723-3">
     <script src="../../../assets/network/game-network.js" defer></script>
     <script src="../../../assets/network/multiplayer-lobby.js" defer></script>
     <script src="../../../assets/sound/game-sfx.js" defer></script>
     <script src="digestion-data.js" defer></script>
+    <script src="system-atlas.js?v=20260723-3" defer></script>
     <script src="app.js" defer></script>
 </head>
 <body class="digestion-page">
@@ -74,14 +76,14 @@
                 <div class="briefing-copy">
                     <p class="section-kicker">MISSION BRIEFING</p>
                     <h2 id="briefingTitle">음식의 긴 여행을 완주하라</h2>
-                    <p>기관의 핵심 역할을 읽고 음식이 이동할 다음 길을 선택하세요. 어려운 의학 용어 대신 학교에서 배우는 내용만 다룹니다.</p>
+                    <p>라이브 소화기관 지도에서 음식의 이동과 기관의 작용을 직접 관찰하세요. 단계마다 작동하는 기관이 밝게 표시됩니다.</p>
                     <ol class="route-preview" aria-label="주요 소화 경로">
                         <li><span>1</span>입에서 잘게 씹고 침과 섞기</li>
                         <li><span>2</span>식도와 위를 지나 작은창자로</li>
                         <li><span>3</span>영양소와 물을 흡수한 뒤 몸 밖으로</li>
                     </ol>
                     <div class="science-note"><strong>핵심!</strong> 소화는 음식을 몸이 흡수할 수 있도록 작게 나누는 과정입니다.</div>
-                    <button id="personalStartButton" class="primary-button" type="button">탐험 시작</button>
+                    <button id="personalStartButton" class="primary-button" type="button">소화기관 지도 열기</button>
                     <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
                 </div>
             </section>
@@ -142,7 +144,7 @@
                 </article>
 
                 <article class="question-card">
-                    <p class="question-kicker">알맞은 답을 선택하세요</p>
+                    <p class="question-kicker">기관의 움직임을 관찰하고 판단하세요</p>
                     <h2 id="stageQuestion"></h2>
                     <div id="choiceList" class="choice-list"></div>
                     <div id="feedback" class="feedback hidden" aria-live="polite">
