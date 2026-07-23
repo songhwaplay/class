@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>송화플레이</title>
+    <title>songhwaplay</title>
     <script src="assets/sound/music-control.js" defer></script>
     <style>
         :root {
@@ -533,6 +533,7 @@
             const signOutButton = document.getElementById('signOutButton');
             const classToolsLink = document.getElementById('classToolsLink');
             const hubContent = document.getElementById('hubContent');
+            const hubLinks = Array.from(hubContent.querySelectorAll('a[href]'));
             const playerLearningLinks = Array.from(document.querySelectorAll('[data-requires-player="true"]'));
             let openAccess = false;
             let currentPlayerName = '';
@@ -553,7 +554,24 @@
                 return KOREAN_NAME_PATTERN.test(String(value || ''));
             }
 
-            function updatePlayerLearningLinks(name) {
+            function setHubLocked(locked) {
+                hubLinks.forEach((link) => {
+                    if (locked) {
+                        if (!link.hasAttribute('href')) return;
+                        link.dataset.lockedHref = link.getAttribute('href');
+                        link.removeAttribute('href');
+                        link.setAttribute('aria-disabled', 'true');
+                        return;
+                    }
+                    if (!link.hasAttribute('href') && link.dataset.lockedHref) {
+                        link.setAttribute('href', link.dataset.lockedHref);
+                    }
+                    delete link.dataset.lockedHref;
+                    link.removeAttribute('aria-disabled');
+                });
+            }
+
+            function updatePlayerLearningLinks(name, membership = null) {
                 playerLearningLinks.forEach((link) => {
                     const handoff = link.dataset.playerHandoff;
                     if (handoff !== 'fragment' && handoff !== 'query') return;
@@ -569,6 +587,13 @@
                         targetUrl.searchParams.set('name', name);
                     } else {
                         targetUrl.searchParams.delete('name');
+                    }
+                    if (link.id === 'cds95GameLink' && membership?.schoolName && Number.isInteger(Number(membership.grade))) {
+                        targetUrl.searchParams.set('school', membership.schoolName);
+                        targetUrl.searchParams.set('grade', String(membership.grade));
+                    } else if (link.id === 'cds95GameLink') {
+                        targetUrl.searchParams.delete('school');
+                        targetUrl.searchParams.delete('grade');
                     }
                     link.href = targetUrl.toString();
                 });
@@ -607,7 +632,7 @@
                 hubContent.hidden = false;
                 currentPlayerName = playerName;
                 localStorage.setItem('classPlayerName', playerName);
-                updatePlayerLearningLinks(playerName);
+                updatePlayerLearningLinks(playerName, membership);
                 setStatus('');
             }
 
@@ -627,8 +652,12 @@
                 if (isValidPlayerName(savedName)) {
                     currentPlayerName = savedName;
                     updatePlayerLearningLinks(savedName);
+                    setHubLocked(false);
                     setStatus(`PLAYER · ${savedName}`);
                 } else {
+                    currentPlayerName = '';
+                    updatePlayerLearningLinks('');
+                    setHubLocked(true);
                     setStatus('Enter a Korean player name before opening a game.');
                 }
             }
@@ -746,16 +775,9 @@
                 });
             }
 
-            guestNameInput.addEventListener('input', (event) => {
-                if (event.isComposing) return;
-                guestNameInput.value = normalizePlayerName(guestNameInput.value);
-            });
-            guestNameInput.addEventListener('compositionend', () => {
-                guestNameInput.value = normalizePlayerName(guestNameInput.value);
-            });
             guestForm.addEventListener('submit', (event) => {
                 event.preventDefault();
-                const playerName = normalizePlayerName(guestNameInput.value);
+                const playerName = guestNameInput.value.trim();
                 if (!isValidPlayerName(playerName)) {
                     setStatus('Enter a Korean name with 2 to 6 characters.', true);
                     guestNameInput.focus();
@@ -764,16 +786,18 @@
                 currentPlayerName = playerName;
                 localStorage.setItem('classPlayerName', playerName);
                 updatePlayerLearningLinks(playerName);
+                setHubLocked(false);
                 setStatus(`PLAYER · ${playerName}`);
             });
-            playerLearningLinks.forEach((link) => {
-                link.addEventListener('click', (event) => {
-                    if (!openAccess || isValidPlayerName(currentPlayerName)) return;
+            hubContent.addEventListener('click', (event) => {
+                if (!openAccess || isValidPlayerName(currentPlayerName)) return;
+                const link = event.target.closest('a');
+                if (link && hubContent.contains(link)) {
                     event.preventDefault();
                     setStatus('Enter a Korean player name before opening a game.', true);
                     guestNameInput.focus();
-                });
-            });
+                }
+            }, true);
             studentNumberInput.addEventListener('input', () => {
                 studentNumberInput.value = studentNumberInput.value.replace(/\D/g, '').slice(0, 3);
             });

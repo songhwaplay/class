@@ -172,39 +172,45 @@
   function markLoaded(){loadDone++;const pct=Math.round(loadDone/loadTotal*100);loadingBar.style.width=pct+'%';loadingText.textContent=pct+'%';if(loadDone>=loadTotal)setTimeout(()=>loading.classList.add('done'),420);}
 
   function buildShell(room) {
-    const width=room.id==='space'?14:11.6,length=GALLERY_START-GALLERY_END,height=6.4,centerZ=(GALLERY_START+GALLERY_END)/2;
+    const isGrand=room.id==='space';
+    const width=isGrand?17.2:11.6,length=GALLERY_START-GALLERY_END,height=isGrand?8.4:6.4,centerZ=(GALLERY_START+GALLERY_END)/2;
+    const wallCenterY=height/2-.1,wallSurfaceY=height/2+.05;
     mesh([width,.18,length],materials.walnut,[0,-.09,centerZ]);
     mesh([width,.18,length],materials.ceiling,[0,height+.1,centerZ]);
-    mesh([.28,height,length],materials.wallInset,[-width/2,3.1,centerZ]);
-    mesh([.28,height,length],materials.wallInset,[width/2,3.1,centerZ]);
-    mesh([width,height,.3],materials.wallInset,[0,3.1,GALLERY_END]);
-    mesh([width,height,.22],materials.wallInset,[0,3.1,7]);
+    mesh([.28,height,length],materials.wallInset,[-width/2,wallCenterY,centerZ]);
+    mesh([.28,height,length],materials.wallInset,[width/2,wallCenterY,centerZ]);
+    mesh([width,height,.3],materials.wallInset,[0,wallCenterY,GALLERY_END]);
+    mesh([width,height,.22],materials.wallInset,[0,wallCenterY,7]);
 
     const leftFabric=new THREE.Mesh(new THREE.PlaneGeometry(length,height-1.05),materials.wall);
-    leftFabric.position.set(-width/2+.145,3.25,centerZ);leftFabric.rotation.y=Math.PI/2;leftFabric.receiveShadow=true;gallery.add(leftFabric);
+    leftFabric.position.set(-width/2+.145,wallSurfaceY,centerZ);leftFabric.rotation.y=Math.PI/2;leftFabric.receiveShadow=true;gallery.add(leftFabric);
     const rightFabric=leftFabric.clone();rightFabric.position.x=width/2-.145;rightFabric.rotation.y=-Math.PI/2;gallery.add(rightFabric);
     const endFabric=new THREE.Mesh(new THREE.PlaneGeometry(width-.55,height-1.05),materials.wall);
-    endFabric.position.set(0,3.25,GALLERY_END+.16);endFabric.receiveShadow=true;gallery.add(endFabric);
+    endFabric.position.set(0,wallSurfaceY,GALLERY_END+.16);endFabric.receiveShadow=true;gallery.add(endFabric);
 
     for(const side of [-1,1]){
       const x=side*(width/2-.13);
       mesh([.1,.2,length],materials.darkBrass,[x,.34,centerZ]);
       mesh([.08,.08,length],materials.brass,[x-side*.025,.47,centerZ]);
       for(let z=4.9;z>GALLERY_END;z-=3.35){
-        mesh([.035,5.35,.055],materials.black,[x-side*.17,3.25,z]);
+        mesh([.035,height-.95,.055],materials.black,[x-side*.17,wallSurfaceY,z]);
       }
     }
 
-    const centerCeiling=mesh([width-2.3,.18,length],materials.ceiling,[0,6.23,centerZ]);centerCeiling.castShadow=false;
+    const coveDepth=isGrand?2.25:1.15;
+    const centerCeiling=mesh([width-coveDepth*2,.18,length],materials.ceiling,[0,height-.17,centerZ]);centerCeiling.castShadow=false;
     for(const side of [-1,1]){
-      const soffitX=side*(width/2-.52);
-      const soffit=mesh([1.04,.34,length],materials.ceiling,[soffitX,5.91,centerZ]);soffit.castShadow=false;
-      const bevel=mesh([.82,.16,length],materials.ceiling,[side*(width/2-1.27),6.08,centerZ]);bevel.rotation.z=side*.38;bevel.castShadow=false;
-      const cove=mesh([.065,.05,length],new THREE.MeshBasicMaterial({color:0xffddb0,toneMapped:false}),[side*(width/2-1.48),5.94,centerZ]);cove.castShadow=false;
+      const soffitX=side*(width/2-(isGrand?.78:.52));
+      const soffit=mesh([isGrand?1.55:1.04,.34,length],materials.ceiling,[soffitX,height-.49,centerZ]);soffit.castShadow=false;
+      const bevelWidth=isGrand?2.05:.82;
+      const bevel=mesh([bevelWidth,.16,length],materials.ceiling,[side*(width/2-(isGrand?1.72:1.27)),height-.32,centerZ]);bevel.rotation.z=side*(isGrand?.27:.38);bevel.castShadow=false;
+      const coveX=side*(width/2-(isGrand?2.55:1.48));
+      const coveY=height-(isGrand?.55:.46);
+      const cove=mesh([.075,.055,length],new THREE.MeshBasicMaterial({color:0xffd49b,toneMapped:false}),[coveX,coveY,centerZ]);cove.castShadow=false;
       for(let z=5;z>GALLERY_END;z-=4.8){
-        const wash=new THREE.SpotLight(0xffd4a0,18,5.2,Math.PI*.34,.8,1.55);
-        wash.position.set(side*(width/2-1.48),5.78,z);
-        wash.target.position.set(side*(width/2-.16),4.55,z);
+        const wash=new THREE.SpotLight(0xffd4a0,isGrand?25:18,isGrand?7:5.2,Math.PI*.34,.8,1.55);
+        wash.position.set(coveX,coveY-.16,z);
+        wash.target.position.set(side*(width/2-.16),height-.95,z);
         gallery.add(wash,wash.target);
       }
     }
@@ -212,17 +218,18 @@
     const downlightMat=new THREE.MeshStandardMaterial({color:0x24211e,roughness:.62,metalness:.3});
     const lampMat=new THREE.MeshBasicMaterial({color:0xfff1d7,toneMapped:false});
     for(let z=3.8;z>GALLERY_END;z-=4.5){
-      for(const x of [-1.45,1.45]){
-        const ring=new THREE.Mesh(new THREE.CylinderGeometry(.115,.115,.035,24),downlightMat);ring.position.set(x,6.105,z);gallery.add(ring);
-        const lens=new THREE.Mesh(new THREE.CircleGeometry(.072,20),lampMat);lens.position.set(x,6.084,z);lens.rotation.x=Math.PI/2;gallery.add(lens);
-        const light=new THREE.SpotLight(0xffe4bf,21,8,Math.PI*.23,.8,1.65);
-        light.position.set(x,5.95,z);light.target.position.set(x,0,z);gallery.add(light,light.target);
+      for(const x of isGrand?[-2.2,2.2]:[-1.45,1.45]){
+        const ring=new THREE.Mesh(new THREE.CylinderGeometry(.115,.115,.035,24),downlightMat);ring.position.set(x,height-.295,z);gallery.add(ring);
+        const lens=new THREE.Mesh(new THREE.CircleGeometry(.072,20),lampMat);lens.position.set(x,height-.316,z);lens.rotation.x=Math.PI/2;gallery.add(lens);
+        const light=new THREE.SpotLight(0xffe4bf,isGrand?27:21,isGrand?10:8,Math.PI*.23,.8,1.65);
+        light.position.set(x,height-.45,z);light.target.position.set(x,0,z);gallery.add(light,light.target);
       }
     }
-    const ambient=new THREE.HemisphereLight(0xe9dece,0x3a2a20,.82);gallery.add(ambient);
+    const ambient=new THREE.HemisphereLight(0xe9dece,0x3a2a20,isGrand?.72:.82);gallery.add(ambient);
     const entrance=new THREE.Group();gallery.add(entrance);
-    mesh([2.2,5,.5],materials.wallInset,[-(width/2-1.1),2.5,5.7],entrance);mesh([2.2,5,.5],materials.wallInset,[(width/2-1.1),2.5,5.7],entrance);mesh([width-4.4,1.15,.5],materials.wallInset,[0,5.42,5.7],entrance);
-    const sign=makeLabel(room.subtitle,`${room.works.length}점의 작품 · 원작 비율 전시`,4.2);sign.position.set(0,4.55,5.4);gallery.add(sign);
+    const entryHeight=isGrand?6.55:5;
+    mesh([2.2,entryHeight,.5],materials.wallInset,[-(width/2-1.1),entryHeight/2,5.7],entrance);mesh([2.2,entryHeight,.5],materials.wallInset,[(width/2-1.1),entryHeight/2,5.7],entrance);mesh([width-4.4,1.15,.5],materials.wallInset,[0,entryHeight+.42,5.7],entrance);
+    const sign=makeLabel(room.subtitle,`${room.works.length}점의 작품 · 원작 비율 전시`,4.2);sign.position.set(0,isGrand?6.05:4.55,5.4);gallery.add(sign);
     return {width,length,height};
   }
 
@@ -340,37 +347,63 @@
     d01:'assets/models/thinker.glb',
     d02:'assets/models/david.glb',
     d05:'assets/models/venus-de-milo.glb',
-    d06:'assets/models/pieta.glb'
+    d06:'assets/models/pieta.glb',
+    d13:'assets/models/gwanghwamun-haetae.glb'
   };
 
   function installSculptureModel(model,group,work,artH,pedestalTop,isScan=false) {
     if(isScan){
-      const material=sculptureMaterial(work);
-      model.rotation.y=work.id==='d01'?.16:work.id==='d02'?-1.48:work.id==='d05'?Math.PI:.08;
-      model.traverse(part=>{if(part.isMesh){part.geometry.computeVertexNormals();part.material=material;}});
+      model.matrixAutoUpdate=true;
+      model.rotation.y=Number.isFinite(work.modelRotationY)?work.modelRotationY:work.id==='d01'?.16:work.id==='d02'?-1.48:work.id==='d05'?Math.PI:.08;
+      const material=work.preserveMaterials?null:sculptureMaterial(work);
+      model.traverse(part=>{
+        if(!part.isMesh)return;
+        part.geometry.computeVertexNormals();
+        if(material)part.material=material;
+        else if(work.materialTint&&part.material){
+          part.material=part.material.clone();
+          part.material.color.multiply(new THREE.Color(work.materialTint));
+          part.material.roughness=Math.max(.7,part.material.roughness||0);
+          part.material.metalness=0;
+        }
+      });
     }
     group.add(model);
     const bounds=new THREE.Box3().setFromObject(model),naturalH=Math.max(.01,bounds.max.y-bounds.min.y),modelScale=artH/naturalH;
-    model.scale.setScalar(modelScale);model.position.y=pedestalTop-bounds.min.y*modelScale;
+    model.scale.setScalar(modelScale);
+    if(work.centerModel){
+      const center=bounds.getCenter(new THREE.Vector3());
+      model.position.x=-center.x*modelScale;
+      model.position.z=-center.z*modelScale;
+    }
+    model.position.y=pedestalTop-bounds.min.y*modelScale;
+    if(work.applyRoomOffset)model.position.z+=group.userData.placementZ;
+    model.updateMatrix();
     model.traverse(part=>{if(part.isMesh){part.userData.work=work;part.userData.room=rooms[activeRoom];part.castShadow=true;part.receiveShadow=true;clickable.push(part);}});
   }
 
   function addSculpture(work,index,z) {
-    const group=new THREE.Group();group.position.set(index%2===0?-.75:.75,0,z);gallery.add(group);
+    const isGrand=rooms[activeRoom].id==='space';
+    const placementZ=z, placementX=work.applyRoomOffset?0:index%2===0?-.75:.75;
+    const group=new THREE.Group();group.position.set(placementX,0,work.applyRoomOffset?0:z);group.userData.placementZ=placementZ;gallery.add(group);
     const dims=getDisplaySize(work),minH=work.id==='d04'?1.25:1.55,maxH=work.id==='d02'?3.15:work.id==='d04'?1.8:2.75;
-    const artH=clamp(dims.h*1.05,minH,maxH),artW=artH*(work.size.w/work.size.h);
-    const baseW=clamp(artW*.82,.92,1.55),baseH=.68+(index%2)*.12;
-    mesh([baseW+.24,.16,baseW+.24],materials.stone,[0,.08,0],group);mesh([baseW,baseH,baseW],new THREE.MeshStandardMaterial({color:index%2?0x4d453c:0x71675b,roughness:.58}),[0,.16+baseH/2,0],group);
-    const pedestalTop=.16+baseH,scanPath=sculptureScans[work.id];
+    const artH=work.actualScale?work.size.h/100:clamp(dims.h*1.05,minH,maxH),artW=artH*(work.size.w/work.size.h);
+    const baseW=work.actualScale?clamp(artW*1.05,1.4,3.1):clamp(artW*.82,.92,1.55),baseH=work.hasBuiltInBase ? .1 : .68+(index%2)*.12;
+    if(!work.hasBuiltInBase){
+      mesh([baseW+.24,.16,baseW+.24],materials.stone,[0,.08,0],group);
+      mesh([baseW,baseH,baseW],new THREE.MeshStandardMaterial({color:index%2?0x4d453c:0x71675b,roughness:.58}),[0,.16+baseH/2,0],group);
+    }
+    const pedestalTop=work.hasBuiltInBase?0:.16+baseH,scanPath=sculptureScans[work.id];
     if(scanPath){
       gltfLoader.load(scanPath,gltf=>{installSculptureModel(gltf.scene,group,work,artH,pedestalTop,true);markLoaded();},undefined,()=>{installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded();});
     }else{
       installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded();
     }
-    const label=makeLabel(work.title,work.artist,1.7);label.position.set(0,baseH*.55,.516);label.rotation.x=-Math.PI*.04;group.add(label);
-    const spot=new THREE.SpotLight(0xffc77a,175,10,Math.PI*.2,.62,1.4);spot.position.set(-group.position.x*.35,5.7,z+1.35);spot.target.position.set(group.position.x,pedestalTop+artH*.52,z);spot.castShadow=index%2===0;spot.shadow.mapSize.set(512,512);gallery.add(spot,spot.target);
-    const rim=new THREE.PointLight(0xffd6a0,38,5.5,2);rim.position.set(-group.position.x*.45,pedestalTop+artH*.58,z-1.15);gallery.add(rim);
-    sculptureObstacles.push({x:group.position.x,z,r:baseW*.72+.42});
+    const label=makeLabel(work.title,work.artist,1.7);label.position.set(0,work.hasBuiltInBase ? .32 : baseH*.55,work.applyRoomOffset?placementZ+.62:.516);label.rotation.x=-Math.PI*.04;group.add(label);
+    const sculptureLightY=isGrand?7.65:5.7;
+    const spot=new THREE.SpotLight(0xffc77a,work.actualScale?105:175,isGrand?13:10,Math.PI*.2,.62,1.4);spot.position.set(-placementX*.35,sculptureLightY,placementZ+1.35);spot.target.position.set(placementX,pedestalTop+artH*.52,placementZ);spot.castShadow=index%2===0;spot.shadow.mapSize.set(512,512);gallery.add(spot,spot.target);
+    const rim=new THREE.PointLight(0xffd6a0,work.actualScale?18:38,5.5,2);rim.position.set(-placementX*.45,pedestalTop+artH*.58,placementZ-1.15);gallery.add(rim);
+    sculptureObstacles.push({x:placementX,z:placementZ,r:baseW*.72+.42});
   }
 
   function setRoom(index,instant=false) {
@@ -380,7 +413,9 @@
     gallery=new THREE.Group();scene.add(gallery);const shell=buildShell(rooms[index]);
     if(rooms[index].id==='space'){
       const sculptures=rooms[index].works.filter(w=>w.type==='sculpture'), wallWorks=rooms[index].works.filter(w=>w.type!=='sculpture');
-      sculptures.forEach((w,i)=>addSculpture(w,i,1-i*4.85));
+      // 광화문 해치는 실제 크기가 큰 독립 석조물이므로, 입구가 아닌
+      // 전시실 맨뒤의 넓은 중앙 공간에 둔다.
+      sculptures.forEach((w,i)=>addSculpture(w,i,w.id==='d13'?GALLERY_END+15:1-i*4.85));
       wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*8.8,shell.width));
     }else{
       rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width));
@@ -414,7 +449,7 @@
     tmpDirection.set(-Math.sin(yaw),0,-Math.cos(yaw));tmpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
     const wish=new THREE.Vector3().addScaledVector(tmpDirection,f).addScaledVector(tmpRight,s);if(wish.lengthSq()>0)wish.normalize();
     const accel=28,maxSpeed=(keys.ShiftLeft||keys.ShiftRight)?7.5:4.8;velocity.addScaledVector(wish,accel*dt);velocity.multiplyScalar(Math.pow(.03,dt));if(velocity.length()>maxSpeed)velocity.setLength(maxSpeed);
-    const oldX=camera.position.x,oldZ=camera.position.z;camera.position.addScaledVector(velocity,dt);const half=rooms[activeRoom].id==='space'?6.05:4.85;
+    const oldX=camera.position.x,oldZ=camera.position.z;camera.position.addScaledVector(velocity,dt);const half=rooms[activeRoom].id==='space'?7.55:4.85;
     camera.position.x=clamp(camera.position.x,-half,half);camera.position.z=clamp(camera.position.z,GALLERY_END+1.4,6.5);
     for(const o of sculptureObstacles){const dx=camera.position.x-o.x,dz=camera.position.z-o.z,dist=Math.hypot(dx,dz);if(dist<o.r){if(dist<.001){camera.position.x=oldX;camera.position.z=oldZ;}else{camera.position.x=o.x+dx/dist*o.r;camera.position.z=o.z+dz/dist*o.r;}}}
     camera.position.y=1.68+Math.sin(performance.now()*.009)*Math.min(velocity.length()*.012,.025);camera.rotation.set(pitch,yaw,0);

@@ -14,3 +14,10 @@ Source category: https://commons.wikimedia.org/wiki/Commons:Scan_the_World
 
 Changes: coordinate conversion, vertex clustering, triangle deduplication,
 normal regeneration, scaling, and conversion from STL to binary glTF (GLB).
+
+- `gwanghwamun-haetae.glb`: “Gwanghwamun Gate_HaetaeA” by KOREA HERITAGE
+  SERVICE [KHS]
+
+  License: CC BY 4.0
+  Source: https://sketchfab.com/3d-models/gwanghwamun-gate-haetaea-e11f9ee66df74288be83f9fede578bd4
+  Downloaded format: GLB with 1K textures

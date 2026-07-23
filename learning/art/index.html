@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>미술품 감상과 퀴즈 · 송화플레이</title>
+    <title>미술품 감상과 퀴즈 · songhwaplay</title>
     <style>
         :root {
             --bg-dark: #1a120b;
@@ -810,7 +810,7 @@
                 img.dataset.fallbackApplied = 'true';
                 const cleanTitle = (title || '미술품 감상').replace(/'/g, "");
                 const cleanArtist = (artist || '작가 미상').replace(/'/g, "");
-                const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2a1b12"/><stop offset="50%" stop-color="#4a2e16"/><stop offset="100%" stop-color="#190e07"/></linearGradient></defs><rect width="600" height="400" fill="url(#g)"/><rect x="16" y="16" width="568" height="368" fill="none" stroke="#d4af37" stroke-width="4" rx="10"/><rect x="26" y="26" width="548" height="348" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/><text x="300" y="160" fill="#f3e5ab" font-size="34" font-family="'Georgia', sans-serif" font-weight="900" text-anchor="middle">🎨 ${cleanTitle}</text><text x="300" y="220" fill="#d4af37" font-size="20" font-family="sans-serif" text-anchor="middle">✍️ ${cleanArtist}</text><text x="300" y="275" fill="#aaaaaa" font-size="14" font-family="sans-serif" text-anchor="middle">송화플레이 미술품 감상</text></svg>`;
+                const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2a1b12"/><stop offset="50%" stop-color="#4a2e16"/><stop offset="100%" stop-color="#190e07"/></linearGradient></defs><rect width="600" height="400" fill="url(#g)"/><rect x="16" y="16" width="568" height="368" fill="none" stroke="#d4af37" stroke-width="4" rx="10"/><rect x="26" y="26" width="548" height="348" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/><text x="300" y="160" fill="#f3e5ab" font-size="34" font-family="'Georgia', sans-serif" font-weight="900" text-anchor="middle">🎨 ${cleanTitle}</text><text x="300" y="220" fill="#d4af37" font-size="20" font-family="sans-serif" text-anchor="middle">✍️ ${cleanArtist}</text><text x="300" y="275" fill="#aaaaaa" font-size="14" font-family="sans-serif" text-anchor="middle">songhwaplay 미술품 감상</text></svg>`;
                 const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
                 img.src = dataUrl;
                 if (img.id === 'modalImg') {

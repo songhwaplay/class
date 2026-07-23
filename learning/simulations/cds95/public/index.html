@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>세계 항해·육상 탐험 학습 · 실시간 교실 v76</title>
+<title>세계 항해·육상 탐험</title>
 <style>
 :root{--ink:#f3e7c9;--panel:#102832ed;--line:#a58d61;--accent:#f2cf78;--good:#9fe1b0;--bad:#ff9f94}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#07141a;color:var(--ink);font-family:"Malgun Gothic","Noto Sans KR",sans-serif;touch-action:none}
@@ -52,7 +52,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
     <h1>세계 항해·육상 탐험</h1>
     <p class="joinIntro">탐험 방식을 먼저 선택하세요.</p>
     <div id="entryModes" class="entryModes">
-      <button type="button" class="entryMode" data-entry-mode="solo"><b>개인 탐험 모드</b><span>교사나 학급 코드 없이 혼자 세계지도를 자유롭게 탐험합니다.</span><small>날짜·바람·해류·도시·도서관 모두 작동</small></button>
+      <button type="button" class="entryMode" data-entry-mode="solo"><b>개인 탐험 모드</b><span>교사나 학급 코드 없이 세계지도를 자유롭게 탐험합니다.</span><small>바람·해류·도시·도서관 모두 작동</small></button>
       <button type="button" class="entryMode" data-entry-mode="competition"><b>경쟁 모드</b><span>학급 코드로 접속해 친구들과 같은 미션을 수행하고 도착 순위를 겨룹니다.</span><small>교사가 미션과 출발을 관리</small></button>
     </div>
     <div id="joinFields" class="joinFields" hidden>
@@ -69,7 +69,7 @@ button,input{font:inherit}button{border:1px solid var(--line);background:#17313b
 </div>
 <div id="hud" class="panel">
   <div class="statusMain">
-    <span class="statusItem"><small>날짜</small><b id="clock">1492년 1월 1일 00:00</b></span>
+    <span class="statusItem" id="clockGroup"><small>날짜</small><b id="clock">1492년 1월 1일 00:00</b></span>
     <span class="statusItem"><small>위도·경도</small><b id="coord">위치 계산 중</b></span>
     <span class="statusItem" title="게임 시간과 구면거리를 기준으로 계산한 실제 이동속력"><small>이동 속력</small><b id="speedValue">0 km/h</b></span>
     <span class="statusItem"><small>피로도</small><b id="fatigueValue">0%</b><span class="fatigueTrack"><span id="fatigueFill" class="fatigueFill"></span></span></span>
@@ -131,7 +131,7 @@ const SEA_BASE_SPEED=132,LAND_BASE_SPEED=96,CURRENT_TAIL_FACTOR=.40,CURRENT_STRO
 const canvas=document.getElementById('game'),ctx=canvas.getContext('2d',{alpha:false});
 const loading=document.getElementById('loading'),join=document.getElementById('join'),joinForm=document.getElementById('joinCard');
 const entryModes=document.getElementById('entryModes'),joinFields=document.getElementById('joinFields'),roomField=document.getElementById('roomField'),roomInput=document.getElementById('roomCode'),nameInput=document.getElementById('studentName'),joinStartBtn=document.getElementById('joinStartBtn'),modeBackBtn=document.getElementById('modeBackBtn'),teacherEntryLink=document.getElementById('teacherEntryLink'),joinError=document.getElementById('joinError');
-const identity=document.getElementById('identity'),net=document.getElementById('net'),onlineEl=document.getElementById('online'),nearbyEl=document.getElementById('nearby'),onlineGroup=document.getElementById('onlineGroup'),nearbyGroup=document.getElementById('nearbyGroup'),soloGroup=document.getElementById('soloGroup'),coord=document.getElementById('coord'),clockEl=document.getElementById('clock'),speedValue=document.getElementById('speedValue'),terrainHud=document.getElementById('terrainHud'),currentHud=document.getElementById('currentHud'),windHud=document.getElementById('windHud'),fatigueValue=document.getElementById('fatigueValue'),fatigueFill=document.getElementById('fatigueFill'),modeHud=document.getElementById('modeHud'),missionEl=document.getElementById('mission'),messageLines=document.getElementById('messageLines');
+const identity=document.getElementById('identity'),net=document.getElementById('net'),onlineEl=document.getElementById('online'),nearbyEl=document.getElementById('nearby'),onlineGroup=document.getElementById('onlineGroup'),nearbyGroup=document.getElementById('nearbyGroup'),soloGroup=document.getElementById('soloGroup'),coord=document.getElementById('coord'),clockGroup=document.getElementById('clockGroup'),clockEl=document.getElementById('clock'),speedValue=document.getElementById('speedValue'),terrainHud=document.getElementById('terrainHud'),currentHud=document.getElementById('currentHud'),windHud=document.getElementById('windHud'),fatigueValue=document.getElementById('fatigueValue'),fatigueFill=document.getElementById('fatigueFill'),modeHud=document.getElementById('modeHud'),missionEl=document.getElementById('mission'),messageLines=document.getElementById('messageLines');
 const missionActionPrompt=document.getElementById('missionActionPrompt'),missionActionText=document.getElementById('missionActionText'),missionActionBtn=document.getElementById('missionActionBtn'),cityActionBtn=document.getElementById('cityActionBtn');
 const cityView=document.getElementById('cityView'),cityScene=document.getElementById('cityScene'),cityTitle=document.getElementById('cityTitle'),cityInfo=document.getElementById('cityInfo'),libraryBtn=document.getElementById('libraryBtn'),leaveCityBtn=document.getElementById('leaveCityBtn'),libraryView=document.getElementById('libraryView'),libraryTitle=document.getElementById('libraryTitle'),libraryHint=document.getElementById('libraryHint'),libraryClose=document.getElementById('libraryClose'),bookList=document.getElementById('bookList'),bookTitle=document.getElementById('bookTitle'),bookMeta=document.getElementById('bookMeta'),bookIntro=document.getElementById('bookIntro'),bookSections=document.getElementById('bookSections'),messageWindow=document.getElementById('messageWindow');
 const missionPanel=document.getElementById('missionPanel'),missionToggle=document.getElementById('missionToggle'),missionBanner=document.getElementById('missionBanner'),missionTitle=document.getElementById('missionTitle'),missionMeta=document.getElementById('missionMeta'),missionInstructions=document.getElementById('missionInstructions'),missionTarget=document.getElementById('missionTarget'),missionFeedback=document.getElementById('missionFeedback'),missionClose=document.getElementById('missionClose');
@@ -531,20 +531,24 @@ modeBackBtn.addEventListener('click',()=>{entryMode='';joinFields.hidden=true;te
 function finishJoin(result,name){
   joined=true;resetMapZoomForDevice();sessionMode=result.sessionMode||entryMode||'competition';roomCodeCurrent=result.roomLabel||result.roomCode||(sessionMode==='solo'?'개인 탐험':'경쟁 모드');self={...result.self};serverSelf={...result.self};syncClassClock(result.classGameMinutes);mode=result.self.mode;applyMissionState(result.mission,result.progress,false);missionInteraction=result.interaction||null;cityInteraction=result.cityInteraction||null;portInteraction=result.portInteraction||null;applyClassSettings(result.settings||{});join.style.display='none';joinError.textContent='';
   localStorage.setItem('uw3-name',name);if(sessionMode==='competition')localStorage.setItem('uw3-room',roomInput.value);guideHistory.length=0;
+  clockGroup.hidden=sessionMode==='solo';
   onlineGroup.hidden=sessionMode==='solo';nearbyGroup.hidden=sessionMode==='solo';soloGroup.hidden=sessionMode!=='solo';
-  showToast(sessionMode==='solo'?'개인 탐험을 시작했습니다. 세계를 자유롭게 탐험하세요.':'같은 반 친구들과 연결되었습니다.','good');showToast('상단에서 날짜·위치·바람·해류 영향을 확인하세요.','system');applyModeUI();sendInput();
+  showToast(sessionMode==='solo'?'개인 탐험을 시작했습니다. 세계를 자유롭게 탐험하세요.':'같은 반 친구들과 연결되었습니다.','good');showToast(sessionMode==='solo'?'상단에서 위치·바람·해류 영향을 확인하세요.':'상단에서 날짜·위치·바람·해류 영향을 확인하세요.','system');applyModeUI();sendInput();
 }
 joinForm.addEventListener('submit',e=>{
   e.preventDefault();if(!assetsReady){joinError.textContent='지도를 불러오는 중입니다.';return}if(!entryMode){joinError.textContent='개인 탐험 모드 또는 경쟁 모드를 먼저 선택하세요.';return}
   const name=nameInput.value.trim();if(!/^[가-힣]{2,6}$/.test(name)){joinError.textContent='메인 화면에서 한글 이름을 먼저 저장해 주세요.';return}
   if(entryMode==='solo'){
-    joinError.textContent='개인 탐험을 준비하는 중…';socket.emit('joinSolo',{name},result=>{if(!result?.ok){joinError.textContent=result?.error||'개인 탐험을 시작하지 못했습니다.';return}finishJoin(result,name)});return;
+    joinError.textContent='개인 탐험을 준비하는 중…';socket.emit('joinSolo',{name,school:mainSchool,grade:mainGrade},result=>{if(!result?.ok){joinError.textContent=result?.error||'개인 탐험을 시작하지 못했습니다.';return}finishJoin(result,name)});return;
   }
   const roomCode=roomInput.value.replace(/\D/g,'').slice(0,6);roomInput.value=roomCode;if(!/^\d{6}$/.test(roomCode)){joinError.textContent='교사 화면에 표시된 숫자 6자리 학급 코드를 입력하세요.';roomInput.focus();return}joinError.textContent='경쟁 모드 입장 중…';
   socket.emit('joinClass',{roomCode,name},result=>{if(!result?.ok){joinError.textContent=result?.error||'입장하지 못했습니다.';return}finishJoin(result,name)});
 });
 const savedRoom=localStorage.getItem('uw3-room')||'';roomInput.value=/^\d{6}$/.test(savedRoom)?savedRoom:'';
-const mainPlayerName=String(new URLSearchParams(location.search).get('name')||'').trim();
+const mainEntryParams=new URLSearchParams(location.search);
+const mainPlayerName=String(mainEntryParams.get('name')||'').trim();
+const mainSchool=String(mainEntryParams.get('school')||'').normalize('NFKC').replace(/\s+/g,' ').trim().slice(0,80);
+const mainGrade=/^(?:[1-9]|1[0-2])$/.test(mainEntryParams.get('grade')||'')?Number(mainEntryParams.get('grade')):null;
 nameInput.value=/^[가-힣]{2,6}$/.test(mainPlayerName)?mainPlayerName:'';
 nameInput.readOnly=true;
 nameInput.placeholder='메인 화면에서 이름을 먼저 저장하세요';

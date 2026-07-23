@@ -3,6 +3,7 @@
 const path = require('node:path');
 const fs = require('node:fs');
 const http = require('node:http');
+const crypto = require('node:crypto');
 const express = require('express');
 const { Server } = require('socket.io');
 const Terrain = require('./public/js/terrain.js');
@@ -460,6 +461,19 @@ function cleanRoom(value) {
     .toUpperCase()
     .replace(/[^0-9A-Z가-힣_-]/g, '')
     .slice(0, 10);
+}
+
+function cleanSoloCohort(payload) {
+  const school = String(payload?.school || '')
+    .normalize('NFKC')
+    .replace(/[\u0000-\u001f\u007f]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 80);
+  const grade = Number(payload?.grade);
+  if (!school || !Number.isInteger(grade) || grade < 1 || grade > 12) return null;
+  const key = crypto.createHash('sha256').update(`${school}\n${grade}`).digest('hex').slice(0, 24);
+  return { school, grade, key };
 }
 
 
@@ -1528,20 +1542,27 @@ io.on('connection', (socket) => {
       const name = cleanName(payload?.name);
       if (name.length < 2) return ack({ ok: false, error: '이름을 두 글자 이상 입력하세요.' });
 
-      const roomCode = `solo:${socket.id}:${Date.now().toString(36)}`;
-      const room = new Map();
-      rooms.set(roomCode, room);
+      const cohort = cleanSoloCohort(payload);
+      const roomCode = cohort
+        ? `solo:cohort:${cohort.key}`
+        : `solo:${socket.id}:${Date.now().toString(36)}`;
+      let room = rooms.get(roomCode);
+      if (!room) {
+        room = new Map();
+        rooms.set(roomCode, room);
+        const initialRoomState = store.room(roomCode);
+        initialRoomState.activeMission = null;
+        initialRoomState.progress = {};
+        initialRoomState.settings = { paused: false, locked: false };
+        initialRoomState.clock = { gameMinutes: 0 };
+        roomClocks.set(roomCode, {
+          baseGameMinutes: 0,
+          baseServerMs: Date.now(),
+          ownerSocketId: null,
+          lastTeacherSyncAt: 0
+        });
+      }
       const roomState = store.room(roomCode);
-      roomState.activeMission = null;
-      roomState.progress = {};
-      roomState.settings = { paused: false, locked: false };
-      roomState.clock = { gameMinutes: 0 };
-      roomClocks.set(roomCode, {
-        baseGameMinutes: 0,
-        baseServerMs: Date.now(),
-        ownerSocketId: null,
-        lastTeacherSyncAt: 0
-      });
 
       const startPlace = RESOLVED_PLACES.get('lisbon');
       const spawn = safeHarborSpawn(room, startPlace);
@@ -1551,6 +1572,7 @@ io.on('connection', (socket) => {
         name,
         roomCode,
         sessionMode: 'solo',
+        soloCohortKey: cohort?.key || null,
         x: spawn.x,
         y: spawn.y,
         dir: 2,
@@ -1589,6 +1611,7 @@ io.on('connection', (socket) => {
       ack({
         ok: true,
         sessionMode: 'solo',
+        sharedSolo: Boolean(cohort),
         roomCode: '개인 탐험',
         roomLabel: '개인 탐험',
         self: publicPlayer(player, classMinutes),
@@ -2425,10 +2448,11 @@ setInterval(() => {
       const nearby = [];
       for (const other of room.values()) {
         if (other.id === p.id) continue;
-        if (distance(p, other) <= NEARBY_RADIUS) nearby.push(publicPlayer(other, classMinutes));
+        const sameSoloCohort = Boolean(p.soloCohortKey && p.soloCohortKey === other.soloCohortKey);
+        if (sameSoloCohort || distance(p, other) <= NEARBY_RADIUS) nearby.push(publicPlayer(other, classMinutes));
       }
       const missionState = activeMissionState(roomCode, p.name, p);
-      io.to(p.id).emit('snapshot', { serverTime: now, classGameMinutes: classMinutes, sessionMode:p.sessionMode || 'competition', roomLabel:p.sessionMode === 'solo' ? '개인 탐험' : `학급 ${roomCode}`, you: publicPlayer(p, classMinutes), nearby, online: room.size, settings: store.room(roomCode).settings, ...missionState });
+      io.to(p.id).emit('snapshot', { serverTime: now, classGameMinutes: classMinutes, sessionMode:p.sessionMode || 'competition', sharedSolo:Boolean(p.soloCohortKey), roomLabel:p.sessionMode === 'solo' ? '개인 탐험' : `학급 ${roomCode}`, you: publicPlayer(p, classMinutes), nearby, online: room.size, settings: store.room(roomCode).settings, ...missionState });
     }
     if (!isSoloRoom(roomCode)) {
       const activeMission = store.room(roomCode).activeMission;

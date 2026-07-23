@@ -70,8 +70,18 @@
         return common / Math.max(leftGrams.size, rightGrams.size);
     }
 
+    const AMBIGUOUS_OPTION_GROUPS = [
+        new Set(["baekmi", "gungyeilhak"])
+    ];
+
+    function hasAmbiguousMeaning(leftId, rightId) {
+        return AMBIGUOUS_OPTION_GROUPS.some((group) => group.has(leftId) && group.has(rightId));
+    }
+
     function selectDistractors(idiom, data, type, random = Math.random) {
-        const ranked = shuffle(data.filter((item) => item.id !== idiom.id), random)
+        const ranked = shuffle(data.filter((item) => (
+            item.id !== idiom.id && !hasAmbiguousMeaning(idiom.id, item.id)
+        )), random)
             .map((candidate) => {
                 let score = 0;
                 if (candidate.level === idiom.level) score += 6;

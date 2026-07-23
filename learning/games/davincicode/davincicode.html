@@ -55,7 +55,7 @@ input:focus{border-color:var(--gold2);box-shadow:0 0 0 2px rgba(240,215,124,.12)
 <section id="missingScreen" class="screen hidden name-missing"><h2>이름이 없습니다</h2><p>메인 화면에서 이름을 먼저 입력한 뒤 다시 들어오세요.</p><button class="primary" type="button" onclick="location.href='../../../index.html'">메인 화면으로</button></section>
 <section id="lobby" class="screen hidden mp-lobby-compact" data-multiplayer-lobby>
   <h1>NUMBER CODE</h1>
-  <div class="subtitle">ONLINE 2–4 PLAYER · NO JOKERS</div>
+  <div class="subtitle">2–4 PLAYERS · NO JOKERS</div>
   <div class="mp-lobby-tabs">
     <button id="hostTab" class="tab active" type="button">CREATE ROOM</button>
     <button id="joinTab" class="tab" type="button">JOIN ROOM</button>
@@ -109,7 +109,7 @@ let lastTurnOwner=null;
 
 function getSavedName(){try{return String(localStorage.getItem(NAME_KEY)||"").trim().slice(0,12)}catch(_){return ""}}
 function currentName(){return getSavedName()}
-function applySavedName(){const saved=getSavedName();if(saved){const subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent=`PLAYER · ${saved} · ONLINE 2–4 PLAYER`}}
+function applySavedName(){const saved=getSavedName();if(saved){const subtitle=document.querySelector(".subtitle");if(subtitle)subtitle.textContent=`PLAYER · ${saved} · 2–4 PLAYERS`}}
 function openRules(){$("rulesOverlay").classList.add("show")}
 function closeRules(){$("rulesOverlay").classList.remove("show")}
 function closeRulesOnBackdrop(e){if(e.target===e.currentTarget)closeRules()}

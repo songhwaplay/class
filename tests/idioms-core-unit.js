@@ -49,4 +49,15 @@ quiz.forEach((question) => {
     assert.ok(question.options.some((option) => option.id === question.answerId));
 });
 
+const baekmi = data.find((item) => item.id === "baekmi");
+const gungyeilhak = data.find((item) => item.id === "gungyeilhak");
+assert.ok(
+    !core.selectDistractors(baekmi, data, "image", () => 0.42).some((item) => item.id === "gungyeilhak"),
+    "백미 삽화 문제에서 뜻이 같은 군계일학을 오답으로 제시하면 안 됩니다."
+);
+assert.ok(
+    !core.selectDistractors(gungyeilhak, data, "image", () => 0.42).some((item) => item.id === "baekmi"),
+    "군계일학 삽화 문제에서 뜻이 같은 백미를 오답으로 제시하면 안 됩니다."
+);
+
 console.log(`idioms core unit tests: ok (${data.length} entries)`);

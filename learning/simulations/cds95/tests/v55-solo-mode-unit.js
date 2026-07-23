@@ -10,9 +10,14 @@ assert.ok(Number(pkg.version.split('.')[0]) >= 60, `unexpected package version: 
 assert.match(html,/data-entry-mode="solo"/);
 assert.match(html,/data-entry-mode="competition"/);
 assert.match(html,/socket\.emit\('joinSolo'/);
+assert.match(html,/school:mainSchool,grade:mainGrade/);
+assert.match(html,/clockGroup\.hidden=sessionMode==='solo'/);
 assert.match(html,/if\(sessionMode==='solo'\)return true/);
 assert.match(html,/sessionMode==='solo'\|\|activeMission\?\.phase==='running'/);
 assert.match(server,/socket\.on\('joinSolo'/);
+assert.match(server,/cleanSoloCohort\(payload\)/);
+assert.match(server,/solo:cohort:/);
+assert.match(server,/sameSoloCohort \|\| distance\(p, other\) <= NEARBY_RADIUS/);
 assert.match(server,/sessionMode: 'solo'/);
 assert.match(server,/if \(isSoloRoom\(roomCode\)\) return roomState\.settings\.paused !== true/);
 assert.match(server,/player\.sessionMode === 'solo'/);
