@@ -175,10 +175,12 @@ test("uses four worksheet cards per row on wide catalog screens", async () => {
   assert.match(css, /@media \(max-width: 820px\)[\s\S]*?\.worksheet-catalog\s*\{[^}]*repeat\(2, minmax\(0, 1fr\)\)/);
 });
 
-test("uses a compact formula size beside geometry answer choices", async () => {
+test("keeps geometry prompts and answer choices in separate usable columns", async () => {
   const css = await readFile("app/globals.css", "utf8");
-  assert.match(css, /\.geometry-choice-expression\s*\{[^}]*font-size:\s*21px/s);
-  assert.match(css, /\.geometry-choice-question \.polynomial-focus-label\s*\{[^}]*font-size:\s*12px/s);
+  assert.match(css, /\.geometry-choice-question\s*\{[^}]*display:\s*block/s);
+  assert.match(css, /\.geometry-choice-expression\s*\{[^}]*font-size:\s*18px/s);
+  assert.match(css, /\.geometry-question-body\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) minmax\(190px, 44%\)/s);
+  assert.match(css, /\.geometry-choice-question \.polynomial-focus-label\s*\{[^}]*white-space:\s*nowrap/s);
 });
 
 test("hides repeated high-school instruction strips and uses one math font stack", async () => {
