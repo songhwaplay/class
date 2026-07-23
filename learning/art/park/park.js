@@ -21,7 +21,7 @@
     },
     {
       id:'liberty', order:'02', title:'자유의 여신상', short:'자유의 여신상',
-      subtitle:'프레데리크 오귀스트 바르톨디 · 1886', position:[137,0,-28], arrival:[137,1.62,45], lookAt:[137,36,-28],
+      subtitle:'프레데리크 오귀스트 바르톨디 · 1886', position:[137,0,-28], arrival:[137,1.62,95], lookAt:[137,44,-28],
       facts:[['지면→횃불','92.99m'],['조각상','46.05m'],['받침대','46.94m']],
       size:'지면에서 횃불까지 92.99m (조각상 46.05m + 받침 구조 46.94m)',
       scale:'전체 높이와 조각상·받침 구조의 높이를 실제 값으로 분리해 적용했습니다.',
@@ -81,6 +81,18 @@
     }
   ];
 
+  // 실제 사진은 작품의 형태를 정확히 보여 주기 위한 2.5D 전시물이다.
+  // 사진의 원근 때문에 사진판 자체를 3차원 실측 형상으로 오해하지 않도록,
+  // 실제 바닥 점유 크기와 높이는 별도의 치수선으로 표시한다.
+  const PHOTO_EXHIBITS = {
+    sphinx:{file:'assets/sphinx.jpg',page:'https://commons.wikimedia.org/wiki/File:The_Great_Sphinx,_Giza,_GG,_EGY_(47850554672).jpg',board:{w:26.67,h:20},footprint:{w:19,d:73.5,h:20},credit:'사진 Warren LeMay · CC0'},
+    liberty:{file:'assets/liberty.jpg',page:'https://commons.wikimedia.org/wiki/File:Statue_of_Liberty_-_New_York_City.jpg',board:{w:61.99,h:92.99},footprint:{w:26,d:26,h:92.99},credit:'사진 Anthony DELANOIX · CC0'},
+    guell:{file:'assets/guell.jpg',page:'https://commons.wikimedia.org/wiki/File:Salamander.jpg',board:{w:2.4,h:1.8},footprint:{w:1.35,d:2.4,h:1.05},credit:'사진 Valérie et Agnès · CC BY-SA 3.0'},
+    haetae:{file:'assets/haetae.jpg',page:'https://commons.wikimedia.org/wiki/File:Gwanghwamun_Haechi1.JPG',board:{w:4.68,h:3.507},footprint:{w:1.862,d:2.756,h:3.507},credit:'사진 hyolee2 · CC BY-SA 3.0'},
+    dol:{file:'assets/dolhareubang.jpg',page:'https://commons.wikimedia.org/wiki/File:Dol-hareubang_from_Jeju_Island_at_the_National_Folk_Museum_of_Korea_(2).jpg',board:{w:1.247,h:1.87},footprint:{w:.85,d:.62,h:1.87},credit:'사진 Ethan Doyle White · CC BY-SA 4.0'},
+    parthenon:{file:'assets/parthenon.jpg',page:'https://commons.wikimedia.org/wiki/File:Parthenon.jpg',board:{w:30.88,h:23.16},footprint:{w:30.88,d:69.5,h:13.73},credit:'사진 Tim Bekaert · Public Domain'}
+  };
+
   const canvas = document.getElementById('park-canvas');
   const loading = document.getElementById('loading');
   const hero = document.getElementById('hero-panel');
@@ -112,6 +124,7 @@
   renderer.outputEncoding = THREE.sRGBEncoding;
 
   const clock = new THREE.Clock();
+  const textureLoader = new THREE.TextureLoader();
   const keys = Object.create(null);
   const raycaster = new THREE.Raycaster();
   const centerPointer = new THREE.Vector2(0,0);
@@ -194,6 +207,35 @@
     for(const y of [0,height])g.add(makeLine(new THREE.Vector3(.32,y,0),new THREE.Vector3(.52,y,0)));
     const tag=makeLabel(label,'크기 비교 기준',1.9);tag.position.set(.42,height+.3,0);g.add(tag);
     return g;
+  }
+  function footprintLines(width,depth,height) {
+    const g=new THREE.Group(), color=0xe6efac;
+    const y=.07,x=width/2,z=depth/2;
+    [[[-x,y,-z],[x,y,-z]],[[x,y,-z],[x,y,z]],[[x,y,z],[-x,y,z]],[[-x,y,z],[-x,y,-z]]]
+      .forEach(pair=>g.add(makeLine(new THREE.Vector3(...pair[0]),new THREE.Vector3(...pair[1]),color)));
+    const corner=new THREE.Vector3(x,y,-z);
+    g.add(makeLine(corner,new THREE.Vector3(x,height,-z),color));
+    for(const yy of [0,height])g.add(makeLine(new THREE.Vector3(x-.35,Math.max(y,yy),-z),new THREE.Vector3(x+.35,Math.max(y,yy),-z),color));
+    return g;
+  }
+  function buildPhotoExhibit(zone) {
+    const spec=PHOTO_EXHIBITS[zone.id],g=new THREE.Group();
+    const backing=box([spec.board.w+.55,spec.board.h+.55,.34],new THREE.MeshStandardMaterial({color:0x18392f,roughness:.74,metalness:.08}),g,[0,spec.board.h/2+.12,0]);
+    const material=new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide,toneMapped:false});
+    const photo=addMesh(new THREE.PlaneGeometry(spec.board.w,spec.board.h),material,g,[0,spec.board.h/2+.12,.19],false);
+    textureLoader.load(spec.file,t=>{t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());material.map=t;material.needsUpdate=true;});
+    const base=box([Math.min(spec.board.w+2,68),.34,2.2],MAT.darkStone,g,[0,.17,.28]);
+    for(const x of [-Math.min(spec.board.w*.38,11),Math.min(spec.board.w*.38,11)])box([.28,Math.min(spec.board.h*.24,5),.45],MAT.darkStone,g,[x,Math.min(spec.board.h*.12,2.5),.18]);
+    const outline=footprintLines(spec.footprint.w,spec.footprint.d,spec.footprint.h);outline.position.z=spec.footprint.d/2+3;g.add(outline);
+    g.userData.zone=zone;g.userData.photoExhibit=true;photo.userData.zone=zone;
+    return g;
+  }
+  function addPhotoMarker(zone,model) {
+    const [x,,z]=zone.position,spec=PHOTO_EXHIBITS[zone.id];
+    const marker=makeScaleMarker(1.45,'어린이 1.45m');marker.position.set(x+Math.min(spec.board.w/2+2.2,8),0,z-2);park.add(marker);
+    const label=makeLabel(zone.title,`실제 사진 전시 · ${zone.size}`,Math.min(12,Math.max(5,spec.board.w*.65)));
+    label.position.set(x,Math.min(spec.board.h+2.2,10),z-2.1);label.userData.faceCamera=true;park.add(label);
+    zoneObjects.push(model);
   }
   function makeMosaicMaterial() {
     const t=canvasTexture((g,w,h)=>{
@@ -340,8 +382,12 @@
     const globe=sphere(2.7,new THREE.MeshStandardMaterial({color:0x7a9f63,roughness:.62,metalness:.08}),park,[0,4.1,0],32,20);
     const hubLabel=makeLabel('실물 크기 세계 미술','작품마다 1m = 3D 1단위',8);hubLabel.position.set(0,7.5,0);hubLabel.userData.faceCamera=true;park.add(hubLabel);
 
-    const builders={sphinx:buildSphinx,liberty:buildLiberty,guell:buildGuell,haetae:buildHaetae,dol:buildDolhareubang,parthenon:buildParthenon};
-    ZONES.forEach(zone=>{const model=builders[zone.id]();model.position.set(zone.position[0],0,zone.position[2]);park.add(model);addPlinthAndMarker(zone,model);});
+    ZONES.forEach(zone=>{
+      const model=buildPhotoExhibit(zone);
+      model.position.set(zone.position[0],0,zone.position[2]);
+      model.lookAt(zone.arrival[0],0,zone.arrival[2]);
+      park.add(model);addPhotoMarker(zone,model);
+    });
 
     for(let i=0;i<115;i++){
       const a=i*2.399,r=50+(i*37%220),x=Math.cos(a)*r,z=Math.sin(a)*r;
@@ -388,19 +434,20 @@
     document.getElementById('modal-title').textContent=zone.title;
     document.getElementById('modal-subtitle').textContent=zone.subtitle;
     document.getElementById('modal-size').textContent=zone.size;
-    document.getElementById('modal-scale').textContent=zone.scale;
+    document.getElementById('modal-scale').textContent='실제 사진은 형태 확인용입니다. 바닥 윤곽과 높이 치수선이 1:1 실제 크기입니다.';
     document.getElementById('modal-docent').textContent=zone.docent;
     document.getElementById('modal-caution').textContent=zone.caution;
     document.getElementById('modal-look').textContent=zone.look;
-    document.getElementById('modal-rights').textContent=zone.rights;
+    document.getElementById('modal-rights').textContent=`${zone.rights} · ${PHOTO_EXHIBITS[zone.id].credit}`;
     document.getElementById('modal-source').href=zone.source;
+    document.getElementById('modal-photo-source').href=PHOTO_EXHIBITS[zone.id].page;
     detailModal.showModal();
   }
   function nearestZone() {
     let best=null,dist=Infinity;
     ZONES.forEach(z=>{const d=Math.hypot(camera.position.x-z.position[0],camera.position.z-z.position[2]);if(d<dist){dist=d;best=z;}});
     const monumental=best&&['sphinx','liberty','parthenon'].includes(best.id);
-    return dist<(monumental?108:34)?best:null;
+    return dist<(monumental?148:34)?best:null;
   }
   function updateCamera(){camera.rotation.y=yaw;camera.rotation.x=pitch;}
   function updateMovement(dt) {
