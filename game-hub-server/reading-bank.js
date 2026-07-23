@@ -4,6 +4,7 @@ const crypto = require("crypto");
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const { createSelfStudyItems } = require("./data/reading-self-study-v2");
 
 const MIGRATION_NAMES = ["001-reading-bank", "002-reading-reviews", "003-reading-pilots"];
 const CHECKER_VERSION = "reading-bank-v1";
@@ -480,7 +481,7 @@ function createReadingBank(options = {}) {
         correctIndex: item.correctIndex,
         explanation: item.explanation
       })));
-      res.json({ items });
+      res.json({ items: items.concat(createSelfStudyItems()) });
     } catch (error) {
       next(error);
     }
