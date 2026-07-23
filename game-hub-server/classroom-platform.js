@@ -118,6 +118,7 @@ function createClassroomPlatform(options = {}) {
       })
     : null;
   const googleClient = googleClientId ? new OAuth2Client(googleClientId) : null;
+  const museumPresenceSecret = crypto.randomBytes(32);
   const router = express.Router();
   let databaseReady = false;
   let initializationError = null;
@@ -420,6 +421,23 @@ function createClassroomPlatform(options = {}) {
     };
   }
 
+  function signMuseumPresence(payload) {
+    const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
+    const signature = crypto.createHmac("sha256", museumPresenceSecret).update(body).digest("base64url");
+    return `${body}.${signature}`;
+  }
+
+  function verifyMuseumPresenceTicket(ticket) {
+    const [body, signature] = String(ticket || "").split(".");
+    if (!body || !signature) return null;
+    const expected = crypto.createHmac("sha256", museumPresenceSecret).update(body).digest("base64url");
+    if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
+    try {
+      const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8"));
+      return payload.exp > Date.now() && payload.kind === "museum-presence" ? payload : null;
+    } catch (_) { return null; }
+  }
+
   router.get("/auth/config", (req, res) => {
     res.json(configuration());
   });
@@ -438,6 +456,19 @@ function createClassroomPlatform(options = {}) {
       user: publicUser(user),
       membership
     });
+  }));
+
+  router.get("/museum/presence-ticket", asyncRoute(async (req, res) => {
+    const user = await requireUser(req);
+    if (user.role !== "student") throw new HttpError(403, "STUDENT_REQUIRED", "Museum presence is for student accounts only.");
+    const membership = await studentMembership(user.id);
+    if (!membership) throw new HttpError(403, "CLASS_MEMBERSHIP_REQUIRED", "Join your class before entering the museum.");
+    const expiresAt = Date.now() + 10 * 60 * 1000;
+    const ticket = signMuseumPresence({
+      kind: "museum-presence", exp: expiresAt, userId: String(user.id), name: membership.name,
+      classKey: `${membership.schoolName}|${membership.academicYear}|${membership.grade}|${membership.classNumber}`
+    });
+    res.json({ ticket, expiresAt });
   }));
 
   router.get("/site/access", asyncRoute(async (req, res) => {
@@ -1224,7 +1255,7 @@ function createClassroomPlatform(options = {}) {
     return res.status(500).json({ error: "INTERNAL_ERROR", message: "The server could not complete the request." });
   });
 
-  return { router, initialize, configuration };
+  return { router, initialize, configuration, verifyMuseumPresenceTicket };
 }
 
 module.exports = {

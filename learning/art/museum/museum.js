@@ -16,6 +16,7 @@
   const modal = document.getElementById('art-modal');
   const helpModal = document.getElementById('help-modal');
   const rooms = window.MUSEUM_ROOMS;
+  const presenceEl = document.getElementById('class-presence');
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x090806);
@@ -45,6 +46,9 @@
   const keys = Object.create(null);
   const clickable = [];
   const sculptureObstacles = [];
+  const remotePeople = new Map();
+  const remoteLayer = new THREE.Group(); scene.add(remoteLayer);
+  let presenceSocket = null, presenceTimer = 0, localPresenceId = null;
   const tmpDirection = new THREE.Vector3();
   const tmpRight = new THREE.Vector3();
   const velocity = new THREE.Vector3();
@@ -61,6 +65,12 @@
   const clamp = (n,min,max) => Math.max(min,Math.min(max,n));
   const GALLERY_START = 8;
   const GALLERY_END = -30;
+
+  function personLabel(name){const c=document.createElement('canvas');c.width=300;c.height=64;const g=c.getContext('2d');g.fillStyle='rgba(9,7,5,.82)';g.fillRect(0,4,300,52);g.strokeStyle='#d6b66b';g.strokeRect(1,5,298,50);g.fillStyle='#fff0ca';g.textAlign='center';g.font='bold 25px sans-serif';g.fillText(name,150,39);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return new THREE.Sprite(new THREE.SpriteMaterial({map:t,transparent:true,depthTest:false}));}
+  function makePerson(visitor){const g=new THREE.Group(), colors=[0x547da6,0x9d5b4c,0x5a896a,0x886ca5];const color=colors[Number(visitor.userId)%colors.length], cloth=new THREE.MeshStandardMaterial({color,roughness:.7,transparent:true,opacity:.86});const skin=new THREE.MeshStandardMaterial({color:0xe4b18d,roughness:.8,transparent:true,opacity:.86});const head=new THREE.Mesh(new THREE.SphereGeometry(.17,16,12),skin);head.position.y=1.38;const body=new THREE.Mesh(new THREE.CylinderGeometry(.18,.24,.54,12),cloth);body.position.y=.93;const leg=new THREE.Mesh(new THREE.CylinderGeometry(.07,.08,.42,10),new THREE.MeshStandardMaterial({color:0x23252c,transparent:true,opacity:.86}));leg.position.set(-.09,.42,0);const leg2=leg.clone();leg2.position.x=.09;g.add(head,body,leg,leg2);const label=personLabel(visitor.name);label.position.y=1.78;label.scale.set(.9,.19,1);g.add(label);remoteLayer.add(g);return g;}
+  function updatePeople(visitors){const visible=visitors.filter(v=>v.userId!==localPresenceId);const ids=new Set(visible.map(v=>v.userId));for(const [id,entry] of remotePeople){if(!ids.has(id)){remoteLayer.remove(entry.group);remotePeople.delete(id);}}for(const v of visible){let entry=remotePeople.get(v.userId);if(!entry){entry={group:makePerson(v)};remotePeople.set(v.userId,entry);}entry.room=v.room;entry.x=v.x;entry.z=v.z;entry.yaw=v.yaw;entry.group.position.set(v.x,0,v.z);entry.group.rotation.y=v.yaw;entry.group.visible=v.room===rooms[activeRoom].id;}}
+  async function connectClassPresence(){try{const response=await fetch('/api/museum/presence-ticket');if(!response.ok)return;const {ticket}=await response.json();const proto=location.protocol==='https:'?'wss':'ws';presenceSocket=new WebSocket(`${proto}://${location.host}`);presenceSocket.addEventListener('open',()=>presenceSocket.send(JSON.stringify({type:'MUSEUM_JOIN',ticket})));presenceSocket.addEventListener('message',event=>{const msg=JSON.parse(event.data);if(msg.type==='MUSEUM_JOINED')localPresenceId=msg.userId;if(msg.type==='MUSEUM_STATE'){updatePeople(msg.visitors);const here=msg.visitors.filter(v=>v.room===rooms[activeRoom].id).length;presenceEl.textContent=`우리 반 함께 관람 중 ${here}명`;presenceEl.hidden=false;}});}catch(_) {}}
+  function sendPresence(){if(!presenceSocket||presenceSocket.readyState!==WebSocket.OPEN)return;const now=performance.now();if(now-presenceTimer<100)return;presenceTimer=now;presenceSocket.send(JSON.stringify({type:'MUSEUM_MOVE',room:rooms[activeRoom].id,x:camera.position.x,z:camera.position.z,yaw}));}
 
   function makeWoodTexture() {
     const c = document.createElement('canvas'); c.width=1024; c.height=1024;
@@ -337,6 +347,7 @@
     document.getElementById('room-kicker').textContent='GALLERY '+rooms[index].number;
     document.getElementById('room-title').textContent=rooms[index].title;
     document.getElementById('room-count').textContent=rooms[index].works.length+' WORKS';
+    for(const entry of remotePeople.values())entry.group.visible=entry.room===rooms[index].id;
     [...roomTabs.children].forEach((b,i)=>{b.classList.toggle('active',i===index);b.setAttribute('aria-current',i===index?'page':'false');});
     if(instant)loading.classList.add('done');
   }
@@ -371,9 +382,10 @@
   function updateFocus(){
     raycaster.setFromCamera(centerPointer,camera);const hits=raycaster.intersectObjects(clickable,false);const hit=hits.find(h=>h.distance<8.5);
     nearest=hit?hit.object:null;prompt.hidden=!nearest;if(nearest)promptTitle.textContent=nearest.userData.work.title;
+    for(const entry of remotePeople.values())entry.group.visible=entry.room===rooms[activeRoom].id&&!nearest;
   }
 
-  function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);updateMovement(dt);updateFocus();renderer.render(scene,camera);}
+  function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);updateMovement(dt);updateFocus();sendPresence();renderer.render(scene,camera);}
 
   addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='Escape'&&modal.open)modal.close();if(e.code==='Enter'&&nearest&&!modal.open)showWork(nearest.userData.work,nearest.userData.room);});
   addEventListener('keyup',e=>{keys[e.code]=false;});
@@ -386,5 +398,5 @@
   for(const d of [modal,helpModal])d.addEventListener('click',e=>{if(e.target===d)d.close();});
   document.querySelectorAll('.touch-controls button').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;});b.addEventListener('pointerup',()=>keys[k]=false);b.addEventListener('pointercancel',()=>keys[k]=false);});
 
-  buildTabs();setRoom(0);animate();
+  buildTabs();setRoom(0);connectClassPresence();animate();
 })();
