@@ -27,6 +27,24 @@
   const finaleArtworkImage = document.getElementById('finale-artwork-image');
   const rooms = window.MUSEUM_ROOMS;
   const presenceEl = document.getElementById('class-presence');
+  const bgm = document.getElementById('bgm');
+  const ROOM_MUSIC = [
+    '../assets/sound/museum/gallery-01-portrait.mp3',
+    '../assets/sound/museum/gallery-02-nature.mp3',
+    '../assets/sound/museum/gallery-03-story.mp3',
+    '../assets/sound/museum/gallery-04-line-color-imagination.mp3',
+    '../assets/sound/museum/gallery-05-form-space.mp3'
+  ];
+
+  function setRoomMusic(index) {
+    if (!bgm || !ROOM_MUSIC[index]) return;
+    const nextSrc = new URL(ROOM_MUSIC[index], document.baseURI).href;
+    if (bgm.src === nextSrc) return;
+    const wasPlaying = !bgm.paused;
+    bgm.src = ROOM_MUSIC[index];
+    bgm.load();
+    if (wasPlaying) bgm.play().catch(() => {});
+  }
 
   const ROOM_QUIZZES = {
     portrait:{
@@ -736,6 +754,7 @@
 
   function setRoom(index,instant=false) {
     const version=++roomLoadVersion;
+    setRoomMusic(index);
     activeRoom=index;clickable.length=0;sculptureObstacles.length=0;nearest=null;prompt.hidden=true;loadDone=0;loadTotal=rooms[index].works.length;
     loading.classList.remove('done');loadingBar.style.width='0';loadingText.textContent='0%';
     finaleSurface=null;

@@ -17,7 +17,11 @@ test("menu-specific asset groups live with their menu", () => {
     "learning/simulations/body-explorer/assets/images/circulation-hero.webp",
     "learning/art/assets/images/k1.jpg",
     "learning/art/assets/sound/art-appreciation.mp3",
-    "learning/art/assets/sound/art-museum.mp3",
+    "learning/art/assets/sound/museum/gallery-01-portrait.mp3",
+    "learning/art/assets/sound/museum/gallery-02-nature.mp3",
+    "learning/art/assets/sound/museum/gallery-03-story.mp3",
+    "learning/art/assets/sound/museum/gallery-04-line-color-imagination.mp3",
+    "learning/art/assets/sound/museum/gallery-05-form-space.mp3",
     "learning/games/omok/assets/images/background.webp",
     "learning/games/omok/assets/sound/bgm.mp3",
     "learning/games/connect6/assets/images/background.webp",
@@ -27,6 +31,23 @@ test("menu-specific asset groups live with their menu", () => {
   for (const relativePath of expected) {
     assert.equal(fs.existsSync(path.join(root, relativePath)), true, relativePath);
   }
+});
+
+test("museum galleries switch to their matching background music", () => {
+  const index = read("learning/art/museum/index.html");
+  const script = read("learning/art/museum/museum.js");
+
+  assert.match(index, /museum\/gallery-01-portrait\.mp3/);
+  for (const name of [
+    "gallery-01-portrait.mp3",
+    "gallery-02-nature.mp3",
+    "gallery-03-story.mp3",
+    "gallery-04-line-color-imagination.mp3",
+    "gallery-05-form-space.mp3",
+  ]) {
+    assert.match(script, new RegExp(name.replaceAll(".", "\\.")));
+  }
+  assert.match(script, /setRoomMusic\(index\)/);
 });
 
 test("moved menu assets have no references to their former root locations", () => {
