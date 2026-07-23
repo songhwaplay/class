@@ -45,6 +45,7 @@ export default function DefiniteIntegralsPage() {
         <div className="polynomial-question-number">{String(index + 1).padStart(2, "0")}</div>
         <div className="polynomial-question-body">
           <span className="polynomial-focus-label">{problem.label}</span>
+          <p className="logarithm-prompt">{problem.prompt}</p>
           <div className="derivative-expression trig-derivative-expression"><MathFormula latex={problem.latex} /></div>
           {answerSheet && <div className="derivative-static-answer"><MathFormula latex={problem.answerLatex} /></div>}
         </div>

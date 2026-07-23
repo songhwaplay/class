@@ -11,6 +11,5 @@ export default function PolynomialIntegralsPage() {
     instruction="부정적분과 정적분의 관계를 이용하여 값을 구하세요."
     createSet={(seed) => createIntegralSet(seed) as { seed: number; problems: NumericWorksheetProblem[] }}
     createReviews={(kinds, seed) => createIntegralReviews(kinds as never[], seed) as NumericWorksheetProblem[]}
-    showPromptOnWorksheet={false}
   />;
 }

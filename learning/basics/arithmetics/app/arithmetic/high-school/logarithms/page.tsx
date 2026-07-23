@@ -15,6 +15,5 @@ export default function LogarithmsPage() {
     instruction="로그의 정의와 성질을 이용하여 값을 구하세요."
     createSet={(seed) => { const set = createLogarithmProblemSet(seed); return { seed: set.seed, problems: set.problems.map(adapt) }; }}
     createReviews={(kinds, seed) => createLogarithmReviewProblems(kinds as never[], seed).map(adapt)}
-    showPromptOnWorksheet={false}
   />;
 }

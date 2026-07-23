@@ -15,6 +15,5 @@ export default function SequencesPage() {
     instruction="수열의 규칙을 찾아 일반항과 합을 구하세요."
     createSet={(seed) => { const set = createSequenceSet(seed); return { seed: set.seed, problems: set.problems.map(adapt) }; }}
     createReviews={(kinds, seed) => createSequenceReviews(kinds as never[], seed).map(adapt)}
-    showPromptOnWorksheet={false}
   />;
 }

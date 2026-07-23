@@ -32,6 +32,5 @@ export default function DerivativePracticePage() {
     createSet={(seed) => { const set = createDerivativeProblemSet(seed); return { seed: set.seed, problems: set.problems.map(adapt) }; }}
     createReviews={(kinds, seed) => createDerivativeReviewProblems(kinds as never[], seed).map(adapt)}
     formatChoice={derivativeLatex}
-    showPromptOnWorksheet={false}
   />;
 }

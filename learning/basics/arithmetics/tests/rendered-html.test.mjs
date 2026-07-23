@@ -390,17 +390,17 @@ test("vector projection worksheet opens its multiple-choice answers in the answe
   assert.match(highSchoolCss, /@media print[\s\S]*?\.trig-derivative-answer-panel-backdrop\s*\{[\s\S]*?display:\s*none\s*!important/);
 });
 
-test("formula-only integral worksheets omit redundant per-question directions", async () => {
+test("formula-only integral worksheets state what each problem asks", async () => {
   for (const route of ["integration-techniques", "definite-integrals"]) {
     const response = await render(`/arithmetic/high-school/${route}`);
     assert.equal(response.status, 200, route);
     const html = await response.text();
-    assert.doesNotMatch(html, /logarithm-prompt/, route);
+    assert.match(html, /logarithm-prompt/, route);
     assert.match(html, /formula-only-page/, route);
   }
 });
 
-test("formula-first high-school worksheets omit generic per-question directions", async () => {
+test("formula-first high-school worksheets state what each problem asks", async () => {
   for (const route of [
     "logarithms",
     "sequences",
@@ -411,7 +411,7 @@ test("formula-first high-school worksheets omit generic per-question directions"
   ]) {
     const response = await render(`/arithmetic/high-school/${route}`);
     assert.equal(response.status, 200, route);
-    assert.doesNotMatch(await response.text(), /logarithm-prompt/, route);
+    assert.match(await response.text(), /logarithm-prompt/, route);
   }
 });
 

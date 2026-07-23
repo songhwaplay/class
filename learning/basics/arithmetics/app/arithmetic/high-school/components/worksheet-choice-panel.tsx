@@ -1,6 +1,7 @@
 "use client";
 
 import MathFormula from "../../../components/math-formula";
+import { targetQuestion } from "../../../../lib/worksheet-question";
 
 export type WorksheetChoice = {
   id: string;
@@ -38,7 +39,7 @@ export default function WorksheetChoicePanel({ title, problems, displayStyle = f
         <div className="trig-derivative-answer-list">
           {problems.map((problem, problemIndex) => (
             <section className="trig-derivative-answer-item" key={problem.id}>
-              <div className="trig-derivative-answer-item-heading"><strong>{String(problemIndex + 1).padStart(2, "0")}</strong><span>{problem.label}</span></div>
+              <div className="trig-derivative-answer-item-heading"><strong>{String(problemIndex + 1).padStart(2, "0")}</strong><span>{targetQuestion(problem.label)}</span></div>
               <div className="trig-derivative-choices">
                 {problem.choices.map((choice, choiceIndex) => (
                   <button className={`trig-derivative-choice${selected[problem.id] === choice.id ? " is-selected" : ""}`} type="button" key={choice.id} aria-pressed={selected[problem.id] === choice.id} onClick={() => onSelect(problem.id, choice.id)}>
