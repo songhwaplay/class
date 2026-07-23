@@ -129,8 +129,10 @@
         try {
             await audio.play();
             playbackUnlocked = true;
+            return true;
         } catch (_) {
             playbackUnlocked = false;
+            return false;
         }
     }
 
@@ -181,9 +183,12 @@
         if (playbackUnlocked || musicMuted) startPlayback();
     });
 
-    const unlockPlayback = () => startPlayback();
-    document.addEventListener("pointerdown", unlockPlayback, { capture: true, once: true });
-    document.addEventListener("keydown", unlockPlayback, { capture: true, once: true });
+    const unlockEvents = ["pointerdown", "click", "touchstart", "keydown"];
+    const unlockPlayback = async () => {
+        if (!await startPlayback()) return;
+        unlockEvents.forEach(eventName => document.removeEventListener(eventName, unlockPlayback, true));
+    };
+    unlockEvents.forEach(eventName => document.addEventListener(eventName, unlockPlayback, { capture: true }));
 
     render();
     applyAudioState();
