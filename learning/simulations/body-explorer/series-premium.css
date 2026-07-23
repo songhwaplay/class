@@ -851,7 +851,8 @@ body.has-system-atlas .scene-panel .fact-card { right: auto; width: min(53%, 300
 .organ-dual-control label.is-target > small { color: #8ce0af; }
 
 .organ-pump-control button,
-.organ-toggle-control button {
+.organ-toggle-control button,
+.organ-choice-control button {
     width: 100%;
     min-height: 52px;
     border: 1px solid color-mix(in srgb, var(--system-accent) 45%, transparent);
@@ -901,6 +902,33 @@ body.has-system-atlas .scene-panel .fact-card { right: auto; width: min(53%, 300
 .organ-toggle-control button.is-open { border-color: #7bd9a4; background: rgba(62, 153, 104, .18); }
 .organ-toggle-control button.is-open i { border-color: #a9f0c7; background: #68d294; box-shadow: 0 0 9px #68d294; }
 .organ-toggle-control button.is-open small { color: #9ae4ba; }
+
+.organ-choice-control {
+    display: grid;
+    gap: 8px;
+}
+
+.organ-choice-control button {
+    padding: 12px 14px;
+    text-align: left;
+    font-weight: 900;
+}
+
+.organ-choice-control button:hover:not(:disabled),
+.organ-choice-control button:focus-visible:not(:disabled) {
+    border-color: var(--system-accent);
+    background: color-mix(in srgb, var(--system-accent-soft) 82%, rgba(255,255,255,.08));
+}
+
+.organ-choice-control button.is-wrong {
+    border-color: #e86f78;
+    background: rgba(157, 49, 61, .24);
+}
+
+.organ-choice-control button.is-correct {
+    border-color: #7bd9a4;
+    background: rgba(62, 153, 104, .2);
+}
 
 .organ-dual-control {
     display: grid;

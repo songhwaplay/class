@@ -525,12 +525,39 @@
         elements.simulationNextButton.classList.toggle("hidden", !showNext);
     }
 
+    function experimentIntensityGoal(stage) {
+        if (stage.scenario.targetMin != null) {
+            return {
+                min: stage.scenario.targetMin,
+                max: stage.scenario.targetMax ?? 100,
+                start: stage.scenario.startIntensity ?? Math.max(10, stage.scenario.targetMin - 20)
+            };
+        }
+        const experimentStages = stages.filter((item) => isExperimentStage(item));
+        const experimentIndex = Math.max(0, experimentStages.findIndex((item) => item.id === stage.id));
+        const patterns = [
+            { offset: [0, 12], startOffset: 30 },
+            { offset: [-6, 8], startOffset: -28 },
+            { offset: [3, 15], startOffset: 30 },
+            { offset: [-4, 7], startOffset: -26 },
+            { offset: [0, 10], startOffset: 28 }
+        ];
+        const pattern = patterns[experimentIndex % patterns.length];
+        const clamp = (value) => Math.max(0, Math.min(100, value));
+        return {
+            min: clamp(stage.scenario.threshold + pattern.offset[0]),
+            max: clamp(stage.scenario.threshold + pattern.offset[1]),
+            start: clamp(stage.scenario.threshold + pattern.startOffset)
+        };
+    }
+
     function updateStimulusReadout() {
         const stage = stages[state.currentIndex];
         if (!isExperimentStage(stage)) return;
         const intensity = Number(elements.stimulusIntensity.value);
+        const goal = experimentIntensityGoal(stage);
         elements.stimulusValue.textContent = String(intensity);
-        elements.stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · ${simulationCopy.thresholdWord} ${stage.scenario.threshold}`;
+        elements.stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · 관찰 구간 ${goal.min}–${goal.max}`;
         elements.stimulusIntensity.style.setProperty("--stimulus-level", `${intensity}%`);
         updateMovementVisual(stage, intensity);
         updateExcretionVisual(stage, intensity);
@@ -762,7 +789,7 @@
         elements.simulationTitle.textContent = stage.question;
         elements.stimulusIcon.textContent = stage.scenario.icon;
         elements.stimulusName.textContent = stage.scenario.stimulus;
-        elements.stimulusIntensity.value = String(Math.max(10, Math.min(90, stage.scenario.threshold - 20)));
+        elements.stimulusIntensity.value = String(experimentIntensityGoal(stage).start);
         elements.stimulusIntensity.disabled = false;
         elements.undoPathButton.disabled = false;
         elements.clearPathButton.disabled = false;
@@ -787,6 +814,7 @@
         if (!isExperimentStage(stage) || state.stageSolved) return;
         const scenario = stage.scenario;
         const intensity = Number(elements.stimulusIntensity.value);
+        const intensityGoal = experimentIntensityGoal(stage);
 
         if (state.experimentPath.length < scenario.correctPath.length) {
             const emptyCount = scenario.correctPath.length - state.experimentPath.length;
@@ -795,8 +823,12 @@
             return;
         }
 
-        if (intensity < scenario.threshold) {
-            setSimulationFeedback("observing", simulationCopy.lowTitle, simulationCopy.lowText.replace("{message}", scenario.lowMessage));
+        if (intensity < intensityGoal.min || intensity > intensityGoal.max) {
+            const direction = intensity < intensityGoal.min ? "높여" : "낮춰";
+            const observation = intensity < intensityGoal.min
+                ? scenario.lowMessage
+                : "자극이나 반응이 지나치게 강하면 관찰하려는 과정이 안정적으로 나타나지 않아요.";
+            setSimulationFeedback("observing", "관찰 조건을 다시 맞춰 보세요", `${observation} 값을 ${direction} ${intensityGoal.min}–${intensityGoal.max} 구간에 맞추세요.`);
             elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent}. ${elements.simulationFeedbackText.textContent}`;
             window.ClassGameSfx?.play("click");
             elements.stimulusIntensity.focus({ preventScroll: true });

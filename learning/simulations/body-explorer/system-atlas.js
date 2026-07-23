@@ -345,27 +345,27 @@
     const manipulationStages = {
         digestion: {
             "mouth-chewing": { type: "pump", title: "저작 압력 실험", instruction: "턱 근육을 네 번 수축해 음식 덩어리를 잘게 부수세요.", action: "턱 근육 수축", goal: 4, unit: "회", visual: "chew" },
-            "mouth-saliva": { type: "range", title: "침 분비 조절", instruction: "침이 너무 적거나 넘치지 않도록 음식이 잘 뭉쳐지는 구간에 맞추세요.", label: "침 분비량", start: 92, min: 0, max: 100, targetMin: 56, targetMax: 70, unit: "%", visual: "saliva" },
+            "mouth-saliva": { type: "toggle", title: "침과 음식 섞기", instruction: "침의 두 가지 작용을 음식에 적용해 씹은 음식이 삼키기 좋은 상태가 되게 하세요.", toggles: ["음식을 촉촉하게 하기", "녹말 소화 시작하기"], visual: "saliva" },
             "swallow-esophagus": { type: "range", title: "삼킴 이동", instruction: "음식 덩어리를 목에서 식도 입구까지 천천히 내려 보내세요.", label: "음식 위치", start: 0, min: 0, max: 100, targetMin: 88, unit: "%", visual: "bolus" },
             "esophagus-movement": { type: "pump", title: "연동운동 관찰", instruction: "식도 근육을 차례로 수축해 음식 덩어리를 위까지 밀어내세요.", action: "연동 파동 보내기", goal: 3, unit: "파동", visual: "peristalsis" },
-            "stomach-mixing": { type: "range", title: "위 혼합 강도", instruction: "너무 강한 수축을 낮춰 음식과 위액이 고르게 섞이는 구간에 맞추세요.", label: "위벽 수축", start: 94, min: 0, max: 100, targetMin: 58, targetMax: 72, unit: "%", visual: "mix" },
+            "stomach-mixing": { type: "pump", title: "위의 혼합 운동", instruction: "위벽을 차례로 수축해 음식과 위액을 골고루 섞으세요.", action: "위벽 수축 보내기", goal: 3, unit: "회", visual: "mix" },
             "digestive-helpers": { type: "toggle", title: "소화액 밸브", instruction: "간의 담즙과 이자의 소화효소 통로를 모두 여세요.", toggles: ["담즙 밸브", "이자액 밸브"], visual: "valves" },
             "small-intestine-digestion": { type: "dual", title: "작은창자 소화 환경", instruction: "과한 효소 농도는 낮추고 느린 장 운동은 높여 두 조건을 각각 알맞게 맞추세요.", controls: [{ label: "소화효소", start: 92, targetMin: 64, targetMax: 78 }, { label: "장 운동", start: 18, targetMin: 48, targetMax: 62 }], unit: "%", visual: "intestine" },
-            "small-intestine-absorption": { type: "range", title: "융털 흡수", instruction: "분해된 영양소를 장 안쪽에서 모세혈관 쪽으로 이동시키세요.", label: "영양소 이동", start: 0, min: 0, max: 100, targetMin: 90, unit: "%", visual: "absorb" },
-            "large-intestine-water": { type: "range", title: "수분 회수 조절", instruction: "물을 너무 적거나 많이 빼앗지 않도록 적정 흡수 구간에 맞추세요.", label: "수분 흡수율", start: 20, min: 0, max: 100, targetMin: 58, targetMax: 72, unit: "%", visual: "water" },
-            "body-exit": { type: "range", title: "마지막 이동", instruction: "남은 찌꺼기를 큰창자 끝까지 이동시켜 소화 여행을 마치세요.", label: "이동 거리", start: 0, min: 0, max: 100, targetMin: 94, unit: "%", visual: "exit" }
+            "small-intestine-absorption": { type: "toggle", title: "융털의 영양소 흡수", instruction: "소화가 끝난 뒤 혈액으로 흡수되는 영양소를 골라 보내세요.", toggles: ["포도당 흡수", "아미노산 흡수"], visual: "absorb" },
+            "large-intestine-water": { type: "choice", title: "큰창자의 수분 회수", instruction: "남은 찌꺼기가 지나치게 묽지도 단단하지도 않도록 알맞은 수분 상태를 고르세요.", options: ["물을 거의 흡수하지 않기", "필요한 만큼 물 흡수하기", "남은 물을 모두 흡수하기"], correctIndex: 1, visual: "water" },
+            "body-exit": { type: "pump", title: "마지막 연동운동", instruction: "큰창자 벽의 수축을 이어 보내 남은 찌꺼기를 몸 밖으로 이동시키세요.", action: "연동 파동 보내기", goal: 3, unit: "파동", visual: "exit" }
         },
         respiration: {
-            "air-enters-nose": { type: "range", title: "비강 공기 처리", instruction: "지나친 습도를 낮춰 여과·가온·가습이 균형을 이루는 구간에 맞추세요.", label: "공기 처리 수준", start: 93, min: 0, max: 100, targetMin: 60, targetMax: 74, unit: "%", visual: "filter" },
+            "air-enters-nose": { type: "toggle", title: "코의 공기 처리", instruction: "코가 들이마신 공기에 하는 세 가지 일을 모두 작동시키세요.", toggles: ["먼지 거르기", "공기 데우기", "공기 촉촉하게 하기"], visual: "filter" },
             "inhale-lungs-expand": { type: "range", title: "횡격막 조작", instruction: "횡격막을 아래로 당겨 흉강을 넓히고 폐를 팽창시키세요.", label: "흉강 팽창", start: 12, min: 0, max: 100, targetMin: 82, unit: "%", visual: "inhale" },
-            "trachea": { type: "range", title: "기관 개방도", instruction: "과도하게 열린 통로를 낮춰 공기 흐름이 안정되는 구간에 맞추세요.", label: "기도 개방", start: 94, min: 0, max: 100, targetMin: 62, targetMax: 78, unit: "%", visual: "airway" },
+            "trachea": { type: "choice", title: "공기 통로 찾기", instruction: "목에서 폐로 공기가 이동할 때 지나야 하는 통로를 고르세요.", options: ["식도", "기관", "혈관"], correctIndex: 1, visual: "airway" },
             "bronchi": { type: "toggle", title: "좌우 기관지 분배", instruction: "왼쪽과 오른쪽 폐로 이어지는 공기 통로를 모두 여세요.", toggles: ["왼쪽 기관지", "오른쪽 기관지"], visual: "bronchi" },
             "alveoli-arrival": { type: "pump", title: "폐포 환기", instruction: "세 번의 부드러운 호흡으로 폐포를 공기로 채우세요.", action: "폐포에 공기 보내기", goal: 3, unit: "호흡", visual: "alveoli" },
             "oxygen-to-blood": { type: "dual", title: "폐포 기체교환", instruction: "혈액으로 가는 산소는 높이고 혈액에 남은 이산화탄소는 낮춰 기체교환을 완성하세요.", controls: [{ label: "O₂ → 혈액", start: 18, targetMin: 72, targetMax: 88 }, { label: "혈액 속 CO₂ 잔류", start: 86, targetMin: 12, targetMax: 28 }], unit: "%", visual: "exchange" },
             "oxygen-to-body": { type: "pump", title: "산소 운반", instruction: "심장 박동으로 산소가 든 혈액을 온몸의 세포까지 보내세요.", action: "순환 펌프 작동", goal: 4, unit: "박동", visual: "delivery" },
-            "carbon-dioxide-return": { type: "range", title: "이산화탄소 회수", instruction: "너무 빠른 회수 속도를 낮춰 정맥혈이 안정적으로 폐에 도착하게 하세요.", label: "CO₂ 회수", start: 96, min: 0, max: 100, targetMin: 74, targetMax: 86, unit: "%", visual: "return" },
-            "carbon-dioxide-to-alveoli": { type: "range", title: "CO₂ 폐포 확산", instruction: "확산 속도를 적정 구간에 맞춰 혈액과 폐포 사이의 교환을 안정시키세요.", label: "폐포 이동", start: 12, min: 0, max: 100, targetMin: 66, targetMax: 80, unit: "%", visual: "co2" },
-            "exhale-out": { type: "range", title: "날숨 조작", instruction: "한꺼번에 밀어내지 말고 날숨 흐름을 안정 구간으로 낮추세요.", label: "날숨 흐름", start: 100, min: 0, max: 100, targetMin: 76, targetMax: 90, unit: "%", visual: "exhale" }
+            "carbon-dioxide-return": { type: "pump", title: "이산화탄소 회수", instruction: "혈액의 순환을 이어 세포에서 생긴 이산화탄소를 폐 가까이 운반하세요.", action: "순환 이어가기", goal: 3, unit: "단계", visual: "return" },
+            "carbon-dioxide-to-alveoli": { type: "choice", title: "이산화탄소 이동 방향", instruction: "혈액 속 이산화탄소가 몸 밖으로 나가려면 어느 방향으로 이동해야 하는지 고르세요.", options: ["혈액 → 폐포", "폐포 → 혈액", "폐포 → 세포"], correctIndex: 0, visual: "co2" },
+            "exhale-out": { type: "pump", title: "날숨 만들기", instruction: "가슴 속 공간이 줄어드는 변화를 이어서 이산화탄소가 든 공기를 밖으로 내보내세요.", action: "날숨 단계 진행", goal: 2, unit: "단계", visual: "exhale" }
         }
     };
 
@@ -642,6 +642,34 @@
         return wrap;
     }
 
+    function buildChoiceControl(config, lab, onReady) {
+        const wrap = document.createElement("div");
+        wrap.className = "organ-choice-control";
+        config.options.forEach((option, index) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.innerHTML = `<span>${option}</span>`;
+            button.addEventListener("click", () => {
+                if (labCompleted) return;
+                wrap.querySelectorAll("button").forEach((item) => item.classList.remove("is-wrong"));
+                if (index !== config.correctIndex) {
+                    button.classList.add("is-wrong");
+                    lab.querySelector(".organ-lab-status").innerHTML = "<b>다시 관찰</b><span>기관의 역할과 물질이 이동해야 하는 방향을 다시 생각해 보세요.</span>";
+                    updateVisual(lab, 24);
+                    return;
+                }
+                button.classList.add("is-correct");
+                wrap.querySelectorAll("button").forEach((item) => {
+                    item.disabled = true;
+                });
+                updateVisual(lab, 100);
+                onReady();
+            });
+            wrap.append(button);
+        });
+        return wrap;
+    }
+
     function buildDualControl(config, lab, onReady) {
         const wrap = document.createElement("div");
         wrap.className = "organ-dual-control";
@@ -680,7 +708,7 @@
         questionCard.classList.add("direct-manipulation-active");
         document.getElementById("stageQuestion").textContent = config.title;
         const questionKicker = questionCard.querySelector(".question-kicker");
-        if (questionKicker) questionKicker.textContent = "장기를 직접 조작하고 실시간 변화를 관찰하세요";
+        if (questionKicker) questionKicker.textContent = "장기를 직접 조작하고 변화를 관찰하세요";
 
         const lab = document.createElement("section");
         lab.className = "organ-manipulation-lab";
@@ -688,7 +716,7 @@
         lab.innerHTML = `<header><span>DIRECT MANIPULATION · ${String(Number(document.getElementById("stageNumber")?.textContent || 1)).padStart(2, "0")}</span><h3>${config.title}</h3><p>${config.instruction}</p></header>
             ${progressMarkup(config)}
             <div class="organ-lab-controls"></div>
-            <div class="organ-lab-status"><b>조작 대기</b><span>컨트롤을 움직이면 장기의 반응이 실시간으로 표시됩니다.</span></div>`;
+            <div class="organ-lab-status"><b>조작 대기</b><span>컨트롤을 움직이면 장기의 반응이 표시됩니다.</span></div>`;
 
         const complete = () => finishManipulation(stage, lab);
         let control;
@@ -696,6 +724,7 @@
         if (config.type === "pump") control = buildPumpControl(config, lab, complete);
         if (config.type === "toggle") control = buildToggleControl(config, lab, complete);
         if (config.type === "dual") control = buildDualControl(config, lab, complete);
+        if (config.type === "choice") control = buildChoiceControl(config, lab, complete);
         lab.querySelector(".organ-lab-controls").append(control);
         questionCard.insertBefore(lab, choiceList);
     }
@@ -744,7 +773,10 @@
         }
     };
 
-    const physiologyProfile = physiologyProfiles[system];
+    // The shared percentage-matching console made five different body systems
+    // feel like the same mission and silently completed the real path-building
+    // task. Keep the system-specific path experiment as the primary interaction.
+    const physiologyProfile = null;
     const simulationCard = document.getElementById("simulationCard");
     let activePhysiologyStage = "";
     let physiologyCompleting = false;
