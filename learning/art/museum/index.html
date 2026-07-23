@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0a09">
   <title>빛의 복도 · 어린이 미술관</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-5">
+  <link rel="stylesheet" href="styles.css?v=20260723-6">
   <script src="../../../assets/sound/music-control.js?v=20260723-1" defer></script>
 </head>
 <body>
@@ -24,7 +24,7 @@
         <strong id="room-title">인물</strong>
         <span id="room-count">12 WORKS</span>
       </div>
-      <button class="help-button" id="help-button" type="button" aria-label="관람 방법 보기">?</button>
+      <button class="help-button" id="help-button" type="button" aria-label="관람 방법 보기" data-sfx="bell">?</button>
     </header>
 
     <nav class="room-tabs" id="room-tabs" aria-label="전시실 선택"></nav>
@@ -58,7 +58,7 @@
     </div>
 
     <dialog class="art-modal" id="art-modal">
-      <button class="modal-close" id="modal-close" type="button" aria-label="닫기">×</button>
+      <button class="modal-close" id="modal-close" type="button" aria-label="닫기" data-sfx="card">×</button>
       <div class="modal-image-wrap">
         <img id="modal-image" alt="">
         <span id="modal-type">PAINTING</span>
@@ -88,7 +88,7 @@
     </dialog>
 
     <dialog class="help-modal" id="help-modal">
-      <button class="modal-close" id="help-close" type="button" aria-label="닫기">×</button>
+      <button class="modal-close" id="help-close" type="button" aria-label="닫기" data-sfx="card">×</button>
       <p class="eyebrow">HOW TO EXPLORE</p>
       <h2>천천히 걸으며 감상해요</h2>
       <div class="help-grid">
@@ -99,14 +99,14 @@
     </dialog>
 
     <div class="touch-controls" aria-hidden="true">
-      <button data-key="KeyW">↑</button><button data-key="KeyA">←</button>
-      <button data-key="KeyS">↓</button><button data-key="KeyD">→</button>
+      <button data-key="KeyW" data-sfx="none">↑</button><button data-key="KeyA" data-sfx="none">←</button>
+      <button data-key="KeyS" data-sfx="none">↓</button><button data-key="KeyD" data-sfx="none">→</button>
     </div>
     <div class="vignette" aria-hidden="true"></div>
   </main>
   <script src="vendor/three.min.js"></script>
   <script src="vendor/GLTFLoader.js"></script>
   <script src="art-data.js?v=20260723-5"></script>
-  <script src="museum.js?v=20260723-27"></script>
+  <script src="museum.js?v=20260723-28"></script>
 </body>
 </html>

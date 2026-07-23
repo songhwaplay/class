@@ -27,15 +27,16 @@ body.class-music-ready .unified-music-control {
   bottom: 22px;
   display: flex !important;
 }
-body.class-music-ready .unified-audio-divider,
-body.class-music-ready .unified-audio-divider + .unified-audio-group {
-  display: none !important;
-}
 @media (max-width:760px), (hover:none) and (pointer:coarse) {
   body.class-music-ready .unified-music-control {
     right: 12px;
     bottom: calc(12px + env(safe-area-inset-bottom));
     transform: scale(.9);
     transform-origin: right bottom;
+  }
+}
+@media (max-width:520px) {
+  body.class-music-ready .unified-music-control {
+    transform: scale(.74);
   }
 }
