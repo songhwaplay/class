@@ -1,15 +1,109 @@
-const pieces=[
- {no:'01',era:'baroque',period:'바로크',title:'사계 〈봄〉 1악장',composer:'안토니오 비발디',url:'https://www.youtube.com/results?search_query=Vivaldi+Four+Seasons+Spring+1st+movement',points:['바이올린이 새의 지저귐을 어떻게 흉내 내는지 찾아보세요.','빠르게 반복되는 리듬에서 봄의 활기를 느껴 보세요.'],note:'표제 음악: 음악 밖의 장면이나 이야기를 떠올리게 하는 음악'},
- {no:'02',era:'baroque',period:'바로크',title:'G선상의 아리아',composer:'요한 제바스티안 바흐',url:'https://www.youtube.com/results?search_query=Bach+Air+on+the+G+String',points:['길게 이어지는 선율의 호흡을 따라가 보세요.','현악기의 부드러운 음색 변화를 들어 보세요.'],note:'현악 합주곡 〈관현악 모음곡 3번〉의 한 악장입니다.'},
- {no:'03',era:'classical',period:'고전',title:'교향곡 5번 〈운명〉 1악장',composer:'루트비히 판 베토벤',url:'https://www.youtube.com/results?search_query=Beethoven+Symphony+No+5+1st+movement',points:['“따따따-따” 네 음의 동기를 찾아보세요.','같은 동기가 여러 악기로 어떻게 달라지는지 들어 보세요.'],note:'동기: 곡 전체에서 반복·변형되는 짧은 음악 재료'},
- {no:'04',era:'classical',period:'고전',title:'작은 별 변주곡',composer:'볼프강 아마데우스 모차르트',url:'https://www.youtube.com/results?search_query=Mozart+Twinkle+Twinkle+Little+Star+Variations',points:['익숙한 주제가 몇 번 나오는지 세어 보세요.','빠르기와 리듬이 바뀔 때 느낌도 달라지는지 생각해 보세요.'],note:'변주곡: 하나의 주제를 여러 모습으로 바꾸어 들려주는 곡'},
- {no:'05',era:'romantic',period:'낭만',title:'피아노 5중주 〈송어〉 4악장',composer:'프란츠 슈베르트',url:'https://www.youtube.com/results?search_query=Schubert+Trout+Quintet+4th+movement',points:['경쾌하게 뛰어오르는 반주에서 물고기의 움직임을 상상해 보세요.','주제가 변주될 때 어떤 악기가 앞에 나서는지 찾아보세요.'],note:'실내악: 소수의 연주자가 함께 연주하는 음악'},
- {no:'06',era:'romantic',period:'낭만',title:'호두까기 인형 〈꽃의 왈츠〉',composer:'표트르 차이콥스키',url:'https://www.youtube.com/results?search_query=Tchaikovsky+Nutcracker+Waltz+of+the+Flowers',points:['3박자의 빙글빙글 도는 느낌을 손으로 지휘해 보세요.','하프와 관악기가 만드는 반짝이는 분위기를 들어 보세요.'],note:'왈츠: 강-약-약의 3박자로 춤추듯 흐르는 음악'},
- {no:'07',era:'modern',period:'근현대',title:'동물의 사육제 〈백조〉',composer:'카미유 생상스',url:'https://www.youtube.com/results?search_query=Saint+Saens+The+Swan',points:['첼로의 선율이 백조의 어떤 움직임을 나타내는지 말해 보세요.','피아노 반주의 잔물결 같은 음형을 들어 보세요.'],note:'음색: 악기나 목소리마다 지닌 고유한 소리의 빛깔'},
- {no:'08',era:'modern',period:'근현대',title:'볼레로',composer:'모리스 라벨',url:'https://www.youtube.com/results?search_query=Ravel+Bolero',points:['처음부터 끝까지 반복되는 리듬을 찾아보세요.','점점 커지는 소리와 악기 변화를 기록해 보세요.'],note:'크레셴도: 소리가 점차 커지도록 연주하는 표현'}
+const pieces = [
+  ['01','baroque','바로크','사계 〈봄〉 1악장','비발디','협주곡','바이올린','4박자','빠르게','밝고 생기 있게','새소리와 천둥을 묘사하는 독주 바이올린','표제 음악','봄 풍경을 소리로 그린 음악'],
+  ['02','baroque','바로크','G선상의 아리아','바흐','관현악 모음곡','현악 합주','4박자','느리게','평온하고 장중하게','길게 이어지는 선율과 고른 저음','선율','숨을 길게 이어 가는 듯한 노래'],
+  ['03','baroque','바로크','브란덴부르크 협주곡 5번 1악장','바흐','합주 협주곡','하프시코드','2박자','빠르게','화려하고 활기차게','독주 악기군과 합주가 주고받는 대화','합주 협주곡','하프시코드의 긴 독주 부분'],
+  ['04','baroque','바로크','수상 음악 〈알라 혼파이프〉','헨델','관현악 모음곡','금관악기','3박자','보통 빠르게','당당하고 축제처럼','힘찬 금관과 뚜렷한 3박자','모음곡','왕의 뱃놀이를 위해 만든 야외 음악'],
+  ['05','baroque','바로크','캐논 라장조','파헬벨','캐논','현악 합주','4박자','보통 빠르게','차분하고 따뜻하게','같은 선율이 차례로 뒤따라 들어옴','돌림노래 원리','반복되는 저음 위에 선율이 겹침'],
+  ['06','classical','고전','교향곡 5번 〈운명〉 1악장','베토벤','교향곡','관현악','2박자','매우 빠르게','긴장되고 힘차게','따따따-따 네 음 동기의 반복과 변형','동기','짧은 음악 재료가 곡 전체를 이끔'],
+  ['07','classical','고전','교향곡 9번 〈합창〉 4악장','베토벤','교향곡','합창과 관현악','4박자','빠르게','장엄하고 환희에 차게','환희의 주제가 합창과 함께 커짐','주제','교향곡에 성악을 본격적으로 결합'],
+  ['08','classical','고전','아이네 클라이네 나흐트무지크 1악장','모차르트','세레나데','현악 합주','4박자','빠르게','밝고 우아하게','힘찬 첫 주제와 부드러운 둘째 주제','소나타 형식','두 성격의 주제가 대비됨'],
+  ['09','classical','고전','작은 별 변주곡','모차르트','변주곡','피아노','4박자','보통 빠르게','재치 있고 다채롭게','익숙한 주제가 리듬과 빠르기를 바꿈','변주','하나의 주제가 여러 모습으로 변화'],
+  ['10','classical','고전','놀람 교향곡 2악장','하이든','교향곡','관현악','2박자','느리게','평온하다가 익살스럽게','여린 선율 뒤 갑자기 나오는 큰 소리','셈여림','갑작스러운 강한 소리로 놀라게 함'],
+  ['11','classical','고전','트럼펫 협주곡 3악장','하이든','협주곡','트럼펫','2박자','빠르게','명랑하고 경쾌하게','독주 트럼펫과 관현악의 주고받음','협주','독주 악기와 관현악이 대비하고 협력'],
+  ['12','classical','고전','윌리엄 텔 서곡 〈피날레〉','로시니','서곡','관현악','2박자','매우 빠르게','용감하고 질주하듯','말발굽을 닮은 빠른 리듬','서곡','오페라가 시작되기 전 연주하는 음악'],
+  ['13','romantic','낭만','피아노 5중주 〈송어〉 4악장','슈베르트','변주곡','피아노와 현악기','2박자','보통 빠르게','맑고 경쾌하게','주제가 악기를 바꾸며 다섯 번 변주됨','실내악','소수 연주자가 긴밀하게 호흡'],
+  ['14','romantic','낭만','마왕','슈베르트','예술가곡','성악과 피아노','4박자','매우 빠르게','불안하고 긴박하게','말발굽 같은 피아노 반주와 역할별 목소리','예술가곡','시와 음악이 결합한 독창곡'],
+  ['15','romantic','낭만','녹턴 작품 9-2','쇼팽','녹턴','피아노','4박자','느리게','고요하고 서정적으로','꾸밈음이 더해진 노래하는 오른손 선율','루바토','박자를 유연하게 밀고 당기는 표현'],
+  ['16','romantic','낭만','헝가리 무곡 5번','브람스','무곡','관현악','2박자','빠르기의 변화가 큼','정열적이고 익살스럽게','갑작스러운 빠르기와 셈여림 변화','아고기크','빠르기 변화가 춤의 긴장감을 만듦'],
+  ['17','romantic','낭만','호두까기 인형 〈꽃의 왈츠〉','차이콥스키','발레 음악','관현악과 하프','3박자','보통 빠르게','화려하고 우아하게','하프 도입과 빙글도는 왈츠 리듬','왈츠','강-약-약으로 흐르는 3박자 춤'],
+  ['18','romantic','낭만','백조의 호수 〈정경〉','차이콥스키','발레 음악','오보에와 관현악','4박자','느리게','신비롭고 애잔하게','오보에가 연주하는 슬픈 백조 주제','발레 음악','춤과 극의 장면을 이끄는 관현악'],
+  ['19','romantic','낭만','동물의 사육제 〈백조〉','생상스','모음곡','첼로와 피아노','6/4박자','느리게','우아하고 평화롭게','첼로 선율과 잔물결 같은 피아노 반주','음색','첼로가 물 위의 백조를 표현'],
+  ['20','romantic','낭만','전람회의 그림 〈키예프의 대문〉','무소륵스키','모음곡','관현악','4박자','장엄하게','웅장하고 찬란하게','큰 종소리 같은 화음과 힘찬 주제','표제 음악','그림에서 받은 인상을 음악으로 표현'],
+  ['21','romantic','낭만','신세계 교향곡 2악장','드보르자크','교향곡','잉글리시 호른','4박자','느리게','그립고 평화롭게','잉글리시 호른의 고향을 그리는 선율','민족주의 음악','민속적 선율과 리듬을 예술 음악에 활용'],
+  ['22','modern','근현대','볼레로','라벨','관현악곡','스네어드럼과 관현악','3박자','보통 빠르게','집요하고 점차 고조되게','같은 리듬 위 음색과 셈여림이 변화','크레셴도','긴 시간에 걸쳐 점점 크게 연주'],
+  ['23','modern','근현대','목신의 오후에의 전주곡','드뷔시','교향시','플루트','자유로운 박자','매우 느리게','몽환적이고 신비롭게','경계가 흐릿한 화음과 유연한 플루트 선율','인상주의','빛과 분위기처럼 순간의 인상을 표현'],
+  ['24','modern','근현대','행성 〈목성〉','홀스트','관현악 모음곡','관현악','3박자','빠르게','웅장하고 즐겁게','힘찬 춤 리듬과 넓게 노래하는 중간 선율','관현악법','다양한 악기 음색을 풍부하게 배치'],
+  ['25','modern','근현대','피터와 늑대','프로코피예프','음악 동화','관현악과 해설','4박자','보통 빠르게','재치 있고 이야기하듯','등장인물마다 다른 악기와 주제를 사용','라이트모티프','인물이나 생각을 나타내는 반복 주제'],
+  ['26','modern','근현대','청소년을 위한 관현악 입문','브리튼','변주곡과 푸가','관현악','3박자','빠르게','선명하고 교육적으로','악기군별 변주 뒤 모든 악기가 푸가로 합류','푸가','주제가 여러 성부에서 차례로 모방'],
+  ['27','modern','근현대','랩소디 인 블루','거슈윈','랩소디','피아노와 관현악','4박자','보통 빠르게','도시적이고 자유롭게','클라리넷 글리산도와 재즈 리듬','글리산도','음을 미끄러지듯 연속해서 연주'],
+  ['28','modern','근현대','아리랑 환상곡','최성환','관현악 환상곡','관현악','3박자','느리게 시작해 빨라짐','서정적이고 힘차게','아리랑 선율이 여러 악기와 리듬으로 변주','환상곡','정해진 틀보다 자유롭게 전개'],
+  ['29','modern','근현대','한국 환상곡','안익태','교향적 환상곡','관현악과 합창','4박자','장엄하게','민족적이고 웅장하게','한국적 선율과 대규모 합창의 결합','민족주의 음악','민족의 역사와 정서를 큰 규모로 표현'],
+  ['30','modern','근현대','캐리비안의 해적 〈그는 해적이다〉','클라우스 바델트','영화 음악','관현악','6/8박자','매우 빠르게','모험적이고 박진감 있게','반복되는 추진력 있는 리듬과 금관 선율','오스티나토','짧은 리듬이나 선율을 계속 반복']
+].map(([no,era,period,title,composer,form,lead,meter,tempo,mood,feature,concept,note])=>({no,era,period,title,composer,form,lead,meter,tempo,mood,feature,concept,note,url:`https://www.youtube.com/results?search_query=${encodeURIComponent(`${composer} ${title}`)}`}));
+
+const levels=['입문','입문','입문','기본','기본','기본','기본','도전','도전','도전'];
+const templates=[
+  ['이 곡의 작곡가는 누구일까요?','composer'],
+  ['이 곡이 속하는 시대는 언제일까요?','period'],
+  ['이 곡의 종류 또는 형식은 무엇일까요?','form'],
+  ['이 곡에서 중심적으로 들어볼 악기 편성은 무엇일까요?','lead'],
+  ['이 곡의 박자 특징은 무엇일까요?','meter'],
+  ['이 곡의 빠르기와 가장 가까운 것은 무엇일까요?','tempo'],
+  ['이 곡의 주된 분위기와 가장 가까운 것은 무엇일까요?','mood'],
+  ['감상할 때 가장 주목할 특징은 무엇일까요?','feature'],
+  ['이 곡과 연결되는 핵심 음악 개념은 무엇일까요?','concept'],
+  ['다음 중 이 곡에 알맞은 해설은 무엇일까요?','note']
 ];
-const quiz=[{q:'〈운명〉 교향곡에서 가장 먼저 귀에 들어오는 것은?',a:['긴 서정 선율','네 음으로 된 짧은 동기','3박자 춤 리듬'],c:1},{q:'〈작은 별 변주곡〉처럼 주제를 여러 모습으로 바꾸는 형식은?',a:['변주곡','교향곡','협주곡'],c:0},{q:'〈볼레로〉를 들으며 주목할 변화는?',a:['점점 작아지는 소리','반복되는 리듬과 점점 커지는 소리','노래하는 합창'],c:1}];
-const playlist=document.querySelector('#playlist');function render(filter='all'){playlist.innerHTML=pieces.filter(p=>filter==='all'||p.era===filter).map(p=>`<article class="piece" data-no="${p.no}"><span class="era">${p.period}</span><h3>${p.title}</h3><p class="composer">${p.composer}</p><a class="listen" href="${p.url}" target="_blank" rel="noopener">▶ 감상곡 찾아 듣기</a><ul class="points">${p.points.map(x=>`<li>${x}</li>`).join('')}</ul><p class="note"><b>음악 낱말</b> · ${p.note}</p></article>`).join('')};render();
-document.querySelectorAll('.filters button').forEach(b=>b.onclick=()=>{document.querySelector('.filters .active').classList.remove('active');b.classList.add('active');render(b.dataset.era)});
-const box=document.querySelector('#quiz-box');box.innerHTML=quiz.map((x,i)=>`<div class="question"><p>${i+1}. ${x.q}</p>${x.a.map((a,j)=>`<label><input type="radio" name="q${i}" value="${j}">${a}</label>`).join('')}</div>`).join('');
-document.querySelector('#check-answer').onclick=()=>{let score=0;quiz.forEach((x,i)=>{if(+document.querySelector(`input[name=q${i}]:checked`)?.value===x.c)score++});document.querySelector('#result').textContent=`${score} / ${quiz.length} 정답! ${score===3?'훌륭해요. 음악을 듣는 귀가 아주 예리하네요!':'해설을 다시 읽고 한 번 더 들어 볼까요?'}`;document.querySelector('#result').className='correct'};
+const values=key=>[...new Set(pieces.map(p=>p[key]))];
+const pickWrong=(key,answer,seed)=>{const pool=values(key).filter(x=>x!==answer);return [pool[seed%pool.length],pool[(seed*3+5)%pool.length]]};
+const shuffle=(arr)=>arr.map(v=>({v,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);
+const allQuestions=pieces.flatMap((p,pi)=>templates.map(([stem,key],ti)=>{
+  const answer=p[key], choices=shuffle([answer,...pickWrong(key,answer,pi*11+ti)]);
+  return {id:`${p.no}-${ti+1}`,piece:p,level:levels[ti],stem:`${p.title} — ${stem}`,choices,correct:choices.indexOf(answer),answer,explain:`${p.title}: ${key==='note'?p.note:`${answer}. ${p.note}`}`};
+}));
+
+const $=s=>document.querySelector(s);
+const playlist=$('#playlist');
+function renderPieces(filter='all'){
+  playlist.innerHTML=pieces.filter(p=>filter==='all'||p.era===filter).map(p=>`<article class="piece" data-no="${p.no}">
+    <div class="piece-top"><span class="era">${p.period}</span><span>${p.form}</span></div>
+    <h3>${p.title}</h3><p class="composer">${p.composer}</p>
+    <a class="listen" href="${p.url}" target="_blank" rel="noopener">▶ 감상곡 찾아 듣기</a>
+    <dl><div><dt>주요 악기</dt><dd>${p.lead}</dd></div><div><dt>빠르기·박자</dt><dd>${p.tempo} · ${p.meter}</dd></div></dl>
+    <p class="listen-point"><b>귀 기울일 곳</b>${p.feature}</p><p class="note"><b>${p.concept}</b> · ${p.note}</p>
+  </article>`).join('');
+}
+renderPieces();
+document.querySelectorAll('.filters button').forEach(b=>b.addEventListener('click',()=>{
+  $('.filters .active').classList.remove('active');b.classList.add('active');renderPieces(b.dataset.era);
+}));
+
+const storeKey='classics-bank-progress-v1';
+let progress=JSON.parse(localStorage.getItem(storeKey)||'{"solved":0,"correct":0,"wrong":[]}');
+let current=[];
+function save(){localStorage.setItem(storeKey,JSON.stringify(progress));renderStats()}
+function renderStats(){
+  $('#solved-count').textContent=progress.solved;
+  $('#accuracy').textContent=progress.solved?`${Math.round(progress.correct/progress.solved*100)}%`:'—';
+  $('#wrong-count').textContent=progress.wrong.length;
+}
+renderStats();
+function makeQuiz(source){
+  current=source;$('#quiz-empty').hidden=true;$('.quiz-actions').hidden=false;$('#result').innerHTML='';
+  $('#quiz-box').innerHTML=current.map((q,i)=>`<fieldset class="question" data-id="${q.id}"><legend><span>${q.level}</span>${i+1}. ${q.stem}</legend>${q.choices.map((a,j)=>`<label><input type="radio" name="q${i}" value="${j}"><i>${j+1}</i>${a}</label>`).join('')}<p class="feedback"></p></fieldset>`).join('');
+}
+function startRandom(){
+  const era=$('#quiz-era').value,level=$('#quiz-level').value,count=+$('#quiz-count').value;
+  const pool=allQuestions.filter(q=>(era==='all'||q.piece.era===era)&&(level==='all'||q.level===level));
+  makeQuiz(shuffle(pool).slice(0,Math.min(count,pool.length)));
+}
+$('#new-quiz').addEventListener('click',startRandom);
+$('#next-quiz').addEventListener('click',startRandom);
+$('#retry-wrong').addEventListener('click',()=>{
+  const pool=allQuestions.filter(q=>progress.wrong.includes(q.id));
+  if(!pool.length){$('#result').innerHTML='<p class="result-card">아직 복습할 오답이 없어요. 먼저 새 문제를 풀어 보세요.</p>';return}
+  makeQuiz(shuffle(pool).slice(0,20));
+});
+$('#check-answer').addEventListener('click',()=>{
+  let score=0,answered=0;
+  current.forEach((q,i)=>{
+    const field=$(`fieldset[data-id="${q.id}"]`),checked=field.querySelector(`input[name="q${i}"]:checked`);
+    field.querySelectorAll('label').forEach((label,j)=>{label.classList.toggle('answer-correct',j===q.correct);label.classList.toggle('answer-wrong',checked&&+checked.value===j&&j!==q.correct)});
+    const ok=checked&&+checked.value===q.correct;if(checked)answered++;if(ok)score++;
+    field.querySelector('.feedback').textContent=checked?(ok?`정답! ${q.explain}`:`정답은 ‘${q.answer}’입니다. ${q.explain}`):`답을 고르지 않았어요. 정답은 ‘${q.answer}’입니다.`;
+    if(checked){progress.solved++;if(ok){progress.correct++;progress.wrong=progress.wrong.filter(id=>id!==q.id)}else if(!progress.wrong.includes(q.id))progress.wrong.push(q.id)}
+  });
+  save();
+  $('#result').innerHTML=`<div class="result-card"><b>${score} / ${current.length}</b><span>${answered<current.length?`${current.length-answered}문제는 답하지 않았어요. `:''}${score===current.length?'완벽해요! 이번에는 다른 시대에 도전해 보세요.':'틀린 문제는 오답 다시 풀기에 저장했어요.'}</span></div>`;
+  $('#result').scrollIntoView({behavior:'smooth',block:'center'});
+});
