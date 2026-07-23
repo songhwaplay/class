@@ -967,7 +967,7 @@
 }
 
 .trig-derivative-answer-panel .trig-derivative-choice {
-  min-height: 44px;
+  min-height: 54px;
 }
 
 .trig-derivative-answer-panel .math-formula .katex .mathnormal {
@@ -1015,8 +1015,12 @@
 
 .trig-derivative-choice .math-formula {
   min-width: 0;
+  max-width: 100%;
   justify-self: start;
-  font-size: 13px;
+  font-size: 18px;
+  line-height: 1.35;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .trig-derivative-choice:hover,

@@ -187,6 +187,7 @@ test("keeps geometry worksheet formulas compact without inline answer controls",
   assert.match(css, /\.geometry-choice-question \.polynomial-focus-label\s*\{[^}]*white-space:\s*nowrap/s);
   assert.doesNotMatch(css, /\.geometry-inline-choices\s*\{/);
   assert.match(highSchoolCss, /\.trig-derivative-answer-panel \.math-formula \.katex \.mathnormal\s*\{[^}]*font-family:\s*"KaTeX_Math"[^}]*font-style:\s*italic/s);
+  assert.match(highSchoolCss, /\.trig-derivative-choice \.math-formula\s*\{[^}]*font-size:\s*18px[^}]*overflow-x:\s*auto/s);
 });
 
 test("hides repeated high-school instruction strips and uses one math font stack", async () => {
