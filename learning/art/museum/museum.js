@@ -17,18 +17,16 @@
   const helpModal = document.getElementById('help-modal');
   const rooms = window.MUSEUM_ROOMS;
   const presenceEl = document.getElementById('class-presence');
-  const PHOTO_ROOM_MODE = true;
-  canvas.classList.toggle('photo-room',PHOTO_ROOM_MODE);
 
   const scene = new THREE.Scene();
-  scene.background = PHOTO_ROOM_MODE ? null : new THREE.Color(0x191613);
-  scene.fog = PHOTO_ROOM_MODE ? null : new THREE.FogExp2(0x211d19, 0.014);
+  scene.background = new THREE.Color(0x191613);
+  scene.fog = new THREE.FogExp2(0x211d19, 0.014);
 
   const camera = new THREE.PerspectiveCamera(62, innerWidth / innerHeight, 0.08, 130);
   camera.rotation.order = 'YXZ';
   camera.position.set(0, 1.68, 6.5);
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, alpha:PHOTO_ROOM_MODE, powerPreference:'high-performance' });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias:true, powerPreference:'high-performance' });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 1.75));
   renderer.setSize(innerWidth, innerHeight, false);
   renderer.shadowMap.enabled = true;
@@ -175,10 +173,6 @@
 
   function buildShell(room) {
     const width=room.id==='space'?14:11.6,length=GALLERY_START-GALLERY_END,height=6.4,centerZ=(GALLERY_START+GALLERY_END)/2;
-    if(PHOTO_ROOM_MODE){
-      const ambient=new THREE.HemisphereLight(0xffead1,0x3b2a20,1.05);gallery.add(ambient);
-      return {width,length,height};
-    }
     mesh([width,.18,length],materials.walnut,[0,-.09,centerZ]);
     mesh([width,.18,length],materials.ceiling,[0,height+.1,centerZ]);
     mesh([.28,height,length],materials.wallInset,[-width/2,3.1,centerZ]);
@@ -240,10 +234,8 @@
 
   function addSpotlight(x,y,z,side,index,target) {
     const spot=new THREE.SpotLight(0xffd29a,62,8.2,Math.PI*.18,.48,1.8);spot.position.set(x-side*.85,Math.min(5.7,y+1.7),z+.05);spot.target=target;spot.castShadow=index%3===0;spot.shadow.mapSize.set(512,512);spot.shadow.bias=-.00015;gallery.add(spot,spot.target);
-    if(!PHOTO_ROOM_MODE){
-      const stem=mesh([.08,.08,.8],materials.brass,[x-side*.42,Math.min(5.78,y+1.82),z]);stem.rotation.z=side*Math.PI/2;
-      const head=mesh([.24,.18,.34],materials.darkBrass,[x-side*.82,Math.min(5.68,y+1.75),z]);head.rotation.z=side*Math.PI/2;
-    }
+    const stem=mesh([.08,.08,.8],materials.brass,[x-side*.42,Math.min(5.78,y+1.82),z]);stem.rotation.z=side*Math.PI/2;
+    const head=mesh([.24,.18,.34],materials.darkBrass,[x-side*.82,Math.min(5.68,y+1.75),z]);head.rotation.z=side*Math.PI/2;
   }
 
   function addFramedWork(work,index,side,z,width) {
