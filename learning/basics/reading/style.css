@@ -36,6 +36,19 @@ button, input { font: inherit; }
 .student-main { width: min(980px, calc(100% - 32px)); margin: 0 auto; padding: 50px 0 90px; }
 .view-heading h2 { margin: 7px 0 28px; font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(2rem, 6vw, 3.6rem); letter-spacing: -.05em; }
 .student-pilot-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.hero-copy { max-width: 640px; margin-bottom: 26px; }
+.hero-copy h2 { margin: 0 0 10px; font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.2; letter-spacing: -.04em; }
+.hero-copy > p:last-child { margin: 0; color: var(--muted); line-height: 1.65; }
+.practice-tabs { display: flex; gap: 8px; margin: 0 0 16px; }
+.tab { min-height: 42px; padding: 0 16px; border: 1px solid var(--line); border-radius: 99px; color: var(--muted); background: transparent; cursor: pointer; font-weight: 850; }
+.tab.active { border-color: var(--green); color: #fff; background: var(--green); }
+.level-list { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.level-card { min-height: 166px; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 18px; border: 1px solid var(--line); border-radius: 18px; color: var(--ink); background: var(--white); cursor: pointer; text-align: left; transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.level-card:hover:not(:disabled) { transform: translateY(-3px); border-color: var(--green); box-shadow: 0 14px 28px rgba(23,104,79,.12); }
+.level-card:disabled { opacity: .55; cursor: default; }
+.level-code { color: var(--green); font-size: 1.4rem; font-weight: 950; letter-spacing: .06em; }
+.level-card strong { font-size: 1.05rem; }
+.level-card > span:last-child { color: var(--muted); font-size: 12px; }
 .student-pilot-card { display: grid; gap: 14px; padding: 22px; border: 1px solid var(--line); border-radius: 18px; background: var(--white); box-shadow: 0 10px 32px rgba(56,45,26,.06); }
 .student-pilot-card h3 { margin: 0; font-family: Georgia, "Noto Serif KR", serif; font-size: 1.45rem; }
 .student-pilot-card p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.55; }
@@ -55,9 +68,16 @@ button, input { font: inherit; }
 .student-choices { display: grid; gap: 10px; }
 .student-choice { display: grid; grid-template-columns: 28px 1fr; align-items: start; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: 13px; cursor: pointer; line-height: 1.55; }
 .student-choice:hover { border-color: var(--green); }
-.student-choice:has(input:checked) { border-color: var(--green); background: var(--green-soft); }
+.student-choice { width: 100%; grid-template-columns: 28px 1fr; color: var(--ink); background: var(--white); text-align: left; }
+.student-choice.selected { border-color: var(--green); background: var(--green-soft); }
+.student-choice.correct { border-color: var(--green); color: #14513e; background: #e2f0e5; }
+.student-choice.wrong { border-color: var(--orange); color: #842d13; background: #fbe8df; }
+.student-choice:disabled { cursor: default; }
 .student-choice input { width: 19px; height: 19px; margin: 2px 0 0; accent-color: var(--green); }
 .choice-number { color: var(--green); font-weight: 950; }
+.feedback { margin-top: 16px; padding: 15px 16px; border: 1px solid var(--line); border-radius: 13px; line-height: 1.65; font-size: 14px; }
+.feedback.is-correct { border-color: #9bc8a7; background: #edf7ee; }
+.feedback.is-wrong { border-color: #e0af98; background: #fff0e9; }
 .answer-actions { margin-top: 24px; }
 #answerStatus { color: var(--orange); font-size: 12px; }
 .completion-view { min-height: 60vh; display: grid; place-content: center; justify-items: center; text-align: center; }
@@ -68,6 +88,7 @@ button, input { font: inherit; }
   .student-band { align-items: flex-start; flex-direction: column; }
   .student-band p { text-align: left; }
   .student-pilot-list { grid-template-columns: 1fr; }
+  .level-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .student-main { padding-top: 34px; }
   .reading-sheet { padding: 22px 17px; }
   .answer-actions { align-items: stretch; flex-direction: column; }

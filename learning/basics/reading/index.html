@@ -4,73 +4,34 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f3efe4">
-  <title>독해 파일럿</title>
+  <title>혼자 하는 독해</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div id="studentApp" class="student-app">
+  <div class="student-app">
     <header class="student-header">
-      <div>
-        <p class="eyebrow">READING PILOT</p>
-        <h1>차분히 읽고, 하나씩</h1>
-      </div>
+      <div><h1>독해 자습</h1></div>
       <a href="/">학습 홈</a>
     </header>
-
     <section class="student-band">
-      <div>
-        <strong id="studentName"></strong>
-        <span id="studentClass"></span>
-      </div>
-      <p>점수를 빨리 내는 시험이 아니에요. 실제 난이도를 알아보기 위한 읽기 활동입니다.</p>
+      <div><strong>독해 문제</strong><span>로그인 없이 이용할 수 있습니다.</span></div>
+      <p>답을 선택하면 정답과 해설이 표시됩니다.</p>
     </section>
-
     <main class="student-main">
-      <section id="pilotDashboard" class="dashboard-view">
-        <div class="view-heading">
-          <p class="eyebrow">MY PILOTS</p>
-          <h2>지금 풀 수 있는 활동</h2>
-        </div>
-        <div id="studentPilotList" class="student-pilot-list"></div>
+      <section id="dashboardView">
+        <div class="hero-copy"><h2>단계 선택</h2><p>언어와 단계를 선택하세요. 한 세트는 5문제입니다.</p></div>
+        <div class="practice-tabs" role="tablist"><button class="tab active" data-track="ko" type="button">국어 독해</button><button class="tab" data-track="en" type="button">English reading</button></div>
+        <div id="levelList" class="level-list"></div>
       </section>
-
       <section id="questionView" class="question-view" hidden>
-        <div class="question-topline">
-          <button id="backToPilotsButton" class="text-button" type="button">← 활동 목록</button>
-          <span id="questionLevel" class="level-chip">K1</span>
-        </div>
-        <div class="progress-copy">
-          <strong id="questionProgress">1 / 5</strong>
-          <span id="pilotQuestionTitle"></span>
-        </div>
+        <div class="question-topline"><button id="backButton" class="text-button" type="button">← 자습 목록</button><span id="questionLevel" class="level-chip"></span></div>
+        <div class="progress-copy"><strong id="questionProgress"></strong><span id="questionTopic"></span></div>
         <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
-        <article class="reading-sheet">
-          <p id="questionTopic" class="question-topic"></p>
-          <div id="studentPassage" class="student-passage"></div>
-          <h2 id="studentPrompt" class="student-prompt"></h2>
-          <form id="answerForm" class="answer-form">
-            <fieldset>
-              <legend class="sr-only">보기 선택</legend>
-              <div id="studentChoices" class="student-choices"></div>
-            </fieldset>
-            <div class="answer-actions">
-              <span id="answerStatus" role="status"></span>
-              <button id="saveAnswerButton" class="button primary" type="submit">이 답으로 다음</button>
-            </div>
-          </form>
-        </article>
+        <article class="reading-sheet"><div id="studentPassage" class="student-passage"></div><h2 id="studentPrompt" class="student-prompt"></h2><div id="studentChoices" class="student-choices"></div><div id="feedback" class="feedback" hidden></div><div class="answer-actions"><span id="answerStatus" role="status"></span><button id="nextButton" class="button primary" type="button" disabled>정답 확인</button></div></article>
       </section>
-
-      <section id="completionView" class="completion-view" hidden>
-        <div class="completion-mark">✓</div>
-        <p class="eyebrow">SUBMITTED</p>
-        <h2>모두 제출했어요</h2>
-        <p>응답은 문항의 실제 난이도를 맞추는 데 사용됩니다. 정답이나 다른 학생의 결과는 공개되지 않아요.</p>
-        <button id="completionBackButton" class="button secondary" type="button">활동 목록으로</button>
-      </section>
+      <section id="resultView" class="completion-view" hidden><div class="completion-mark">✓</div><h2 id="resultTitle">학습 결과</h2><p id="resultCopy"></p><button id="restartButton" class="button primary" type="button">단계 선택으로</button></section>
     </main>
   </div>
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="./app.js"></script>
 </body>
 </html>

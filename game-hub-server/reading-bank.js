@@ -462,6 +462,30 @@ function createReadingBank(options = {}) {
     );
   }
 
+  // This route deliberately does not depend on the classroom database or a
+  // teacher-created pilot.  It is the always-available practice shelf used by
+  // the student reading page.
+  router.get("/self-study", (req, res, next) => {
+    try {
+      const seed = JSON.parse(fs.readFileSync(SAMPLE_SEED_PATH, "utf8"));
+      const items = (seed.topics || []).flatMap((topic) => (topic.items || []).map((item) => ({
+        id: item.itemKey,
+        topicTitle: topic.title,
+        track: item.track,
+        targetLevel: item.targetLevel,
+        questionType: item.questionType,
+        passageText: item.passageText,
+        promptText: item.promptText,
+        choices: item.choices,
+        correctIndex: item.correctIndex,
+        explanation: item.explanation
+      })));
+      res.json({ items });
+    } catch (error) {
+      next(error);
+    }
+  });
+
   function topicResponse(row) {
     return {
       id: Number(row.id),
