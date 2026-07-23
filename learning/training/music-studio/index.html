@@ -56,8 +56,8 @@
                     <div class="foundation-intro">
                         <div>
                             <span class="course-badge">왕초보 코스 · 1단계</span>
-                            <h3 id="harmonyFoundationTitle">화성학은 ‘소리의 이름’을 아는 것부터!</h3>
-                            <p>아래 세 칸을 왼쪽부터 하나씩 해 보세요. 어려운 말은 아직 외우지 않아도 됩니다.</p>
+                            <h3 id="harmonyFoundationTitle">화성학은 ‘음 사이의 관계’를 듣는 것부터!</h3>
+                            <p>여기서 ‘도’는 C로 고정된 음이 아니라 지금 음악의 출발점이에요. 시작 높이가 바뀌어도 도·레·미의 관계는 같습니다.</p>
                         </div>
                         <span class="course-time">약 3분</span>
                     </div>
@@ -65,14 +65,16 @@
                         <section class="foundation-step">
                             <span class="step-number">1</span>
                             <div>
-                                <p class="step-kicker">음의 이름</p>
+                                <p class="step-kicker">계이름과 관계</p>
                                 <h4>도 · 레 · 미를 눌러 보세요</h4>
-                                <p>소리마다 높이가 달라요. 오른쪽으로 갈수록 소리가 높아져요.</p>
+                                <p>지금 들리는 첫 음을 ‘도’로 삼아요. 오른쪽으로 갈수록 차례로 높아져요.</p>
                                 <div class="sound-buttons" aria-label="도레미 소리 듣기">
-                                    <button type="button" data-basic-note="60">도</button>
-                                    <button type="button" data-basic-note="62">레</button>
-                                    <button type="button" data-basic-note="64">미</button>
+                                    <button type="button" data-basic-offset="0">도</button>
+                                    <button type="button" data-basic-offset="2">레</button>
+                                    <button type="button" data-basic-offset="4">미</button>
                                 </div>
+                                <button id="changeBasicTonicButton" class="change-tonic-button" type="button">다른 높이에서 시작 ↻</button>
+                                <small id="basicTonicStatus" class="tonic-status" aria-live="polite">첫 음을 ‘도’로 듣고 관계를 익혀요.</small>
                             </div>
                         </section>
                         <section class="foundation-step">
@@ -81,7 +83,7 @@
                                 <p class="step-kicker">화음 만들기</p>
                                 <h4>도·미·솔을 함께 들어요</h4>
                                 <p>높이가 다른 음을 여러 개 같이 내면 <strong>화음</strong>이 됩니다.</p>
-                                <button class="try-button" type="button" data-basic-chord="60,64,67">도 + 미 + 솔 듣기 <span>▶</span></button>
+                                <button class="try-button" type="button" data-basic-chord-offsets="0,4,7">도 + 미 + 솔 듣기 <span>▶</span></button>
                             </div>
                         </section>
                         <section class="foundation-step">
@@ -91,8 +93,8 @@
                                 <h4>가운데 음을 바꿔 들어요</h4>
                                 <p>‘미’를 건반 한 칸 낮춘 ‘미♭’으로 바꾸면 음 사이의 거리와 울림이 달라져요.</p>
                                 <div class="feeling-buttons">
-                                    <button type="button" data-basic-chord="60,64,67">도 · 미 · 솔</button>
-                                    <button type="button" data-basic-chord="60,63,67">도 · 미♭ · 솔</button>
+                                    <button type="button" data-basic-chord-offsets="0,4,7">도 · 미 · 솔</button>
+                                    <button type="button" data-basic-chord-offsets="0,3,7">도 · 미♭ · 솔</button>
                                 </div>
                                 <small class="context-note">장3화음과 단3화음의 정서가 항상 정해지는 것은 아니에요. 곡의 흐름과 연주 방식에 따라 다르게 들릴 수 있어요.</small>
                             </div>

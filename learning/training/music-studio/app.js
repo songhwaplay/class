@@ -63,7 +63,8 @@
         dictationAttempts: 0,
         dictationCorrect: 0,
         dictationListens: 0,
-        practiceCount: 0
+        practiceCount: 0,
+        basicTonicMidi: 60
     };
 
     const elements = {};
@@ -909,6 +910,17 @@
         });
     }
 
+    function chooseBasicTonic(initial) {
+        const choices = [55, 57, 59, 60, 62, 64];
+        const available = choices.filter(function (midi) { return midi !== state.basicTonicMidi; });
+        const pool = initial ? choices : available;
+        state.basicTonicMidi = pool[Math.floor(Math.random() * pool.length)];
+        const status = document.getElementById("basicTonicStatus");
+        if (status) status.textContent = initial
+            ? "첫 음을 ‘도’로 듣고 관계를 익혀요."
+            : "출발 높이가 바뀌었어요. 새 첫 음이 이제 ‘도’예요.";
+    }
+
     function bindEvents() {
         document.querySelectorAll("[data-practice-gate]").forEach(function (button) {
             button.addEventListener("click", function () {
@@ -922,19 +934,28 @@
                 if (expanded) panel.scrollIntoView({ behavior: "smooth", block: "start" });
             });
         });
-        document.querySelectorAll("[data-basic-note]").forEach(function (button) {
+        document.querySelectorAll("[data-basic-offset]").forEach(function (button) {
             button.addEventListener("click", function () {
-                playPianoTone(core.midiToFrequency(Number(button.dataset.basicNote)), 0, .7, .08);
+                const midi = state.basicTonicMidi + Number(button.dataset.basicOffset);
+                playPianoTone(core.midiToFrequency(midi), 0, .7, .08);
             });
         });
-        document.querySelectorAll("[data-basic-chord]").forEach(function (button) {
+        document.querySelectorAll("[data-basic-chord-offsets]").forEach(function (button) {
             button.addEventListener("click", function () {
                 const context = ensureAudio();
                 if (!context) return;
-                button.dataset.basicChord.split(",").map(Number).forEach(function (midi) {
+                button.dataset.basicChordOffsets.split(",").map(Number).map(function (offset) {
+                    return state.basicTonicMidi + offset;
+                }).forEach(function (midi) {
                     playPianoTone(core.midiToFrequency(midi), context.currentTime, 1.1, .06);
                 });
             });
+        });
+        elements.changeBasicTonicButton = document.getElementById("changeBasicTonicButton");
+        elements.basicTonicStatus = document.getElementById("basicTonicStatus");
+        elements.changeBasicTonicButton.addEventListener("click", function () {
+            chooseBasicTonic(false);
+            playPianoTone(core.midiToFrequency(state.basicTonicMidi), 0, .7, .08);
         });
         document.querySelectorAll("[data-basic-beats]").forEach(function (button) {
             button.addEventListener("click", function () {
@@ -1082,6 +1103,7 @@
 
     function init() {
         cacheElements();
+        chooseBasicTonic(true);
         bindEvents();
         loadPracticeCount();
         renderKeyOptions();
