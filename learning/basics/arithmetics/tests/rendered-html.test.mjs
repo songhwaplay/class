@@ -258,6 +258,7 @@ test("renders the unified arithmetic catalog and high-school worksheets", async 
   assert.match(rationalHtml, /aria-label="A4 인수분해와 분수식 정답지"/);
   assert.equal((rationalHtml.match(/data-testid="rational-expression-question"/g) ?? []).length, 8);
   assert.equal((rationalHtml.match(/class="rational-coefficient-input"/g) ?? []).length, 0);
+  assert.doesNotMatch(rationalHtml, /rational-restrictions|단,\s*<span/);
 
   const exponentRadicalResponse = await render("/arithmetic/high-school/exponents-radicals");
   assert.equal(exponentRadicalResponse.status, 200);

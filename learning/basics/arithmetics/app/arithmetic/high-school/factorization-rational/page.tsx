@@ -241,7 +241,6 @@ export default function FactorizationRationalPage() {
         <div className="polynomial-question-body">
           <span className="polynomial-focus-label">{problem.label}</span>
           {renderExpression(problem.operations)}
-          <small className="rational-restrictions">단, <MathFormula latex={`x \\ne ${problem.restrictions.join(",\\,")}`} /></small>
         </div>
         {answerSheet ? (
           <div className="rational-static-answer"><MathFormula latex={fractionLatex(problem.answer)} /></div>
