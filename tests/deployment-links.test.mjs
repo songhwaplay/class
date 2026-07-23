@@ -15,6 +15,7 @@ test("learning links stay on the main Render service", () => {
 test("the main service builds and proxies both learning apps", () => {
   assert.match(serverPackage, /learning\/basics\/arithmetics run build/);
   assert.match(serverPackage, /learning\/basics\/hanguksa-basic run build/);
+  assert.equal((serverPackage.match(/ci --include=dev/g) || []).length, 2);
   assert.match(serverSource, /app\.use\("\/arithmetic", proxyToLearningApp\(ARITHMETIC_PORT\)\)/);
   assert.match(serverSource, /app\.use\("\/hanguksa", proxyToLearningApp\(HANGUKSA_PORT\)\)/);
 });
