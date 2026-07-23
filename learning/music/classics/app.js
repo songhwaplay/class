@@ -28,7 +28,7 @@ const pieces = [
   ['27','modern','근현대','랩소디 인 블루','거슈윈','랩소디','피아노와 관현악','4박자','보통 빠르게','도시적이고 자유롭게','클라리넷 글리산도와 재즈 리듬','글리산도','음을 미끄러지듯 연속해서 연주'],
   ['28','modern','근현대','아리랑 환상곡','최성환','관현악 환상곡','관현악','3박자','느리게 시작해 빨라짐','서정적이고 힘차게','아리랑 선율이 여러 악기와 리듬으로 변주','환상곡','정해진 틀보다 자유롭게 전개'],
   ['29','modern','근현대','한국 환상곡','안익태','교향적 환상곡','관현악과 합창','4박자','장엄하게','민족적이고 웅장하게','한국적 선율과 대규모 합창의 결합','민족주의 음악','민족의 역사와 정서를 큰 규모로 표현'],
-  ['30','modern','근현대','캐리비안의 해적 〈그는 해적이다〉','클라우스 바델트','영화 음악','관현악','6/8박자','매우 빠르게','모험적이고 박진감 있게','반복되는 추진력 있는 리듬과 금관 선율','오스티나토','짧은 리듬이나 선율을 계속 반복']
+  ['30','modern','근현대','사브르 댄스','하차투리안','발레 음악','관현악','2박자','매우 빠르게','격렬하고 긴장되게','빠른 리듬과 강한 악센트가 반복됨','발레 음악','발레 〈가야네〉의 한 장면을 위한 음악']
 ].map(([no,era,period,title,composer,form,lead,meter,tempo,mood,feature,concept,note])=>({no,era,period,title,composer,form,lead,meter,tempo,mood,feature,concept,note,url:`https://www.youtube.com/results?search_query=${encodeURIComponent(`${composer} ${title}`)}`}));
 
 const originalTitles=[
@@ -37,13 +37,13 @@ const originalTitles=[
   'Trumpet Concerto in E-flat major, III','Guillaume Tell Overture: Finale','Piano Quintet in A major “Trout”, IV','Erlkönig, D 328','Nocturne in E-flat major, Op. 9 No. 2',
   'Hungarian Dance No. 5','The Nutcracker: “Waltz of the Flowers”','Swan Lake: “Scene”','Le Carnaval des animaux: “Le Cygne”','Pictures at an Exhibition: “The Great Gate of Kyiv”',
   'Symphony No. 9 “From the New World”, II','Boléro','Prélude à l’après-midi d’un faune','The Planets: “Jupiter, the Bringer of Jollity”','Peter and the Wolf, Op. 67',
-  'The Young Person’s Guide to the Orchestra','Rhapsody in Blue','Arirang Fantasy','Korea Fantasy','Pirates of the Caribbean: “He’s a Pirate”'
+  'The Young Person’s Guide to the Orchestra','Rhapsody in Blue','Arirang Fantasy','Korea Fantasy','Gayane: “Sabre Dance”'
 ];
 const composerOriginal={
   '비발디':'Antonio Vivaldi','바흐':'Johann Sebastian Bach','헨델':'George Frideric Handel','파헬벨':'Johann Pachelbel','베토벤':'Ludwig van Beethoven','모차르트':'Wolfgang Amadeus Mozart',
   '하이든':'Joseph Haydn','로시니':'Gioachino Rossini','슈베르트':'Franz Schubert','쇼팽':'Frédéric Chopin','브람스':'Johannes Brahms','차이콥스키':'Pyotr Ilyich Tchaikovsky',
   '생상스':'Camille Saint-Saëns','무소륵스키':'Modest Mussorgsky','드보르자크':'Antonín Dvořák','라벨':'Maurice Ravel','드뷔시':'Claude Debussy','홀스트':'Gustav Holst',
-  '프로코피예프':'Sergei Prokofiev','브리튼':'Benjamin Britten','거슈윈':'George Gershwin','최성환':'Choi Seong-hwan','안익태':'Ahn Eak-tai','클라우스 바델트':'Klaus Badelt'
+  '프로코피예프':'Sergei Prokofiev','브리튼':'Benjamin Britten','거슈윈':'George Gershwin','최성환':'Choi Seong-hwan','안익태':'Ahn Eak-tai','하차투리안':'Aram Khachaturian'
 };
 const paired=(ko,foreign)=>`${ko} (${foreign})`;
 const termMaps={
