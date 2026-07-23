@@ -360,9 +360,9 @@
   function buildImageQuestion(room,mode,target) {
     const allWorks=rooms.flatMap(item=>item.works);
     const config={
-      title:{key:'title',question:'이 작품의 한글 제목은 무엇일까요?'},
+      title:{key:'title',question:'이 작품의 제목은 무엇일까요?'},
       artist:{key:'artist',question:'이 작품을 만든 작가는 누구일까요?'},
-      english:{key:'englishTitle',question:'이 작품의 영어 제목은 무엇일까요?'}
+      english:{key:'englishTitle',question:'What is the title of this artwork?'}
     }[mode];
     const correct=target[config.key];
     const source=mode==='artist'?allWorks:room.works;

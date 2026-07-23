@@ -73,7 +73,7 @@ assert.doesNotMatch(
 
 assert.match(html, /styles\.css\?v=20260724-3/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-8/);
+assert.match(html, /museum\.js\?v=20260724-9/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
 assert.match(html, /id="finale-artwork-image"/);
@@ -105,6 +105,9 @@ assert.match(museumJs, /buildImageQuestion\(room,imageModes\[0\],imageWorks\[0\]
 assert.match(museumJs, /buildImageQuestion\(room,imageModes\[1\],imageWorks\[1\]\)/, 'each finale attempt must include two visible artwork questions');
 assert.match(museumJs, /buildImageQuestion\(room,imageModes\[2\],imageWorks\[2\]\)/, 'each finale attempt must include three visible artwork questions');
 assert.match(museumJs, /const imageModes=\['title','artist','english'\]/, 'every finale must include title, artist, and English-title modes');
+assert.match(museumJs, /question:'이 작품의 제목은 무엇일까요\?'/, 'Korean title prompt should be natural and concise');
+assert.match(museumJs, /question:'What is the title of this artwork\?'/, 'English title prompt should ask the question naturally in English');
+assert.doesNotMatch(museumJs, /question:'[^']*(한글 제목|영어 제목)/, 'quiz prompts should not explain their language mode');
 assert.match(museumJs, /observations\[0\],\s*observations\[1\]/, 'every finale must include two observation questions');
 assert.match(museumJs, /imageWorkIds\.has\(question\.workId\)/, 'observation questions must exclude all three image-question artworks');
 assert.match(museumJs, /options:\[correct,\.\.\.distractors\]/, 'image questions must restore four-choice answer construction');
