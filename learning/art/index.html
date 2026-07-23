@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>명화 감상과 퀴즈 · 송화플레이</title>
+    <title>미술품 감상과 퀴즈 · 송화플레이</title>
     <style>
         :root {
             --bg-dark: #1a120b;
@@ -104,6 +104,44 @@
             background: linear-gradient(180deg, var(--gold-main) 0%, var(--gold-dark) 100%);
             color: #120b06;
             border-color: #fff;
+        }
+
+        .museum-entry {
+            max-width: 780px;
+            margin: 38px auto 0;
+            padding: 46px 30px;
+            border: 1px solid rgba(212, 175, 55, 0.5);
+            border-radius: 18px;
+            background: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.14), rgba(17, 10, 5, 0.78) 60%);
+            text-align: center;
+            box-shadow: 0 18px 50px rgba(0, 0, 0, 0.35);
+        }
+
+        .museum-entry h1 {
+            margin: 0 0 12px;
+            color: var(--gold-light);
+            font-family: Georgia, serif;
+            font-size: clamp(1.7rem, 4vw, 2.5rem);
+        }
+
+        .museum-entry p {
+            margin: 0 auto 26px;
+            max-width: 560px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .museum-enter-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 24px;
+            border: 1px solid #fff0b8;
+            border-radius: 999px;
+            background: linear-gradient(180deg, var(--gold-main), var(--gold-dark));
+            color: #160d05;
+            font-weight: 900;
+            text-decoration: none;
         }
 
         /* Content Container */
@@ -501,34 +539,29 @@
 
     <header class="top-bar">
         <a href="../../index.html" class="back-link">← 메인 페이지로</a>
-        <div class="header-title">🎨 명화 감상</div>
+        <div class="header-title">🎨 미술품 감상</div>
         <div style="width: 100px;"></div>
     </header>
 
     <!-- 모드 선택 헤더 -->
     <nav class="main-modes" aria-label="감상 및 퀴즈 모드">
-        <button class="mode-btn active" id="btnModeGallery" type="button">
-            🏛️ 1. 명화 박물관
-        </button>
+        <a class="mode-btn active" id="btnModeGallery" href="./museum/">
+            🏛️ 1. 미술관
+        </a>
         <button class="mode-btn" id="btnModeQuiz" type="button">
-            ❓ 2. 명화 퀴즈
+            ❓ 2. 미술품 퀴즈
         </button>
-        <a class="mode-btn" href="./museum/">🏛️ 3. 3D 박물관 탐험</a>
     </nav>
 
     <main class="container">
-        
-        <!-- 1. 갤러리 감상 모드 -->
-        <section id="viewGallery">
-            <div class="category-bar">
-                <button class="cat-btn active" data-cat="all">전체 명화 (50점)</button>
-                <button class="cat-btn" data-cat="korea">🇰🇷 한국 명화 (12점)</button>
-                <button class="cat-btn" data-cat="impression">🌻 인상주의·사실주의 (14점)</button>
-                <button class="cat-btn" data-cat="renaissance">🏛️ 르네상스·바로크 (12점)</button>
-                <button class="cat-btn" data-cat="surreal">🎨 초현실·현대미술 (12점)</button>
-            </div>
 
-            <div class="art-grid" id="artGrid"></div>
+        <!-- 1. 미술관 입장 -->
+        <section id="viewGallery">
+            <div class="museum-entry">
+                <h1>작품은 미술관에서 만나요</h1>
+                <p>그림과 입체 작품을 전시실에서 직접 찾아보고, 작품을 선택해 도슨트 설명과 관람 포인트를 감상하세요.</p>
+                <a class="museum-enter-btn" href="./museum/">🏛️ 미술관 입장하기</a>
+            </div>
         </section>
 
         <!-- 2. 퀴즈 모드 -->
@@ -544,7 +577,7 @@
                 <h3 id="quizQuestionText" style="margin: 8px 0; font-size: 1.25rem;">이 작품의 제목은 무엇일까요?</h3>
                 
                 <div class="quiz-img-wrap" id="quizImgWrap">
-                    <img id="quizImg" class="quiz-img" src="" alt="명화 퀴즈" onerror="handleImgError(this, '명화 퀴즈', '작품 감상')">
+                    <img id="quizImg" class="quiz-img" src="" alt="미술품 퀴즈" onerror="handleImgError(this, '미술품 퀴즈', '작품 감상')">
                 </div>
 
                 <div class="quiz-options" id="quizOptions"></div>
@@ -581,6 +614,7 @@
         </div>
     </div>
 
+    <script src="./museum/art-data.js?v=20260723-3"></script>
     <script>
         (() => {
             const audio = document.getElementById('bgm');
@@ -691,13 +725,26 @@
                 work.sizeLabel = `${dimensions[0]} × ${dimensions[1]}cm`;
             });
 
+            // 퀴즈도 현재 미술관 전시 목록과 같은 작품만 사용한다.
+            const normalizeArtworkTitle = title => String(title || '')
+                .replace(/\s*\([^)]*\)/g, '')
+                .replace(/\s+/g, '')
+                .trim();
+            const museumArtworkTitles = new Set(
+                (window.MUSEUM_ROOMS || [])
+                    .flatMap(room => room.works)
+                    .map(work => normalizeArtworkTitle(work.title))
+            );
+            const currentMuseumQuizWorks = MASTERPIECES.filter(work =>
+                museumArtworkTitles.has(normalizeArtworkTitle(work.title))
+            );
+            MASTERPIECES.splice(0, MASTERPIECES.length, ...currentMuseumQuizWorks);
+
             // UI Elements
             const btnModeGallery = document.getElementById('btnModeGallery');
             const btnModeQuiz = document.getElementById('btnModeQuiz');
             const viewGallery = document.getElementById('viewGallery');
             const viewQuiz = document.getElementById('viewQuiz');
-            const artGrid = document.getElementById('artGrid');
-            const categoryBtns = document.querySelectorAll('.cat-btn');
 
             // Modal & Loupe Elements
             const docentModal = document.getElementById('docentModal');
@@ -758,9 +805,9 @@
             window.handleImgError = function(img, title, artist) {
                 if (img.dataset.fallbackApplied) return;
                 img.dataset.fallbackApplied = 'true';
-                const cleanTitle = (title || '명화 감상').replace(/'/g, "");
+                const cleanTitle = (title || '미술품 감상').replace(/'/g, "");
                 const cleanArtist = (artist || '작가 미상').replace(/'/g, "");
-                const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2a1b12"/><stop offset="50%" stop-color="#4a2e16"/><stop offset="100%" stop-color="#190e07"/></linearGradient></defs><rect width="600" height="400" fill="url(#g)"/><rect x="16" y="16" width="568" height="368" fill="none" stroke="#d4af37" stroke-width="4" rx="10"/><rect x="26" y="26" width="548" height="348" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/><text x="300" y="160" fill="#f3e5ab" font-size="34" font-family="'Georgia', sans-serif" font-weight="900" text-anchor="middle">🎨 ${cleanTitle}</text><text x="300" y="220" fill="#d4af37" font-size="20" font-family="sans-serif" text-anchor="middle">✍️ ${cleanArtist}</text><text x="300" y="275" fill="#aaaaaa" font-size="14" font-family="sans-serif" text-anchor="middle">송화플레이 명화 갤러리</text></svg>`;
+                const svgData = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#2a1b12"/><stop offset="50%" stop-color="#4a2e16"/><stop offset="100%" stop-color="#190e07"/></linearGradient></defs><rect width="600" height="400" fill="url(#g)"/><rect x="16" y="16" width="568" height="368" fill="none" stroke="#d4af37" stroke-width="4" rx="10"/><rect x="26" y="26" width="548" height="348" fill="none" stroke="rgba(212,175,55,0.3)" stroke-width="1"/><text x="300" y="160" fill="#f3e5ab" font-size="34" font-family="'Georgia', sans-serif" font-weight="900" text-anchor="middle">🎨 ${cleanTitle}</text><text x="300" y="220" fill="#d4af37" font-size="20" font-family="sans-serif" text-anchor="middle">✍️ ${cleanArtist}</text><text x="300" y="275" fill="#aaaaaa" font-size="14" font-family="sans-serif" text-anchor="middle">송화플레이 미술품 감상</text></svg>`;
                 const dataUrl = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svgData);
                 img.src = dataUrl;
                 if (img.id === 'modalImg') {
@@ -943,7 +990,7 @@
                     playSfx('success');
                     const totalPoints = quizScore * 5;
                     quizScoreBadge.textContent = `최종 점수: ${totalPoints}점 / 100점!`;
-                    quizQuestionText.textContent = `🎉 축하합니다! 20문제 명화 퀴즈를 모두 완료했습니다. (정답: ${quizScore}/20)`;
+                    quizQuestionText.textContent = `🎉 축하합니다! 20문제 미술품 퀴즈를 모두 완료했습니다. (정답: ${quizScore}/20)`;
                     quizImg.src = quizQueue[0].img;
                     quizOptions.innerHTML = `
                         <button class="quiz-opt-btn" style="grid-column: span 2;" onclick="location.reload()">🔄 다시 도전하기</button>
@@ -964,11 +1011,11 @@
                 let distractors = [];
 
                 if (currentQuizType === 'title') {
-                    questionStr = `[문제 ${quizIndex + 1}] 아래 명화의 한글 제목은 무엇일까요?`;
+                    questionStr = `[문제 ${quizIndex + 1}] 아래 작품의 한글 제목은 무엇일까요?`;
                     correctAns = current.title;
                     distractors = current.dTitle || [];
                 } else if (currentQuizType === 'artist') {
-                    questionStr = `[문제 ${quizIndex + 1}] 아래 명화를 그린 화가는 누구일까요?`;
+                    questionStr = `[문제 ${quizIndex + 1}] 아래 작품을 만든 작가는 누구일까요?`;
                     correctAns = current.artist;
                     distractors = current.dArtist || [];
                 } else if (currentQuizType === 'eng') {
@@ -1008,33 +1055,12 @@
                 renderQuizQuestion();
             }
 
-            // Mode Switching
-            btnModeGallery.addEventListener('click', () => {
-                playSfx('click');
-                viewGallery.classList.remove('hidden');
-                viewQuiz.classList.add('hidden');
-                btnModeGallery.classList.add('active');
-                btnModeQuiz.classList.remove('active');
-            });
-
             btnModeQuiz.addEventListener('click', () => {
                 playSfx('click');
                 startQuiz();
             });
 
-            // Category Filtering
-            categoryBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    playSfx('click');
-                    categoryBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    currentCategory = btn.dataset.cat;
-                    renderGallery();
-                });
-            });
-
             // Initial Execution
-            renderGallery();
             window.ART_MASTERPIECES = MASTERPIECES;
             window.openMuseumArtwork = id => {
                 const work = MASTERPIECES.find(item => item.id === id);
