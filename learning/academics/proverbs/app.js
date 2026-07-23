@@ -17,36 +17,6 @@ let mode = "study";
 let correct = 0;
 let attempts = 0;
 const $ = (id) => document.getElementById(id);
-const backgroundMusic = $("backgroundMusic");
-const musicToggle = $("musicToggle");
-backgroundMusic.volume = 0.28;
-
-function updateMusicButton(playing) {
-  musicToggle.textContent = playing ? "♫ 음악 끄기" : "♫ 음악 켜기";
-  musicToggle.setAttribute("aria-pressed", String(playing));
-  musicToggle.setAttribute("aria-label", playing ? "배경음악 끄기" : "배경음악 켜기");
-}
-
-async function startMusic() {
-  try {
-    await backgroundMusic.play();
-    updateMusicButton(true);
-  } catch {
-    updateMusicButton(false);
-  }
-}
-
-musicToggle.addEventListener("click", async () => {
-  if (backgroundMusic.paused) await startMusic();
-  else {
-    backgroundMusic.pause();
-    updateMusicButton(false);
-  }
-});
-
-document.addEventListener("pointerdown", (event) => {
-  if (!event.target.closest("#musicToggle") && backgroundMusic.paused) startMusic();
-}, { once: true });
 
 function updateNavigationLocale() {
   const english = language === "en";
@@ -88,6 +58,7 @@ function renderQuiz() {
     const button = document.createElement("button");
     button.type = "button";
     button.textContent = choice;
+    button.dataset.sfx = "none";
     button.addEventListener("click", () => answer(choiceIndex, button));
     return button;
   }));
@@ -117,11 +88,13 @@ function answer(choiceIndex, selectedButton) {
   attempts += 1;
   if (choiceIndex === item.answer) {
     correct += 1;
+    window.ClassGameSfx?.play("success");
     $("feedback").textContent = language === "en"
       ? "Correct! You matched the proverb to the situation."
       : "정답! 뜻과 상황을 잘 연결했어요.";
   } else {
     selectedButton.classList.add("wrong");
+    window.ClassGameSfx?.play("error");
     $("feedback").textContent = language === "en"
       ? `The correct answer is “${item.proverb}”`
       : `정답은 “${item.proverb}”입니다.`;

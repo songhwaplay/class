@@ -6,16 +6,16 @@
   <meta name="description" content="한국 속담과 영어 속담의 뜻과 쓰임을 익히는 학습 도구">
   <title>속담 학습 | 한국·영어 속담</title>
   <link rel="stylesheet" href="styles.css">
+  <script src="../../../assets/sound/music-control.js" defer></script>
   <script src="app.js" defer></script>
 </head>
 <body>
   <header>
     <a class="back" href="../../../index.html">← 메인</a>
     <div><strong>속담 학습</strong><small>한국·영어 속담의 뜻과 쓰임</small></div>
-    <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false" aria-label="배경음악 켜기">♫ 음악 켜기</button>
     <output id="score" aria-live="polite" hidden>정답 0 / 0</output>
   </header>
-  <audio id="backgroundMusic" src="assets/marimba-drift.mp3" preload="metadata" loop></audio>
+  <audio id="bgm" src="assets/marimba-drift.mp3" preload="auto" loop></audio>
   <main>
     <section class="hero">
       <p>교과학습 · 국어 · 영어</p>

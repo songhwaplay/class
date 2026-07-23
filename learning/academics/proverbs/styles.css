@@ -11,8 +11,10 @@ header { min-height: 68px; padding: 12px max(5vw, 24px); background: #fff9edeb; 
 header div { display: grid; gap: 2px; }
 header small { color: #765840; }
 .back { color: #70401f; text-decoration: none; }
-output { font-weight: 700; color: #70401f; }
-.music-toggle { margin-left: auto; background: #fff9ed; border-color: #a67954; color: #70401f; white-space: nowrap; }
+output { margin-left: auto; font-weight: 700; color: #70401f; }
+@media (min-width: 761px) {
+  .class-music-ready header { padding-right: 380px; }
+}
 main { width: min(760px, calc(100% - 32px)); margin: 48px auto 80px; }
 .hero { padding: 22px 26px; border: 1px solid #fff9ed8f; border-radius: 18px; background: #fff9edc7; box-shadow: 0 8px 28px #4a29122b; backdrop-filter: blur(5px); }
 .hero p:first-child, .label { color: #8b4e25; font-weight: 750; letter-spacing: .04em; font-size: .82rem; }
@@ -43,7 +45,6 @@ button:disabled { cursor: not-allowed; opacity: .55; }
 @media (max-width: 520px) {
   header { gap: 10px; }
   header small { display: none; }
-  .music-toggle { padding: 9px 10px; font-size: .88rem; }
   main { margin-top: 30px; }
   .actions { flex-wrap: wrap; }
 }
