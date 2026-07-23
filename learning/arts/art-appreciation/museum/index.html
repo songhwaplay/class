@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0a09">
   <title>빛의 복도 · 어린이 미술관</title>
-  <link rel="stylesheet" href="styles.css?v=20260724-4">
+  <link rel="stylesheet" href="styles.css?v=20260724-5">
   <script src="../../../../assets/sound/music-control.js?v=20260723-1" defer></script>
 </head>
 <body>
@@ -77,16 +77,21 @@
         <section class="docent-card">
           <span>어린이 도슨트</span>
           <p id="modal-docent"></p>
-          <p class="modal-context" id="modal-context" hidden></p>
+          <div class="docent-details">
+            <section>
+              <h3>그때는 어떤 시대였을까?</h3>
+              <p id="modal-background"></p>
+            </section>
+            <section>
+              <h3>그림 속 단서 찾기</h3>
+              <p id="modal-point"></p>
+            </section>
+            <section>
+              <h3>친구와 이야기해 보세요</h3>
+              <p id="modal-talk"></p>
+            </section>
+          </div>
         </section>
-        <section class="look-card">
-          <span>관람 포인트</span>
-          <p id="modal-point"></p>
-        </section>
-        <a class="detail-guide-link" id="detail-guide-link" href="art-guide.html" data-sfx="click">
-          <span>배경지식과 함께 읽기</span>
-          <strong>자세히 알아보기 <b aria-hidden="true">→</b></strong>
-        </a>
         <details class="modal-legal" id="modal-legal" hidden>
           <summary>ⓘ 작품 정보</summary>
           <p id="modal-rights"></p>
@@ -104,11 +109,6 @@
         <div><b>02</b><strong>둘러보기</strong><p>마우스를 누른 채 움직이면 360도로 볼 수 있어요.</p></div>
         <div><b>03</b><strong>감상하기</strong><p>빛나는 작품을 클릭하면 자세한 이야기가 열려요.</p></div>
       </div>
-    </dialog>
-
-    <dialog class="guide-modal" id="guide-modal" aria-label="작품 자세히 알아보기">
-      <button class="modal-close" id="guide-close" type="button" aria-label="상세 설명 닫기" data-sfx="click">×</button>
-      <iframe id="guide-frame" title="작품 자세히 알아보기"></iframe>
     </dialog>
 
     <dialog class="finale-modal" id="finale-modal" aria-labelledby="finale-title">
@@ -148,6 +148,6 @@
   <script src="vendor/three.min.js"></script>
   <script src="vendor/GLTFLoader.js"></script>
   <script src="art-data.js?v=20260723-11"></script>
-  <script src="museum.js?v=20260724-12"></script>
+  <script src="museum.js?v=20260724-13"></script>
 </body>
 </html>
