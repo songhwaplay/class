@@ -40,3 +40,11 @@ body.class-music-ready .unified-music-control {
     transform: scale(.74);
   }
 }
+
+.modal-legal{margin-top:20px;color:#766b5c;font-size:9px}
+.modal-legal[hidden]{display:none}
+.modal-legal summary{width:max-content;color:#8d7b60;cursor:pointer;list-style:none}
+.modal-legal summary::-webkit-details-marker{display:none}
+.modal-legal[open] summary{color:#b99a5b}
+.modal-legal p{margin:10px 0 5px;line-height:1.6}
+.modal-legal a{color:#9d8454;text-decoration:none}
