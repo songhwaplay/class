@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#153026">
+  <title>세계 미술 테마파크 · 실물 크기 3D 탐험</title>
+  <link rel="stylesheet" href="styles.css?v=20260723-1">
+</head>
+<body>
+  <main id="app" aria-label="실물 크기 세계 미술 테마파크">
+    <canvas id="park-canvas" aria-label="마우스와 키보드로 탐험하는 3D 야외 미술 공원"></canvas>
+
+    <header class="topbar">
+      <a class="brand" href="../museum/" aria-label="실내 미술관으로 돌아가기">
+        <span class="brand-mark">A</span>
+        <span><b>ARTSCAPE</b><small>세계 미술 테마파크</small></span>
+      </a>
+      <div class="scale-badge"><i></i><b>실물 크기 모드</b><span>3D 1단위 = 1m</span></div>
+      <button id="help-button" class="circle-button" type="button" aria-label="탐험 방법">?</button>
+    </header>
+
+    <nav class="zone-tabs" id="zone-tabs" aria-label="전시 구역 바로 이동"></nav>
+
+    <section class="hero-panel" id="hero-panel">
+      <p>OPEN-AIR ART PARK · 1:1 SCALE</p>
+      <h1>세계 미술을<br><em>실제 크기</em>로 만나요</h1>
+      <span>여섯 작품 사이를 직접 걸으며 크기와 구조를 비교해 보세요.</span>
+      <button id="start-button" type="button">탐험 시작하기 <b>→</b></button>
+    </section>
+
+    <section class="measure-panel" id="measure-panel" hidden>
+      <p id="measure-kicker"></p>
+      <h2 id="measure-title"></h2>
+      <dl id="measure-facts"></dl>
+      <span id="measure-note"></span>
+      <button id="detail-button" type="button">작품 이야기 보기</button>
+    </section>
+
+    <div class="crosshair" aria-hidden="true"><i></i><i></i></div>
+    <div class="movement-hud">
+      <span><kbd>WASD</kbd> 이동</span><span><kbd>Shift</kbd> 달리기</span>
+      <span><kbd>드래그</kbd> 둘러보기</span>
+    </div>
+    <div class="minimap" aria-label="현재 구역">
+      <i id="compass-arrow"></i>
+      <span id="current-zone">중앙 광장</span>
+    </div>
+
+    <div class="touch-controls" aria-label="터치 이동 조작">
+      <button data-key="KeyW" aria-label="앞으로">▲</button>
+      <button data-key="KeyA" aria-label="왼쪽">◀</button>
+      <button data-key="KeyS" aria-label="뒤로">▼</button>
+      <button data-key="KeyD" aria-label="오른쪽">▶</button>
+    </div>
+
+    <div class="loading" id="loading" role="status">
+      <div class="loading-orbit"><i></i><b>A</b></div>
+      <p>실물 크기 공원을 만들고 있어요</p>
+      <span>1m를 3D 1단위로 맞추는 중</span>
+    </div>
+
+    <dialog class="detail-modal" id="detail-modal">
+      <button class="modal-close" id="modal-close" type="button" aria-label="닫기">×</button>
+      <p class="eyebrow" id="modal-kicker"></p>
+      <h2 id="modal-title"></h2>
+      <p class="modal-subtitle" id="modal-subtitle"></p>
+      <div class="modal-grid">
+        <section>
+          <span>실제 크기</span>
+          <strong id="modal-size"></strong>
+          <p id="modal-scale"></p>
+        </section>
+        <section>
+          <span>어린이 도슨트</span>
+          <p id="modal-docent"></p>
+        </section>
+        <section>
+          <span>꼭 알아둘 점</span>
+          <p id="modal-caution"></p>
+        </section>
+        <section>
+          <span>관람 포인트</span>
+          <p id="modal-look"></p>
+        </section>
+      </div>
+      <footer><span id="modal-rights"></span><a id="modal-source" target="_blank" rel="noopener">치수 근거 확인 ↗</a></footer>
+    </dialog>
+
+    <dialog class="help-modal" id="help-modal">
+      <button class="modal-close" id="help-close" type="button" aria-label="닫기">×</button>
+      <p class="eyebrow">HOW TO EXPLORE</p>
+      <h2>크기를 몸으로 비교해 보세요</h2>
+      <div class="help-grid">
+        <div><b>01</b><strong>걷기</strong><p>WASD·방향키로 이동하고 Shift를 누르면 더 빠르게 달려요.</p></div>
+        <div><b>02</b><strong>둘러보기</strong><p>화면을 누른 채 드래그하면 시선을 360도로 돌릴 수 있어요.</p></div>
+        <div><b>03</b><strong>비교하기</strong><p>작품 옆 1.45m 어린이와 치수선을 보고 실제 크기를 비교해요.</p></div>
+      </div>
+    </dialog>
+    <div class="vignette" aria-hidden="true"></div>
+  </main>
+
+  <script src="../museum/vendor/three.min.js"></script>
+  <script src="park.js?v=20260723-1"></script>
+</body>
+</html>
