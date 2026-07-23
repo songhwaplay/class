@@ -13,7 +13,7 @@ function adapt(problem: DerivativeProblem): NumericWorksheetProblem {
   return {
     ...problem,
     prompt: "도함수를 구하세요.",
-    latex: formatDerivativeProblemLatex(problem),
+    latex: `${formatDerivativeProblemLatex(problem)}\\quad f^{\\prime}(x)=?`,
     answers: [...problem.answer],
     answerLabels: problem.answer.map((_, index) => String.fromCharCode(65 + index)),
   };

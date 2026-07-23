@@ -307,6 +307,7 @@ test("renders the unified arithmetic catalog and high-school worksheets", async 
   assert.equal((derivativeHtml.match(/data-testid="numeric-choice-question"/g) ?? []).length, 8);
   assert.equal((derivativeHtml.match(/<input/g) ?? []).length, 0);
   assert.doesNotMatch(derivativeHtml, /f\(x\+h\)/);
+  assert.equal((derivativeHtml.match(/data-math-latex="[^"]*f\^\{\\prime\}\(x\)=\?"/g) ?? []).length, 8);
 
   const trigDerivativeResponse = await render("/arithmetic/high-school/trigonometric-derivatives");
   assert.equal(trigDerivativeResponse.status, 200);
