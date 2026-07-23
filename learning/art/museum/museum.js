@@ -399,7 +399,12 @@
     }else{
       installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded();
     }
-    const label=makeLabel(work.title,work.artist,1.7);label.position.set(0,work.hasBuiltInBase ? .32 : baseH*.55,work.applyRoomOffset?placementZ+.62:.516);label.rotation.x=-Math.PI*.04;group.add(label);
+    const labelWidth=clamp(baseW*.9,1.45,2.25);
+    const labelFront=baseW/2+.16;
+    const label=makeLabel(work.title,work.artist,labelWidth);
+    label.position.set(0,work.hasBuiltInBase ? .32 : baseH*.55,work.applyRoomOffset?placementZ+labelFront:labelFront);
+    label.rotation.x=-Math.PI*.04;
+    group.add(label);
     const sculptureLightY=isGrand?7.65:5.7;
     const spot=new THREE.SpotLight(0xffc77a,work.actualScale?105:175,isGrand?13:10,Math.PI*.2,.62,1.4);spot.position.set(-placementX*.35,sculptureLightY,placementZ+1.35);spot.target.position.set(placementX,pedestalTop+artH*.52,placementZ);spot.castShadow=index%2===0;spot.shadow.mapSize.set(512,512);gallery.add(spot,spot.target);
     const rim=new THREE.PointLight(0xffd6a0,work.actualScale?18:38,5.5,2);rim.position.set(-placementX*.45,pedestalTop+artH*.58,placementZ-1.15);gallery.add(rim);
