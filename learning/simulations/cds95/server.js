@@ -319,6 +319,7 @@ app.get('/health', (_req, res) => res.json({
   directSeaLandTransfer: true,
   coastalLanding: true,
   coastalLandingRule: 'near-coast-only-return-to-anchored-ship',
+  exactCoastalReboarding: true,
   fatigueAffectsSeaAndLandSpeed: true,
   fatigueSlowdownStart: Fatigue.FATIGUE_SLOWDOWN_START,
   fatigueMinSpeedPercent: Math.round(Fatigue.MIN_SPEED_MULTIPLIER * 100),

@@ -72,8 +72,8 @@ function ack(socket, event, payload = {}) {
   assert.equal(embark.ok, true, embark.error);
   const sea = await once(student, 'snapshot', (snap) => snap.you.mode === 'sea' && !snap.you.transition);
   assert.equal(sea.you.shipAnchoredAtShore, false);
-  assert.ok(Math.abs(sea.you.x - anchoredX) < 0.1);
-  assert.ok(Math.abs(sea.you.y - anchoredY) < 0.1);
+  assert.ok(Math.abs(sea.you.x - anchoredX) < 0.1, `ship x moved: ${anchoredX} -> ${sea.you.x}`);
+  assert.ok(Math.abs(sea.you.y - anchoredY) < 0.1, `ship y moved: ${anchoredY} -> ${sea.you.y}`);
 
   console.log(JSON.stringify({
     ok: true,
