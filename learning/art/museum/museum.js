@@ -32,7 +32,7 @@
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.17;
+  renderer.toneMappingExposure = 1.08;
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.physicallyCorrectLights = true;
 
@@ -93,37 +93,28 @@
   async function connectClassPresence(){try{const name=String(localStorage.getItem('classPlayerName')||'').trim();let clientId=localStorage.getItem('museumPresenceClientId');if(!clientId){clientId=crypto.randomUUID?crypto.randomUUID():`${Date.now()}-${Math.random().toString(36).slice(2)}`;localStorage.setItem('museumPresenceClientId',clientId);}const query=new URLSearchParams({name,clientId});const response=await fetch(`/api/museum/presence-ticket?${query}`);if(!response.ok)return;const payload=await response.json();presenceScope=payload.scope||'class';const proto=location.protocol==='https:'?'wss':'ws';presenceSocket=new WebSocket(`${proto}://${location.host}`);presenceSocket.addEventListener('open',()=>presenceSocket.send(JSON.stringify({type:'MUSEUM_JOIN',ticket:payload.ticket})));presenceSocket.addEventListener('message',event=>{const msg=JSON.parse(event.data);if(msg.type==='MUSEUM_JOINED'){localPresenceId=msg.userId;selfAvatar.userData.cloth.color.setHex(avatarColor(msg.userId));}if(msg.type==='MUSEUM_STATE'){updatePeople(msg.visitors);const here=msg.visitors.filter(v=>v.room===rooms[activeRoom].id).length;presenceEl.textContent=presenceScope==='open'?`함께 관람 중 ${here}명`:`우리 반 함께 관람 중 ${here}명`;presenceEl.hidden=false;}});}catch(_) {}}
   function sendPresence(){if(!presenceSocket||presenceSocket.readyState!==WebSocket.OPEN)return;const now=performance.now();if(now-presenceTimer<100)return;presenceTimer=now;presenceSocket.send(JSON.stringify({type:'MUSEUM_MOVE',room:rooms[activeRoom].id,x:camera.position.x,z:camera.position.z,yaw}));}
 
-  function makeWoodTexture() {
-    const c = document.createElement('canvas'); c.width=1024; c.height=1024;
-    const g = c.getContext('2d');
-    g.fillStyle='#4f301f'; g.fillRect(0,0,c.width,c.height);
-    const boardW=112, boardH=410;
-    for(let row=0;row<3;row++) for(let col=-1;col<11;col++){
-      const x=col*boardW+(row%2?64:0), y=row*boardH;
-      const grad=g.createLinearGradient(x,y,x+boardW,y);
-      const light=34+Math.abs((col*11+row*7)%8);
-      grad.addColorStop(0,`hsl(25 30% ${light-3}%)`);
-      grad.addColorStop(.42,`hsl(27 34% ${light+3}%)`);
-      grad.addColorStop(1,`hsl(23 29% ${light-2}%)`);
-      g.fillStyle=grad;g.fillRect(x+1,y+2,boardW-2,boardH-4);
-      g.strokeStyle='rgba(37,18,8,.42)';g.lineWidth=2;g.strokeRect(x,y,boardW,boardH);
-      for(let k=0;k<16;k++){
-        const yy=y+14+k*25+Math.sin((col+k)*1.7)*7;
-        g.strokeStyle=`rgba(255,220,166,${.022+(k%4)*.006})`;g.beginPath();g.moveTo(x+5,yy);g.bezierCurveTo(x+34,yy+7,x+76,yy-6,x+boardW-4,yy+2);g.stroke();
-        if(k%5===0){g.strokeStyle='rgba(62,28,12,.15)';g.beginPath();g.moveTo(x+8,yy+5);g.bezierCurveTo(x+42,yy-5,x+76,yy+9,x+boardW-7,yy);g.stroke();}
-      }
-    }
-    const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3.2,6.2);t.anisotropy=renderer.capabilities.getMaxAnisotropy();t.encoding=THREE.sRGBEncoding;return t;
+  function surfaceTexture(path,repeatX,repeatY,color=true) {
+    const texture=textureLoader.load(path);
+    texture.wrapS=texture.wrapT=THREE.RepeatWrapping;
+    texture.repeat.set(repeatX,repeatY);
+    texture.anisotropy=Math.min(12,renderer.capabilities.getMaxAnisotropy());
+    if(color)texture.encoding=THREE.sRGBEncoding;
+    return texture;
   }
 
-  const woodTexture = makeWoodTexture();
+  const floorAlbedo=surfaceTexture('assets/textures/walnut-floor-albedo.webp?v=2',4,12.5);
+  const floorBump=surfaceTexture('assets/textures/walnut-floor-bump.webp?v=2',4,12.5,false);
+  const wallAlbedo=surfaceTexture('assets/textures/charcoal-fabric-albedo.webp?v=2',12,6);
+  const wallBump=surfaceTexture('assets/textures/charcoal-fabric-bump.webp?v=2',12,6,false);
+  const plasterAlbedo=surfaceTexture('assets/textures/warm-plaster-albedo.webp?v=2',2.4,7.2);
+  const plasterBump=surfaceTexture('assets/textures/warm-plaster-bump.webp?v=2',2.4,7.2,false);
   const materials = {
-    wall:new THREE.MeshStandardMaterial({color:0x2b2926,roughness:.96,metalness:.01}),
-    wallInset:new THREE.MeshStandardMaterial({color:0x211f1c,roughness:.92,metalness:.02}),
-    walnut:new THREE.MeshStandardMaterial({map:woodTexture,color:0xd8c2aa,roughness:.64,metalness:.015,emissive:0x24180f,emissiveIntensity:.42}),
-    ceiling:new THREE.MeshStandardMaterial({color:0x81776d,roughness:.94}),
-    brass:new THREE.MeshStandardMaterial({color:0xb7904d,roughness:.3,metalness:.72}),
-    darkBrass:new THREE.MeshStandardMaterial({color:0x72532d,roughness:.45,metalness:.58}),
+    wall:new THREE.MeshStandardMaterial({map:wallAlbedo,bumpMap:wallBump,bumpScale:.004,color:0xf0ece8,roughness:.94,metalness:0}),
+    wallInset:new THREE.MeshStandardMaterial({map:wallAlbedo,bumpMap:wallBump,bumpScale:.003,color:0xa19b95,roughness:.96,metalness:0}),
+    walnut:new THREE.MeshStandardMaterial({map:floorAlbedo,bumpMap:floorBump,bumpScale:.022,color:0xf0e5d8,roughness:.59,metalness:.01,emissive:0x100a06,emissiveIntensity:.1}),
+    ceiling:new THREE.MeshStandardMaterial({map:plasterAlbedo,bumpMap:plasterBump,bumpScale:.0025,color:0xa99b8c,roughness:.94,metalness:0,emissive:0x6f5d4a,emissiveMap:plasterAlbedo,emissiveIntensity:.48}),
+    brass:new THREE.MeshStandardMaterial({color:0xa77b3e,roughness:.34,metalness:.68}),
+    darkBrass:new THREE.MeshStandardMaterial({color:0x4b3928,roughness:.52,metalness:.42}),
     black:new THREE.MeshStandardMaterial({color:0x181512,roughness:.76}),
     stone:new THREE.MeshStandardMaterial({color:0x8a8176,roughness:.72,metalness:.025})
   };
@@ -183,25 +174,52 @@
   function buildShell(room) {
     const width=room.id==='space'?14:11.6,length=GALLERY_START-GALLERY_END,height=6.4,centerZ=(GALLERY_START+GALLERY_END)/2;
     mesh([width,.18,length],materials.walnut,[0,-.09,centerZ]);
-    mesh([width,.25,length],materials.ceiling,[0,height,centerZ]);
-    mesh([.28,height,length],materials.wall,[-width/2,3.1,centerZ]);
-    mesh([.28,height,length],materials.wall,[width/2,3.1,centerZ]);
-    mesh([width,height,.3],materials.wall,[0,3.1,GALLERY_END]);
+    mesh([width,.18,length],materials.ceiling,[0,height+.1,centerZ]);
+    mesh([.28,height,length],materials.wallInset,[-width/2,3.1,centerZ]);
+    mesh([.28,height,length],materials.wallInset,[width/2,3.1,centerZ]);
+    mesh([width,height,.3],materials.wallInset,[0,3.1,GALLERY_END]);
     mesh([width,height,.22],materials.wallInset,[0,3.1,7]);
+
+    const leftFabric=new THREE.Mesh(new THREE.PlaneGeometry(length,height-1.05),materials.wall);
+    leftFabric.position.set(-width/2+.145,3.25,centerZ);leftFabric.rotation.y=Math.PI/2;leftFabric.receiveShadow=true;gallery.add(leftFabric);
+    const rightFabric=leftFabric.clone();rightFabric.position.x=width/2-.145;rightFabric.rotation.y=-Math.PI/2;gallery.add(rightFabric);
+    const endFabric=new THREE.Mesh(new THREE.PlaneGeometry(width-.55,height-1.05),materials.wall);
+    endFabric.position.set(0,3.25,GALLERY_END+.16);endFabric.receiveShadow=true;gallery.add(endFabric);
+
     for(const side of [-1,1]){
       const x=side*(width/2-.13);
-      mesh([.12,.18,length],materials.brass,[x,.38,centerZ]);
-      for(let z=4;z>GALLERY_END;z-=5.15){
-        mesh([.16,4.9,.09],materials.darkBrass,[x-side*.08,3,z]);
-        mesh([.11,.11,5.5],materials.brass,[x-side*.12,5.52,z-3.1]);
+      mesh([.1,.2,length],materials.darkBrass,[x,.34,centerZ]);
+      mesh([.08,.08,length],materials.brass,[x-side*.025,.47,centerZ]);
+      for(let z=4.9;z>GALLERY_END;z-=3.35){
+        mesh([.035,5.35,.055],materials.black,[x-side*.17,3.25,z]);
       }
     }
-    for(let z=4;z>GALLERY_END;z-=6.2){
-      mesh([width-1.1,.12,.28],materials.darkBrass,[0,6.05,z]);
-      const strip=mesh([4.2,.05,.42],new THREE.MeshBasicMaterial({color:0xe5b870}),[0,5.88,z]);strip.castShadow=false;
-      const light=new THREE.PointLight(0xffdfb5,24,10,1.8);light.position.set(0,5.66,z);gallery.add(light);
+
+    const centerCeiling=mesh([width-2.3,.18,length],materials.ceiling,[0,6.23,centerZ]);centerCeiling.castShadow=false;
+    for(const side of [-1,1]){
+      const soffitX=side*(width/2-.52);
+      const soffit=mesh([1.04,.34,length],materials.ceiling,[soffitX,5.91,centerZ]);soffit.castShadow=false;
+      const bevel=mesh([.82,.16,length],materials.ceiling,[side*(width/2-1.27),6.08,centerZ]);bevel.rotation.z=side*.38;bevel.castShadow=false;
+      const cove=mesh([.065,.05,length],new THREE.MeshBasicMaterial({color:0xffddb0,toneMapped:false}),[side*(width/2-1.48),5.94,centerZ]);cove.castShadow=false;
+      for(let z=5;z>GALLERY_END;z-=4.8){
+        const wash=new THREE.SpotLight(0xffd4a0,18,5.2,Math.PI*.34,.8,1.55);
+        wash.position.set(side*(width/2-1.48),5.78,z);
+        wash.target.position.set(side*(width/2-.16),4.55,z);
+        gallery.add(wash,wash.target);
+      }
     }
-    const ambient=new THREE.HemisphereLight(0xc8b69e,0x2a2019,.78);gallery.add(ambient);
+
+    const downlightMat=new THREE.MeshStandardMaterial({color:0x24211e,roughness:.62,metalness:.3});
+    const lampMat=new THREE.MeshBasicMaterial({color:0xfff1d7,toneMapped:false});
+    for(let z=3.8;z>GALLERY_END;z-=4.5){
+      for(const x of [-1.45,1.45]){
+        const ring=new THREE.Mesh(new THREE.CylinderGeometry(.115,.115,.035,24),downlightMat);ring.position.set(x,6.105,z);gallery.add(ring);
+        const lens=new THREE.Mesh(new THREE.CircleGeometry(.072,20),lampMat);lens.position.set(x,6.084,z);lens.rotation.x=Math.PI/2;gallery.add(lens);
+        const light=new THREE.SpotLight(0xffe4bf,21,8,Math.PI*.23,.8,1.65);
+        light.position.set(x,5.95,z);light.target.position.set(x,0,z);gallery.add(light,light.target);
+      }
+    }
+    const ambient=new THREE.HemisphereLight(0xe9dece,0x3a2a20,.82);gallery.add(ambient);
     const entrance=new THREE.Group();gallery.add(entrance);
     mesh([2.2,5,.5],materials.wallInset,[-(width/2-1.1),2.5,5.7],entrance);mesh([2.2,5,.5],materials.wallInset,[(width/2-1.1),2.5,5.7],entrance);mesh([width-4.4,1.15,.5],materials.wallInset,[0,5.42,5.7],entrance);
     const sign=makeLabel(room.subtitle,`${room.works.length}점의 작품 · 원작 비율 전시`,4.2);sign.position.set(0,4.55,5.4);gallery.add(sign);
