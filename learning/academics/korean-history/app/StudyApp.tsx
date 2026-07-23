@@ -205,7 +205,7 @@ export function StudyApp() {
   if (view === "quiz" && currentQuestion) {
     const isCorrect = selectedAnswer === currentQuestion.answer;
     return (
-      <main className={`site-shell quiz-shell ${selectedAnswer === null ? "quiz-shell-solving" : "quiz-shell-answered"}`}>
+      <main className={`site-shell quiz-shell quiz-shell-solving ${selectedAnswer !== null ? "quiz-shell-answered" : ""}`}>
         <header className="quiz-header">
           <button className="text-button" onClick={goHome} aria-label="단원 선택으로 돌아가기">
             ← 단원 선택
@@ -219,10 +219,7 @@ export function StudyApp() {
           </div>
         </header>
 
-        <section
-          className={`question-card ${selectedAnswer === null ? "question-card-solving" : "question-card-answered"}`}
-          aria-labelledby="question-label"
-        >
+        <section className="question-card question-card-solving" aria-labelledby="question-label">
           <div className="question-meta">
             <span className="unit-pill">{currentQuestion.unit}</span>
             <div className="question-meta-actions">
@@ -269,35 +266,39 @@ export function StudyApp() {
             })}
           </div>
 
-          {selectedAnswer !== null && (
-            <div className={`feedback ${isCorrect ? "feedback-correct" : "feedback-wrong"}`} aria-live="polite">
-              <div>
-                <strong>{isCorrect ? "정답입니다." : "오답입니다."}</strong>
-                {!isCorrect && <span>정답은 {answerSymbols[currentQuestion.answer]}번입니다.</span>}
-              </div>
-              <button className="primary-button compact" onClick={nextQuestion}>
-                {questionIndex + 1 === quiz.length ? "결과 보기" : "다음 문제 →"}
-              </button>
-            </div>
-          )}
-          {selectedAnswer !== null && currentExplanation && (
-            <aside className="explanation-card" aria-labelledby="explanation-title">
-              <h2 id="explanation-title">정답 해설</h2>
-              <p className="answer-reason">{currentExplanation.answerReason}</p>
-              <div className="explanation-grid">
-                <section>
-                  <h3>핵심 개념</h3>
-                  <p>{currentExplanation.keyPoint}</p>
-                </section>
-                <section>
-                  <h3>오답 정리</h3>
-                  <p>{currentExplanation.wrongReason}</p>
-                </section>
-              </div>
-            </aside>
-          )}
-          <p className="source-note">출처: {currentQuestion.source}</p>
         </section>
+        {selectedAnswer !== null && (
+          <div className="answer-result-overlay" role="dialog" aria-modal="true" aria-label="채점 결과">
+            <div className="answer-result-panel">
+              <div className={`feedback ${isCorrect ? "feedback-correct" : "feedback-wrong"}`} aria-live="polite">
+                <div>
+                  <strong>{isCorrect ? "정답입니다." : "오답입니다."}</strong>
+                  {!isCorrect && <span>정답은 {answerSymbols[currentQuestion.answer]}번입니다.</span>}
+                </div>
+                <button className="primary-button compact" onClick={nextQuestion}>
+                  {questionIndex + 1 === quiz.length ? "결과 보기" : "다음 문제 →"}
+                </button>
+              </div>
+              {currentExplanation && (
+                <aside className="explanation-card" aria-labelledby="explanation-title">
+                  <h2 id="explanation-title">정답 해설</h2>
+                  <p className="answer-reason">{currentExplanation.answerReason}</p>
+                  <div className="explanation-grid">
+                    <section>
+                      <h3>핵심 개념</h3>
+                      <p>{currentExplanation.keyPoint}</p>
+                    </section>
+                    <section>
+                      <h3>오답 정리</h3>
+                      <p>{currentExplanation.wrongReason}</p>
+                    </section>
+                  </div>
+                </aside>
+              )}
+              <p className="source-note">출처: {currentQuestion.source}</p>
+            </div>
+          </div>
+        )}
         {imageExpanded && (
           <div
             className="image-modal"
