@@ -43,7 +43,7 @@
         voicingQuizChord: 0,
         voicingQuizInversion: 1,
         voicingQuizAnswered: false,
-        rhythmMode: "dictation",
+        rhythmMode: "performance",
         rhythmPattern: "steady",
         rhythmPlaybackToken: 0,
         tempo: 84,
@@ -53,7 +53,7 @@
         challengeActive: false,
         performanceStartMs: 0,
         taps: [],
-        dictationLevel: "all",
+        dictationLevel: "basic",
         dictationQuestionId: null,
         dictationQuestionNumber: 0,
         dictationAnswer: [],
@@ -910,6 +910,53 @@
     }
 
     function bindEvents() {
+        document.querySelectorAll("[data-practice-gate]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const panel = document.getElementById(button.dataset.practiceGate);
+                const expanded = button.getAttribute("aria-expanded") !== "true";
+                button.setAttribute("aria-expanded", String(expanded));
+                panel.classList.toggle("hidden", !expanded);
+                button.querySelector("strong").textContent = expanded
+                    ? (button.dataset.practiceGate === "harmonyPractice" ? "코드 실전 연습 닫기" : "리듬 실전 연습 닫기")
+                    : (button.dataset.practiceGate === "harmonyPractice" ? "코드 실전 연습 열기" : "리듬 실전 연습 열기");
+                if (expanded) panel.scrollIntoView({ behavior: "smooth", block: "start" });
+            });
+        });
+        document.querySelectorAll("[data-basic-note]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                playPianoTone(core.midiToFrequency(Number(button.dataset.basicNote)), 0, .7, .08);
+            });
+        });
+        document.querySelectorAll("[data-basic-chord]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const context = ensureAudio();
+                if (!context) return;
+                button.dataset.basicChord.split(",").map(Number).forEach(function (midi) {
+                    playPianoTone(core.midiToFrequency(midi), context.currentTime, 1.1, .06);
+                });
+            });
+        });
+        document.querySelectorAll("[data-basic-beats]").forEach(function (button) {
+            button.addEventListener("click", function () {
+                const beats = Number(button.dataset.basicBeats);
+                playRhythmTone(0, beats * .5, true);
+            });
+        });
+        elements.basicPulseButton = document.getElementById("basicPulseButton");
+        elements.basicPulseDots = document.getElementById("basicPulseDots");
+        elements.basicPulseButton.addEventListener("click", function () {
+            const context = ensureAudio();
+            if (!context) return;
+            const dots = Array.from(elements.basicPulseDots.children);
+            dots.forEach(function (dot) { dot.classList.remove("active"); });
+            for (let beat = 0; beat < 4; beat += 1) {
+                playClick(context.currentTime + beat * .6, beat === 0, 1.05);
+                window.setTimeout(function () {
+                    dots.forEach(function (dot, index) { dot.classList.toggle("active", index === beat); });
+                    if (beat === 3) window.setTimeout(function () { dots[3].classList.remove("active"); }, 450);
+                }, beat * 600);
+            }
+        });
         document.querySelectorAll(".lab-tab").forEach(function (button) {
             button.addEventListener("click", function () { switchTab(button.dataset.tab); });
         });

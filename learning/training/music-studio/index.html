@@ -6,9 +6,9 @@
     <meta name="theme-color" content="#100f19">
     <title>화성학·리듬 트레이닝</title>
     <meta name="description" content="화성학과 리듬 트레이닝 웹 학습 도구">
-    <link rel="stylesheet" href="styles.css?v=20260721-rhythm-notation">
+    <link rel="stylesheet" href="styles.css?v=20260723-foundation-course">
     <script src="music-core.js?v=20260721-rhythm-notation" defer></script>
-    <script src="app.js?v=20260721-rhythm-notation" defer></script>
+    <script src="app.js?v=20260723-foundation-course" defer></script>
 </head>
 <body>
     <div class="noise" aria-hidden="true"></div>
@@ -28,18 +28,18 @@
             <section class="hero" aria-labelledby="pageTitle">
                 <div class="hero-copy">
                     <h1 id="pageTitle">화성학<br><em>리듬 트레이닝</em></h1>
-                    <p>코드 진행과 리듬 타이밍을 연습합니다.</p>
+                    <p>음악을 처음 만나는 어린이도 도레미와 하나·둘·셋·넷부터 차근차근 배워요.</p>
                 </div>
             </section>
 
             <nav class="lab-tabs" aria-label="훈련 영역 선택">
                 <button class="lab-tab active" type="button" data-tab="harmony" aria-controls="harmonyLab" aria-selected="true">
                     <span class="tab-number">01</span>
-                    <span><b>화성학</b><small>코드의 기능과 진행</small></span>
+                    <span><b>화성학</b><small>도레미부터 화음까지</small></span>
                 </button>
                 <button class="lab-tab" type="button" data-tab="rhythm" aria-controls="rhythmLab" aria-selected="false">
                     <span class="tab-number">02</span>
-                    <span><b>리듬 트레이닝</b><small>듣고 따라치는 타이밍</small></span>
+                    <span><b>리듬 트레이닝</b><small>박자 세기부터 따라치기까지</small></span>
                 </button>
             </nav>
 
@@ -47,9 +47,67 @@
                 <header class="section-heading">
                     <div>
                         <p class="section-kicker">화성학</p>
-                        <h2 id="harmonyTitle">코드 진행 연습</h2>
-                        <p>조성과 화음 유형을 선택하고 코드의 기능과 진행을 들어봅니다.</p>
+                        <h2 id="harmonyTitle">도레미부터 시작해요</h2>
+                        <p>설명을 읽고 소리를 눌러 보세요. 처음이라도 괜찮아요.</p>
                     </div>
+                </header>
+
+                <article class="foundation-course" aria-labelledby="harmonyFoundationTitle">
+                    <div class="foundation-intro">
+                        <div>
+                            <span class="course-badge">왕초보 코스 · 1단계</span>
+                            <h3 id="harmonyFoundationTitle">화성학은 ‘소리의 이름’을 아는 것부터!</h3>
+                            <p>아래 세 칸을 왼쪽부터 하나씩 해 보세요. 어려운 말은 아직 외우지 않아도 됩니다.</p>
+                        </div>
+                        <span class="course-time">약 3분</span>
+                    </div>
+                    <div class="foundation-steps">
+                        <section class="foundation-step">
+                            <span class="step-number">1</span>
+                            <div>
+                                <p class="step-kicker">음의 이름</p>
+                                <h4>도 · 레 · 미를 눌러 보세요</h4>
+                                <p>소리마다 높이가 달라요. 오른쪽으로 갈수록 소리가 높아져요.</p>
+                                <div class="sound-buttons" aria-label="도레미 소리 듣기">
+                                    <button type="button" data-basic-note="60">도</button>
+                                    <button type="button" data-basic-note="62">레</button>
+                                    <button type="button" data-basic-note="64">미</button>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="foundation-step">
+                            <span class="step-number">2</span>
+                            <div>
+                                <p class="step-kicker">화음 만들기</p>
+                                <h4>도·미·솔을 함께 들어요</h4>
+                                <p>높이가 다른 음을 여러 개 같이 내면 <strong>화음</strong>이 됩니다.</p>
+                                <button class="try-button" type="button" data-basic-chord="60,64,67">도 + 미 + 솔 듣기 <span>▶</span></button>
+                            </div>
+                        </section>
+                        <section class="foundation-step">
+                            <span class="step-number">3</span>
+                            <div>
+                                <p class="step-kicker">울림 비교</p>
+                                <h4>가운데 음을 바꿔 들어요</h4>
+                                <p>‘미’를 건반 한 칸 낮춘 ‘미♭’으로 바꾸면 음 사이의 거리와 울림이 달라져요.</p>
+                                <div class="feeling-buttons">
+                                    <button type="button" data-basic-chord="60,64,67">도 · 미 · 솔</button>
+                                    <button type="button" data-basic-chord="60,63,67">도 · 미♭ · 솔</button>
+                                </div>
+                                <small class="context-note">장3화음과 단3화음의 정서가 항상 정해지는 것은 아니에요. 곡의 흐름과 연주 방식에 따라 다르게 들릴 수 있어요.</small>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="foundation-summary"><strong>오늘의 한 문장</strong><span>음 여러 개를 동시에 내면 ‘화음’이에요.</span></div>
+                </article>
+
+                <button class="practice-gate" type="button" data-practice-gate="harmonyPractice" aria-expanded="false">
+                    <span><small>기초를 다 해봤나요?</small><strong>코드 실전 연습 열기</strong></span><b aria-hidden="true">↓</b>
+                </button>
+
+                <div id="harmonyPractice" class="advanced-practice hidden">
+                    <header class="practice-heading">
+                        <div><span>다음 단계</span><h3>코드 실전 연습</h3><p>기초 소리를 익혔다면 여러 화음의 연결을 들어 보세요.</p></div>
                     <div class="harmony-controls" aria-label="화성 설정">
                         <div class="control-stack">
                             <span>종류</span>
@@ -91,7 +149,7 @@
                             </div>
                         </div>
                     </div>
-                </header>
+                    </header>
 
                 <div class="harmony-layout">
                     <article class="progression-card">
@@ -157,27 +215,83 @@
                     <p id="voicingQuizFeedback" class="quiz-feedback" aria-live="polite"></p>
                     <button id="newVoicingQuizButton" class="text-button" type="button">새 문제 ↻</button>
                 </article>
+                </div>
             </section>
 
             <section id="rhythmLab" class="lab-panel hidden" aria-labelledby="rhythmTitle">
                 <header class="section-heading rhythm-heading">
                     <div>
                         <p class="section-kicker coral">리듬 트레이닝</p>
-                        <h2 id="rhythmTitle">리듬 훈련</h2>
-                        <p>리듬을 듣고 입력하거나 직접 따라 칩니다.</p>
+                        <h2 id="rhythmTitle">하나·둘·셋·넷부터 시작해요</h2>
+                        <p>일정한 박을 느끼고, 손뼉으로 천천히 따라 해 봐요.</p>
                     </div>
+                </header>
+
+                <article class="foundation-course rhythm-foundation" aria-labelledby="rhythmFoundationTitle">
+                    <div class="foundation-intro">
+                        <div>
+                            <span class="course-badge coral-badge">왕초보 코스 · 1단계</span>
+                            <h3 id="rhythmFoundationTitle">리듬은 ‘일정하게 세는 것’부터!</h3>
+                            <p>정답을 맞히기 전에 몸으로 박을 느껴 봐요. 숫자에 맞춰 무릎이나 책상을 톡톡 쳐도 좋아요.</p>
+                        </div>
+                        <span class="course-time">약 3분</span>
+                    </div>
+                    <div class="foundation-steps">
+                        <section class="foundation-step">
+                            <span class="step-number coral-step">1</span>
+                            <div>
+                                <p class="step-kicker coral-copy">기본 박</p>
+                                <h4>하나 · 둘 · 셋 · 넷</h4>
+                                <p>똑같은 간격으로 네 번 소리가 나요. 숫자를 소리 내어 세어 보세요.</p>
+                                <button id="basicPulseButton" class="try-button coral-button" type="button">네 박 듣기 <span>▶</span></button>
+                                <div id="basicPulseDots" class="pulse-dots" aria-label="네 박 표시"><i>1</i><i>2</i><i>3</i><i>4</i></div>
+                            </div>
+                        </section>
+                        <section class="foundation-step">
+                            <span class="step-number coral-step">2</span>
+                            <div>
+                                <p class="step-kicker coral-copy">음표 길이</p>
+                                <h4>한 박, 두 박, 네 박</h4>
+                                <p>숫자가 클수록 소리를 더 오래 이어요. 눌러서 길이를 비교해 보세요.</p>
+                                <div class="note-value-buttons">
+                                    <button type="button" data-basic-beats="1"><b>♩</b><span>한 박</span></button>
+                                    <button type="button" data-basic-beats="2"><b>𝅗𝅥</b><span>두 박</span></button>
+                                    <button type="button" data-basic-beats="4"><b>𝅝</b><span>네 박</span></button>
+                                </div>
+                            </div>
+                        </section>
+                        <section class="foundation-step">
+                            <span class="step-number coral-step">3</span>
+                            <div>
+                                <p class="step-kicker coral-copy">따라 하기</p>
+                                <h4>소리에 맞춰 네 번 쳐요</h4>
+                                <p>‘네 박 듣기’를 다시 누르고, 1·2·3·4에 맞춰 손뼉을 쳐 보세요.</p>
+                                <div class="clap-guide"><span>👏</span><b>짝 · 짝 · 짝 · 짝</b></div>
+                            </div>
+                        </section>
+                    </div>
+                    <div class="foundation-summary coral-summary"><strong>오늘의 한 문장</strong><span>일정하게 반복되는 음악의 걸음을 ‘박’이라고 해요.</span></div>
+                </article>
+
+                <button class="practice-gate coral-gate" type="button" data-practice-gate="rhythmPractice" aria-expanded="false">
+                    <span><small>네 박을 따라 해봤나요?</small><strong>리듬 실전 연습 열기</strong></span><b aria-hidden="true">↓</b>
+                </button>
+
+                <div id="rhythmPractice" class="advanced-practice hidden">
+                    <header class="practice-heading rhythm-practice-heading">
+                        <div><span>다음 단계</span><h3>리듬 실전 연습</h3><p>기본 박을 익혔다면 듣고 표시하거나 직접 따라 쳐 보세요.</p></div>
                     <div class="tempo-box">
                         <div><span>TEMPO</span><output id="tempoOutput" for="tempoSlider">84</output><b>BPM</b></div>
                         <input id="tempoSlider" type="range" min="50" max="150" value="84" aria-label="템포">
                     </div>
-                </header>
+                    </header>
 
                 <div class="rhythm-mode-switch" role="tablist" aria-label="리듬 훈련 방식">
-                    <button class="active" type="button" role="tab" aria-selected="true" data-rhythm-mode="dictation">리듬 청음</button>
-                    <button type="button" role="tab" aria-selected="false" data-rhythm-mode="performance">따라 치기</button>
+                    <button type="button" role="tab" aria-selected="false" data-rhythm-mode="dictation">리듬 청음</button>
+                    <button class="active" type="button" role="tab" aria-selected="true" data-rhythm-mode="performance">쉬운 따라 치기</button>
                 </div>
 
-                <div id="dictationPanel" class="dictation-layout">
+                <div id="dictationPanel" class="dictation-layout hidden">
                     <article class="dictation-card">
                         <div class="dictation-toolbar">
                             <div>
@@ -211,8 +325,8 @@
                         <span class="mini-label">문제은행</span>
                         <h3><strong id="dictationBankCount">48</strong>개 리듬</h3>
                         <div class="difficulty-list" role="group" aria-label="리듬 청음 난이도">
-                            <button class="active" type="button" data-dictation-level="all"><span>전체</span><b>48</b></button>
-                            <button type="button" data-dictation-level="basic"><span>기초</span><b>12</b></button>
+                            <button type="button" data-dictation-level="all"><span>전체</span><b>48</b></button>
+                            <button class="active" type="button" data-dictation-level="basic"><span>기초</span><b>12</b></button>
                             <button type="button" data-dictation-level="offbeat"><span>엇박</span><b>12</b></button>
                             <button type="button" data-dictation-level="sixteenth"><span>16비트</span><b>12</b></button>
                             <button type="button" data-dictation-level="mixed"><span>혼합</span><b>12</b></button>
@@ -225,7 +339,7 @@
                     </aside>
                 </div>
 
-                <div id="performancePanel" class="rhythm-layout hidden">
+                <div id="performancePanel" class="rhythm-layout">
                     <article class="rhythm-player-card">
                         <div class="rhythm-toolbar">
                             <div>
@@ -272,6 +386,7 @@
                         </div>
                         <div class="tip-card"><span>연습 방법</span><p>발로 1·2·3·4박을 유지하고 손으로 리듬을 두드립니다.</p></div>
                     </aside>
+                </div>
                 </div>
             </section>
         </main>
