@@ -2,6 +2,10 @@
 node_modules/
 .pnpm-store/
 .npm-cache/
+dist/
+.vinext/
+.next/
+.wrangler/
 
 # Python caches
 __pycache__/
@@ -9,6 +13,7 @@ __pycache__/
 
 # Locally generated reports and previews
 /outputs/
+/tmp/
 
 # Former standalone deployment metadata kept only as a local backup.
 /learning/basics/arithmetics/.sites-git-backup/

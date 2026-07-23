@@ -3,7 +3,7 @@ services:
     name: classroom-game-hub
     runtime: node
     plan: free
-    buildCommand: npm --prefix game-hub-server install
+    buildCommand: npm --prefix game-hub-server ci
     startCommand: npm --prefix game-hub-server start
     healthCheckPath: /health
     autoDeployTrigger: commit

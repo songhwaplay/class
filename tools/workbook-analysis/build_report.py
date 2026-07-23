@@ -10,7 +10,7 @@ from openpyxl.utils.cell import coordinate_from_string, column_index_from_string
 from openpyxl.formula.tokenizer import Tokenizer
 
 
-ROOT = Path(r"C:\Users\A\Desktop\class")
+ROOT = Path(__file__).resolve().parent
 ANALYSIS = ROOT / "_analysis" / "연산" / "analysis.json"
 OUTPUT = ROOT / "연산_XLSM_분석보고서.md"
 A = json.loads(ANALYSIS.read_text(encoding="utf-8"))

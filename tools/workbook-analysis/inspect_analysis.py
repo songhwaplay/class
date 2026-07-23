@@ -6,7 +6,7 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 
-PATH = Path(r"C:\Users\A\Desktop\class\_analysis\연산\analysis.json")
+PATH = Path(__file__).resolve().parent / "_analysis" / "연산" / "analysis.json"
 A = json.loads(PATH.read_text(encoding="utf-8"))
 
 
