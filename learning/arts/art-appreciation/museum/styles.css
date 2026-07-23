@@ -55,6 +55,10 @@ body.class-music-ready .unified-music-control {
 .modal-tags span{padding:5px 8px;border:1px solid rgba(201,166,90,.28);border-radius:999px;background:rgba(201,166,90,.06);color:#c9ad74;font-size:9px;letter-spacing:.04em}
 .docent-card .modal-context{margin-top:12px;padding-top:11px;border-top:1px solid rgba(203,165,72,.18);color:#ad9d86;font-size:11px;line-height:1.65}
 .docent-card .modal-context[hidden]{display:none}
+.detail-guide-link{display:flex;align-items:center;justify-content:space-between;gap:16px;margin:14px 0 10px;padding:15px 17px;border:1px solid rgba(203,165,72,.52);background:linear-gradient(105deg,rgba(117,86,30,.28),rgba(31,26,20,.92));color:#efdfb7;text-decoration:none;transition:.2s}
+.detail-guide-link span{color:#c9ab6a;font-size:10px;font-weight:700;letter-spacing:.08em}
+.detail-guide-link strong{font:600 14px 'Noto Serif KR';white-space:nowrap}.detail-guide-link b{margin-left:6px;color:#e1b857;font-size:18px}
+.detail-guide-link:hover,.detail-guide-link:focus-visible{border-color:#e2bc65;background:#382917;transform:translateY(-1px)}
 .art-modal h2,.modal-title-en,.modal-artist,.modal-context{overflow-wrap:anywhere}
 .modal-tags span{max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
 .art-modal,.art-modal article{scrollbar-width:thin;scrollbar-color:#8f6d36 #17130f}
