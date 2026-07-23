@@ -8,6 +8,8 @@
   --green-soft: #dce9df;
   --orange: #c45e2b;
   --white: #fffdf8;
+  --reading-paper: #fbf5e8;
+  --reading-choice: #fffaf1;
   color-scheme: light;
 }
 * { box-sizing: border-box; }
@@ -62,7 +64,7 @@ button, input { font: inherit; }
 .progress-copy span { color: var(--muted); font-size: 12px; }
 .progress-track { height: 6px; margin: 10px 0 24px; overflow: hidden; border-radius: 99px; background: var(--paper-deep); }
 .progress-fill { height: 100%; border-radius: inherit; background: var(--orange); transition: width .25s ease; }
-.reading-sheet { padding: clamp(22px, 5vw, 54px); border: 1px solid var(--line); border-radius: 12px; background: var(--white); }
+.reading-sheet { padding: clamp(22px, 5vw, 54px); border: 1px solid #d2c5ab; border-radius: 12px; background: var(--reading-paper); }
 .question-topic { margin: 0 0 20px; color: var(--green); font-size: 12px; font-weight: 900; }
 .student-passage { padding-bottom: 28px; border-bottom: 1px solid var(--line); font-family: Georgia, "Noto Serif KR", serif; font-size: clamp(1.05rem, 2.1vw, 1.22rem); line-height: 1.95; white-space: pre-wrap; }
 .student-prompt { margin: 30px 0 18px; font-size: clamp(1.15rem, 2.5vw, 1.4rem); line-height: 1.55; }
@@ -70,7 +72,7 @@ button, input { font: inherit; }
 .student-choices { display: grid; gap: 10px; }
 .student-choice { display: grid; grid-template-columns: 28px 1fr; align-items: start; gap: 11px; padding: 15px; border: 1px solid var(--line); border-radius: 13px; cursor: pointer; line-height: 1.55; }
 .student-choice:hover { border-color: var(--green); }
-.student-choice { width: 100%; grid-template-columns: 28px 1fr; color: var(--ink); background: var(--white); text-align: left; }
+.student-choice { width: 100%; grid-template-columns: 28px 1fr; color: var(--ink); background: var(--reading-choice); text-align: left; }
 .student-choice.selected { border-color: var(--green); background: var(--green-soft); }
 .student-choice.correct { border-color: var(--green); color: #14513e; background: #e2f0e5; }
 .student-choice.wrong { border-color: var(--orange); color: #842d13; background: #fbe8df; }
