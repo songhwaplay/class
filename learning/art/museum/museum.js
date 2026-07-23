@@ -709,6 +709,12 @@
       mesh([baseW,baseH,baseW],new THREE.MeshStandardMaterial({color:index%2?0x4d453c:0x71675b,roughness:.58}),[0,.16+baseH/2,0],group);
     }
     const pedestalTop=work.hasBuiltInBase?0:.16+baseH,scanPath=sculptureScans[work.id];
+    const labelWidth=clamp(baseW*.9,1.45,2.25);
+    const labelFront=baseW/2+.16;
+    const label=makeLabel(work.title,work.artist,labelWidth);
+    label.position.set(0,work.hasBuiltInBase ? .55 : baseH*.55,labelFront);
+    label.rotation.x=-Math.PI*.04;
+    group.userData.label=label;group.add(label);
     if(scanPath){
       gltfLoader.load(scanPath,gltf=>{
         if(!isCurrentRoomLoad(version,roomGallery)){disposeDetachedModel(gltf.scene);return;}
@@ -720,12 +726,6 @@
     }else{
       installSculptureModel(buildSculptureModel(work),group,work,artH,pedestalTop);markLoaded(version,roomGallery);
     }
-    const labelWidth=clamp(baseW*.9,1.45,2.25);
-    const labelFront=baseW/2+.16;
-    const label=makeLabel(work.title,work.artist,labelWidth);
-    label.position.set(0,work.hasBuiltInBase ? .55 : baseH*.55,labelFront);
-    label.rotation.x=-Math.PI*.04;
-    group.userData.label=label;group.add(label);
     const sculptureLightY=isGrand?7.65:5.7;
     const spot=new THREE.SpotLight(0xffc77a,work.actualScale?105:175,isGrand?13:10,Math.PI*.2,.62,1.4);spot.position.set(-placementX*.35,sculptureLightY,placementZ+1.35);spot.target.position.set(placementX,pedestalTop+artH*.52,placementZ);spot.castShadow=index%2===0;spot.shadow.mapSize.set(512,512);gallery.add(spot,spot.target);
     const rim=new THREE.PointLight(0xffd6a0,work.actualScale?18:38,5.5,2);rim.position.set(-placementX*.45,pedestalTop+artH*.58,placementZ-1.15);gallery.add(rim);
@@ -746,7 +746,7 @@
       sculptures.sort((a,b)=>sculptureOrder.indexOf(a.id)-sculptureOrder.indexOf(b.id));
       // Venus occupies the previously empty spot where the detached Haechi
       // label was seen. Haechi stays opposite it with its label on its base.
-      const sculptureLayout={d05:{x:-2.1,z:-12},d13:{x:2.1,z:-14.1}};
+      const sculptureLayout={d05:{x:-3.8,z:-10.7},d13:{x:3.8,z:-15.5}};
       sculptures.forEach((w,i)=>{
         const placement=sculptureLayout[w.id];
         addSculpture(w,i,placement?.z??1-i*4.85,version,roomGallery,placement?.x??null);
