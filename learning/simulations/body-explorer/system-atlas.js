@@ -654,6 +654,9 @@
                 wrap.querySelectorAll("button").forEach((item) => item.classList.remove("is-wrong"));
                 if (index !== config.correctIndex) {
                     button.classList.add("is-wrong");
+                    document.dispatchEvent(new CustomEvent("body-explorer-manipulation-error", {
+                        detail: { chosen: option }
+                    }));
                     lab.querySelector(".organ-lab-status").innerHTML = "<b>다시 관찰</b><span>기관의 역할과 물질이 이동해야 하는 방향을 다시 생각해 보세요.</span>";
                     updateVisual(lab, 24);
                     return;

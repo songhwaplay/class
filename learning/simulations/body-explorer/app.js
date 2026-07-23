@@ -525,6 +525,14 @@
         elements.simulationNextButton.classList.toggle("hidden", !showNext);
     }
 
+    function recordStageMistake(stage, chosen) {
+        if (!stage || state.stageSolved) return;
+        if (state.attempts === 0) {
+            state.missed.push({ stage, chosen });
+        }
+        state.attempts += 1;
+    }
+
     function experimentIntensityGoal(stage) {
         if (stage.scenario.targetMin != null) {
             return {
@@ -828,6 +836,7 @@
             const observation = intensity < intensityGoal.min
                 ? scenario.lowMessage
                 : "자극이나 반응이 지나치게 강하면 관찰하려는 과정이 안정적으로 나타나지 않아요.";
+            recordStageMistake(stage, `${scenario.intensityLabel} ${intensity} (관찰 구간 ${intensityGoal.min}–${intensityGoal.max})`);
             setSimulationFeedback("observing", "관찰 조건을 다시 맞춰 보세요", `${observation} 값을 ${direction} ${intensityGoal.min}–${intensityGoal.max} 구간에 맞추세요.`);
             elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent}. ${elements.simulationFeedbackText.textContent}`;
             window.ClassGameSfx?.play("click");
@@ -837,10 +846,7 @@
 
         const mismatchIndex = state.experimentPath.findIndex((component, index) => component !== scenario.correctPath[index]);
         if (mismatchIndex !== -1) {
-            if (state.attempts === 0) {
-                state.missed.push({ stage, chosen: state.experimentPath.join(" → ") });
-            }
-            state.attempts += 1;
+            recordStageMistake(stage, state.experimentPath.join(" → "));
             renderExperimentPath(stage, mismatchIndex);
             setSimulationFeedback("correcting", simulationCopy.mismatchTitle.replace("{index}", String(mismatchIndex + 1)), scenario.hints[mismatchIndex]);
             elements.announcer.textContent = `${elements.simulationFeedbackTitle.textContent}. ${elements.simulationFeedbackText.textContent}`;
@@ -942,10 +948,7 @@
         const isCorrect = choice === stage.answer;
 
         if (!isCorrect) {
-            if (state.attempts === 0) {
-                state.missed.push({ stage, chosen: choice });
-            }
-            state.attempts += 1;
+            recordStageMistake(stage, choice);
             button.disabled = true;
             button.classList.add("is-wrong");
             elements.feedback.className = "feedback is-wrong";
@@ -1143,6 +1146,10 @@
     elements.clearPathButton?.addEventListener("click", clearExperimentPath);
     elements.runSimulationButton?.addEventListener("click", runInteractiveExperiment);
     elements.simulationNextButton?.addEventListener("click", goToNextStage);
+    document.addEventListener("body-explorer-manipulation-error", (event) => {
+        const stage = stages[state.currentIndex];
+        recordStageMistake(stage, event.detail?.chosen || "조작 조건을 잘못 선택함");
+    });
     document.querySelectorAll(".mode-back-button").forEach((button) => button.addEventListener("click", showModeScreen));
     document.addEventListener("keydown", handleKeyboard);
 
