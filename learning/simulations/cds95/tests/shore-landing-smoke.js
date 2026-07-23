@@ -52,6 +52,8 @@ function ack(socket, event, payload = {}) {
   assert.ok(Number.isFinite(land.you.shipAnchorX));
   assert.ok(Number.isFinite(land.you.shipAnchorY));
   assert.ok(Number.isInteger(land.you.shipAnchorDir));
+  const anchoredX = land.you.shipAnchorX;
+  const anchoredY = land.you.shipAnchorY;
   const observedShip = await once(observer, 'snapshot', (snap) => snap.nearby.some((player) =>
     player.name === '해안탐험가'
     && player.shipAnchoredAtShore
@@ -64,6 +66,8 @@ function ack(socket, event, payload = {}) {
   assert.equal(embark.ok, true, embark.error);
   const sea = await once(student, 'snapshot', (snap) => snap.you.mode === 'sea' && !snap.you.transition);
   assert.equal(sea.you.shipAnchoredAtShore, false);
+  assert.ok(Math.abs(sea.you.x - anchoredX) < 0.1);
+  assert.ok(Math.abs(sea.you.y - anchoredY) < 0.1);
 
   console.log(JSON.stringify({
     ok: true,

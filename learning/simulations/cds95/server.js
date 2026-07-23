@@ -2054,7 +2054,9 @@ io.on('connection', (socket) => {
 
     const fromSea = p.mode === 'sea';
     const destinationMode = fromSea ? 'land' : 'sea';
-    const destinationPoint = safeSpawn(room, fromSea ? shore.landingPoint : shore.anchorPoint, destinationMode);
+    const destinationPoint = fromSea
+      ? safeSpawn(room, shore.landingPoint, destinationMode)
+      : { x: shore.anchorPoint.x, y: shore.anchorPoint.y };
     const mooring = fromSea
       ? { anchorPoint: shore.anchorPoint, anchorDir: p.dir, landingPoint: destinationPoint }
       : null;
