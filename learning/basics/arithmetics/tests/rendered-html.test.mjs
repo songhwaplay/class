@@ -898,6 +898,8 @@ test("renders the grade-three compound-length worksheet", async () => {
   assert.match(html, /aria-label="A4 3학년 길이 전체 답지"/);
   assert.equal((html.match(/data-testid="grade-three-length-question"/g) ?? []).length, 18);
   assert.equal((html.match(/class="length-operation-input"/g) ?? []).length, 9);
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /\.length-operation-rule\s*\{[^}]*height:\s*2px[^}]*display:\s*block[^}]*background:\s*#17233c/s);
   assert.equal((html.match(/class="length-operation-input minor"/g) ?? []).length, 9);
   assert.equal((html.match(/class="length-operation-static"/g) ?? []).length, 9);
   assert.equal((html.match(/class="length-operation-static minor"/g) ?? []).length, 9);

@@ -4301,6 +4301,7 @@ button.prime-number-question:focus-visible {
 .length-operation-rule {
   width: calc(100% - 24px);
   height: 2px;
+  display: block;
   justify-self: end;
   background: #17233c;
 }
