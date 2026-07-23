@@ -33,10 +33,28 @@ function placeCell(place) {
   return latLonToCell(place?.lat, place?.lon);
 }
 
+function hasVerifiedSeaAccess(place) {
+  return place?.canEnterFromSea === true && place?.verifiedSeaAccess !== false;
+}
+
+function normalizePlaceAccess(place) {
+  if (!place?.isOriginalCity || hasVerifiedSeaAccess(place) === (place.canEnterFromSea === true)) return place;
+  return {
+    ...place,
+    category: place.category === '항구 도시' ? '도시' : place.category,
+    access: 'land',
+    canEnterFromSea: false,
+    facilities: Array.isArray(place.facilities)
+      ? place.facilities.filter((facility) => facility !== '항구')
+      : place.facilities
+  };
+}
+
 function publicCatalog() {
   return {
     version: 2,
-    places: PLACES.map((place) => {
+    places: PLACES.map((source) => {
+      const place = normalizePlaceAccess(source);
       const { originalMarkerCells, originalSeaEntryCells, originalLandEntryCells, ...publicPlace } = place;
       return { ...publicPlace, facilities: place.facilities ? [...place.facilities] : undefined };
     }),
@@ -55,5 +73,7 @@ module.exports = {
   READY_MISSIONS,
   latLonToCell,
   placeCell,
+  hasVerifiedSeaAccess,
+  normalizePlaceAccess,
   publicCatalog
 };

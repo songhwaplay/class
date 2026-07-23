@@ -125,7 +125,8 @@ const ORIGINAL_CITY_IMAGE_INDEX = new Map(
 
 function resolveCatalog() {
   const byId = new Map();
-  for (const source of MissionCatalog.PLACES) {
+  for (const rawSource of MissionCatalog.PLACES) {
+    const source = MissionCatalog.normalizePlaceAccess(rawSource);
     const useNaturalEarthPosition = source?.naturalEarthPositionOverride === true;
     const cell = useNaturalEarthPosition
       ? MissionCatalog.latLonToCell(source.lat, source.lon)
@@ -185,7 +186,9 @@ function resolveCatalog() {
     const resolvedSeaPoint = useNaturalEarthPosition ? (naturalEarthSeaPoint || seaPoint) : (source.isOriginalCity ? exactSeaPoint : seaPoint);
     const resolvedLandPoint = useNaturalEarthPosition ? (naturalEarthLandPoint || displayedLandPoint) : (source.isOriginalCity ? exactLandPoint : landPoint);
     const resolvedMarkerPoints = useNaturalEarthPosition && cityPoint ? [cityPoint] : originalMarkerPoints;
-    const resolvedSeaEntryPoints = useNaturalEarthPosition && source.canEnterFromSea && resolvedSeaPoint ? [resolvedSeaPoint] : originalSeaEntryPoints;
+    const resolvedSeaEntryPoints = source.canEnterFromSea
+      ? (useNaturalEarthPosition && resolvedSeaPoint ? [resolvedSeaPoint] : originalSeaEntryPoints)
+      : [];
     const resolvedLandEntryPoints = useNaturalEarthPosition && resolvedLandPoint ? [resolvedLandPoint] : originalLandEntryPoints;
     const point = source.isOriginalCity
       ? (source.canEnterFromSea ? resolvedSeaPoint : resolvedLandPoint)
