@@ -275,7 +275,9 @@
   }
 
   function addFinaleWall(room,shell) {
-    const grand=room.id==='space',panelW=grand?7.1:5.8,panelH=grand?2.45:3.65,panelY=grand?6.42:3.25,z=GALLERY_END+.38;
+    // The spatial gallery has the widest end wall. Keep its final board at a
+    // full, readable scale even when the featured Venus overlaps its lower edge.
+    const grand=room.id==='space',panelW=grand?11.6:5.8,panelH=grand?4.0:3.65,panelY=grand?5.85:3.25,z=GALLERY_END+.38;
     const group=new THREE.Group();gallery.add(group);
     mesh([panelW+.62,panelH+.62,.18],materials.black,[0,panelY,z-.08],group);
     mesh([panelW+.76,.11,.24],materials.brass,[0,panelY+(panelH+.7)/2,z],group);
@@ -736,9 +738,11 @@
     addFinaleWall(rooms[index],shell);
     if(rooms[index].id==='space'){
       const sculptures=rooms[index].works.filter(w=>w.type==='sculpture'), wallWorks=rooms[index].works.filter(w=>w.type!=='sculpture');
-      // 광화문 해치는 실제 크기가 큰 독립 석조물이므로, 입구가 아닌
-      // 전시실 맨뒤의 넓은 중앙 공간에 둔다.
-      sculptures.forEach((w,i)=>addSculpture(w,i,w.id==='d13'?GALLERY_END+4.6:1-i*4.85,version,roomGallery));
+      // 비너스는 가느다란 실루엣이라 전시실 맨뒤 중앙에 두어도 안내판과
+      // 시야를 덜 가린다. 해태는 비너스가 있던 일반 조각 위치로 옮긴다.
+      const sculptureOrder=['d05','d01','d02','d13','d06'];
+      sculptures.sort((a,b)=>sculptureOrder.indexOf(a.id)-sculptureOrder.indexOf(b.id));
+      sculptures.forEach((w,i)=>addSculpture(w,i,w.id==='d05'?GALLERY_END+4.6:1-i*4.85,version,roomGallery));
       wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*7.1,shell.width,version,roomGallery));
     }else{
       rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width,version,roomGallery));
