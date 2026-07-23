@@ -9,7 +9,7 @@
   const ZONES = [
     {
       id:'sphinx', order:'01', title:'카프라 왕의 스핑크스', short:'기자의 대스핑크스',
-      subtitle:'고대 이집트 · 석회암 조각', position:[-145,0,-18], arrival:[-145,1.62,-76], lookAt:[-145,8,-48],
+      subtitle:'고대 이집트 · 석회암 조각', position:[-145,0,-18], arrival:[-145,1.62,-76], lookAt:[-145,14,-43],
       facts:[['길이','73.5m'],['너비','19m'],['높이','20m']],
       size:'길이 73.5m × 너비 19m × 높이 20m',
       scale:'모형의 전체 경계가 실제 치수와 일치합니다.',
@@ -206,18 +206,22 @@
 
   function buildSphinx() {
     const g=new THREE.Group();
-    const body=sphere(1,MAT.limestone,g,[0,1.25,0],38,22);body.scale.set(1.12,1,3.75);
-    const chest=sphere(.82,MAT.limestone,g,[0,1.15,-3.15],30,18);chest.scale.set(1.05,1.2,1.15);
-    for(const x of [-.58,.58]){
-      const paw=addMesh(new THREE.CylinderGeometry(.3,.3,2.25,16),MAT.limestone,g,[x,.34,-4.35]);paw.rotation.x=Math.PI/2;
-      const pawTip=sphere(.3,MAT.limestone,g,[x,.34,-5.48],16,10);pawTip.scale.z=.75;
+    const body=sphere(1,MAT.limestone,g,[0,6.2,6],40,24);body.scale.set(7.7,5.1,25.5);
+    const haunch=sphere(1,MAT.limestone,g,[0,6.8,24],34,20);haunch.scale.set(8.7,6.8,10.5);
+    const chest=sphere(1,MAT.limestone,g,[0,8,-19],32,22);chest.scale.set(6.4,8,7.6);
+    for(const x of [-4.25,4.25]){
+      const paw=addMesh(new THREE.CylinderGeometry(1.55,1.8,18,20),MAT.limestone,g,[x,1.65,-28]);paw.rotation.x=Math.PI/2;
+      const pawTip=sphere(1,MAT.limestone,g,[x,1.65,-37],20,12);pawTip.scale.set(1.9,1.5,2.4);
     }
-    const neck=cylinder(.52,.68,1.05,24,MAT.limestone,g,[0,2.2,-3.28]);
-    const head=sphere(.7,MAT.limestone,g,[0,3.07,-3.3],32,22);head.scale.set(.9,1.18,.84);
-    const nemes=addMesh(new THREE.ConeGeometry(1.03,1.8,4),MAT.sandstone,g,[0,2.75,-3.08]);nemes.rotation.y=Math.PI/4;nemes.scale.z=.72;
-    const face=sphere(.5,MAT.sandstone,g,[0,3.08,-3.83],24,18);face.scale.set(.72,1,.38);
-    const nose=addMesh(new THREE.ConeGeometry(.11,.55,12),MAT.sandstone,g,[0,3.15,-4.18]);nose.rotation.x=Math.PI/2;
-    const beard=addMesh(new THREE.ConeGeometry(.13,.95,8),MAT.limestone,g,[0,2.45,-3.92]);beard.rotation.z=Math.PI;
+    const neck=cylinder(2.8,3.7,5.4,28,MAT.limestone,g,[0,13.2,-20.5]);
+    const nemes=sphere(1,MAT.sandstone,g,[0,16.1,-20.8],34,22);nemes.scale.set(5.2,4.6,4.1);
+    for(const x of [-4.2,4.2]){const flap=box([2.3,7.2,1.15],MAT.sandstone,g,[x,12.9,-20.7]);flap.rotation.z=x>0?-.08:.08;}
+    const face=sphere(1,MAT.sandstone,g,[0,16.2,-24.2],28,20);face.scale.set(3.45,4.2,1.65);
+    const brow=box([5.5,.42,.42],MAT.limestone,g,[0,17.2,-25.55]);
+    for(const x of [-1.35,1.35])sphere(.25,new THREE.MeshStandardMaterial({color:0x2e281e,roughness:.9}),g,[x,17,-25.75],14,9);
+    const nose=addMesh(new THREE.ConeGeometry(.48,2.25,16),MAT.sandstone,g,[0,16.35,-26.35]);nose.rotation.x=Math.PI/2;
+    const mouth=box([2.8,.22,.25],new THREE.MeshStandardMaterial({color:0x715d3d,roughness:.95}),g,[0,14.75,-25.65]);
+    const beard=addMesh(new THREE.ConeGeometry(.55,3.8,12),MAT.limestone,g,[0,12.7,-25.05]);beard.rotation.z=Math.PI;
     fitExact(g,{x:19,y:20,z:73.5});return g;
   }
   function buildLiberty() {
