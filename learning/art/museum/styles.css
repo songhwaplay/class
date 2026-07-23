@@ -56,5 +56,10 @@ body.class-music-ready .unified-music-control {
 .docent-card .modal-context[hidden]{display:none}
 .art-modal h2,.modal-title-en,.modal-artist,.modal-context{overflow-wrap:anywhere}
 .modal-tags span{max-width:100%;box-sizing:border-box;overflow-wrap:anywhere}
+.art-modal,.art-modal article{scrollbar-width:thin;scrollbar-color:#8f6d36 #17130f}
+.art-modal::-webkit-scrollbar,.art-modal article::-webkit-scrollbar{width:7px}
+.art-modal::-webkit-scrollbar-track,.art-modal article::-webkit-scrollbar-track{background:#17130f}
+.art-modal::-webkit-scrollbar-thumb,.art-modal article::-webkit-scrollbar-thumb{border:2px solid #17130f;border-radius:999px;background:#8f6d36}
+.art-modal::-webkit-scrollbar-button,.art-modal article::-webkit-scrollbar-button{display:none}
 @media(max-width:900px){.art-modal[open]{grid-template-rows:minmax(240px,42vh) auto}.art-modal article{overflow:visible;scrollbar-gutter:auto}.modal-image-wrap{min-height:0}.facts{grid-template-columns:1fr}}
 @media(max-width:520px){.art-modal article{padding:26px 18px 34px}.art-modal h2{font-size:26px}.modal-close{right:12px;top:12px}}
