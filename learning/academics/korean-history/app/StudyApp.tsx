@@ -135,7 +135,6 @@ export function StudyApp() {
   );
 
   const totalTried = Object.values(stats).reduce((sum, item) => sum + item.tried, 0);
-  const learnedUnits = units.filter((unit) => (stats[unit.id]?.tried || 0) > 0).length;
   const currentQuestion = quiz[questionIndex];
   const currentExplanation = currentQuestion ? explanations[currentQuestion.id] : undefined;
   const correctCount = results.filter((result) => result.correct).length;
@@ -388,18 +387,6 @@ export function StudyApp() {
                 {count}문제
               </button>
             ))}
-          </div>
-        </div>
-        <div className="hero-panel" aria-label="학습 현황">
-          <div className="sun-shape" />
-          <div className="mini-card mini-card-main">
-            <span>전 범위</span>
-            <strong>전 범위에서<br />5문제</strong>
-            <button onClick={() => beginQuiz(questions, "전 범위", 5)}>시작</button>
-          </div>
-          <div className="mini-card mini-card-progress">
-            <span>학습한 단원</span>
-            <strong>{learnedUnits} / {units.length}</strong>
           </div>
         </div>
       </section>
