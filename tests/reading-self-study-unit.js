@@ -19,7 +19,7 @@ for (const item of items) {
   assert.equal(item.choices.length, expectedChoices);
   assert(Number.isInteger(item.correctIndex));
   assert(item.correctIndex >= 0 && item.correctIndex < item.choices.length);
-  assert(item.passageText.includes(item.choices[item.correctIndex]));
+  assert(!item.passageText.includes(item.choices[item.correctIndex]), `${item.id} repeats its answer verbatim`);
   assert(item.explanation.length > 0);
 }
 
