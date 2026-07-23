@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="한국 속담과 영어 속담의 뜻과 쓰임을 익히는 학습 도구">
+  <title>속담 학습 | 한국·영어 속담</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header>
+    <a class="back" href="../../../index.html">← 메인</a>
+    <div><strong>속담 학습</strong><small>한국·영어 속담의 뜻과 쓰임</small></div>
+    <output id="score" aria-live="polite" hidden>정답 0 / 0</output>
+  </header>
+  <main>
+    <section class="hero">
+      <p>교과학습 · 국어 · 영어</p>
+      <h1>속담을 알고, <em>상황에 맞게 쓰기</em></h1>
+      <p>공부와 문제 풀이를 나누어 차근차근 익혀 보세요.</p>
+    </section>
+
+    <nav class="mode-tabs" aria-label="학습 모드 선택">
+      <button class="mode-tab active" data-mode="study" type="button" aria-selected="true">속담 공부</button>
+      <button class="mode-tab" data-mode="quiz" type="button" aria-selected="false">문제 풀기</button>
+    </nav>
+    <section class="language-tabs" aria-label="속담 언어 선택">
+      <button class="language-tab active" data-language="ko" type="button">한국 속담</button>
+      <button class="language-tab" data-language="en" type="button">영어 속담</button>
+    </section>
+
+    <section id="studyView" class="panel study-card" aria-live="polite">
+      <p id="label" class="label"></p>
+      <h2 id="proverb"></h2>
+      <p id="meaning" class="meaning"></p>
+      <p id="example" class="example"></p>
+      <div class="actions">
+        <button id="previous" type="button">이전</button>
+        <button id="next" class="primary" type="button">다음 속담</button>
+      </div>
+    </section>
+
+    <section id="quizView" class="panel quiz" aria-labelledby="quiz-title" hidden>
+      <p class="label">확인 퀴즈</p>
+      <h2 id="quiz-title">이 상황에 알맞은 속담은?</h2>
+      <p id="question"></p>
+      <div id="choices" class="choices"></div>
+      <p id="feedback" role="status"></p>
+      <div class="actions">
+        <button id="reviewAnswer" type="button" hidden>이 속담 다시 공부하기</button>
+        <button id="nextQuestion" class="primary" type="button" disabled>다음 문제</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
