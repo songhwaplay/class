@@ -266,6 +266,7 @@
 
   const sculptureScans={
     d01:'assets/models/thinker.glb',
+    d02:'assets/models/david.glb',
     d05:'assets/models/venus-de-milo.glb',
     d06:'assets/models/pieta.glb'
   };
@@ -273,7 +274,7 @@
   function installSculptureModel(model,group,work,artH,pedestalTop,isScan=false) {
     if(isScan){
       const material=sculptureMaterial(work);
-      model.rotation.y=work.id==='d01'?.16:work.id==='d05'?Math.PI:.08;
+      model.rotation.y=work.id==='d01'?.16:work.id==='d02'?-1.48:work.id==='d05'?Math.PI:.08;
       model.traverse(part=>{if(part.isMesh){part.geometry.computeVertexNormals();part.material=material;}});
     }
     group.add(model);
