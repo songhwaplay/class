@@ -2,8 +2,22 @@
   'use strict';
   const A = 'assets/artworks/';
   const C = 'https://commons.wikimedia.org/wiki/';
+  const META = {
+    p01:{englishTitle:'Self-Portrait',tags:['조선 후기','초상화'],styleNote:'조선 후기 초상화는 인물의 생김새뿐 아니라 성품과 정신까지 담으려 했어요.'},
+    p02:{englishTitle:'Mona Lisa',tags:['르네상스','초상화'],styleNote:'르네상스 미술은 사람과 자연을 세밀하게 관찰하고, 화면 속 공간을 실제처럼 표현하려 했어요.'},
+    p03:{englishTitle:'Girl with a Pearl Earring',tags:['바로크','네덜란드 황금시대','트로니'],styleNote:'트로니는 특정 인물의 초상이 아니라 표정·빛·독특한 옷차림을 연구한 인물 습작이에요.'},
+    p04:{englishTitle:'Portrait of a Beauty',tags:['조선 후기','인물화'],styleNote:'조선 후기 인물화에서는 옷차림과 섬세한 선을 통해 인물의 분위기와 아름다움을 나타냈어요.'},
+    p05:{englishTitle:'The Scream',tags:['표현주의','상징주의'],styleNote:'표현주의는 눈에 보이는 모습을 그대로 옮기기보다 강한 선과 색으로 마음속 감정을 드러내요.'},
+    p06:{englishTitle:'Self-Portrait with Grey Felt Hat',tags:['후기 인상주의','자화상'],styleNote:'후기 인상주의 화가들은 순간의 빛을 넘어 자신만의 색과 붓질로 감정을 표현했어요.'},
+    p07:{englishTitle:'The Kiss',tags:['빈 분리파','상징주의'],styleNote:'빈 분리파 화가들은 회화와 장식의 경계를 허물며 금빛과 반복 무늬로 새로운 아름다움을 만들었어요.'},
+    p08:{englishTitle:'The Milkmaid',tags:['바로크','네덜란드 황금시대','풍속화'],styleNote:'네덜란드 바로크의 풍속화는 평범한 일상과 실내로 스며드는 빛을 세심하게 관찰했어요.'},
+    p09:{englishTitle:'The Gleaners',tags:['사실주의','농민화'],styleNote:'사실주의 화가들은 이상적인 영웅보다 당시 사람들이 살아가고 일하는 현실을 진지하게 그렸어요.'},
+    p10:{englishTitle:'Swaying Dancer (Dancer in Green)',tags:['인상주의','파스텔'],styleNote:'인상주의 화가들은 완벽하게 멈춘 자세보다 빛과 움직임이 스쳐 가는 한순간을 포착했어요.'},
+    p11:{englishTitle:'Weeping Woman',tags:['입체주의','초상화'],styleNote:'입체주의는 하나의 대상을 여러 방향에서 본 모습으로 나누고 다시 조합해 표현했어요.'},
+    p12:{englishTitle:'The Fifer',tags:['사실주의','인물화'],styleNote:'마네는 전통적인 입체감과 배경 묘사를 줄이고 선명한 색면과 인물 자체에 집중했어요.'}
+  };
   const art = (id,title,artist,year,medium,size,image,docent,point,extra={}) => ({
-    id,title,artist,year,medium,size,image:A+image,docent,point,type:'painting',rights:'원작 Public Domain · 교육용 이미지',source:C, ...extra
+    id,title,artist,year,medium,size,image:A+image,docent,point,type:'painting',rights:'원작 Public Domain · 교육용 이미지',source:C, ...(META[id]||{}), ...extra
   });
 
   window.MUSEUM_ROOMS = [

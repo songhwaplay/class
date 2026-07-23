@@ -48,3 +48,9 @@ body.class-music-ready .unified-music-control {
 .modal-legal[open] summary{color:#b99a5b}
 .modal-legal p{margin:10px 0 5px;line-height:1.6}
 .modal-legal a{color:#9d8454;text-decoration:none}
+.modal-title-en{margin:4px 0 0;color:#9e8f7b;font:italic 13px/1.45 Georgia,serif;letter-spacing:.025em}
+.modal-tags{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0 -12px}
+.modal-tags[hidden]{display:none}
+.modal-tags span{padding:5px 8px;border:1px solid rgba(201,166,90,.28);border-radius:999px;background:rgba(201,166,90,.06);color:#c9ad74;font-size:9px;letter-spacing:.04em}
+.docent-card .modal-context{margin-top:12px;padding-top:11px;border-top:1px solid rgba(203,165,72,.18);color:#ad9d86;font-size:11px;line-height:1.65}
+.docent-card .modal-context[hidden]{display:none}
