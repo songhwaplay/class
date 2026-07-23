@@ -345,27 +345,27 @@
     const manipulationStages = {
         digestion: {
             "mouth-chewing": { type: "pump", title: "저작 압력 실험", instruction: "턱 근육을 네 번 수축해 음식 덩어리를 잘게 부수세요.", action: "턱 근육 수축", goal: 4, unit: "회", visual: "chew" },
-            "mouth-saliva": { type: "range", title: "침 분비 조절", instruction: "침샘 분비량을 높여 음식 표면을 충분히 적시세요.", label: "침 분비량", start: 18, min: 0, max: 100, targetMin: 72, unit: "%", visual: "saliva" },
+            "mouth-saliva": { type: "range", title: "침 분비 조절", instruction: "침이 너무 적거나 넘치지 않도록 음식이 잘 뭉쳐지는 구간에 맞추세요.", label: "침 분비량", start: 92, min: 0, max: 100, targetMin: 56, targetMax: 70, unit: "%", visual: "saliva" },
             "swallow-esophagus": { type: "range", title: "삼킴 이동", instruction: "음식 덩어리를 목에서 식도 입구까지 천천히 내려 보내세요.", label: "음식 위치", start: 0, min: 0, max: 100, targetMin: 88, unit: "%", visual: "bolus" },
             "esophagus-movement": { type: "pump", title: "연동운동 관찰", instruction: "식도 근육을 차례로 수축해 음식 덩어리를 위까지 밀어내세요.", action: "연동 파동 보내기", goal: 3, unit: "파동", visual: "peristalsis" },
-            "stomach-mixing": { type: "range", title: "위 혼합 강도", instruction: "위벽 수축을 조절해 음식과 위액이 충분히 섞이게 하세요.", label: "위벽 수축", start: 12, min: 0, max: 100, targetMin: 76, unit: "%", visual: "mix" },
+            "stomach-mixing": { type: "range", title: "위 혼합 강도", instruction: "너무 강한 수축을 낮춰 음식과 위액이 고르게 섞이는 구간에 맞추세요.", label: "위벽 수축", start: 94, min: 0, max: 100, targetMin: 58, targetMax: 72, unit: "%", visual: "mix" },
             "digestive-helpers": { type: "toggle", title: "소화액 밸브", instruction: "간의 담즙과 이자의 소화효소 통로를 모두 여세요.", toggles: ["담즙 밸브", "이자액 밸브"], visual: "valves" },
-            "small-intestine-digestion": { type: "dual", title: "작은창자 소화 환경", instruction: "소화효소와 장 운동을 함께 높여 영양소를 충분히 분해하세요.", controls: [{ label: "소화효소", start: 20 }, { label: "장 운동", start: 25 }], targetMin: 70, unit: "%", visual: "intestine" },
+            "small-intestine-digestion": { type: "dual", title: "작은창자 소화 환경", instruction: "과한 효소 농도는 낮추고 느린 장 운동은 높여 두 조건을 각각 알맞게 맞추세요.", controls: [{ label: "소화효소", start: 92, targetMin: 64, targetMax: 78 }, { label: "장 운동", start: 18, targetMin: 48, targetMax: 62 }], unit: "%", visual: "intestine" },
             "small-intestine-absorption": { type: "range", title: "융털 흡수", instruction: "분해된 영양소를 장 안쪽에서 모세혈관 쪽으로 이동시키세요.", label: "영양소 이동", start: 0, min: 0, max: 100, targetMin: 90, unit: "%", visual: "absorb" },
             "large-intestine-water": { type: "range", title: "수분 회수 조절", instruction: "물을 너무 적거나 많이 빼앗지 않도록 적정 흡수 구간에 맞추세요.", label: "수분 흡수율", start: 20, min: 0, max: 100, targetMin: 58, targetMax: 72, unit: "%", visual: "water" },
             "body-exit": { type: "range", title: "마지막 이동", instruction: "남은 찌꺼기를 큰창자 끝까지 이동시켜 소화 여행을 마치세요.", label: "이동 거리", start: 0, min: 0, max: 100, targetMin: 94, unit: "%", visual: "exit" }
         },
         respiration: {
-            "air-enters-nose": { type: "range", title: "비강 공기 처리", instruction: "코 점막의 여과·가온·가습 수준을 높여 공기를 준비하세요.", label: "공기 처리 수준", start: 10, min: 0, max: 100, targetMin: 76, unit: "%", visual: "filter" },
+            "air-enters-nose": { type: "range", title: "비강 공기 처리", instruction: "지나친 습도를 낮춰 여과·가온·가습이 균형을 이루는 구간에 맞추세요.", label: "공기 처리 수준", start: 93, min: 0, max: 100, targetMin: 60, targetMax: 74, unit: "%", visual: "filter" },
             "inhale-lungs-expand": { type: "range", title: "횡격막 조작", instruction: "횡격막을 아래로 당겨 흉강을 넓히고 폐를 팽창시키세요.", label: "흉강 팽창", start: 12, min: 0, max: 100, targetMin: 82, unit: "%", visual: "inhale" },
-            "trachea": { type: "range", title: "기관 개방도", instruction: "공기가 막힘없이 지나가도록 기관의 통로를 충분히 확보하세요.", label: "기도 개방", start: 25, min: 0, max: 100, targetMin: 78, unit: "%", visual: "airway" },
+            "trachea": { type: "range", title: "기관 개방도", instruction: "과도하게 열린 통로를 낮춰 공기 흐름이 안정되는 구간에 맞추세요.", label: "기도 개방", start: 94, min: 0, max: 100, targetMin: 62, targetMax: 78, unit: "%", visual: "airway" },
             "bronchi": { type: "toggle", title: "좌우 기관지 분배", instruction: "왼쪽과 오른쪽 폐로 이어지는 공기 통로를 모두 여세요.", toggles: ["왼쪽 기관지", "오른쪽 기관지"], visual: "bronchi" },
             "alveoli-arrival": { type: "pump", title: "폐포 환기", instruction: "세 번의 부드러운 호흡으로 폐포를 공기로 채우세요.", action: "폐포에 공기 보내기", goal: 3, unit: "호흡", visual: "alveoli" },
-            "oxygen-to-blood": { type: "dual", title: "폐포 기체교환", instruction: "산소는 혈액 쪽으로, 이산화탄소는 폐포 쪽으로 확산시키세요.", controls: [{ label: "O₂ → 혈액", start: 5 }, { label: "CO₂ → 폐포", start: 8 }], targetMin: 78, unit: "%", visual: "exchange" },
+            "oxygen-to-blood": { type: "dual", title: "폐포 기체교환", instruction: "혈액으로 가는 산소는 높이고 혈액에 남은 이산화탄소는 낮춰 기체교환을 완성하세요.", controls: [{ label: "O₂ → 혈액", start: 18, targetMin: 72, targetMax: 88 }, { label: "혈액 속 CO₂ 잔류", start: 86, targetMin: 12, targetMax: 28 }], unit: "%", visual: "exchange" },
             "oxygen-to-body": { type: "pump", title: "산소 운반", instruction: "심장 박동으로 산소가 든 혈액을 온몸의 세포까지 보내세요.", action: "순환 펌프 작동", goal: 4, unit: "박동", visual: "delivery" },
-            "carbon-dioxide-return": { type: "range", title: "이산화탄소 회수", instruction: "세포에서 나온 이산화탄소를 정맥혈에 실어 폐 쪽으로 이동시키세요.", label: "CO₂ 회수", start: 4, min: 0, max: 100, targetMin: 88, unit: "%", visual: "return" },
-            "carbon-dioxide-to-alveoli": { type: "range", title: "CO₂ 폐포 확산", instruction: "혈액 속 이산화탄소를 폐포 안쪽으로 이동시키세요.", label: "폐포 이동", start: 8, min: 0, max: 100, targetMin: 86, unit: "%", visual: "co2" },
-            "exhale-out": { type: "range", title: "날숨 조작", instruction: "횡격막을 이완시켜 흉강 부피를 줄이고 공기를 몸 밖으로 내보내세요.", label: "날숨 진행", start: 0, min: 0, max: 100, targetMin: 92, unit: "%", visual: "exhale" }
+            "carbon-dioxide-return": { type: "range", title: "이산화탄소 회수", instruction: "너무 빠른 회수 속도를 낮춰 정맥혈이 안정적으로 폐에 도착하게 하세요.", label: "CO₂ 회수", start: 96, min: 0, max: 100, targetMin: 74, targetMax: 86, unit: "%", visual: "return" },
+            "carbon-dioxide-to-alveoli": { type: "range", title: "CO₂ 폐포 확산", instruction: "확산 속도를 적정 구간에 맞춰 혈액과 폐포 사이의 교환을 안정시키세요.", label: "폐포 이동", start: 12, min: 0, max: 100, targetMin: 66, targetMax: 80, unit: "%", visual: "co2" },
+            "exhale-out": { type: "range", title: "날숨 조작", instruction: "한꺼번에 밀어내지 말고 날숨 흐름을 안정 구간으로 낮추세요.", label: "날숨 흐름", start: 100, min: 0, max: 100, targetMin: 76, targetMax: 90, unit: "%", visual: "exhale" }
         }
     };
 
@@ -584,7 +584,7 @@
         wrap.className = "organ-range-control";
         wrap.innerHTML = `<span><b>${config.label}</b><output>${config.start}${config.unit}</output></span>
             <input type="range" min="${config.min}" max="${config.max}" value="${config.start}" aria-label="${config.label}">
-            <small>${config.targetMax ? `목표 구간 ${config.targetMin}–${config.targetMax}${config.unit}` : `목표 ${config.targetMin}${config.unit} 이상`}</small>`;
+            <small>${config.targetMax != null ? `목표 구간 ${config.targetMin}–${config.targetMax}${config.unit}` : `목표 ${config.targetMin}${config.unit} 이상`}</small>`;
         const input = wrap.querySelector("input");
         const output = wrap.querySelector("output");
         const apply = () => {
@@ -648,15 +648,20 @@
         config.controls.forEach((control) => {
             const label = document.createElement("label");
             label.innerHTML = `<span><b>${control.label}</b><output>${control.start}${config.unit}</output></span>
-                <input type="range" min="0" max="100" value="${control.start}" aria-label="${control.label}">`;
+                <input type="range" min="0" max="100" value="${control.start}" aria-label="${control.label}">
+                <small>목표 구간 ${control.targetMin}–${control.targetMax}${config.unit}</small>`;
             const input = label.querySelector("input");
             input.addEventListener("input", () => {
                 label.querySelector("output").value = `${input.value}${config.unit}`;
                 label.querySelector("output").textContent = `${input.value}${config.unit}`;
                 const values = [...wrap.querySelectorAll("input")].map((item) => Number(item.value));
                 updateVisual(lab, values.reduce((sum, value) => sum + value, 0) / values.length, config.unit);
-                label.classList.toggle("is-target", Number(input.value) >= config.targetMin);
-                if (values.length === config.controls.length && values.every((value) => value >= config.targetMin)) onReady();
+                const value = Number(input.value);
+                label.classList.toggle("is-target", value >= control.targetMin && value <= control.targetMax);
+                if (values.length === config.controls.length && values.every((item, index) => {
+                    const target = config.controls[index];
+                    return item >= target.targetMin && item <= target.targetMax;
+                })) onReady();
             });
             wrap.append(label);
         });
@@ -705,35 +710,35 @@
         nervous: {
             title: "신경 반응 조절",
             label: "신경 신호 전도율",
-            instruction: "자극이 감지 기준을 넘도록 조절한 뒤 신경 신호를 근육 반응 수준까지 높이세요.",
+            instruction: "자극과 신경 반응을 각각 표시된 목표 구간에 맞추세요. 지나치게 강한 반응도 실패합니다.",
             result: "감각 정보가 중추에서 처리되어 운동 명령으로 전환됩니다.",
             visual: "neural"
         },
         immune: {
             title: "면역 반응 조절",
             label: "방어 반응 활성도",
-            instruction: "침입 신호가 감지되도록 조절하고 면역세포의 방어 반응을 충분히 활성화하세요.",
+            instruction: "침입 신호와 방어 반응을 목표 구간에 맞추세요. 과도한 면역 반응은 조직도 해칠 수 있습니다.",
             result: "면역세포가 침입자를 인식하고 제거 반응을 시작합니다.",
             visual: "immune"
         },
         movement: {
             title: "근육 수축 조절",
             label: "근육 수축력",
-            instruction: "움직임 자극과 근육 수축력을 함께 높여 관절에서 실제 동작을 만드세요.",
+            instruction: "움직임 자극과 수축력을 목표 구간에 맞추세요. 힘이 너무 세면 동작이 불안정해집니다.",
             result: "근육의 힘이 힘줄을 거쳐 뼈에 전달되어 관절이 움직입니다.",
             visual: "muscle"
         },
         excretion: {
             title: "콩팥 기능 조절",
             label: "여과·재흡수 효율",
-            instruction: "혈액 상태를 감지 기준 이상으로 맞추고 네프론의 처리 효율을 높이세요.",
+            instruction: "혈액 상태와 네프론 처리 효율을 목표 구간에 맞추세요. 지나친 여과도 필요한 물질을 잃게 합니다.",
             result: "필요한 물질은 되찾고 노폐물과 남는 물은 오줌으로 이동합니다.",
             visual: "kidney"
         },
         temperature: {
             title: "체온 반응 조절",
             label: "체온 보정 반응",
-            instruction: "온도 변화가 감지되도록 조절하고 몸의 냉각 또는 보온 반응을 활성화하세요.",
+            instruction: "온도 변화와 보정 반응을 목표 구간에 맞추세요. 과잉 반응은 체온을 반대로 벗어나게 합니다.",
             result: "시상하부의 명령에 따라 열 방출 또는 열 보존 반응이 작동합니다.",
             visual: "thermal"
         }
@@ -743,6 +748,31 @@
     const simulationCard = document.getElementById("simulationCard");
     let activePhysiologyStage = "";
     let physiologyCompleting = false;
+    const physiologyGoalPatterns = [
+        { stimulusOffset: [0, 12], response: [58, 70], responseStart: 90 },
+        { stimulusOffset: [-6, 8], response: [76, 88], responseStart: 22 },
+        { stimulusOffset: [3, 15], response: [44, 58], responseStart: 86 },
+        { stimulusOffset: [-4, 7], response: [64, 78], responseStart: 18 },
+        { stimulusOffset: [0, 10], response: [50, 64], responseStart: 88 }
+    ];
+
+    function physiologyGoalFor(stage) {
+        const experiments = window.BODY_EXPLORER_STAGES.filter((item) => item.kind === "experiment");
+        const experimentIndex = Math.max(0, experiments.findIndex((item) => item.id === stage.id));
+        const pattern = physiologyGoalPatterns[experimentIndex % physiologyGoalPatterns.length];
+        const clamp = (value) => Math.max(0, Math.min(100, value));
+        return {
+            stimulusMin: clamp(stage.scenario.threshold + pattern.stimulusOffset[0]),
+            stimulusMax: clamp(stage.scenario.threshold + pattern.stimulusOffset[1]),
+            responseMin: pattern.response[0],
+            responseMax: pattern.response[1],
+            responseStart: pattern.responseStart
+        };
+    }
+
+    function isInTargetRange(value, minimum, maximum) {
+        return value >= minimum && value <= maximum;
+    }
 
     function assembleHiddenCorrectPath(stage) {
         stage.scenario.correctPath.forEach((component) => {
@@ -776,15 +806,18 @@
         }
         const desiredTitle = `${stage.scenario.stimulus} · ${physiologyProfile.title}`;
         if (stage.id === activePhysiologyStage && simulationCard.querySelector(".physiology-direct-console")) {
+            const currentConsole = simulationCard.querySelector(".physiology-direct-console");
             const currentTitle = document.getElementById("simulationTitle");
             if (currentTitle && currentTitle.textContent !== desiredTitle) currentTitle.textContent = desiredTitle;
             const currentMission = document.getElementById("stageMission");
             if (currentMission && currentMission.textContent !== physiologyProfile.instruction) currentMission.textContent = physiologyProfile.instruction;
+            currentConsole.syncGoalState?.();
             return;
         }
 
         activePhysiologyStage = stage.id;
         physiologyCompleting = false;
+        const goal = physiologyGoalFor(stage);
         simulationCard.querySelector(".physiology-direct-console")?.remove();
         simulationCard.classList.add("physiology-direct-active");
         const simulationTitle = document.getElementById("simulationTitle");
@@ -805,44 +838,57 @@
                 <h3>${physiologyProfile.title}</h3>
                 <p>${physiologyProfile.instruction}</p>
                 <label>
-                    <span><b>${physiologyProfile.label}</b><output>12%</output></span>
-                    <input type="range" min="0" max="100" value="12" aria-label="${physiologyProfile.label}">
-                    <small>목표 반응 78% 이상</small>
+                    <span><b>${physiologyProfile.label}</b><output>${goal.responseStart}%</output></span>
+                    <input type="range" min="0" max="100" value="${goal.responseStart}" aria-label="${physiologyProfile.label}">
+                    <small>반응 목표 ${goal.responseMin}–${goal.responseMax}%</small>
                 </label>
             </div>
-            <div class="physiology-status"><b>반응 대기</b><span>위쪽 자극 세기와 생리 반응을 모두 조절하세요.</span></div>`;
+            <div class="physiology-status"><b>균형 조절</b><span>자극 ${goal.stimulusMin}–${goal.stimulusMax}%, 반응 ${goal.responseMin}–${goal.responseMax}%를 맞추세요.</span></div>`;
 
         const pathBuilder = simulationCard.querySelector(".path-builder");
         simulationCard.insertBefore(directConsole, pathBuilder);
         const responseInput = directConsole.querySelector("input");
         const stimulusInput = document.getElementById("stimulusIntensity");
         const output = directConsole.querySelector("output");
+        const stimulusThreshold = document.getElementById("stimulusThreshold");
 
         const updateResponse = () => {
             if (stage.id !== activePhysiologyStage || !directConsole.isConnected) return;
             const response = Number(responseInput.value);
             const stimulus = Number(stimulusInput.value);
+            if (stimulusThreshold) {
+                stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · 목표 ${goal.stimulusMin}–${goal.stimulusMax}%`;
+            }
             output.value = `${response}%`;
             output.textContent = `${response}%`;
             directConsole.style.setProperty("--physiology-response", `${response}%`);
             directConsole.style.setProperty("--physiology-stimulus", `${stimulus}%`);
             directConsole.style.setProperty("--physiology-size", `${32 + response * .46}px`);
             directConsole.style.setProperty("--physiology-rise", `${response * .45}%`);
-            const stimulusReady = stimulus >= stage.scenario.threshold;
-            const responseReady = response >= 78;
+            const stimulusReady = isInTargetRange(stimulus, goal.stimulusMin, goal.stimulusMax);
+            const responseReady = isInTargetRange(response, goal.responseMin, goal.responseMax);
             directConsole.classList.toggle("has-stimulus", stimulusReady);
             directConsole.classList.toggle("has-response", responseReady);
+            const stimulusDirection = stimulus < goal.stimulusMin ? "높이세요" : "낮추세요";
+            const responseDirection = response < goal.responseMin ? "높이세요" : "낮추세요";
             directConsole.querySelector(".physiology-status").innerHTML = stimulusReady
                 ? (responseReady
-                    ? "<b>반응 실행</b><span>기관들이 함께 작동하고 있습니다.</span>"
-                    : "<b>자극 감지</b><span>이제 생리 반응 강도를 목표까지 높이세요.</span>")
-                : `<b>감지 전</b><span>${stage.scenario.intensityLabel}가 감지 기준 ${stage.scenario.threshold}보다 낮습니다.</span>`;
+                    ? "<b>균형 완성</b><span>자극과 생리 반응이 모두 안정 구간에 들어왔습니다.</span>"
+                    : `<b>자극 적정</b><span>${physiologyProfile.label}을 ${responseDirection} (${goal.responseMin}–${goal.responseMax}%)</span>`)
+                : `<b>자극 조정</b><span>${stage.scenario.intensityLabel}를 ${stimulusDirection} (${goal.stimulusMin}–${goal.stimulusMax}%)</span>`;
             if (stimulusReady && responseReady) completePhysiologyExperiment(stage, directConsole, responseInput);
         };
 
         responseInput.addEventListener("input", updateResponse);
         stimulusInput.addEventListener("input", updateResponse);
-        updateResponse();
+        directConsole.syncGoalState = () => {
+            if (stage.id !== activePhysiologyStage || !directConsole.isConnected) return;
+            if (stimulusThreshold) {
+                stimulusThreshold.textContent = `${stage.scenario.intensityLabel} · 목표 ${goal.stimulusMin}–${goal.stimulusMax}%`;
+            }
+            updateResponse();
+        };
+        directConsole.syncGoalState();
     }
 
     if (physiologyProfile && simulationCard) {

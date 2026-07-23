@@ -126,6 +126,29 @@ assert.match(systemAtlas, /body-explorer-stage-rendered/);
 assert.match(systemAtlas, /MutationObserver/);
 assert.match(systemAtlas, /if \(!isExperiment\)\s*\{[\s\S]*?activePhysiologyStage = "";[\s\S]*?physiologyCompleting = false;/);
 assert.match(systemAtlas, /stage\.id !== activePhysiologyStage \|\| !directConsole\.isConnected/);
+assert.match(systemAtlas, /function isInTargetRange\(value, minimum, maximum\)/);
+assert.doesNotMatch(systemAtlas, /response\s*>=\s*78/);
+assert.ok(
+    (manipulationSource.match(/targetMax:/g) || []).length >= 10,
+    "digestion and respiration should use target bands often enough to prevent right-edge solving"
+);
+assert.match(
+    manipulationSource,
+    /controls:\s*\[\{[^}]*targetMin:[^}]*targetMax:[^}]*\},\s*\{[^}]*targetMin:[^}]*targetMax:/,
+    "dual controls should define independent target bands"
+);
+
+const goalPatternsSource = systemAtlas.match(/const physiologyGoalPatterns = (\[[\s\S]*?\]);\s*\n\s*function physiologyGoalFor/);
+assert.ok(goalPatternsSource, "physiology target patterns should be inspectable");
+const physiologyGoalPatterns = Function(`"use strict"; return (${goalPatternsSource[1]});`)();
+assert.strictEqual(physiologyGoalPatterns.length, 5);
+physiologyGoalPatterns.forEach((pattern, index) => {
+    assert.ok(
+        pattern.responseStart < pattern.response[0] || pattern.responseStart > pattern.response[1],
+        `physiology pattern ${index + 1} should start outside its response target`
+    );
+    assert.ok(pattern.response[1] < 100, `physiology pattern ${index + 1} must reject the right edge`);
+});
 assert.match(premiumStyles, /\.system-process-atlas/);
 assert.match(premiumStyles, /\.physiology-direct-console/);
 assert.match(premiumStyles, /@media \(max-width: 739px\)/);

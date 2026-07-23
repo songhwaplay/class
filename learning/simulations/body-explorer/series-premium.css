@@ -844,6 +844,11 @@ body.has-system-atlas .scene-panel .fact-card { right: auto; width: min(53%, 300
     font-size: 10px;
 }
 .organ-range-control.is-target small { color: #8ce0af; }
+.organ-dual-control label > small {
+    color: #887c87;
+    font-size: 10px;
+}
+.organ-dual-control label.is-target > small { color: #8ce0af; }
 
 .organ-pump-control button,
 .organ-toggle-control button {
