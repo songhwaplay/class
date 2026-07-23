@@ -108,7 +108,7 @@
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.08;
+  renderer.toneMappingExposure = .82;
   renderer.outputEncoding = THREE.sRGBEncoding;
 
   const clock = new THREE.Clock();
@@ -350,8 +350,8 @@
   }
 
   function setupLights() {
-    scene.add(new THREE.HemisphereLight(0xd9efff,0x354b2d,1.25));
-    const sun=new THREE.DirectionalLight(0xffeed0,3.2);sun.position.set(-90,160,70);sun.castShadow=true;
+    scene.add(new THREE.HemisphereLight(0xd9efff,0x354b2d,.64));
+    const sun=new THREE.DirectionalLight(0xffeed0,1.35);sun.position.set(-90,160,70);sun.castShadow=true;
     sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-190;sun.shadow.camera.right=190;sun.shadow.camera.top=190;sun.shadow.camera.bottom=-190;sun.shadow.camera.far=420;sun.shadow.bias=-.0002;scene.add(sun);
   }
 

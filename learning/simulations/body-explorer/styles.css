@@ -874,6 +874,1105 @@ button {
     text-align: center;
 }
 
+.anatomy-explorer {
+    position: relative;
+    display: grid;
+    min-height: 560px;
+    padding: clamp(18px, 3vw, 32px);
+    grid-template-rows: auto minmax(300px, 1fr) auto;
+    gap: 14px;
+    border: 1px solid rgba(255, 222, 196, 0.26);
+    border-radius: 26px;
+    background:
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        radial-gradient(circle at 50% 45%, rgba(193, 52, 83, 0.2), transparent 42%),
+        linear-gradient(145deg, #221023, #100a1a 70%);
+    background-size: 24px 24px, 24px 24px, auto, auto;
+    box-shadow: inset 0 1px rgba(255,255,255,.06), 0 24px 70px rgba(3, 2, 12, .55);
+    overflow: hidden;
+}
+
+.anatomy-explorer::before,
+.anatomy-explorer::after {
+    position: absolute;
+    z-index: 8;
+    width: 42px;
+    height: 42px;
+    border-color: rgba(255, 214, 168, .7);
+    pointer-events: none;
+    content: "";
+}
+
+.anatomy-explorer::before {
+    top: 10px;
+    left: 10px;
+    border-top: 1px solid;
+    border-left: 1px solid;
+    border-radius: 12px 0 0;
+}
+
+.anatomy-explorer::after {
+    right: 10px;
+    bottom: 10px;
+    border-right: 1px solid;
+    border-bottom: 1px solid;
+    border-radius: 0 0 12px;
+}
+
+.explorer-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.explorer-heading h2 {
+    max-width: 620px;
+    margin: 5px 0 0;
+    color: white;
+    font-family: Georgia, "Nanum Myeongjo", serif;
+    font-size: clamp(20px, 2.25vw, 29px);
+    line-height: 1.35;
+    word-break: keep-all;
+}
+
+.atlas-kicker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #e75764;
+    font-family: Consolas, "SFMono-Regular", monospace;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .14em;
+}
+
+.atlas-kicker i {
+    width: 28px;
+    height: 1px;
+    background: linear-gradient(90deg, #dd5968, transparent);
+}
+
+.atlas-kicker b {
+    color: #dbbda9;
+    font-weight: 700;
+    letter-spacing: .08em;
+}
+
+.atlas-focus {
+    margin: 7px 0 0;
+    color: #b4939f;
+    font-family: Consolas, "SFMono-Regular", monospace;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.explorer-guide {
+    max-width: 205px;
+    margin: 0;
+    padding: 9px 11px;
+    border: 1px solid rgba(255, 221, 184, 0.16);
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.07), rgba(255,255,255,.025));
+    color: #eacdd5;
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.45;
+}
+
+.explorer-guide b {
+    display: block;
+    margin-bottom: 3px;
+    color: #ffbd81;
+    font-family: Consolas, "SFMono-Regular", monospace;
+    font-size: 9px;
+    letter-spacing: .14em;
+}
+
+.explorer-guide span {
+    display: inline-grid;
+    width: 20px;
+    height: 20px;
+    margin-right: 4px;
+    place-items: center;
+    border-radius: 50%;
+    background: rgba(255, 211, 164, 0.14);
+    color: #ffd4a2;
+}
+
+.anatomy-map {
+    position: relative;
+    width: min(100%, 490px);
+    min-height: 300px;
+    margin: 0 auto;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1px solid rgba(255, 215, 183, .1);
+    border-radius: 20px;
+    background: radial-gradient(circle at 50% 44%, rgba(123, 32, 55, .18), rgba(4, 8, 20, .26) 68%);
+    box-shadow: inset 0 0 55px rgba(1, 4, 13, .38);
+    perspective: 900px;
+    touch-action: pan-y;
+    cursor: grab;
+}
+
+.anatomy-map.is-rotating { cursor: grabbing; }
+
+.anatomy-map::before {
+    position: absolute;
+    top: 5%;
+    left: 50%;
+    width: 78%;
+    height: 88%;
+    border: 1px solid rgba(255, 205, 190, 0.13);
+    border-radius: 50%;
+    background: radial-gradient(circle at var(--atlas-light-x, 50%) 42%, rgba(247, 120, 119, 0.14), transparent 67%);
+    content: "";
+    transform: translateX(-50%);
+}
+
+.anatomy-map::after {
+    position: absolute;
+    inset: 10px;
+    z-index: 6;
+    border: 1px solid rgba(255,255,255,.035);
+    border-radius: 15px;
+    content: "";
+    pointer-events: none;
+}
+
+.anatomy-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    transform: rotateX(var(--atlas-rotate-x, 0deg)) rotateY(var(--atlas-rotate-y, 0deg)) scale(var(--atlas-scale, 1.03));
+    transform-origin: 50% 44%;
+    transform-style: preserve-3d;
+    filter: drop-shadow(var(--atlas-shadow-x, 0) 18px 18px rgba(0,0,0,.22));
+    transition: transform 260ms cubic-bezier(.2,.8,.2,1), filter 260ms ease;
+}
+
+.anatomy-map[data-focus="lung"] .anatomy-layer {
+    transform-origin: 50% 34%;
+}
+
+.anatomy-map[data-focus="heart"] .anatomy-layer {
+    transform-origin: 50% 50%;
+}
+
+.anatomy-map.is-rotating .anatomy-layer { transition: filter 160ms ease; }
+
+.atlas-3d-toolbar,
+.atlas-layer-controls,
+.atlas-3d-hint {
+    position: absolute;
+    z-index: 9;
+}
+
+.atlas-3d-toolbar {
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 7px;
+}
+
+.atlas-free-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding-inline: 8px !important;
+    border: 1px solid rgba(111, 210, 226, .2) !important;
+    background: rgba(9, 8, 19, .76) !important;
+    backdrop-filter: blur(10px);
+}
+
+.atlas-free-toggle i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #7d8991;
+    box-shadow: 0 0 0 transparent;
+}
+
+.atlas-free-toggle[aria-pressed="true"] {
+    border-color: rgba(111, 222, 235, .62) !important;
+    background: linear-gradient(135deg, rgba(44, 143, 167, .45), rgba(117, 53, 119, .35)) !important;
+    color: #dffcff !important;
+}
+
+.atlas-free-toggle[aria-pressed="true"] i {
+    background: #7ce6ef;
+    box-shadow: 0 0 9px #7ce6ef;
+    animation: free-mode-pulse 1.6s ease-out infinite;
+}
+
+@keyframes free-mode-pulse {
+    60% { box-shadow: 0 0 0 7px rgba(124, 230, 239, 0); }
+}
+
+.atlas-view-switch,
+.atlas-camera-controls,
+.atlas-layer-controls {
+    display: flex;
+    gap: 3px;
+    padding: 3px;
+    border: 1px solid rgba(255, 224, 199, .16);
+    border-radius: 10px;
+    background: rgba(9, 8, 19, .76);
+    box-shadow: inset 0 1px rgba(255,255,255,.05), 0 10px 25px rgba(0,0,0,.22);
+    backdrop-filter: blur(10px);
+}
+
+.atlas-3d-toolbar button,
+.atlas-layer-controls button {
+    min-width: 30px;
+    min-height: 28px;
+    padding: 4px 7px;
+    border: 0;
+    border-radius: 7px;
+    background: transparent;
+    color: rgba(236, 220, 216, .62);
+    font: 800 9px/1 Consolas, "SFMono-Regular", monospace;
+    cursor: pointer;
+}
+
+.atlas-3d-toolbar button:hover,
+.atlas-3d-toolbar button:focus-visible,
+.atlas-layer-controls button:hover,
+.atlas-layer-controls button:focus-visible {
+    background: rgba(255,255,255,.08);
+    color: #fff;
+}
+
+.atlas-3d-toolbar button[aria-pressed="true"],
+.atlas-layer-controls button[aria-pressed="true"] {
+    background: linear-gradient(135deg, rgba(239, 96, 105, .34), rgba(91, 192, 217, .18));
+    color: #fff0df;
+    box-shadow: inset 0 0 0 1px rgba(255, 212, 175, .2);
+}
+
+.anatomy-map.is-free-explore {
+    border-color: rgba(103, 218, 233, .38);
+    box-shadow: inset 0 0 55px rgba(27, 116, 140, .14), 0 0 0 1px rgba(103, 218, 233, .08);
+}
+
+.anatomy-map.is-free-explore .anatomy-hotspot {
+    cursor: help;
+}
+
+.anatomy-map.is-free-explore .anatomy-hotspot.is-inspected {
+    z-index: 8;
+    border-color: #eaffff;
+    background: #57cbd8;
+    box-shadow: 0 0 0 5px rgba(87, 203, 216, .18), 0 0 28px rgba(87, 203, 216, .65);
+}
+
+.anatomy-map.is-free-explore .anatomy-hotspot.is-inspected span {
+    border-color: rgba(122, 230, 239, .7);
+    background: rgba(12, 56, 68, .94);
+    color: #eaffff;
+}
+
+.explorer-feedback[data-state="explore"] {
+    border-color: rgba(96, 211, 225, .4);
+    background: linear-gradient(135deg, rgba(19, 94, 112, .26), rgba(63, 25, 77, .24));
+}
+
+.explorer-feedback[data-state="explore"] strong {
+    color: #a7f2f5;
+}
+
+.anatomy-explorer.free-explore-active .explorer-guide b {
+    color: #79e3ed;
+}
+
+.atlas-camera-controls button[data-atlas-camera="reset"] {
+    color: #ffcb9b;
+    font-size: 8px;
+    letter-spacing: .08em;
+}
+
+.atlas-layer-controls {
+    bottom: 34px;
+    left: 50%;
+    translate: -50% 0;
+}
+
+.atlas-layer-controls button {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.atlas-layer-controls i {
+    width: 6px;
+    height: 6px;
+    border: 1px solid currentColor;
+    border-radius: 50%;
+}
+
+.atlas-layer-controls button[aria-pressed="true"] i {
+    background: currentColor;
+    box-shadow: 0 0 7px currentColor;
+}
+
+.atlas-3d-hint {
+    top: 50%;
+    left: 13px;
+    display: grid;
+    gap: 3px;
+    color: rgba(212, 229, 229, .42);
+    font: 800 7px/1 Consolas, monospace;
+    letter-spacing: .1em;
+    writing-mode: vertical-rl;
+    pointer-events: none;
+    transition: opacity 300ms ease;
+}
+
+.atlas-3d-hint i { color: #72d1df; font-size: 13px; font-style: normal; }
+.atlas-3d-hint.is-used,
+.anatomy-map[data-camera-moved="true"] .atlas-3d-hint { opacity: .18; }
+
+.anatomy-map[data-layer-skin="false"] .skin-structure { opacity: .03; }
+.anatomy-map[data-layer-organs="false"] .lung,
+.anatomy-map[data-layer-organs="false"] .airway,
+.anatomy-map[data-layer-organs="false"] .heart-shape,
+.anatomy-map[data-layer-organs="false"] .heart-divider,
+.anatomy-map[data-layer-organs="false"] .atlas-view-heart .chamber,
+.anatomy-map[data-layer-organs="false"] .atlas-view-heart .heart-outline-large,
+.anatomy-map[data-layer-organs="false"] .atlas-view-lung .lung-large,
+.anatomy-map[data-layer-organs="false"] .atlas-view-lung .alveoli-cluster { opacity: .05; }
+.anatomy-map[data-layer-vessels="false"] .vessel,
+.anatomy-map[data-layer-vessels="false"] .full-vascular-network,
+.anatomy-map[data-layer-vessels="false"] .capillary-web,
+.anatomy-map[data-layer-vessels="false"] .blood-journey-track,
+.anatomy-map[data-layer-vessels="false"] .atlas-view-heart .heart-aorta,
+.anatomy-map[data-layer-vessels="false"] .atlas-view-heart .heart-pulmonary-artery,
+.anatomy-map[data-layer-vessels="false"] .atlas-view-heart .heart-vena,
+.anatomy-map[data-layer-vessels="false"] .atlas-view-heart .heart-pulmonary-vein,
+.anatomy-map[data-layer-vessels="false"] .atlas-view-lung .lung-artery-large,
+.anatomy-map[data-layer-vessels="false"] .atlas-view-lung .lung-vein-large,
+.anatomy-map[data-layer-vessels="false"] .atlas-view-lung .capillary-ring { opacity: .04; }
+
+.skin-structure,
+.lung,
+.airway,
+.heart-shape,
+.heart-divider,
+.vessel,
+.full-vascular-network,
+.capillary-web,
+.blood-journey-track,
+.atlas-view-heart *,
+.atlas-view-lung * {
+    transition: opacity 280ms ease;
+}
+
+@media (max-width: 739px) {
+    .atlas-3d-toolbar {
+        top: 8px;
+        right: 8px;
+        gap: 4px;
+    }
+    .atlas-view-switch,
+    .atlas-camera-controls,
+    .atlas-layer-controls {
+        gap: 1px;
+        padding: 2px;
+        border-radius: 8px;
+    }
+    .atlas-3d-toolbar button,
+    .atlas-layer-controls button {
+        min-width: 27px;
+        min-height: 26px;
+        padding: 3px 5px;
+        font-size: 8px;
+    }
+    .atlas-layer-controls {
+        bottom: 31px;
+    }
+    .atlas-layer-controls button {
+        gap: 3px;
+    }
+    .atlas-3d-hint {
+        left: 7px;
+    }
+}
+
+.atlas-view {
+    display: none;
+}
+
+.anatomy-map[data-focus="body"] .atlas-view-body,
+.anatomy-map[data-focus="heart"] .atlas-view-heart,
+.anatomy-map[data-focus="lung"] .atlas-view-lung {
+    display: inline;
+}
+
+.view-title {
+    fill: #efbd91;
+    font-family: Consolas, "SFMono-Regular", monospace;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.view-subtitle {
+    fill: rgba(232, 211, 210, .58);
+    font-size: 9px;
+    font-weight: 700;
+}
+
+.heart-outline-large {
+    fill: rgba(92, 21, 47, .52);
+    stroke: rgba(255, 174, 168, .65);
+    stroke-width: 5;
+    filter: url(#softGlow);
+    transform-origin: 180px 290px;
+    animation: heart-beat-detail 1.35s ease-in-out infinite;
+}
+
+@keyframes heart-beat-detail {
+    8% { transform: scale(1.018); }
+    16% { transform: scale(1); }
+    24% { transform: scale(1.012); }
+}
+
+.chamber {
+    stroke: rgba(255, 232, 218, .74);
+    stroke-width: 3;
+}
+
+.right-atrium-chamber,
+.right-ventricle-chamber { fill: url(#heartBlue); }
+.left-atrium-chamber,
+.left-ventricle-chamber { fill: url(#heartRed); }
+
+.heart-septum-large {
+    fill: none;
+    stroke: #f5c4b2;
+    stroke-width: 7;
+    opacity: .75;
+}
+
+.heart-aorta,
+.heart-pulmonary-artery,
+.heart-vena,
+.heart-pulmonary-vein,
+.trachea-large,
+.bronchi-tree path,
+.lung-artery-large,
+.lung-vein-large,
+.capillary-ring,
+.flow-arrows path,
+.gas-arrows path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.heart-aorta { stroke: #ef5765; stroke-width: 20; }
+.heart-pulmonary-artery { stroke: #4bb5d4; stroke-width: 14; }
+.heart-vena { stroke: #4bb5d4; stroke-width: 18; }
+.heart-pulmonary-vein { stroke: #f16a70; stroke-width: 12; }
+
+.valve path {
+    fill: none;
+    stroke: #fff0c7;
+    stroke-width: 5;
+    stroke-linecap: round;
+}
+
+.valve circle {
+    fill: none;
+    stroke: rgba(255, 232, 183, .34);
+    stroke-width: 2;
+    stroke-dasharray: 3 4;
+}
+
+.tricuspid-valve path,
+.mitral-valve path {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: valve-breathe 1.35s ease-in-out infinite;
+}
+
+@keyframes valve-breathe {
+    18%, 42% { transform: scaleX(.68); }
+}
+
+.anatomy-map[data-arrived="true"][data-target="right-atrium"] .right-atrium-chamber,
+.anatomy-map[data-arrived="true"][data-target="left-ventricle"] .left-ventricle-chamber,
+.anatomy-map[data-arrived="true"][data-target="tricuspid"] .tricuspid-valve,
+.anatomy-map[data-arrived="true"][data-target="mitral"] .mitral-valve,
+.anatomy-map[data-arrived="true"][data-target="pulmonary-artery"] .heart-pulmonary-artery {
+    filter: url(#softGlow);
+    stroke: #ffe09e;
+}
+
+.flow-arrows path,
+.gas-arrows path {
+    stroke-width: 4;
+    stroke-dasharray: 8 7;
+    animation: vessel-flow 2.4s linear infinite;
+}
+
+.flow-blue { stroke: #8ce7f0; }
+.flow-red { stroke: #ff9a91; }
+
+@keyframes vessel-flow {
+    to { stroke-dashoffset: -30; }
+}
+
+.diagram-labels text,
+.anatomy-callout text {
+    fill: #f7e8df;
+    font-size: 10px;
+    font-weight: 900;
+    paint-order: stroke;
+    stroke: rgba(24, 8, 24, .8);
+    stroke-width: 4px;
+}
+
+.anatomy-callout path {
+    fill: none;
+    stroke: rgba(255, 218, 175, .62);
+    stroke-width: 1.5;
+}
+
+.anatomy-callout circle { fill: #ffcf91; }
+
+.lung-large {
+    fill: url(#lungTissue);
+    stroke: rgba(255, 181, 187, .66);
+    stroke-width: 4;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: lung-breathe 4.2s ease-in-out infinite;
+}
+
+.lung-large.right { animation-delay: -.08s; }
+
+@keyframes lung-breathe {
+    50% { transform: scale(1.045, 1.025); }
+}
+
+.trachea-large,
+.bronchi-tree path {
+    stroke: #8bd7df;
+    stroke-width: 13;
+}
+
+.bronchi-tree path { stroke-width: 7; }
+.lung-artery-large { stroke: #48add3; stroke-width: 11; }
+.lung-vein-large { stroke: #ee6670; stroke-width: 10; }
+
+.alveoli-cluster circle {
+    fill: rgba(255, 185, 182, .72);
+    stroke: #ffd0bd;
+    stroke-width: 3;
+}
+
+.alveoli-cluster {
+    transform-origin: 232px 322px;
+    animation: alveoli-breathe 3.1s ease-in-out infinite;
+}
+
+@keyframes alveoli-breathe {
+    50% { transform: translate(232px, 322px) scale(1.08); }
+}
+
+.capillary-ring {
+    stroke: #6fcde3;
+    stroke-width: 6;
+    stroke-dasharray: 7 5;
+}
+
+.gas-particles circle {
+    stroke-width: 2;
+}
+
+.gas-particles text {
+    fill: white;
+    font-family: Consolas, monospace;
+    font-size: 7px;
+    font-weight: 900;
+    text-anchor: middle;
+}
+
+.oxygen-particles circle { fill: #d94b59; stroke: #ffb0ac; }
+.carbon-particles circle { fill: #337fae; stroke: #90dced; }
+
+.oxygen-particles { animation: oxygen-transfer 2.8s ease-in-out infinite; }
+.carbon-particles { animation: carbon-transfer 2.8s ease-in-out infinite reverse; }
+
+@keyframes oxygen-transfer {
+    50% { transform: translate(-18px, 25px); opacity: .55; }
+}
+
+@keyframes carbon-transfer {
+    50% { transform: translate(18px, -20px); opacity: .5; }
+}
+
+.anatomy-map[data-arrived="true"][data-target="alveoli"] .alveoli-cluster,
+.anatomy-map[data-arrived="true"][data-target="pulmonary-vein"] .lung-vein-large {
+    filter: url(#softGlow);
+}
+
+.anatomy-map .anatomy-hotspot {
+    visibility: hidden;
+    opacity: 0;
+}
+
+.anatomy-map[data-focus="body"] .anatomy-hotspot[data-target="body-return"],
+.anatomy-map[data-focus="body"] .anatomy-hotspot[data-target="aorta"],
+.anatomy-map[data-focus="body"] .anatomy-hotspot[data-target="tissue-exchange"],
+.anatomy-map[data-focus="heart"] .anatomy-hotspot[data-target="right-atrium"],
+.anatomy-map[data-focus="heart"] .anatomy-hotspot[data-target="tricuspid"],
+.anatomy-map[data-focus="heart"] .anatomy-hotspot[data-target="mitral"],
+.anatomy-map[data-focus="heart"] .anatomy-hotspot[data-target="left-ventricle"],
+.anatomy-map[data-focus="heart"] .anatomy-hotspot[data-target="pulmonary-artery"],
+.anatomy-map[data-focus="heart"] .anatomy-hotspot[data-target="aorta"],
+.anatomy-map[data-focus="lung"] .anatomy-hotspot[data-target="pulmonary-artery"],
+.anatomy-map[data-focus="lung"] .anatomy-hotspot[data-target="alveoli"],
+.anatomy-map[data-focus="lung"] .anatomy-hotspot[data-target="pulmonary-vein"] {
+    visibility: visible;
+    opacity: 1;
+}
+
+.anatomy-map[data-focus="body"] [data-target="body-return"] { left: 40%; top: 69%; }
+.anatomy-map[data-focus="body"] [data-target="aorta"] { left: 57%; top: 34%; }
+.anatomy-map[data-focus="body"] [data-target="tissue-exchange"] { left: 57%; top: 76%; }
+
+.anatomy-map[data-focus="heart"] [data-target="right-atrium"] { left: 36%; top: 43%; }
+.anatomy-map[data-focus="heart"] [data-target="tricuspid"] { left: 43%; top: 53%; }
+.anatomy-map[data-focus="heart"] [data-target="pulmonary-artery"] { left: 35%; top: 30%; }
+.anatomy-map[data-focus="heart"] [data-target="mitral"] { left: 56%; top: 53%; }
+.anatomy-map[data-focus="heart"] [data-target="left-ventricle"] { left: 57%; top: 65%; }
+.anatomy-map[data-focus="heart"] [data-target="aorta"] { left: 67%; top: 23%; }
+
+.anatomy-map[data-focus="lung"] [data-target="pulmonary-artery"] { left: 31%; top: 58%; }
+.anatomy-map[data-focus="lung"] [data-target="pulmonary-vein"] { left: 45%; top: 65%; }
+.anatomy-map[data-focus="lung"] [data-target="alveoli"] { left: 75%; top: 63%; }
+
+.atlas-grid {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: .26;
+    background:
+        linear-gradient(90deg, transparent 49.8%, rgba(122, 199, 218, .18) 50%, transparent 50.2%),
+        linear-gradient(transparent 49.8%, rgba(122, 199, 218, .13) 50%, transparent 50.2%),
+        repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 36px),
+        repeating-linear-gradient(rgba(255,255,255,.025) 0 1px, transparent 1px 36px);
+}
+
+.scan-beam {
+    position: absolute;
+    top: 12%;
+    right: 8%;
+    left: 8%;
+    z-index: 4;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(92, 212, 236, .62), transparent);
+    box-shadow: 0 0 18px rgba(92, 212, 236, .35);
+    opacity: .55;
+    pointer-events: none;
+    animation: atlas-scan 6s ease-in-out infinite;
+}
+
+@keyframes atlas-scan {
+    50% { translate: 0 250px; opacity: .18; }
+}
+
+.map-coordinate,
+.map-readout,
+.atlas-legend {
+    position: absolute;
+    z-index: 7;
+    font-family: Consolas, "SFMono-Regular", monospace;
+    pointer-events: none;
+}
+
+.map-coordinate {
+    left: 13px;
+    color: rgba(198, 225, 229, .42);
+    font-size: 7px;
+    letter-spacing: .12em;
+    writing-mode: vertical-rl;
+}
+
+.map-coordinate.north { top: 14px; }
+.map-coordinate.south { bottom: 14px; }
+
+.map-depth {
+    position: absolute;
+    top: 15%;
+    right: 12px;
+    bottom: 21%;
+    z-index: 7;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+}
+
+.map-depth i {
+    width: 9px;
+    height: 1px;
+    background: rgba(202, 231, 233, .32);
+}
+
+.map-depth i:nth-child(3) { width: 17px; background: rgba(255, 209, 166, .58); }
+
+.body-model,
+.map-hotspots {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.anatomy-guides {
+    fill: none;
+    stroke: rgba(221, 234, 229, .16);
+    stroke-width: 2;
+}
+
+.anatomy-guides .spine-guide {
+    stroke: rgba(224, 235, 226, .24);
+    stroke-dasharray: 3 7;
+}
+
+.anatomy-guides .diaphragm-guide {
+    stroke: rgba(142, 207, 211, .22);
+    stroke-dasharray: 6 4;
+}
+
+.body-silhouette {
+    fill: url(#bodySkin);
+    stroke: rgba(255, 225, 213, 0.42);
+    stroke-width: 2;
+}
+
+.lung {
+    fill: rgba(237, 143, 156, 0.34);
+    stroke: rgba(255, 190, 196, 0.74);
+    stroke-width: 2;
+}
+
+.airway {
+    fill: none;
+    stroke: rgba(143, 221, 231, 0.62);
+    stroke-linecap: round;
+    stroke-width: 6;
+}
+
+.vessel {
+    fill: none;
+    stroke-linecap: round;
+    stroke-width: 8;
+    opacity: .78;
+}
+
+.vessel.branch { stroke-width: 5; }
+.vessel-blue { stroke: #58b9dc; }
+.vessel-red { stroke: #eb5963; }
+
+.full-vascular-network path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.arterial-tree path {
+    stroke: rgba(239, 89, 99, .8);
+    stroke-width: 4;
+}
+
+.venous-tree path {
+    stroke: rgba(78, 180, 215, .82);
+    stroke-width: 4;
+}
+
+.arterial-tree path.fine,
+.venous-tree path.fine {
+    stroke-width: 2;
+    opacity: .72;
+}
+
+.capillary-beds path {
+    fill: none;
+    stroke: rgba(238, 129, 142, .66);
+    stroke-width: 2;
+}
+
+.capillary-beds circle {
+    fill: #ffb2a8;
+    stroke: #6dc8df;
+    stroke-width: 2;
+    filter: url(#softGlow);
+    animation: capillary-pulse 2.1s ease-in-out infinite;
+}
+
+.capillary-beds circle:nth-of-type(2n) { animation-delay: -.7s; }
+
+@keyframes capillary-pulse {
+    50% { opacity: .5; r: 7px; }
+}
+
+.anatomy-map[data-arrived="true"][data-target="body-return"] .vena-cava-path,
+.anatomy-map[data-arrived="true"][data-target="aorta"] .aorta-path,
+.anatomy-map[data-arrived="true"][data-target="tissue-exchange"] .tissue-capillary-path {
+    stroke: #ffe09e;
+    stroke-width: 11;
+    filter: url(#softGlow);
+}
+
+.heart-shape {
+    fill: #b62d4b;
+    stroke: #ff9c9f;
+    stroke-width: 3;
+    filter: url(#softGlow);
+}
+
+.heart-divider {
+    fill: none;
+    stroke: rgba(255, 220, 210, .68);
+    stroke-width: 2;
+}
+
+.capillary-web path {
+    fill: none;
+    stroke: url(#bodySkin);
+    stroke-width: 2;
+    opacity: .65;
+}
+
+.blood-journey-track {
+    fill: none;
+    stroke: #ffd3a1;
+    stroke-dasharray: var(--journey-progress, 0) 100;
+    stroke-linecap: round;
+    stroke-width: 4;
+    opacity: .88;
+    filter: url(#softGlow);
+    transition: stroke-dasharray 600ms ease;
+}
+
+.blood-cell-marker {
+    fill: #fff0d7;
+    stroke: #ea4559;
+    stroke-width: 5;
+    filter: url(#softGlow);
+    transition: cx 520ms ease, cy 520ms ease, fill 260ms ease;
+}
+
+.anatomy-map[data-oxygen="rich"] .blood-cell-marker { fill: #ff525b; }
+.anatomy-map[data-oxygen="exchange"] .blood-cell-marker { fill: #e68d9e; }
+
+.anatomy-hotspot {
+    position: absolute;
+    top: var(--y);
+    left: var(--x);
+    z-index: 3;
+    width: 19px;
+    height: 19px;
+    padding: 0;
+    border: 2px solid #f8d9bd;
+    border-radius: 50%;
+    background: radial-gradient(circle, #f7c28d 0 25%, #542033 28%);
+    box-shadow: 0 0 0 4px rgba(255, 221, 184, 0.08), 0 0 18px rgba(255, 202, 164, 0.28);
+    color: white;
+    cursor: pointer;
+    transform: translate(-50%, -50%);
+    transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.anatomy-hotspot span {
+    position: absolute;
+    top: 50%;
+    left: 23px;
+    width: max-content;
+    padding: 5px 8px;
+    border: 1px solid rgba(255, 225, 205, .2);
+    border-radius: 5px;
+    background: linear-gradient(90deg, rgba(25, 12, 31, .96), rgba(41, 17, 38, .88));
+    color: #f7e7e4;
+    font-size: 9px;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
+    transform: translateY(-50%);
+}
+
+.anatomy-hotspot span::before {
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    width: 7px;
+    height: 1px;
+    background: rgba(255, 220, 190, .45);
+    content: "";
+}
+
+.anatomy-hotspot[data-target="body-return"] span,
+.anatomy-hotspot[data-target="pulmonary-artery"] span,
+.anatomy-hotspot[data-target="right-atrium"] span,
+.anatomy-hotspot[data-target="tricuspid"] span {
+    right: 23px;
+    left: auto;
+}
+
+.anatomy-hotspot[data-target="body-return"] span::before,
+.anatomy-hotspot[data-target="pulmonary-artery"] span::before,
+.anatomy-hotspot[data-target="right-atrium"] span::before,
+.anatomy-hotspot[data-target="tricuspid"] span::before {
+    right: auto;
+    left: 100%;
+}
+
+.anatomy-hotspot.detail {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+}
+
+.anatomy-hotspot:hover:not(:disabled),
+.anatomy-hotspot:focus-visible:not(:disabled) {
+    z-index: 5;
+    background: #f2636d;
+    box-shadow: 0 0 0 7px rgba(255, 221, 184, .16), 0 0 25px rgba(255, 106, 112, .62);
+    outline: none;
+    transform: translate(-50%, -50%) scale(1.3);
+}
+
+.anatomy-hotspot.is-discovered {
+    border-color: #fff4d9;
+    background: #db4357;
+}
+
+.anatomy-hotspot.is-discovered::after {
+    position: absolute;
+    inset: -8px;
+    border: 1px solid rgba(255, 222, 188, .55);
+    border-radius: 50%;
+    content: "";
+    animation: hotspot-pulse 1.8s ease-out infinite;
+}
+
+.anatomy-hotspot.is-arrival {
+    z-index: 6;
+    background: #ffdf9e;
+    box-shadow: 0 0 0 8px rgba(255, 223, 158, .18), 0 0 30px #f2696e;
+    transform: translate(-50%, -50%) scale(1.35);
+}
+
+.anatomy-hotspot.is-wrong {
+    border-color: #9c7a8b;
+    background: #3a2a38;
+    opacity: .48;
+}
+
+.atlas-legend {
+    bottom: 10px;
+    left: 12px;
+    display: flex;
+    gap: 10px;
+    padding: 5px 7px;
+    border: 1px solid rgba(255,255,255,.06);
+    border-radius: 6px;
+    background: rgba(5, 7, 17, .58);
+    color: #9e8994;
+    font-size: 7px;
+    letter-spacing: .05em;
+}
+
+.atlas-legend span { display: flex; align-items: center; gap: 4px; }
+.atlas-legend i { width: 9px; height: 3px; border-radius: 99px; }
+.legend-low { background: #58b9dc; }
+.legend-rich { background: #eb5963; }
+.legend-route { background: #ffd3a1; box-shadow: 0 0 5px #ffd3a1; }
+
+.map-readout {
+    right: 12px;
+    bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #bba1aa;
+    font-size: 7px;
+    letter-spacing: .06em;
+}
+
+.map-readout span {
+    padding: 3px 5px;
+    border-radius: 4px;
+    background: rgba(227, 69, 86, .16);
+    color: #ff8590;
+    font-size: 6px;
+    letter-spacing: .13em;
+}
+
+.map-readout span::before {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    margin-right: 4px;
+    border-radius: 50%;
+    background: #ff5968;
+    box-shadow: 0 0 6px #ff5968;
+    content: "";
+}
+
+@keyframes hotspot-pulse {
+    to { opacity: 0; transform: scale(1.55); }
+}
+
+.explorer-feedback {
+    display: flex;
+    min-height: 70px;
+    box-sizing: border-box;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 224, 205, .14);
+    border-radius: 12px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, .065), rgba(255,255,255,.025));
+    color: #ead7dd;
+}
+
+.explorer-feedback strong {
+    color: white;
+    font-size: 15px;
+}
+
+.explorer-feedback p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    line-height: 1.45;
+}
+
+.explorer-feedback[data-state="correcting"] {
+    border-color: rgba(255, 133, 143, .52);
+    background: rgba(139, 35, 55, .24);
+}
+
+.explorer-feedback[data-state="success"] {
+    border-color: rgba(255, 215, 153, .56);
+    background: rgba(153, 60, 61, .3);
+}
+
+.explorer-feedback .primary-button {
+    min-width: 156px;
+    padding: 10px 14px;
+    flex: 0 0 auto;
+}
+
 .question-kicker {
     color: var(--red);
 }
@@ -1406,6 +2505,24 @@ footer a {
         padding: 7px 9px;
     }
 
+    body.anatomy-active .journey-screen:not(.hidden) {
+        display: flex;
+        flex-direction: column;
+    }
+
+    body.anatomy-active .journey-status { order: 1; }
+    body.anatomy-active .route-strip { order: 2; }
+    body.anatomy-active .anatomy-explorer { order: 3; }
+    body.anatomy-active .scene-panel { order: 4; }
+
+    body.anatomy-active .route-strip {
+        scrollbar-width: none;
+    }
+
+    body.anatomy-active .route-strip::-webkit-scrollbar {
+        display: none;
+    }
+
     .score-meter > span {
         display: none;
     }
@@ -1452,6 +2569,39 @@ footer a {
     .question-card {
         padding: 24px 14px;
         border-radius: 0 0 20px 20px;
+    }
+
+    .anatomy-explorer {
+        min-height: 650px;
+        padding: 20px 12px;
+        border-radius: 20px;
+    }
+
+    .explorer-heading {
+        display: block;
+    }
+
+    .explorer-guide {
+        max-width: none;
+        margin-top: 10px;
+    }
+
+    .anatomy-map {
+        min-height: 390px;
+    }
+
+    .anatomy-hotspot span {
+        padding: 4px 5px;
+        font-size: 9px;
+    }
+
+    .explorer-feedback {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .explorer-feedback .primary-button {
+        width: 100%;
     }
 
     .ranking-row {
@@ -1553,7 +2703,8 @@ footer a {
     }
 
     .journey-screen:not(.hidden) .scene-panel,
-    .journey-screen:not(.hidden) .question-card {
+    .journey-screen:not(.hidden) .question-card,
+    .journey-screen:not(.hidden) .anatomy-explorer {
         min-height: 0;
         border-radius: 20px;
     }
@@ -1570,6 +2721,27 @@ footer a {
         grid-row: 3;
         flex-direction: column;
         overflow: auto;
+    }
+
+    .journey-screen:not(.hidden) .anatomy-explorer {
+        padding: clamp(13px, 1.7vw, 21px);
+        grid-column: 2;
+        grid-row: 3;
+        grid-template-rows: auto minmax(245px, 1fr) auto;
+        overflow: hidden;
+    }
+
+    .journey-screen:not(.hidden) .explorer-heading h2 {
+        font-size: clamp(17px, 1.8vw, 23px);
+    }
+
+    .journey-screen:not(.hidden) .anatomy-map {
+        min-height: 245px;
+    }
+
+    .journey-screen:not(.hidden) .explorer-feedback {
+        min-height: 62px;
+        padding: 9px 11px;
     }
 
     .journey-screen:not(.hidden) .question-card h2 {

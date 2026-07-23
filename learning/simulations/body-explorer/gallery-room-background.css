@@ -1,0 +1,40 @@
+body.journey-active {
+    background: #17130f;
+}
+
+body.journey-active .ambient-cells {
+    display: none;
+}
+
+.page-shell {
+    position: relative;
+    z-index: 1;
+}
+
+.anatomy-gallery-room {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    display: none;
+    overflow: hidden;
+    background: url("../../../assets/images/body-explorer/anatomy-gallery-room-v2.webp") center / cover no-repeat;
+    pointer-events: none;
+}
+
+body.journey-active .anatomy-gallery-room {
+    display: block;
+}
+
+.gallery-room-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+        linear-gradient(90deg, rgba(12, 8, 6, .11), transparent 13%, transparent 87%, rgba(12, 8, 6, .11)),
+        linear-gradient(0deg, rgba(16, 9, 5, .07), transparent 28%, rgba(255, 239, 214, .02));
+}
+
+@media (max-width: 700px) {
+    .anatomy-gallery-room {
+        background-position: center top;
+    }
+}

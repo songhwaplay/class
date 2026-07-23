@@ -2,6 +2,7 @@ window.BODY_EXPLORER_CONFIG = {
     gameId: "circulation",
     messagePrefix: "CIRCULATION",
     bestScoreKey: "circulationBestScore",
+    experienceType: "circulation-explorer",
     namedGreeting: "{name} 탐험가, 적혈구와 함께 혈액순환 한 바퀴를 출발해 볼까요?",
     guestGreeting: "적혈구가 되어 심장과 폐, 온몸을 직접 한 바퀴 돌아보세요.",
     resetAnnouncement: "새 혈액순환 탐험을 기다립니다.",
@@ -21,6 +22,7 @@ window.BODY_EXPLORER_CONFIG = {
 window.CIRCULATION_STAGES = [
     {
         id: "body-return",
+        target: "body-return",
         shortLabel: "온몸",
         location: "온몸의 모세혈관",
         scene: "body",
@@ -36,6 +38,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "right-atrium",
+        target: "right-atrium",
         shortLabel: "우심방",
         location: "대정맥과 우심방",
         scene: "heart",
@@ -51,6 +54,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "tricuspid",
+        target: "tricuspid",
         shortLabel: "삼첨판",
         location: "우심방과 우심실 사이",
         scene: "heart",
@@ -66,6 +70,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "pulmonary-artery",
+        target: "pulmonary-artery",
         shortLabel: "폐동맥",
         location: "우심실과 폐동맥",
         scene: "heart",
@@ -81,6 +86,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "alveoli",
+        target: "alveoli",
         shortLabel: "폐포",
         location: "폐포를 감싼 모세혈관",
         scene: "lung",
@@ -96,6 +102,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "pulmonary-vein",
+        target: "pulmonary-vein",
         shortLabel: "폐정맥",
         location: "폐정맥과 좌심방",
         scene: "body",
@@ -111,6 +118,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "mitral",
+        target: "mitral",
         shortLabel: "이첨판",
         location: "좌심방과 좌심실 사이",
         scene: "heart",
@@ -126,6 +134,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "left-ventricle",
+        target: "left-ventricle",
         shortLabel: "좌심실",
         location: "좌심실",
         scene: "heart",
@@ -141,6 +150,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "aorta",
+        target: "aorta",
         shortLabel: "대동맥",
         location: "대동맥판과 대동맥",
         scene: "body",
@@ -156,6 +166,7 @@ window.CIRCULATION_STAGES = [
     },
     {
         id: "tissue-exchange",
+        target: "tissue-exchange",
         shortLabel: "모세혈관",
         location: "온몸 조직의 모세혈관",
         scene: "body",

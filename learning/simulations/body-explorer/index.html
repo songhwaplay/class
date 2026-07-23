@@ -8,13 +8,18 @@
     <meta name="description" content="적혈구가 되어 온몸, 심장, 폐를 한 바퀴 돌며 혈액순환을 배우는 교실용 학습 시뮬레이션">
     <link rel="stylesheet" href="../../../assets/network/multiplayer-lobby.css">
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="gallery-room-background.css?v=20260723-1">
     <script src="../../../assets/network/game-network.js" defer></script>
     <script src="../../../assets/network/multiplayer-lobby.js" defer></script>
     <script src="../../../assets/sound/game-sfx.js" defer></script>
     <script src="journey-data.js" defer></script>
     <script src="app.js" defer></script>
+    <script src="atlas-3d.js" defer></script>
 </head>
 <body>
+    <div class="anatomy-gallery-room" aria-hidden="true">
+        <div class="gallery-room-vignette"></div>
+    </div>
     <div class="ambient-cells" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
     <div class="page-shell">
         <header class="topbar">
@@ -73,14 +78,14 @@
                 <div class="briefing-copy">
                     <p class="section-kicker">MISSION BRIEFING</p>
                     <h2 id="briefingTitle">혈액순환 한 바퀴를 완주하라</h2>
-                    <p>각 장소의 핵심 지식을 읽고 다음 경로를 선택하세요. 틀린 길은 막히며, 원리를 확인한 뒤 다시 선택해야 이동할 수 있습니다.</p>
+                    <p>3D 해부 지도를 회전하고 피부·장기·혈관 레이어를 분리해 심장과 폐, 혈관을 직접 탐험하세요.</p>
                     <ol class="route-preview" aria-label="주요 순환 경로">
                         <li><span>1</span>온몸에서 심장 오른쪽으로</li>
                         <li><span>2</span>폐에서 산소 교환</li>
                         <li><span>3</span>심장 왼쪽에서 온몸으로</li>
                     </ol>
                     <div class="science-note"><strong>중요!</strong> 산소가 적은 혈액도 실제로는 파란색이 아니라 짙은 붉은색입니다.</div>
-                    <button id="personalStartButton" class="primary-button" type="button">탐험 시작</button>
+                    <button id="personalStartButton" class="primary-button" type="button">3D 인체 지도 열기</button>
                     <button class="text-button mode-back-button" type="button">← 방식 다시 선택</button>
                 </div>
             </section>
@@ -137,6 +142,184 @@
                     <div class="fact-card">
                         <span>풀이 뒤 핵심 정리</span>
                         <p id="stageFact"></p>
+                    </div>
+                </article>
+
+                <article id="anatomyExplorer" class="anatomy-explorer hidden" aria-labelledby="explorerQuestion">
+                    <div class="explorer-heading">
+                        <div>
+                            <div class="atlas-kicker"><span>CIRCULATORY ATLAS</span><i aria-hidden="true"></i><b id="atlasStep">ROUTE 01</b></div>
+                            <h2 id="explorerQuestion"></h2>
+                            <p id="atlasFocus" class="atlas-focus">SYSTEMIC RETURN · 전신에서 심장으로</p>
+                        </div>
+                        <p class="explorer-guide"><span aria-hidden="true">＋</span><b>DISCOVER</b> 모델을 회전하고 레이어를 분리해 혈구의 다음 위치를 찾으세요.</p>
+                    </div>
+
+                    <div id="anatomyMap" class="anatomy-map" data-oxygen="low">
+                        <div class="atlas-grid" aria-hidden="true"></div>
+                        <div class="scan-beam" aria-hidden="true"></div>
+                        <div class="map-coordinate north" aria-hidden="true">A / SUPERIOR</div>
+                        <div class="map-coordinate south" aria-hidden="true">B / INFERIOR</div>
+                        <div class="map-depth" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+                        <div class="atlas-3d-toolbar" aria-label="3D 해부 뷰어 조작">
+                            <button class="atlas-free-toggle" type="button" data-atlas-mode="explore" aria-pressed="false"><i></i>자유 탐험</button>
+                            <div class="atlas-view-switch" role="group" aria-label="해부 보기 전환">
+                                <button type="button" data-atlas-view="body" aria-pressed="true">전신</button>
+                                <button type="button" data-atlas-view="heart" aria-pressed="false">심장</button>
+                                <button type="button" data-atlas-view="lung" aria-pressed="false">폐</button>
+                            </div>
+                            <div class="atlas-camera-controls" role="group" aria-label="카메라 조작">
+                                <button type="button" data-atlas-camera="zoom-out" aria-label="축소">−</button>
+                                <button type="button" data-atlas-camera="reset" aria-label="3D 보기 초기화">3D</button>
+                                <button type="button" data-atlas-camera="zoom-in" aria-label="확대">＋</button>
+                            </div>
+                        </div>
+                        <div class="atlas-layer-controls" role="group" aria-label="해부 레이어 표시">
+                            <button type="button" data-atlas-layer="skin" aria-pressed="true"><i></i>피부</button>
+                            <button type="button" data-atlas-layer="organs" aria-pressed="true"><i></i>장기</button>
+                            <button type="button" data-atlas-layer="vessels" aria-pressed="true"><i></i>혈관</button>
+                        </div>
+                        <div class="atlas-3d-hint" aria-hidden="true"><i>↔</i><span>DRAG TO ROTATE</span></div>
+                        <div class="anatomy-layer">
+                        <svg class="body-model" viewBox="0 0 360 560" role="img" aria-label="심장, 폐, 주요 혈관이 보이는 인체 순환계 지도">
+                            <defs>
+                                <linearGradient id="bodySkin" x1="0" x2="1" y1="0" y2="1">
+                                    <stop offset="0" stop-color="#f8cdbd" stop-opacity=".84"/>
+                                    <stop offset="1" stop-color="#b96e75" stop-opacity=".42"/>
+                                </linearGradient>
+                                <radialGradient id="organGlow">
+                                    <stop offset="0" stop-color="#fff2df" stop-opacity=".9"/>
+                                    <stop offset="1" stop-color="#f2868d" stop-opacity=".16"/>
+                                </radialGradient>
+                                <linearGradient id="heartBlue" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0" stop-color="#73d7e8"/><stop offset="1" stop-color="#276eae"/>
+                                </linearGradient>
+                                <linearGradient id="heartRed" x1="0" y1="0" x2="1" y2="1">
+                                    <stop offset="0" stop-color="#ff8e8d"/><stop offset="1" stop-color="#b51f48"/>
+                                </linearGradient>
+                                <radialGradient id="lungTissue">
+                                    <stop offset="0" stop-color="#f8a9ad" stop-opacity=".7"/><stop offset="1" stop-color="#9c3658" stop-opacity=".48"/>
+                                </radialGradient>
+                                <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%">
+                                    <feGaussianBlur stdDeviation="7" result="blur"/>
+                                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                </filter>
+                            </defs>
+                            <g class="atlas-view atlas-view-body">
+                            <ellipse cx="180" cy="280" rx="140" ry="250" fill="url(#organGlow)" opacity=".28"/>
+                            <circle class="body-head skin-structure" cx="180" cy="58" r="37" fill="url(#bodySkin)"/>
+                            <path class="body-silhouette skin-structure" d="M145 98 C117 112 104 151 101 197 L82 319 112 329 132 226 137 329 122 520 164 520 180 354 196 520 238 520 223 329 228 226 248 329 278 319 259 197 C256 151 243 112 215 98 Z"/>
+                            <path class="lung lung-left" d="M171 137 C145 120 124 148 127 207 130 247 151 254 171 230 Z"/>
+                            <path class="lung lung-right" d="M189 137 C215 120 236 148 233 207 230 247 209 254 189 230 Z"/>
+                            <path class="airway" d="M180 99 L180 143 M180 140 L151 165 M180 140 L209 165"/>
+                            <g class="anatomy-guides" aria-hidden="true">
+                                <path class="spine-guide" d="M180 98 L180 474"/>
+                                <path d="M138 119 Q180 143 222 119 M126 151 Q180 180 234 151 M122 184 Q180 212 238 184 M124 216 Q180 241 236 216"/>
+                                <path class="diaphragm-guide" d="M126 248 Q180 274 234 248"/>
+                            </g>
+                            <path class="vessel vessel-blue vena-cava-path" d="M178 473 C174 401 174 337 176 272 C178 244 170 224 165 210"/>
+                            <path class="vessel vessel-red aorta-path" d="M188 255 C202 282 200 346 193 474 M190 254 C222 249 248 235 260 214"/>
+                            <path class="vessel vessel-blue branch" d="M173 194 C150 185 135 173 125 157 M174 195 C207 184 222 172 234 157"/>
+                            <path class="vessel vessel-red branch" d="M188 204 C151 213 139 229 126 244 M189 203 C214 215 229 228 236 245"/>
+                            <g class="full-vascular-network" aria-hidden="true">
+                                <g class="arterial-tree">
+                                    <path d="M189 188 C188 151 188 121 186 91 M190 239 C153 249 124 263 102 300 M196 241 C226 251 249 270 266 301 M194 310 C163 352 151 414 145 499 M198 313 C221 362 224 428 224 500"/>
+                                    <path class="fine" d="M186 122 L157 107 M187 137 L209 111 M144 257 L118 221 M226 257 L249 220 M161 355 L132 390 M216 357 L244 392"/>
+                                </g>
+                                <g class="venous-tree">
+                                    <path d="M176 187 C176 153 175 122 175 91 M173 241 C143 254 121 272 104 305 M177 244 C216 252 243 275 263 306 M174 311 C151 356 143 421 139 499 M180 314 C205 361 213 430 214 500"/>
+                                    <path class="fine" d="M175 121 L150 104 M175 136 L202 108 M145 257 L113 219 M218 258 L253 218 M156 355 L126 393 M207 357 L237 395"/>
+                                </g>
+                                <g class="capillary-beds">
+                                    <path d="M151 82 Q180 66 209 82 M148 92 Q180 108 212 92 M92 300 Q107 286 120 303 T94 320 M241 302 Q256 286 271 303 T244 321 M126 478 Q143 462 158 480 T128 499 M201 480 Q219 463 235 481 T203 500"/>
+                                    <circle cx="180" cy="86" r="5"/><circle cx="104" cy="307" r="5"/><circle cx="256" cy="307" r="5"/><circle cx="143" cy="486" r="5"/><circle cx="219" cy="487" r="5"/>
+                                </g>
+                            </g>
+                            <path class="heart-shape" d="M181 249 C166 231 144 218 145 190 C146 164 176 158 188 179 C202 155 232 165 232 192 C231 220 209 235 181 249 Z"/>
+                            <path class="heart-divider" d="M188 179 C183 195 184 218 181 244"/>
+                            <g class="capillary-web tissue-capillary-path">
+                                <path d="M132 340 Q180 318 228 340 M125 369 Q180 346 235 369 M121 402 Q180 374 239 402"/>
+                                <path d="M138 329 Q151 377 130 422 M168 324 Q179 376 164 432 M199 326 Q186 380 201 433 M226 331 Q211 379 232 423"/>
+                            </g>
+                            <path id="bloodJourneyTrack" class="blood-journey-track" pathLength="100" d="M154 393 C151 327 158 280 169 231 C174 210 166 188 144 178 C128 167 130 145 148 144 C170 143 175 166 179 189 C184 165 194 143 218 145 C237 148 238 169 220 180 C198 193 188 212 190 234 C195 282 208 333 207 394 C205 424 190 440 180 442 C168 441 155 424 154 393"/>
+                            <circle id="bloodCellMarker" class="blood-cell-marker" cx="154" cy="393" r="8"/>
+                            </g>
+
+                            <g class="atlas-view atlas-view-heart">
+                                <text class="view-title" x="34" y="46">HEART · CUTAWAY</text>
+                                <text class="view-subtitle" x="34" y="66">혈액이 한 방향으로 흐르는 네 개의 방</text>
+                                <path class="heart-aorta" d="M209 137 C208 81 271 79 273 137 L273 199"/>
+                                <path class="heart-pulmonary-artery" d="M154 180 C115 151 78 158 52 190 M161 180 C205 151 246 157 302 192"/>
+                                <path class="heart-vena" d="M99 83 L99 183 M96 390 L96 322"/>
+                                <path class="heart-pulmonary-vein" d="M44 224 L111 234 M316 224 L247 234"/>
+                                <path class="heart-outline-large" d="M180 461 C134 420 77 356 76 258 C75 186 118 150 171 180 C205 145 277 167 282 239 C288 333 231 415 180 461 Z"/>
+                                <path class="chamber right-atrium-chamber" d="M93 220 C98 180 137 171 162 198 L157 279 C130 287 96 270 93 220 Z"/>
+                                <path class="chamber right-ventricle-chamber" d="M96 289 C119 275 144 281 160 294 L173 423 C129 394 101 350 96 289 Z"/>
+                                <path class="chamber left-atrium-chamber" d="M199 198 C226 173 263 189 268 226 C267 267 232 282 202 275 Z"/>
+                                <path class="chamber left-ventricle-chamber" d="M198 291 C221 277 251 285 267 304 C255 367 220 416 181 442 L180 315 Z"/>
+                                <path class="heart-septum-large" d="M180 190 C171 261 175 350 181 442"/>
+                                <g class="valve tricuspid-valve"><path d="M145 279 L161 296 M162 277 L151 299"/><circle cx="154" cy="288" r="20"/></g>
+                                <g class="valve mitral-valve"><path d="M201 278 L186 298 M218 282 L193 301"/><circle cx="202" cy="289" r="20"/></g>
+                                <g class="flow-arrows">
+                                    <path class="flow-blue" d="M99 109 L99 167 M119 218 Q135 238 150 256 M145 329 Q153 368 166 394"/>
+                                    <path class="flow-red" d="M214 258 Q237 240 250 220 M213 337 Q223 288 213 310 M208 200 Q219 161 234 139"/>
+                                </g>
+                                <g class="diagram-labels">
+                                    <text x="32" y="104">상대정맥</text><text x="24" y="386">하대정맥</text>
+                                    <text x="105" y="240">우심방</text><text x="111" y="347">우심실</text>
+                                    <text x="218" y="238">좌심방</text><text x="214" y="350">좌심실</text>
+                                    <text x="251" y="111">대동맥</text><text x="245" y="177">폐동맥</text>
+                                </g>
+                                <g class="anatomy-callout callout-valve"><path d="M154 288 L51 288"/><circle cx="154" cy="288" r="4"/><text x="26" y="282">판막</text><text x="26" y="300">역류 방지</text></g>
+                            </g>
+
+                            <g class="atlas-view atlas-view-lung">
+                                <text class="view-title" x="34" y="46">LUNG · GAS EXCHANGE</text>
+                                <text class="view-subtitle" x="34" y="66">폐포와 모세혈관 사이의 산소·이산화탄소 교환</text>
+                                <path class="trachea-large" d="M180 81 L180 170 M180 153 L126 203 M180 153 L234 203"/>
+                                <path class="lung-large left" d="M163 144 C111 124 64 172 62 282 C61 385 103 428 162 398 Z"/>
+                                <path class="lung-large right" d="M197 144 C249 124 296 172 298 282 C299 385 257 428 198 398 Z"/>
+                                <g class="bronchi-tree">
+                                    <path d="M126 203 L103 245 M126 203 L141 259 M103 245 L86 286 M103 245 L118 303 M234 203 L258 246 M234 203 L219 259 M258 246 L277 286 M258 246 L244 303"/>
+                                </g>
+                                <path class="lung-artery-large" d="M176 246 C144 254 118 280 101 326 M184 246 C219 255 245 281 263 326"/>
+                                <path class="lung-vein-large" d="M103 348 C140 322 161 302 177 278 M257 348 C221 322 202 302 184 278"/>
+                                <g class="alveoli-cluster" transform="translate(232 322)">
+                                    <circle cx="0" cy="0" r="22"/><circle cx="27" cy="-14" r="19"/><circle cx="31" cy="18" r="21"/><circle cx="2" cy="29" r="20"/><circle cx="-23" cy="17" r="18"/><circle cx="-24" cy="-14" r="17"/>
+                                </g>
+                                <path class="capillary-ring" d="M193 296 C241 273 296 303 302 347 C306 395 259 429 215 407 C180 389 170 329 193 296 Z"/>
+                                <g class="gas-particles oxygen-particles"><circle cx="242" cy="284" r="8"/><circle cx="277" cy="294" r="8"/><text x="236" y="287">O₂</text><text x="271" y="297">O₂</text></g>
+                                <g class="gas-particles carbon-particles"><circle cx="202" cy="365" r="10"/><circle cx="284" cy="377" r="10"/><text x="194" y="368">CO₂</text><text x="276" y="380">CO₂</text></g>
+                                <g class="gas-arrows"><path class="flow-red" d="M256 310 L229 348"/><path class="flow-blue" d="M226 373 L254 340"/></g>
+                                <g class="diagram-labels"><text x="64" y="455">폐동맥: 산소가 적은 혈액</text><text x="192" y="474">폐정맥: 산소가 많은 혈액</text></g>
+                                <g class="anatomy-callout"><path d="M267 338 L323 309"/><circle cx="267" cy="338" r="4"/><text x="286" y="300">폐포</text><text x="278" y="316">기체 교환</text></g>
+                            </g>
+                        </svg>
+
+                        <div class="map-hotspots" aria-label="선택할 수 있는 순환계 위치">
+                            <button type="button" class="anatomy-hotspot" data-target="body-return" data-label="대정맥" style="--x:38%;--y:66%"><span>대정맥</span></button>
+                            <button type="button" class="anatomy-hotspot" data-target="right-atrium" data-label="우심방" style="--x:43%;--y:39%"><span>우심방</span></button>
+                            <button type="button" class="anatomy-hotspot detail" data-target="tricuspid" data-label="삼첨판" style="--x:45%;--y:44%"><span>삼첨판</span></button>
+                            <button type="button" class="anatomy-hotspot" data-target="pulmonary-artery" data-label="폐동맥" style="--x:35%;--y:33%"><span>폐동맥</span></button>
+                            <button type="button" class="anatomy-hotspot" data-target="alveoli" data-label="폐포" style="--x:68%;--y:30%"><span>폐포</span></button>
+                            <button type="button" class="anatomy-hotspot" data-target="pulmonary-vein" data-label="폐정맥" style="--x:66%;--y:38%"><span>폐정맥</span></button>
+                            <button type="button" class="anatomy-hotspot detail" data-target="mitral" data-label="이첨판" style="--x:55%;--y:44%"><span>이첨판</span></button>
+                            <button type="button" class="anatomy-hotspot" data-target="left-ventricle" data-label="좌심실" style="--x:55%;--y:49%"><span>좌심실</span></button>
+                            <button type="button" class="anatomy-hotspot" data-target="aorta" data-label="대동맥" style="--x:57%;--y:25%"><span>대동맥</span></button>
+                            <button type="button" class="anatomy-hotspot" data-target="tissue-exchange" data-label="온몸 모세혈관" style="--x:52%;--y:75%"><span>모세혈관</span></button>
+                        </div>
+                        </div>
+                        <div class="atlas-legend" aria-hidden="true">
+                            <span><i class="legend-low"></i>산소 적음</span>
+                            <span><i class="legend-rich"></i>산소 풍부</span>
+                            <span><i class="legend-route"></i>탐험 경로</span>
+                        </div>
+                        <div class="map-readout" aria-hidden="true"><span>LIVE</span><b id="mapReadout">O₂ LOW · CO₂ RETURN</b></div>
+                    </div>
+
+                    <div id="explorerFeedback" class="explorer-feedback" data-state="idle" aria-live="polite">
+                        <div><strong id="explorerFeedbackTitle">어디로 이동해야 할까요?</strong><p id="explorerFeedbackText">기관 이름과 혈액의 흐름을 함께 살펴보세요.</p></div>
+                        <button id="explorerNextButton" class="primary-button hidden" type="button">다음 위치 탐험</button>
                     </div>
                 </article>
 

@@ -21,6 +21,7 @@
         ? window.BODY_EXPLORER_STAGES
         : Array.isArray(window.CIRCULATION_STAGES) ? window.CIRCULATION_STAGES : [];
     const TOTAL_STAGES = stages.length;
+    const HAS_ANATOMY_EXPLORER = config.experienceType === "circulation-explorer";
     const HAS_INTERACTIVE_SIMULATION = config.experienceType === "nervous-simulation"
         || config.experienceType === "immune-simulation"
         || config.experienceType === "movement-simulation"
@@ -91,6 +92,18 @@
         feedbackTitle: document.getElementById("feedbackTitle"),
         feedbackText: document.getElementById("feedbackText"),
         nextStageButton: document.getElementById("nextStageButton"),
+        anatomyExplorer: document.getElementById("anatomyExplorer"),
+        anatomyMap: document.getElementById("anatomyMap"),
+        explorerQuestion: document.getElementById("explorerQuestion"),
+        explorerFeedback: document.getElementById("explorerFeedback"),
+        explorerFeedbackTitle: document.getElementById("explorerFeedbackTitle"),
+        explorerFeedbackText: document.getElementById("explorerFeedbackText"),
+        explorerNextButton: document.getElementById("explorerNextButton"),
+        bloodCellMarker: document.getElementById("bloodCellMarker"),
+        atlasStep: document.getElementById("atlasStep"),
+        atlasFocus: document.getElementById("atlasFocus"),
+        mapReadout: document.getElementById("mapReadout"),
+        bodyModel: document.querySelector(".body-model"),
         simulationCard: document.getElementById("simulationCard"),
         simulationTitle: document.getElementById("simulationTitle"),
         stimulusIcon: document.getElementById("stimulusIcon"),
@@ -216,6 +229,7 @@
     function setScreen(activeScreen) {
         screens.forEach((screen) => screen?.classList.toggle("hidden", screen !== activeScreen));
         document.body.classList.toggle("journey-active", activeScreen === elements.journeyScreen);
+        document.body.classList.toggle("anatomy-active", activeScreen === elements.journeyScreen && HAS_ANATOMY_EXPLORER);
     }
 
     function setGreeting() {
@@ -345,7 +359,7 @@
         buildRouteMap();
         setScreen(elements.journeyScreen);
         renderStage();
-        window.scrollTo({ top: 0, behavior: "smooth" });
+        window.scrollTo({ top: 0, behavior: "auto" });
     }
 
     function buildRouteMap() {
@@ -373,6 +387,122 @@
 
     function isExperimentStage(stage) {
         return Boolean(HAS_INTERACTIVE_SIMULATION && stage?.kind === "experiment" && elements.simulationCard);
+    }
+
+    function isAnatomyExplorerStage(stage) {
+        return Boolean(HAS_ANATOMY_EXPLORER && stage?.target && elements.anatomyExplorer);
+    }
+
+    const anatomyMarkerPositions = {
+        "body-return": [154, 393],
+        "right-atrium": [169, 214],
+        tricuspid: [174, 231],
+        "pulmonary-artery": [145, 178],
+        alveoli: [218, 156],
+        "pulmonary-vein": [214, 203],
+        mitral: [190, 222],
+        "left-ventricle": [193, 246],
+        aorta: [202, 145],
+        "tissue-exchange": [207, 394]
+    };
+
+    function setExplorerFeedback(stateName, title, message, showNext = false) {
+        elements.explorerFeedback.dataset.state = stateName;
+        elements.explorerFeedbackTitle.textContent = title;
+        elements.explorerFeedbackText.textContent = message;
+        elements.explorerNextButton.classList.toggle("hidden", !showNext);
+    }
+
+    function updateAnatomyMap(stage, arrived = false) {
+        elements.anatomyMap.dataset.oxygen = stage.oxygen;
+        const focus = stage.target === "alveoli" || stage.target === "pulmonary-vein"
+            ? "lung"
+            : ["right-atrium", "tricuspid", "pulmonary-artery", "mitral", "left-ventricle"].includes(stage.target)
+                ? "heart"
+                : "body";
+        elements.anatomyMap.dataset.focus = focus;
+        elements.anatomyMap.dataset.target = stage.target;
+        elements.anatomyMap.dataset.arrived = String(arrived);
+        elements.bodyModel?.setAttribute("aria-label", focus === "heart"
+            ? "우심방, 우심실, 좌심방, 좌심실과 판막이 보이는 심장 단면도"
+            : focus === "lung"
+                ? "폐동맥, 폐정맥, 폐포와 기체 교환이 보이는 폐 확대도"
+                : "대정맥, 대동맥과 모세혈관망이 보이는 전신 순환도");
+        elements.anatomyMap.style.setProperty("--journey-progress", `${Math.max(0, state.currentIndex + (arrived ? 1 : 0)) * 10}`);
+        elements.atlasStep.textContent = `ROUTE ${String(state.currentIndex + 1).padStart(2, "0")} / ${String(TOTAL_STAGES).padStart(2, "0")}`;
+        elements.atlasFocus.textContent = `${stage.chapter.toUpperCase()} · ${stage.location}`;
+        elements.mapReadout.textContent = stage.oxygen === "rich"
+            ? "O₂ RICH · SYSTEMIC DELIVERY"
+            : stage.oxygen === "exchange" ? "GAS EXCHANGE · O₂ LOADING" : "O₂ LOW · CO₂ RETURN";
+        const markerStage = arrived
+            ? stage
+            : stages[Math.max(0, state.currentIndex - 1)] || stage;
+        const [x, y] = anatomyMarkerPositions[markerStage.target] || anatomyMarkerPositions["body-return"];
+        elements.bloodCellMarker?.setAttribute("cx", String(x));
+        elements.bloodCellMarker?.setAttribute("cy", String(y));
+
+        elements.anatomyMap.querySelectorAll(".anatomy-hotspot").forEach((button) => {
+            const targetIndex = stages.findIndex((item) => item.target === button.dataset.target);
+            button.disabled = state.stageSolved || button.classList.contains("is-wrong");
+            button.classList.toggle("is-discovered", targetIndex < state.currentIndex || (arrived && targetIndex === state.currentIndex));
+            button.classList.toggle("is-arrival", arrived && button.dataset.target === stage.target);
+        });
+    }
+
+    function renderAnatomyExplorer(stage) {
+        elements.questionCard.classList.add("hidden");
+        elements.simulationCard?.classList.add("hidden");
+        elements.anatomyExplorer.classList.remove("hidden");
+        elements.explorerQuestion.textContent = stage.question;
+        elements.explorerNextButton.textContent = state.currentIndex === TOTAL_STAGES - 1 ? "탐험 결과 보기" : "혈구를 따라 계속 이동";
+        elements.anatomyMap.querySelectorAll(".anatomy-hotspot").forEach((button) => {
+            button.disabled = false;
+            button.classList.remove("is-wrong", "is-arrival");
+        });
+        setExplorerFeedback("idle", "몸속 어디로 이동해야 할까요?", "기관 이름과 혈액의 방향을 관찰한 뒤 지도에서 직접 눌러 보세요.");
+        updateAnatomyMap(stage);
+        updateRouteMap();
+        elements.anatomyExplorer.focus?.({ preventScroll: true });
+        elements.announcer.textContent = `${stage.location}. ${stage.mission} ${stage.question}`;
+    }
+
+    function selectAnatomyTarget(button) {
+        if (state.stageSolved || button.disabled) return;
+        const stage = stages[state.currentIndex];
+        const isCorrect = button.dataset.target === stage.target;
+
+        if (!isCorrect) {
+            if (state.attempts === 0) {
+                state.missed.push({ stage, chosen: button.dataset.label });
+            }
+            state.attempts += 1;
+            button.disabled = true;
+            button.classList.add("is-wrong");
+            setExplorerFeedback("correcting", `${button.dataset.label}에서는 흐름이 이어지지 않아요`, stage.hint);
+            elements.announcer.textContent = `${elements.explorerFeedbackTitle.textContent}. ${stage.hint}`;
+            window.ClassGameSfx?.play("error");
+            return;
+        }
+
+        state.stageSolved = true;
+        if (state.attempts === 0) {
+            state.score += 1;
+            elements.currentScore.textContent = String(state.score);
+        }
+        revealFact(stage);
+        updateAnatomyMap(stage, true);
+        setExplorerFeedback(
+            "success",
+            state.attempts === 0 ? "혈구가 정확한 위치에 도착했어요!" : "혈액의 흐름을 찾아냈어요!",
+            stage.explanation,
+            true
+        );
+        elements.cellExplorer.classList.add("moving");
+        setTimeout(() => elements.cellExplorer.classList.remove("moving"), 320);
+        elements.announcer.textContent = `${elements.explorerFeedbackTitle.textContent} ${stage.explanation}`;
+        window.ClassGameSfx?.play("success");
+        updateRouteMap();
+        elements.explorerNextButton.focus({ preventScroll: true });
     }
 
     function hideFact() {
@@ -735,12 +865,20 @@
         elements.nextStageButton.classList.add("hidden");
         elements.choiceList.replaceChildren();
 
+        if (isAnatomyExplorerStage(stage)) {
+            renderAnatomyExplorer(stage);
+            document.dispatchEvent(new CustomEvent("body-explorer-stage-rendered", { detail: { stageId: stage.id, kind: stage.kind || "anatomy" } }));
+            return;
+        }
+
         if (isExperimentStage(stage)) {
             renderExperimentStage(stage);
+            document.dispatchEvent(new CustomEvent("body-explorer-stage-rendered", { detail: { stageId: stage.id, kind: stage.kind } }));
             return;
         }
 
         elements.simulationCard?.classList.add("hidden");
+        elements.anatomyExplorer?.classList.add("hidden");
         elements.questionCard.classList.remove("hidden");
         elements.stageQuestion.textContent = stage.question;
 
@@ -763,6 +901,7 @@
         updateRouteMap();
         elements.choiceList.querySelector("button")?.focus({ preventScroll: true });
         elements.announcer.textContent = `${stage.location}. ${stage.mission} ${stage.question}`;
+        document.dispatchEvent(new CustomEvent("body-explorer-stage-rendered", { detail: { stageId: stage.id, kind: stage.kind || "check" } }));
     }
 
     function selectRoute(choice, button) {
@@ -943,7 +1082,7 @@
     function handleKeyboard(event) {
         if (elements.journeyScreen.classList.contains("hidden")) return;
         const stage = stages[state.currentIndex];
-        if (!isExperimentStage(stage) && !state.stageSolved && /^[1-3]$/.test(event.key)) {
+        if (!isExperimentStage(stage) && !isAnatomyExplorerStage(stage) && !state.stageSolved && /^[1-3]$/.test(event.key)) {
             const choice = elements.choiceList.querySelectorAll("button")[Number(event.key) - 1];
             if (choice && !choice.disabled) {
                 event.preventDefault();
@@ -963,6 +1102,10 @@
     elements.restartButton.addEventListener("click", startJourney);
     elements.resultModeButton.addEventListener("click", showModeScreen);
     elements.nextStageButton.addEventListener("click", goToNextStage);
+    elements.anatomyMap?.querySelectorAll(".anatomy-hotspot").forEach((button) => {
+        button.addEventListener("click", () => selectAnatomyTarget(button));
+    });
+    elements.explorerNextButton?.addEventListener("click", goToNextStage);
     elements.stimulusIntensity?.addEventListener("input", updateStimulusReadout);
     elements.undoPathButton?.addEventListener("click", undoExperimentPath);
     elements.clearPathButton?.addEventListener("click", clearExperimentPath);
