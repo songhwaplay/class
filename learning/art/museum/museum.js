@@ -211,7 +211,7 @@
     g.fillStyle=complete?'#f0d88d':'#c6a55c';g.font='700 56px Georgia';g.fillText(complete?'✓':'M',700,505);
     g.fillStyle=complete?'#dbc27c':'#d0b577';g.font='700 27px sans-serif';g.fillText(complete?'관찰 미션 완료':'관람을 마무리하는 3가지 관찰',700,628);
     g.fillStyle='#8d806d';g.font='24px sans-serif';g.fillText(complete?'클릭하면 다시 도전할 수 있어요':'가까이에서 클릭해 어린이 큐레이터 도전을 시작하세요',700,681);
-    const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());t.userData.finaleTexture=true;return t;
+    const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());t.userData={finaleTexture:true};return t;
   }
 
   function addFinaleWall(room,shell) {

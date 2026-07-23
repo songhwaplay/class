@@ -71,12 +71,13 @@ assert.doesNotMatch(
 
 assert.match(html, /styles\.css\?v=20260724-1/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-1/);
+assert.match(html, /museum\.js\?v=20260724-2/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
 assert.match(css, /\.finale-modal/);
 assert.match(museumJs, /museumFinaleRooms/);
 assert.match(museumJs, /addFinaleWall\(rooms\[index\],shell\)/);
+assert.doesNotMatch(museumJs, /userData\.finaleTexture=true/, 'generated textures must initialize userData for the bundled Three.js version');
 assert.equal((museumJs.match(/\{q:'/g)||[]).length, 15, 'five galleries should each provide three finale questions');
 
 console.log('museum-modal-contract: 60 artworks, finale missions, and responsive modal safeguards verified');
