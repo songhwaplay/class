@@ -73,10 +73,11 @@ assert.doesNotMatch(
 
 assert.match(html, /styles\.css\?v=20260724-3/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-6/);
+assert.match(html, /museum\.js\?v=20260724-7/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
 assert.match(html, /id="finale-artwork-image"/);
+assert.match(html, /QUESTION 01 \/ 05/);
 assert.match(css, /\.finale-modal/);
 assert.match(css, /\.finale-artwork img/);
 assert.match(museumJs, /museumFinaleRoomsV2/);
@@ -102,8 +103,12 @@ assert.match(museumJs, /finaleQuizCorrect===total/, 'a stamp must require every 
 assert.match(museumJs, /showFinaleRetry\(finaleQuizRoom\)/, 'an imperfect finale attempt must end in retry instead of a stamp');
 assert.match(museumJs, /buildImageQuestion\(room,imageModes\[0\],works\[0\]\)/, 'each finale attempt must include a visible artwork question');
 assert.match(museumJs, /buildImageQuestion\(room,imageModes\[1\],works\[1\]\)/, 'each finale attempt must include two visible artwork questions');
-assert.match(museumJs, /shuffledCopy\(\['title','artist','english'\]\)\.slice\(0,2\)/, 'restored title, artist, and English-title quiz modes must rotate');
+assert.match(museumJs, /buildImageQuestion\(room,imageModes\[2\],works\[2\]\)/, 'each finale attempt must include three visible artwork questions');
+assert.match(museumJs, /const imageModes=\['title','artist','english'\]/, 'every finale must include title, artist, and English-title modes');
+assert.match(museumJs, /observations\[0\],\s*observations\[1\]/, 'every finale must include two observation questions');
 assert.match(museumJs, /options:\[correct,\.\.\.distractors\]/, 'image questions must restore four-choice answer construction');
+assert.match(museumJs, /총 5문제가 무작위 순서로 출제됩니다/, 'the finale instructions must explain the five-question format');
+assert.match(museumJs, /다섯 문제를 모두 맞혀야/, 'the retry message must explain the perfect-score stamp rule');
 assert.match(museumJs, /Math\.random\(\)\*\(i\+1\)/, 'the finale question bank must be shuffled for each attempt');
 assert.match(museumJs, /signature===finaleLastQuestionSet\[room\.id\]/, 'an immediate retry must not repeat the same question set');
 assert.match(museumJs, /randomizedChoices\.findIndex\(choice=>choice\.correct\)/, 'answer positions must be shuffled without losing the correct choice');

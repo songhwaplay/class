@@ -30,7 +30,7 @@
 
   const ROOM_QUIZZES = {
     portrait:{
-      intro:'얼굴과 자세, 빛을 얼마나 세심하게 보았는지 문제은행에서 뽑힌 세 장면으로 확인해 보세요.',
+      intro:'얼굴과 자세, 빛을 얼마나 세심하게 보았는지 문제은행으로 확인해 보세요.',
       questions:[
         {q:'〈진주 귀걸이를 한 소녀〉의 얼굴을 드러내는 빛은 주로 어느 쪽에서 올까요?',options:['화면 왼쪽 위','화면 오른쪽 아래','인물의 등 뒤'],answer:0,explain:'왼쪽 위에서 들어온 빛이 이마와 뺨, 진주를 차례로 밝혀요.'},
         {q:'윤두서의 〈자화상〉에서 화면의 긴장을 가장 강하게 만드는 부분은 무엇일까요?',options:['화려한 배경','정면을 응시하는 눈','손에 든 책'],answer:1,explain:'몸과 배경을 거의 생략하고 정면의 눈빛에 정신과 기운을 집중했어요.'},
@@ -47,7 +47,7 @@
       ]
     },
     nature:{
-      intro:'빛과 계절, 자연을 표현한 붓질 속에서 발견한 것을 매번 달라지는 세 가지 관찰로 되짚어 보세요.',
+      intro:'빛과 계절, 자연을 표현한 붓질 속에서 발견한 것을 되짚어 보세요.',
       questions:[
         {q:'반 고흐의 〈별이 빛나는 밤〉에서 밤하늘의 움직임을 만드는 핵심은 무엇일까요?',options:['곧고 얇은 격자','소용돌이치는 붓질','완전히 평평한 검정'],answer:1,explain:'굽이치며 반복되는 붓질이 별빛과 하늘 전체를 움직이는 것처럼 보여 줘요.'},
         {q:'모네의 〈수련〉 연작은 주로 어디를 바라본 시점일까요?',options:['하늘 높이 위쪽','멀리 있는 산 정상','가까운 연못 수면'],answer:2,explain:'연못을 내려다보며 물 위 수련과 하늘의 반사를 한 화면에 담았어요.'},
@@ -81,7 +81,7 @@
       ]
     },
     shape:{
-      intro:'선과 색, 반복과 변형이 어떻게 생각으로 바뀌었는지 문제은행의 세 가지 조형 단서로 확인해 보세요.',
+      intro:'선과 색, 반복과 변형이 어떻게 생각으로 바뀌었는지 문제은행으로 확인해 보세요.',
       questions:[
         {q:'몬드리안의 화면을 나누는 두 가지 기본 방향은 무엇일까요?',options:['수직과 수평','나선과 물결','원과 타원'],answer:0,explain:'수직·수평의 검은 선과 기본색 면만으로 비대칭의 균형을 만들었어요.'},
         {q:'쇠라의 〈그랑드 자트 섬의 일요일 오후〉에서 멀리 볼수록 하나의 색처럼 섞이는 것은?',options:['작은 색점','굵은 연필선','금속 조각'],answer:0,explain:'서로 다른 순수한 색점을 나란히 찍어 관람자의 눈에서 색이 섞이게 했어요.'},
@@ -98,7 +98,7 @@
       ]
     },
     space:{
-      intro:'조각의 부피와 거대한 그림 속 깊이를 몸으로 경험했는지 매번 달라지는 공간 단서로 확인해 보세요.',
+      intro:'조각의 부피와 거대한 그림 속 깊이를 몸으로 경험했는지 확인해 보세요.',
       questions:[
         {q:'로댕의 〈생각하는 사람〉 원작 대형 주조본의 재료는 무엇일까요?',options:['청동','종이','유리'],answer:0,explain:'거친 표면과 묵직한 근육을 청동으로 주조해 강한 에너지를 만들었어요.'},
         {q:'〈최후의 만찬〉의 원근선이 모이는 중심은 어디일까요?',options:['예수의 머리 뒤','왼쪽 문 끝','식탁 아래'],answer:0,explain:'벽과 천장의 선이 예수의 머리 뒤 소실점으로 모여 중심과 깊이를 함께 만들어요.'},
@@ -261,7 +261,7 @@
     g.beginPath();g.arc(700,486,72,0,Math.PI*2);g.strokeStyle=complete?'#e1c778':'#9a7a3b';g.lineWidth=3;g.stroke();
     g.beginPath();g.arc(700,486,59,0,Math.PI*2);g.strokeStyle='rgba(211,177,101,.3)';g.lineWidth=2;g.stroke();
     g.fillStyle=complete?'#f0d88d':'#c6a55c';g.font='700 56px Georgia';g.fillText(complete?'✓':'M',700,505);
-    g.fillStyle=complete?'#dbc27c':'#d0b577';g.font='700 27px sans-serif';g.fillText(complete?'관찰 미션 완료':'관람을 마무리하는 3가지 관찰',700,628);
+    g.fillStyle=complete?'#dbc27c':'#d0b577';g.font='700 27px sans-serif';g.fillText(complete?'관찰 미션 완료':'관람을 마무리하는 5가지 도전',700,628);
     g.fillStyle='#8d806d';g.font='24px sans-serif';g.fillText(complete?'클릭하면 다시 도전할 수 있어요':'가까이에서 클릭해 어린이 큐레이터 도전을 시작하세요',700,681);
     const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());t.userData={finaleTexture:true};return t;
   }
@@ -316,7 +316,7 @@
     document.getElementById('finale-progress').style.width='100%';
     document.getElementById('finale-total').textContent=`${completedFinaleCount()} / ${rooms.length} ROOMS`;
     document.getElementById('finale-complete-title').textContent=`${finaleQuizCorrect} / ${total}개를 맞혔어요`;
-    document.getElementById('finale-complete-copy').textContent='큐레이터 도장은 세 문제를 모두 맞혀야 받을 수 있어요. 작품을 다시 살펴보고 재도전해 보세요.';
+    document.getElementById('finale-complete-copy').textContent='큐레이터 도장은 다섯 문제를 모두 맞혀야 받을 수 있어요. 작품을 다시 살펴보고 재도전해 보세요.';
   }
 
   function renderFinaleQuestion() {
@@ -371,14 +371,16 @@
     finaleQuizRoom=room;finaleQuizIndex=0;finaleQuizCorrect=0;
     const observations=shuffledCopy(ROOM_QUIZZES[room.id].questions);
     const works=shuffledCopy(room.works);
-    const imageModes=shuffledCopy(['title','artist','english']).slice(0,2);
+    const imageModes=['title','artist','english'];
     const selected=[
       buildImageQuestion(room,imageModes[0],works[0]),
       buildImageQuestion(room,imageModes[1],works[1]),
-      observations[0]
+      buildImageQuestion(room,imageModes[2],works[2]),
+      observations[0],
+      observations[1]
     ];
     let signature=selected.map(item=>`${item.kind||'observation'}:${item.image||''}:${item.q}`).sort().join('|');
-    if(signature===finaleLastQuestionSet[room.id]&&observations[1]){selected[2]=observations[1];signature=selected.map(item=>`${item.kind||'observation'}:${item.image||''}:${item.q}`).sort().join('|');}
+    if(signature===finaleLastQuestionSet[room.id]&&observations[2]){selected[4]=observations[2];signature=selected.map(item=>`${item.kind||'observation'}:${item.image||''}:${item.q}`).sort().join('|');}
     finaleLastQuestionSet[room.id]=signature;
     finaleQuizQuestions=shuffledCopy(selected.map(item=>{
       const choices=item.options.map((label,index)=>({label,correct:index===item.answer}));
@@ -387,7 +389,7 @@
     }));
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 작품 이미지 문제 2개와 관찰 문제 1개가 무작위로 출제됩니다.`;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 한글 제목·화가·영어 제목 문제와 관찰 문제 2개, 총 5문제가 무작위 순서로 출제됩니다.`;
     renderFinaleQuestion();
   }
 
@@ -395,7 +397,7 @@
     window.ClassGameSfx?.play('card');keysClear();
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 작품 이미지 문제 2개와 관찰 문제 1개가 무작위로 출제됩니다.`;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 한글 제목·화가·영어 제목 문제와 관찰 문제 2개, 총 5문제가 무작위 순서로 출제됩니다.`;
     finaleQuizRoom=room;
     if(readFinaleProgress()[room.id])showFinaleCompletion(room);
     else startFinaleQuiz(room);
