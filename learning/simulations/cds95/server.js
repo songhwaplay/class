@@ -61,6 +61,8 @@ const LAND_GATE_RADIUS = 2.25 * TILE;
 // 파나마처럼 좁은 지협 반대편 바다에서 항구 명령이 뜨는 것을 막는다.
 const SEA_PORT_TOUCH_RADIUS_TILES = 1.10;
 const LAND_PORT_TOUCH_RADIUS_TILES = 1.25;
+const SHORE_TRANSFER_RADIUS_TILES = 2.15;
+const SHORE_RETURN_RADIUS_TILES = 1.65;
 const MAX_MISSION_TITLE = 50;
 const MAX_MISSION_TEXT = 500;
 const store = new ClassroomStore();
@@ -315,6 +317,8 @@ app.get('/health', (_req, res) => res.json({
   teacherClockAuthority: true,
   timedPortOperations: true,
   directSeaLandTransfer: true,
+  coastalLanding: true,
+  coastalLandingRule: 'near-coast-only-return-to-anchored-ship',
   fatigueAffectsSeaAndLandSpeed: true,
   fatigueSlowdownStart: Fatigue.FATIGUE_SLOWDOWN_START,
   fatigueMinSpeedPercent: Math.round(Fatigue.MIN_SPEED_MULTIPLIER * 100),
@@ -1040,15 +1044,36 @@ function advanceStagedMission(roomCode, player, mission, progress, stage, label)
 
 
 function nearbyCatalogPort(player) {
+  const anchoredShore = player.mode === 'land' ? coastalTransferForPlayer(player) : null;
+  if (anchoredShore) {
+    return {
+      kind: 'shore',
+      placeId: null,
+      placeName: '해안 상륙 지점',
+      actionLabel: '배로 돌아가 승선',
+      nextMode: 'sea',
+      canUse: true
+    };
+  }
   const place = nearestOriginalCityAccess(player);
-  if (!place) return null;
+  if (!place) {
+    const shore = player.mode === 'sea' ? coastalTransferForPlayer(player) : null;
+    return shore ? {
+      kind: 'shore',
+      placeId: null,
+      placeName: '가까운 해안',
+      actionLabel: '해안 상륙',
+      nextMode: 'land',
+      canUse: true
+    } : null;
+  }
   // 내륙 도시는 육상 통과·도착만 가능하다. 실제 바다 출입구가 있는 도시만 승선 후보가 된다.
   if (player.mode === 'land' && (!Array.isArray(place.originalSeaEntryPoints) || !place.originalSeaEntryPoints.length)) return null;
   if (player.mode === 'land') {
     const shipPort = RESOLVED_PLACES.get(String(player.shipPortId || ''));
     const hasOwnShip = !!shipPort && shipPort.id === place.id;
     if (!hasOwnShip) {
-      const shipPortName = shipPort?.name || '출발 항구';
+      const shipPortName = shipPort?.name || (Number.isFinite(player.shipAnchorX) ? '해안 상륙 지점' : '출발 항구');
       return {
         placeId: place.id,
         placeName: place.name,
@@ -1062,6 +1087,7 @@ function nearbyCatalogPort(player) {
     }
   }
   return {
+    kind: 'port',
     placeId: place.id,
     placeName: place.name,
     actionLabel: player.mode === 'sea' ? `${place.name} 상륙` : `${place.name} 승선`,
@@ -1172,6 +1198,41 @@ function distanceXY(ax, ay, bx, by) {
 
 function distance(a, b) {
   return distanceXY(a.x, a.y, b.x, b.y);
+}
+
+function coastalTransferForPlayer(player) {
+  if (!player || (player.mode !== 'sea' && player.mode !== 'land')) return null;
+  if (player.mode === 'land') {
+    const values = [player.shipAnchorX, player.shipAnchorY, player.shipLandingX, player.shipLandingY];
+    if (!values.every(Number.isFinite)) return null;
+    if (distanceXY(player.x, player.y, player.shipLandingX, player.shipLandingY) > SHORE_RETURN_RADIUS_TILES * TILE) return null;
+    return {
+      anchorPoint: { x: player.shipAnchorX, y: player.shipAnchorY },
+      landingPoint: { x: player.shipLandingX, y: player.shipLandingY }
+    };
+  }
+
+  const baseCellX = Math.floor(wrapX(player.x) / TILE);
+  const baseCellY = Math.floor(player.y / TILE);
+  let best = null;
+  let bestDistance = Infinity;
+  for (let dy = -2; dy <= 2; dy += 1) {
+    for (let dx = -2; dx <= 2; dx += 1) {
+      const x = (baseCellX + dx + 0.5) * TILE;
+      const y = (baseCellY + dy + 0.5) * TILE;
+      const terrain = terrainAtPixel(x, y);
+      if (terrain.type === 'sea' || !terrain.passable) continue;
+      const d = distanceXY(player.x, player.y, x, y);
+      if (d <= SHORE_TRANSFER_RADIUS_TILES * TILE && d < bestDistance) {
+        best = { x: wrapX(x), y };
+        bestDistance = d;
+      }
+    }
+  }
+  return best ? {
+    anchorPoint: { x: player.x, y: player.y },
+    landingPoint: best
+  } : null;
 }
 
 function safeSpawn(room, origin, requiredMode) {
@@ -1341,7 +1402,9 @@ function publicPlayer(p, nowGameMinutes = classGameMinutes(p.roomCode)) {
     currentCityImage: currentCity?.interiorImage || '',
     lastCityId: p.lastCityId || null,
     shipPortId: p.shipPortId || null,
-    shipPortName: RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name || '',
+    shipPortName: RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name
+      || (Number.isFinite(p.shipAnchorX) ? '해안 상륙 지점' : ''),
+    shipAnchoredAtShore: Number.isFinite(p.shipAnchorX),
     fatigue: Math.round(Fatigue.clamp(p.fatigue) * 10) / 10,
     fatigueSpeedMultiplier: Math.round(Fatigue.speedMultiplier(p.fatigue) * 1000) / 1000,
     transition
@@ -1398,7 +1461,10 @@ function beginTimedTransition(p, options) {
     noticeAfter: options.noticeAfter || '',
     cityIdAfter: options.cityIdAfter || null,
     lastCityIdAfter: options.lastCityIdAfter || options.cityIdAfter || null,
-    shipPortIdAfter: options.shipPortIdAfter || null
+    shipPortIdAfter: options.shipPortIdAfter || null,
+    shipMooringAfter: Object.prototype.hasOwnProperty.call(options, 'shipMooringAfter')
+      ? options.shipMooringAfter
+      : undefined
   };
   p.lastSeen = nowRealMs;
   return true;
@@ -1414,10 +1480,22 @@ function updateTimedTransition(p, _nowGameMinutes, nowRealMs = Date.now()) {
   if (action.lastCityIdAfter) p.lastCityId = action.lastCityIdAfter;
   if (action.shipPortIdAfter) {
     p.shipPortId = action.shipPortIdAfter;
+    p.shipAnchorX = null;
+    p.shipAnchorY = null;
+    p.shipLandingX = null;
+    p.shipLandingY = null;
     const activeMission = store.room(p.roomCode).activeMission;
     const progress = activeMission ? progressFor(p.roomCode, p.name, activeMission.id, false) : null;
     if (progress) progress.shipPortId = action.shipPortIdAfter;
     store.scheduleSave();
+  }
+  if (action.shipMooringAfter !== undefined) {
+    const mooring = action.shipMooringAfter;
+    p.shipPortId = null;
+    p.shipAnchorX = Number.isFinite(mooring?.anchorPoint?.x) ? mooring.anchorPoint.x : null;
+    p.shipAnchorY = Number.isFinite(mooring?.anchorPoint?.y) ? mooring.anchorPoint.y : null;
+    p.shipLandingX = Number.isFinite(mooring?.landingPoint?.x) ? mooring.landingPoint.x : null;
+    p.shipLandingY = Number.isFinite(mooring?.landingPoint?.y) ? mooring.landingPoint.y : null;
   }
   p.mission = action.missionAfter;
   if (action.noticeAfter) setNotice(p, action.noticeAfter);
@@ -1599,6 +1677,10 @@ io.on('connection', (socket) => {
         cityReturnPoint: null,
         lastCityId: startPlace?.id || 'lisbon',
         shipPortId: startPlace?.id || 'lisbon',
+        shipAnchorX: null,
+        shipAnchorY: null,
+        shipLandingX: null,
+        shipLandingY: null,
         fatigue: 0,
         money: STARTING_MONEY,
         water: MAX_WATER,
@@ -1687,6 +1769,10 @@ io.on('connection', (socket) => {
         cityReturnPoint: null,
         lastCityId: savedRaceStart?.id || null,
         shipPortId: savedProgress?.shipPortId || savedRaceStart?.id || null,
+        shipAnchorX: null,
+        shipAnchorY: null,
+        shipLandingX: null,
+        shipLandingY: null,
         fatigue: 0,
         money: STARTING_MONEY,
         water: MAX_WATER,
@@ -1930,7 +2016,8 @@ io.on('connection', (socket) => {
     const entryPoints = fromSea ? place.originalSeaEntryPoints : place.originalLandEntryPoints;
     if (!Array.isArray(entryPoints) || !entryPoints.length) return ack({ ok:false, error:fromSea?'원작에서 이 도시는 바다로 접근할 수 없습니다.':'원작에서 이 도시를 통해 승선할 수 없습니다.' });
     if (!fromSea && p.shipPortId !== place.id) {
-      const shipPortName = RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name || '출발 항구';
+      const shipPortName = RESOLVED_PLACES.get(String(p.shipPortId || ''))?.name
+        || (Number.isFinite(p.shipAnchorX) ? '해안 상륙 지점' : '출발 항구');
       return ack({ ok:false, error:`${place.name}에는 내 배가 없습니다. 배는 ${shipPortName}에 정박해 있습니다.` });
     }
     const touchRadiusTiles = fromSea ? SEA_PORT_TOUCH_RADIUS_TILES : LAND_PORT_TOUCH_RADIUS_TILES;
@@ -1947,6 +2034,36 @@ io.on('connection', (socket) => {
       noticeAfter:fromSea?`${place.name}에 배를 정박하고 육상 탐험을 시작합니다.`:`${place.name}에 정박한 내 배에 승선했습니다.`
     });
     ack({ ok:true, started:true, self:publicPlayer(p), port:place.name });
+  });
+
+  socket.on('useShoreTransfer', (_payload, ack = () => {}) => {
+    const room = roomForSocket(socket);
+    const p = playerForSocket(socket);
+    if (!p || (p.mode !== 'sea' && p.mode !== 'land')) return ack({ ok:false, error:'현재 해안 상륙을 이용할 수 없습니다.' });
+    const travel = arrivalRaceTravelGate(p); if (!travel.ok) return ack({ ok:false, error:travel.error });
+    if (p.transition) return ack({ ok:false, error:'이동 수단 전환이 이미 진행 중입니다.' });
+    const shore = coastalTransferForPlayer(p);
+    if (!shore) return ack({ ok:false, error:p.mode === 'sea' ? '배를 해안에 더 가까이 이동하세요.' : '배를 정박한 해안으로 돌아가세요.' });
+
+    const fromSea = p.mode === 'sea';
+    const destinationMode = fromSea ? 'land' : 'sea';
+    const destinationPoint = safeSpawn(room, fromSea ? shore.landingPoint : shore.anchorPoint, destinationMode);
+    const mooring = fromSea
+      ? { anchorPoint: shore.anchorPoint, landingPoint: destinationPoint }
+      : null;
+    beginTimedTransition(p, {
+      kind: fromSea ? 'shoreDisembark' : 'shoreEmbark',
+      label: fromSea ? '해안 상륙 준비 중' : '해안 승선 준비 중',
+      durationGameMinutes: PORT_TRANSFER_GAME_MINUTES,
+      destinationMode,
+      destinationPoint,
+      shipMooringAfter: mooring,
+      missionAfter: fromSea ? '해안에서 육상 탐험' : '해안에서 항해 재개',
+      noticeAfter: fromSea
+        ? '배를 해안에 정박하고 육상 탐험을 시작합니다. 같은 상륙 지점으로 돌아와야 다시 승선할 수 있습니다.'
+        : '해안에 정박한 배로 돌아와 항해를 다시 시작합니다.'
+    });
+    ack({ ok:true, started:true, self:publicPlayer(p), shore:fromSea?'해안 상륙':'해안 승선' });
   });
 
   socket.on('teacherPublishArrivalRace', (payload, ack = () => {}) => {

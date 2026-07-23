@@ -583,7 +583,7 @@ function doMissionOrPortAction(){
   clearKeys();
   if(missionInteraction?.canInteract){socket.emit('missionInteract',{},result=>{if(!result?.ok){showToast(result?.error||'미션 행동을 완료하지 못했습니다.');return}serverSelf=result.self;self={...result.self};mode=result.self.mode;applyMissionState(result.mission||activeMission,result.progress||missionProgress,false);missionInteraction=null;cityInteraction=null;portInteraction=null;showToast('미션 단계가 완료되었습니다.');applyModeUI()});return}
   if(portInteraction?.canUse===false){showToast(portInteraction.message||'이 항구에는 내 배가 없습니다.','warn');return}
-  if(portInteraction){socket.emit('useCatalogPort',{placeId:portInteraction.placeId},result=>{if(!result?.ok){showToast(result?.error||'항구를 이용하지 못했습니다.','warn');return}serverSelf=result.self;self={...result.self};mode=result.self.mode;portInteraction=null;cityInteraction=null;showToast(`${result.port} 항구 이용 절차 시작`);applyModeUI()})}
+  if(portInteraction){const shore=portInteraction.kind==='shore',eventName=shore?'useShoreTransfer':'useCatalogPort',payload=shore?{}:{placeId:portInteraction.placeId};socket.emit(eventName,payload,result=>{if(!result?.ok){showToast(result?.error||(shore?'해안에서 상륙·승선하지 못했습니다.':'항구를 이용하지 못했습니다.'),'warn');return}serverSelf=result.self;self={...result.self};mode=result.self.mode;portInteraction=null;cityInteraction=null;showToast(shore?`${result.shore} 절차 시작`:`${result.port} 항구 이용 절차 시작`);applyModeUI()})}
 }
 cityActionBtn.onclick=doCityAction;missionActionBtn.onclick=doMissionOrPortAction;
 libraryBtn.onclick=openLibrary;libraryClose.onclick=closeLibrary;libraryView.addEventListener('pointerdown',e=>{if(e.target===libraryView)closeLibrary()});
