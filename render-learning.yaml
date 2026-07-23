@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: fraction-lab-20260720
+    name: songhwaplay-arithmetic
     runtime: node
     plan: free
     rootDir: learning/basics/arithmetics
