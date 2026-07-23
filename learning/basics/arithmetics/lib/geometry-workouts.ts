@@ -42,10 +42,10 @@ export const projectionProblems: GeometryChoiceItem[] = [
   item("p1", "내적", String.raw`\vec a=(2,3),\quad\vec b=(4,-1),\quad \vec a\cdot\vec b=?`, String.raw`5`, [String.raw`11`, String.raw`8`, String.raw`-5`]),
   item("p2", "수직 조건", String.raw`(k,2)\perp(3,-6)\text{일 때}\quad k=?`, String.raw`k=4`, [String.raw`k=-4`, String.raw`k=2`, String.raw`k=12`]),
   item("p3", "두 벡터가 이루는 각", String.raw`\vec a=(1,0),\quad\vec b=(1,\sqrt3),\quad \theta=?`, String.raw`\frac{\pi}{3}`, [String.raw`\frac{\pi}{6}`, String.raw`\frac{\pi}{4}`, String.raw`\frac{2\pi}{3}`]),
-  item("p4", "스칼라 정사영", String.raw`\vec a=(3,4),\ \vec b=(4,0)\quad \operatorname{comp}_{\vec b}\vec a=?`, String.raw`3`, [String.raw`4`, String.raw`\frac{12}{5}`, String.raw`12`]),
-  item("p5", "벡터 정사영", String.raw`\vec a=(2,3),\ \vec b=(1,1)\quad \operatorname{proj}_{\vec b}\vec a=?`, String.raw`\left(\frac52,\frac52\right)`, [String.raw`(5,5)`, String.raw`\left(1,\frac32\right)`, String.raw`\left(-\frac12,\frac12\right)`]),
-  item("p6", "수직 성분", String.raw`\vec a=(5,2),\ \vec b=(1,1)\quad \vec a_{\perp}=\vec a-\operatorname{proj}_{\vec b}\vec a=?`, String.raw`\left(\frac32,-\frac32\right)`, [String.raw`\left(\frac72,\frac72\right)`, String.raw`(3,-3)`, String.raw`\left(-\frac32,\frac32\right)`]),
-  item("p7", "좌표축과 이루는 각", String.raw`\vec a=(3,4),\quad \cos\theta_x=?\quad(\theta_x:\ x\text{축과의 각})`, String.raw`\frac35`, [String.raw`\frac45`, String.raw`\frac34`, String.raw`\frac53`]),
+  item("p4", "스칼라 정사영", String.raw`\vec a=(3,4),\ \vec b=(4,0),\quad \frac{\vec a\cdot\vec b}{|\vec b|}=?`, String.raw`3`, [String.raw`4`, String.raw`\frac{12}{5}`, String.raw`12`]),
+  item("p5", "벡터 정사영", String.raw`\vec a=(2,3),\ \vec b=(1,1),\quad \vec a_{\parallel}=?`, String.raw`\left(\frac52,\frac52\right)`, [String.raw`(5,5)`, String.raw`\left(1,\frac32\right)`, String.raw`\left(-\frac12,\frac12\right)`]),
+  item("p6", "수직 성분", String.raw`\vec a=(5,2),\ \vec b=(1,1),\quad \vec a_{\perp}=?`, String.raw`\left(\frac32,-\frac32\right)`, [String.raw`\left(\frac72,\frac72\right)`, String.raw`(3,-3)`, String.raw`\left(-\frac32,\frac32\right)`]),
+  item("p7", "좌표축과 이루는 각", String.raw`\vec a=(3,4),\quad \cos\angle(\vec a,\ x\text{축})=?`, String.raw`\frac35`, [String.raw`\frac45`, String.raw`\frac34`, String.raw`\frac53`]),
 ];
 
 export const vectorGeometryProblems: GeometryChoiceItem[] = [

@@ -381,8 +381,9 @@ test("vector projection worksheet opens its multiple-choice answers in the answe
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.equal((html.match(/geometry-inline-choice"/g) ?? []).length, 0);
-  assert.match(html, /comp/);
-  assert.match(html, /proj/);
+  assert.match(html, /스칼라 정사영/);
+  assert.match(html, /벡터 정사영/);
+  assert.doesNotMatch(html, /operatorname|theta_x:/);
   assert.match(html, />답안 입력<\/button>/);
   const highSchoolCss = await readFile(new URL("../app/arithmetic/high-school/high-school.css", import.meta.url), "utf8");
   assert.match(highSchoolCss, /@media print[\s\S]*?\.trig-derivative-answer-panel-backdrop\s*\{[\s\S]*?display:\s*none\s*!important/);
