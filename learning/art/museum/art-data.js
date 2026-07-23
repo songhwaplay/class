@@ -14,7 +14,19 @@
     p09:{englishTitle:'The Gleaners',tags:['사실주의','농민화'],styleNote:'사실주의 화가들은 이상적인 영웅보다 당시 사람들이 살아가고 일하는 현실을 진지하게 그렸어요.'},
     p10:{englishTitle:'Swaying Dancer (Dancer in Green)',tags:['인상주의','파스텔'],styleNote:'인상주의 화가들은 완벽하게 멈춘 자세보다 빛과 움직임이 스쳐 가는 한순간을 포착했어요.'},
     p11:{englishTitle:'Weeping Woman',tags:['입체주의','초상화'],styleNote:'입체주의는 하나의 대상을 여러 방향에서 본 모습으로 나누고 다시 조합해 표현했어요.'},
-    p12:{englishTitle:'The Fifer',tags:['사실주의','인물화'],styleNote:'마네는 전통적인 입체감과 배경 묘사를 줄이고 선명한 색면과 인물 자체에 집중했어요.'}
+    p12:{englishTitle:'The Fifer',tags:['사실주의','인물화'],styleNote:'마네는 전통적인 입체감과 배경 묘사를 줄이고 선명한 색면과 인물 자체에 집중했어요.'},
+    n01:{englishTitle:'The Starry Night',tags:['후기 인상주의','풍경화'],styleNote:'후기 인상주의 화가들은 보이는 풍경을 그대로 옮기기보다 자신만의 색과 붓질로 감정과 움직임을 표현했어요.'},
+    n02:{englishTitle:'Water Lilies',tags:['인상주의','수련 연작'],styleNote:'인상주의는 빛과 날씨에 따라 계속 달라지는 색을 빠르고 자유로운 붓질로 포착하려 했어요.'},
+    n03:{englishTitle:'Clearing after Rain on Mount Inwang',tags:['조선 후기','진경산수화','수묵화'],styleNote:'진경산수화는 실제 우리 산천을 직접 보고 그 특징과 기운을 자신만의 붓과 먹으로 표현한 그림이에요.'},
+    n04:{englishTitle:'Sunflowers',tags:['후기 인상주의','정물화'],styleNote:'정물화는 꽃이나 과일 같은 움직이지 않는 대상을 관찰하며 색·형태·질감을 새롭게 보여 주는 그림이에요.'},
+    n05:{englishTitle:'Tiger and Magpie',tags:['조선 민화','동물화','상징'],styleNote:'민화는 생활 속 바람과 이야기를 친근한 동물·식물·물건에 담아 자유롭고 익살스럽게 표현했어요.'},
+    n06:{englishTitle:'Chochungdo (Watermelons and Mice)',tags:['조선 시대','초충도','생태 관찰'],styleNote:'초충도는 풀과 꽃, 열매, 벌레와 작은 동물을 한 화면에 세밀하게 담아 가까운 자연을 관찰하게 해요.'},
+    n07:{englishTitle:'White Ox',tags:['한국 근대미술','동물화','표현적 선'],styleNote:'한국 근대미술가 이중섭은 거칠고 힘찬 선을 반복해 소의 생명력과 자신의 마음을 함께 드러냈어요.'},
+    n08:{englishTitle:'Hwangmyo Nongjeopdo (Cat and Butterfly)',tags:['조선 후기','영모화','상징'],styleNote:'영모화는 새와 짐승을 자세히 그린 그림으로, 동물의 생김새뿐 아니라 장수와 기쁨 같은 뜻도 담았어요.'},
+    c12:{englishTitle:'Summer',tags:['매너리즘','복합 초상','정물화'],styleNote:'아르침볼도는 과일과 채소 같은 사물을 조합해 사람의 얼굴로 보이게 하는 재치 있는 복합 초상을 만들었어요.'},
+    n10:{englishTitle:'Impression, Sunrise',tags:['인상주의','풍경화'],styleNote:'인상주의라는 이름은 이 작품의 제목에서 시작되었으며, 화가들은 순간의 빛과 색이 주는 첫인상을 중요하게 여겼어요.'},
+    n11:{englishTitle:'Woman with a Parasol – Madame Monet and Her Son',tags:['인상주의','야외 풍경'],styleNote:'인상주의 화가들은 야외에서 빠르게 변하는 햇빛과 바람을 짧고 가벼운 붓질로 화면에 남겼어요.'},
+    n12:{englishTitle:'The Dream',tags:['소박파','상상 풍경','정글 회화'],styleNote:'소박파 미술은 전문적인 원근법보다 단순하고 또렷한 형태, 풍부한 상상력으로 독특한 세계를 만들어요.'}
   };
   const art = (id,title,artist,year,medium,size,image,docent,point,extra={}) => ({
     id,title,artist,year,medium,size,image:A+image,docent,point,type:'painting',rights:'원작 Public Domain · 교육용 이미지',source:C, ...(META[id]||{}), ...extra
