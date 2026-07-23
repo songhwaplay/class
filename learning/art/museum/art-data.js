@@ -26,7 +26,19 @@
     c12:{englishTitle:'Summer',tags:['매너리즘','복합 초상','정물화'],styleNote:'아르침볼도는 과일과 채소 같은 사물을 조합해 사람의 얼굴로 보이게 하는 재치 있는 복합 초상을 만들었어요.'},
     n10:{englishTitle:'Impression, Sunrise',tags:['인상주의','풍경화'],styleNote:'인상주의라는 이름은 이 작품의 제목에서 시작되었으며, 화가들은 순간의 빛과 색이 주는 첫인상을 중요하게 여겼어요.'},
     n11:{englishTitle:'Woman with a Parasol – Madame Monet and Her Son',tags:['인상주의','야외 풍경'],styleNote:'인상주의 화가들은 야외에서 빠르게 변하는 햇빛과 바람을 짧고 가벼운 붓질로 화면에 남겼어요.'},
-    n12:{englishTitle:'The Dream',tags:['소박파','상상 풍경','정글 회화'],styleNote:'소박파 미술은 전문적인 원근법보다 단순하고 또렷한 형태, 풍부한 상상력으로 독특한 세계를 만들어요.'}
+    n12:{englishTitle:'The Dream',tags:['소박파','상상 풍경','정글 회화'],styleNote:'소박파 미술은 전문적인 원근법보다 단순하고 또렷한 형태, 풍부한 상상력으로 독특한 세계를 만들어요.'},
+    s01:{englishTitle:'Dano Day',tags:['조선 후기','풍속화','단오'],styleNote:'조선 후기 풍속화는 사람들의 일상과 풍습을 세련된 선과 색, 재치 있는 장면 구성으로 보여 줘요.'},
+    c11:{englishTitle:'Dance at Le Moulin de la Galette',tags:['인상주의','풍속화','야외 장면'],styleNote:'인상주의 화가들은 순간적으로 변하는 빛과 색을 빠른 붓질로 포착해 생생한 현장감을 만들었어요.'},
+    s03:{englishTitle:'A Village School',tags:['조선 후기','풍속화','원형 구도'],styleNote:'김홍도는 간결한 붓질과 익살스러운 표정, 둥글게 모인 인물 배치로 평범한 일상을 한 편의 이야기로 만들었어요.'},
+    d09:{englishTitle:'Primavera (Spring)',tags:['초기 르네상스','신화화','알레고리'],styleNote:'초기 르네상스의 신화화는 고대 신과 상징을 우아한 선, 자연의 세부 묘사와 결합해 복합적인 이야기를 전해요.'},
+    s05:{englishTitle:'The Birth of Venus',tags:['초기 르네상스','신화화','템페라'],styleNote:'보티첼리는 흐르는 듯한 윤곽선과 장식적인 리듬으로 고대 신화 속 이상적인 아름다움을 표현했어요.'},
+    c10:{englishTitle:'The Swing',tags:['로코코','풍속화','움직임'],styleNote:'로코코 미술은 밝고 우아한 색, 장난스러운 몸짓과 사적인 장면으로 경쾌하고 감각적인 분위기를 만들어요.'},
+    s07:{englishTitle:'Sehando (Winterscape)',tags:['조선 후기','문인화','수묵화'],styleNote:'문인화는 그림과 글씨, 이야기와 인품을 함께 담으며 절제된 먹과 넓은 빈 공간으로 깊은 뜻을 전해요.'},
+    s08:{englishTitle:'Dream Journey to the Peach Blossom Land',tags:['조선 전기','산수화','이상향'],styleNote:'조선 전기 산수화는 산과 물의 흐름을 따라 시선을 이동시키며 현실 너머의 이상적인 세계를 펼쳐 보여 줘요.'},
+    s09:{englishTitle:'The Creation of Adam',tags:['성기 르네상스','프레스코','종교화'],styleNote:'성기 르네상스 미술은 이상적인 인체와 안정된 구도, 기념비적인 규모로 인간과 신의 관계를 웅장하게 표현했어요.'},
+    s10:{englishTitle:'A Family on the Road',tags:['한국 근대미술','가족','표현적 선'],styleNote:'이중섭은 거칠고 힘찬 선과 소박한 색으로 가족에 대한 그리움과 함께 살아가려는 마음을 솔직하게 표현했어요.'},
+    s11:{englishTitle:'A Wash Place',tags:['조선 후기','풍속화','생활 장면'],styleNote:'김홍도는 간결한 붓질과 유머러스한 관찰로 평범한 사람들의 일과 관계를 생동감 있게 포착했어요.'},
+    s12:{englishTitle:'The Angelus',tags:['사실주의','농민화','황혼 풍경'],styleNote:'사실주의 화가들은 이상화된 영웅보다 동시대 농민의 노동과 삶을 진지하게 그려 평범한 일상의 존엄을 드러냈어요.'}
   };
   const art = (id,title,artist,year,medium,size,image,docent,point,extra={}) => ({
     id,title,artist,year,medium,size,image:A+image,docent,point,type:'painting',rights:'원작 Public Domain · 교육용 이미지',source:C, ...(META[id]||{}), ...extra
@@ -82,7 +94,7 @@
         art('s07','세한도','김정희','1844년','종이에 수묵',{w:108.3,h:23.7},'s07.jpg','제주에 유배된 김정희가 어려운 때에도 귀한 책을 보내 준 제자 이상적에게 고마움을 전하려 그렸어요. 겨울에도 푸른 소나무와 잣나무에 변치 않는 마음을 담았습니다.','외딴 집과 나무, 넓은 빈 공간을 보며 두 사람이 서로에게 어떤 마음이었을지 이야기해 보세요.',{source:'https://www.museum.go.kr/MUSEUM/contents/M0501000000.do?relicRecommendId=623104&schM=view'}),
         art('s08','몽유도원도','안견','1447년','비단에 수묵담채',{w:106.5,h:38.7},'s08.jpg','꿈속에서 본 복숭아꽃 마을로 들어가는 여정을 오른쪽에서 왼쪽으로 펼쳤어요.','현실의 낮은 언덕과 꿈속의 높고 기이한 산을 비교해 보세요.'),
         art('s09','아담의 창조','미켈란젤로','1508–1512년','천장 프레스코',{w:570,h:280},'s09.jpg','거의 닿을 듯한 두 손가락 사이에 생명이 전해지는 긴장된 순간을 담았어요.','두 손 사이의 작은 빈틈이 왜 중요한지 생각해 보세요.',{type:'mural'}),
-        art('s10','길 떠나는 가족','김환기','1948년','캔버스에 유채',{w:64.5,h:29.5},'s10.jpg','단순한 사람과 소의 실루엣으로 가족이 길을 떠나는 쓸쓸한 장면을 만들었어요.','가로로 긴 화면에서 인물들이 향하는 방향을 따라가 보세요.',{rights:'© 김환기 저작권자 · 교육적 감상용',source:'https://whankimuseum.org/'}),
+        art('s10','길 떠나는 가족','이중섭','1954년','종이에 유채',{w:64.5,h:29.5},'s10.jpg','사람과 소가 한데 어울려 길을 떠나는 모습을 거칠고 따뜻한 선과 색으로 담았어요. 헤어진 가족과 다시 함께 살고 싶었던 작가의 바람이 포개져 보여요.','가로로 긴 화면에서 사람과 소가 향하는 방향, 서로 이어지는 몸짓을 따라가 보세요.',{rights:'© 이중섭 저작권자 · 교육적 감상용',source:'https://www.mmca.go.kr/exhibitions/exhibitionsDetail.do?exhId=201603150000406&menuId=1020000000'}),
         art('s11','빨래터','김홍도','18세기 후반','종이에 수묵담채',{w:22.7,h:27},'s11.jpg','냇가에서 빨래하는 사람들의 일상과 주변의 작은 사건을 익살스럽게 담았어요.','각 인물의 자세를 보고 무슨 대화를 나누는지 상상해 보세요.'),
         art('s12','만종','장프랑수아 밀레','1857–1859년','캔버스에 유채',{w:66,h:55.5},'s12.jpg','해 질 무렵 일을 멈추고 기도하는 농부 부부의 조용한 순간이에요.','밝은 하늘과 어두운 인물이 만드는 실루엣을 살펴보세요.')
       ]
