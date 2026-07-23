@@ -109,11 +109,12 @@
 
   function getDisplaySize(work) {
     const w=work.size.w||60,h=work.size.h||90,aspect=w/h;
-    // 기본 축척: 원작 1cm = 전시실 0.016 단위. 비율과 작품 사이의 크기 차이를 그대로 유지한다.
-    let dw=w*.016, dh=h*.016;
-    const minLong=.95;
+    // 원작 비율과 작품 간 크기 차이는 유지하되, 높은 전시 벽에서 너무 작아 보이지 않도록
+    // 관람용 축척과 최소 전시 크기를 적용한다.
+    let dw=w*.0215, dh=h*.0215;
+    const minLong=1.35;
     if(Math.max(dw,dh)<minLong){const grow=minLong/Math.max(dw,dh);dw*=grow;dh*=grow;}
-    const maxW=work.type==='mural'?4.7:4.2, maxH=work.type==='mural'?3.1:3.35;
+    const maxW=work.type==='mural'?4.7:4.35, maxH=3.65;
     const shrink=Math.min(1,maxW/dw,maxH/dh);dw*=shrink;dh*=shrink;
     return {w:Math.max(.32,dw),h:Math.max(.32,dh),aspect};
   }
