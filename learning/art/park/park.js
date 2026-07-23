@@ -194,7 +194,7 @@
       g.fillStyle='#b8caaf';g.font='30px sans-serif';g.fillText(subtitle,42,164);
       g.fillStyle='#dce9a6';g.fillRect(42,203,120,5);
     });
-    return new THREE.Mesh(new THREE.PlaneGeometry(width,width*.25),new THREE.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,side:THREE.DoubleSide}));
+    return new THREE.Mesh(new THREE.PlaneGeometry(width,width*.25),new THREE.MeshBasicMaterial({map:t,transparent:true,toneMapped:false,side:THREE.FrontSide}));
   }
   function makeScaleMarker(height,label) {
     const g=new THREE.Group();
@@ -225,7 +225,7 @@
     box([spec.board.w+.5,.25,.28],frameMat,g,[0,spec.board.h+.12,0]);
     box([.25,spec.board.h,.28],frameMat,g,[-spec.board.w/2-.12,spec.board.h/2+.12,0]);
     box([.25,spec.board.h,.28],frameMat,g,[spec.board.w/2+.12,spec.board.h/2+.12,0]);
-    const material=new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.DoubleSide,toneMapped:false});
+    const material=new THREE.MeshBasicMaterial({color:0xffffff,side:THREE.FrontSide,toneMapped:false});
     const photo=addMesh(new THREE.PlaneGeometry(spec.board.w,spec.board.h),material,g,[0,spec.board.h/2+.12,.19],false);
     textureLoader.load(spec.file,t=>{t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());material.map=t;material.needsUpdate=true;});
     const base=box([Math.min(spec.board.w+2,68),.34,2.2],MAT.darkStone,g,[0,.17,.28]);
