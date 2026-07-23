@@ -28,43 +28,58 @@
 
   const ROOM_QUIZZES = {
     portrait:{
-      intro:'얼굴과 자세, 빛을 얼마나 세심하게 보았는지 마지막 세 장면으로 확인해 보세요.',
+      intro:'얼굴과 자세, 빛을 얼마나 세심하게 보았는지 문제은행에서 뽑힌 세 장면으로 확인해 보세요.',
       questions:[
         {q:'〈진주 귀걸이를 한 소녀〉의 얼굴을 드러내는 빛은 주로 어느 쪽에서 올까요?',options:['화면 왼쪽 위','화면 오른쪽 아래','인물의 등 뒤'],answer:0,explain:'왼쪽 위에서 들어온 빛이 이마와 뺨, 진주를 차례로 밝혀요.'},
         {q:'윤두서의 〈자화상〉에서 화면의 긴장을 가장 강하게 만드는 부분은 무엇일까요?',options:['화려한 배경','정면을 응시하는 눈','손에 든 책'],answer:1,explain:'몸과 배경을 거의 생략하고 정면의 눈빛에 정신과 기운을 집중했어요.'},
-        {q:'〈모나리자〉의 인물이 안정적으로 보이는 데 가장 크게 기여하는 자세는 무엇일까요?',options:['가지런히 포갠 두 손','높이 든 양팔','옆으로 뻗은 다리'],answer:0,explain:'화면 아래 포개진 두 손이 피라미드형 구도를 단단하게 받쳐 줘요.'}
+        {q:'〈모나리자〉의 인물이 안정적으로 보이는 데 가장 크게 기여하는 자세는 무엇일까요?',options:['가지런히 포갠 두 손','높이 든 양팔','옆으로 뻗은 다리'],answer:0,explain:'화면 아래 포개진 두 손이 피라미드형 구도를 단단하게 받쳐 줘요.'},
+        {q:'뭉크의 〈절규〉에서 인물의 불안과 함께 흔들리는 듯 보이는 것은 무엇일까요?',options:['굽이치는 하늘과 다리','반듯한 창문 격자','고요한 흰 벽'],answer:0,explain:'하늘과 풍경의 물결치는 선이 인물의 벌어진 입과 얼굴을 둘러싸며 불안을 퍼뜨려요.'},
+        {q:'베르메르의 〈우유를 따르는 여인〉에서 실내를 밝히는 빛은 어디에서 들어올까요?',options:['왼쪽 창문','바닥 아래','여인의 등 뒤 촛불'],answer:0,explain:'화면 왼쪽 창문에서 들어온 빛이 얼굴과 빵, 우유 항아리의 질감을 드러내요.'},
+        {q:'마네의 〈피리 부는 소년〉에서 소년에게 시선을 집중시키는 배경의 특징은?',options:['장식이 가득하다','깊이감이 거의 없이 단순하다','산과 강이 멀리 펼쳐진다'],answer:1,explain:'평평하고 비어 있는 배경 덕분에 제복의 선명한 색과 소년의 윤곽이 또렷해져요.'}
       ]
     },
     nature:{
-      intro:'빛과 계절, 자연을 표현한 붓질 속에서 발견한 것을 세 가지 관찰로 되짚어 보세요.',
+      intro:'빛과 계절, 자연을 표현한 붓질 속에서 발견한 것을 매번 달라지는 세 가지 관찰로 되짚어 보세요.',
       questions:[
         {q:'반 고흐의 〈별이 빛나는 밤〉에서 밤하늘의 움직임을 만드는 핵심은 무엇일까요?',options:['곧고 얇은 격자','소용돌이치는 붓질','완전히 평평한 검정'],answer:1,explain:'굽이치며 반복되는 붓질이 별빛과 하늘 전체를 움직이는 것처럼 보여 줘요.'},
         {q:'모네의 〈수련〉 연작은 주로 어디를 바라본 시점일까요?',options:['하늘 높이 위쪽','멀리 있는 산 정상','가까운 연못 수면'],answer:2,explain:'연못을 내려다보며 물 위 수련과 하늘의 반사를 한 화면에 담았어요.'},
-        {q:'정선의 〈인왕제색도〉에서 비 갠 산의 묵직한 기운을 강조한 재료는 무엇일까요?',options:['짙고 옅은 먹','금박과 은박','파스텔 가루'],answer:0,explain:'번지고 겹쳐진 먹의 농담이 젖은 바위와 피어오르는 안개를 표현해요.'}
+        {q:'정선의 〈인왕제색도〉에서 비 갠 산의 묵직한 기운을 강조한 재료는 무엇일까요?',options:['짙고 옅은 먹','금박과 은박','파스텔 가루'],answer:0,explain:'번지고 겹쳐진 먹의 농담이 젖은 바위와 피어오르는 안개를 표현해요.'},
+        {q:'반 고흐의 〈해바라기〉에서 화면 전체를 하나로 묶는 중심 색은 무엇일까요?',options:['노랑','보라','검정'],answer:0,explain:'서로 다른 밝기와 온도의 노랑이 꽃·화병·배경에 반복되어 화면을 하나로 묶어요.'},
+        {q:'모네의 〈인상, 해돋이〉에서 푸른 안개 속 가장 강한 색의 대비를 만드는 것은?',options:['주황빛 해와 물결','검은 산봉우리','초록색 들판'],answer:0,explain:'작은 주황빛 해와 반사가 푸른 회색의 항구 안개와 보색에 가까운 대비를 만들어요.'},
+        {q:'〈호작도〉에서 좋은 소식을 전하는 존재로 여겨진 동물은 무엇일까요?',options:['호랑이','까치','거북이'],answer:1,explain:'민화에서 까치는 반가운 소식을 알리고, 익살스러운 호랑이와 재미있는 이야기를 만들어요.'}
       ]
     },
     story:{
-      intro:'장면 속 인물과 시선, 사건의 앞뒤를 떠올리며 이야기의 단서를 다시 찾아보세요.',
+      intro:'장면 속 인물과 시선, 사건의 앞뒤를 떠올리며 무작위로 뽑힌 이야기 단서를 다시 찾아보세요.',
       questions:[
         {q:'신윤복의 〈단오풍정〉에서 여러 장면을 차례로 살피게 하는 시선의 흐름은 무엇일까요?',options:['한가운데의 완전한 대칭','위아래를 오가는 지그재그','한 점에 멈춘 원'],answer:1,explain:'그네와 냇가의 여러 무리가 지그재그로 이어지며 화면 곳곳을 보게 해요.'},
         {q:'〈아담의 창조〉에서 가장 큰 긴장을 만드는 작은 공간은 어디일까요?',options:['두 손가락 사이','구름 아래의 산','화면 양끝의 벽'],answer:0,explain:'거의 닿을 듯 남겨 둔 손가락 사이의 틈이 생명이 전해질 순간을 강조해요.'},
-        {q:'김정희의 〈세한도〉에서 변치 않는 마음을 상징하는 것은 무엇일까요?',options:['활짝 핀 장미','소나무와 잣나무','화려한 궁궐'],answer:1,explain:'추운 겨울에도 푸른 나무에 어려운 때에도 변하지 않는 마음을 담았어요.'}
+        {q:'김정희의 〈세한도〉에서 변치 않는 마음을 상징하는 것은 무엇일까요?',options:['활짝 핀 장미','소나무와 잣나무','화려한 궁궐'],answer:1,explain:'추운 겨울에도 푸른 나무에 어려운 때에도 변하지 않는 마음을 담았어요.'},
+        {q:'김홍도의 〈서당〉에서 이야기의 중심이 되는 인물은 누구일까요?',options:['웃음을 참는 훈장','울고 있는 어린 학생','문밖의 장사꾼'],answer:1,explain:'꾸중을 들은 듯 눈물을 닦는 아이와 그 모습을 둘러싼 학생들의 표정이 장면의 이야기를 만들어요.'},
+        {q:'보티첼리의 〈봄〉 한가운데에서 장면의 중심을 잡는 인물은 누구일까요?',options:['비너스','갑옷 입은 장군','악기를 든 소년'],answer:0,explain:'비너스가 화면 중앙의 열린 공간에 서서 좌우로 펼쳐지는 봄의 인물들을 연결해요.'},
+        {q:'밀레의 〈만종〉에서 두 농부가 일을 멈춘 까닭으로 알맞은 것은?',options:['멀리서 들린 기도 종소리','갑자기 내린 폭우','시장으로 달려가기 위해'],answer:0,explain:'해 질 무렵 들려오는 종소리에 두 사람이 들판에서 잠시 고개를 숙인 순간이에요.'}
       ]
     },
     shape:{
-      intro:'선과 색, 반복과 변형이 어떻게 생각으로 바뀌었는지 세 가지 조형 단서로 확인해 보세요.',
+      intro:'선과 색, 반복과 변형이 어떻게 생각으로 바뀌었는지 문제은행의 세 가지 조형 단서로 확인해 보세요.',
       questions:[
         {q:'몬드리안의 화면을 나누는 두 가지 기본 방향은 무엇일까요?',options:['수직과 수평','나선과 물결','원과 타원'],answer:0,explain:'수직·수평의 검은 선과 기본색 면만으로 비대칭의 균형을 만들었어요.'},
         {q:'쇠라의 〈그랑드 자트 섬의 일요일 오후〉에서 멀리 볼수록 하나의 색처럼 섞이는 것은?',options:['작은 색점','굵은 연필선','금속 조각'],answer:0,explain:'서로 다른 순수한 색점을 나란히 찍어 관람자의 눈에서 색이 섞이게 했어요.'},
-        {q:'마그리트의 〈이미지의 배반〉이 “이것은 파이프가 아니다”라고 말하는 이유는?',options:['파이프가 너무 작아서','그림은 실제 물건이 아니어서','화가가 제목을 잊어서'],answer:1,explain:'그림 속 파이프는 실제로 사용할 수 있는 물건이 아니라 파이프의 이미지예요.'}
+        {q:'마그리트의 〈이미지의 배반〉이 “이것은 파이프가 아니다”라고 말하는 이유는?',options:['파이프가 너무 작아서','그림은 실제 물건이 아니어서','화가가 제목을 잊어서'],answer:1,explain:'그림 속 파이프는 실제로 사용할 수 있는 물건이 아니라 파이프의 이미지예요.'},
+        {q:'칸딘스키의 〈구성 VIII〉에서 화면의 리듬을 만드는 주된 요소는 무엇일까요?',options:['원·삼각형·직선 같은 기하학 형태','한 사람의 사실적인 얼굴','같은 크기의 글자'],answer:0,explain:'크기와 방향이 다른 원·선·삼각형이 음악의 음처럼 긴장과 리듬을 만들어요.'},
+        {q:'말레비치의 〈검은 사각형〉이 전통적인 그림과 가장 다른 점은?',options:['구체적인 대상을 거의 보여 주지 않는다','원근법으로 도시를 세밀하게 그린다','인물을 사진처럼 묘사한다'],answer:0,explain:'익숙한 대상을 지우고 검은 사각형이라는 가장 단순한 형태 자체에 집중했어요.'},
+        {q:'달리의 〈기억의 지속〉에서 현실을 낯설게 바꾸는 대표적인 물체는?',options:['녹아내리는 시계','곧게 선 금속 탑','커다란 유리병'],answer:0,explain:'단단해야 할 시계가 천처럼 늘어져 시간에 대한 꿈같고 불안한 상상을 만들어요.'}
       ]
     },
     space:{
-      intro:'조각의 부피와 거대한 그림 속 깊이를 몸으로 경험했는지 마지막 공간 단서를 찾아보세요.',
+      intro:'조각의 부피와 거대한 그림 속 깊이를 몸으로 경험했는지 매번 달라지는 공간 단서로 확인해 보세요.',
       questions:[
         {q:'로댕의 〈생각하는 사람〉 원작 대형 주조본의 재료는 무엇일까요?',options:['청동','종이','유리'],answer:0,explain:'거친 표면과 묵직한 근육을 청동으로 주조해 강한 에너지를 만들었어요.'},
         {q:'〈최후의 만찬〉의 원근선이 모이는 중심은 어디일까요?',options:['예수의 머리 뒤','왼쪽 문 끝','식탁 아래'],answer:0,explain:'벽과 천장의 선이 예수의 머리 뒤 소실점으로 모여 중심과 깊이를 함께 만들어요.'},
-        {q:'〈밀로의 비너스〉가 부드럽게 움직이는 것처럼 보이는 까닭은?',options:['몸 전체가 완전한 직선이라서','어깨와 골반이 반대로 기울어서','좌우가 완벽히 대칭이라서'],answer:1,explain:'한쪽 다리에 무게를 싣고 어깨와 골반을 반대로 기울인 자세가 S자 흐름을 만들어요.'}
+        {q:'〈밀로의 비너스〉가 부드럽게 움직이는 것처럼 보이는 까닭은?',options:['몸 전체가 완전한 직선이라서','어깨와 골반이 반대로 기울어서','좌우가 완벽히 대칭이라서'],answer:1,explain:'한쪽 다리에 무게를 싣고 어깨와 골반을 반대로 기울인 자세가 S자 흐름을 만들어요.'},
+        {q:'미켈란젤로의 〈다비드〉는 이야기의 어느 순간을 표현했을까요?',options:['싸움을 앞두고 긴장한 순간','승리 뒤 잠든 순간','왕관을 쓰는 순간'],answer:0,explain:'집중한 눈과 팽팽한 몸, 커다란 손이 골리앗과 맞서기 직전의 긴장을 보여 줘요.'},
+        {q:'렘브란트의 〈야경〉에서 많은 인물 사이의 깊이와 움직임을 만드는 핵심은?',options:['강한 빛과 어둠의 대비','모두 같은 자세와 크기','배경을 완전히 흰색으로 칠하기'],answer:0,explain:'선택적으로 비추는 빛이 앞뒤 인물을 나누고, 어둠 속에서 행렬이 나아오는 느낌을 만들어요.'},
+        {q:'벨라스케스의 〈시녀들〉 뒤쪽 거울에 비친 사람들은 누구일까요?',options:['왕과 왕비','화가의 두 제자','광장의 상인들'],answer:0,explain:'뒤쪽 작은 거울 속 왕과 왕비의 모습이 그림 밖 관람자의 자리까지 작품 공간에 연결해요.'}
       ]
     }
   };
@@ -115,6 +130,8 @@
   let finaleQuizRoom = null;
   let finaleQuizIndex = 0;
   let finaleQuizCorrect = 0;
+  let finaleQuizQuestions = [];
+  const finaleLastQuestionSet = {};
   let loadTotal = 12;
   let loadDone = 0;
   let roomLoadVersion = 0;
@@ -260,7 +277,7 @@
   }
 
   function showFinaleRetry(room) {
-    const total=ROOM_QUIZZES[room.id].questions.length;
+    const total=finaleQuizQuestions.length;
     finaleQuestionWrap.hidden=true;finaleComplete.hidden=false;
     document.querySelector('.curator-stamp').hidden=true;
     document.getElementById('finale-step').textContent='TRY AGAIN';
@@ -271,12 +288,12 @@
   }
 
   function renderFinaleQuestion() {
-    const set=ROOM_QUIZZES[finaleQuizRoom.id],item=set.questions[finaleQuizIndex];
+    const item=finaleQuizQuestions[finaleQuizIndex];
     finaleQuestionWrap.hidden=false;finaleComplete.hidden=true;finaleNext.hidden=true;
-    finaleNext.textContent=finaleQuizIndex===set.questions.length-1?'결과 보기':'다음 관찰로';
+    finaleNext.textContent=finaleQuizIndex===finaleQuizQuestions.length-1?'결과 보기':'다음 관찰로';
     finaleFeedback.textContent='정답이라고 생각하는 장면을 골라보세요.';finaleFeedback.className='finale-feedback';
-    document.getElementById('finale-step').textContent=`QUESTION ${String(finaleQuizIndex+1).padStart(2,'0')} / ${String(set.questions.length).padStart(2,'0')}`;
-    document.getElementById('finale-progress').style.width=`${finaleQuizIndex/set.questions.length*100}%`;
+    document.getElementById('finale-step').textContent=`QUESTION ${String(finaleQuizIndex+1).padStart(2,'0')} / ${String(finaleQuizQuestions.length).padStart(2,'0')}`;
+    document.getElementById('finale-progress').style.width=`${finaleQuizIndex/finaleQuizQuestions.length*100}%`;
     document.getElementById('finale-total').textContent=`${completedFinaleCount()} / ${rooms.length} ROOMS`;
     document.getElementById('finale-question').textContent=item.q;
     finaleOptions.replaceChildren(...item.options.map((label,index)=>{
@@ -294,6 +311,12 @@
 
   function startFinaleQuiz(room) {
     finaleQuizRoom=room;finaleQuizIndex=0;finaleQuizCorrect=0;
+    const shuffled=[...ROOM_QUIZZES[room.id].questions];
+    for(let i=shuffled.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[shuffled[i],shuffled[j]]=[shuffled[j],shuffled[i]];}
+    finaleQuizQuestions=shuffled.slice(0,3);
+    let signature=finaleQuizQuestions.map(item=>item.q).sort().join('|');
+    if(signature===finaleLastQuestionSet[room.id]&&shuffled[3]){finaleQuizQuestions[2]=shuffled[3];signature=finaleQuizQuestions.map(item=>item.q).sort().join('|');}
+    finaleLastQuestionSet[room.id]=signature;
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
     document.getElementById('finale-intro').textContent=ROOM_QUIZZES[room.id].intro;
@@ -708,7 +731,7 @@
   canvas.addEventListener('pointercancel',()=>{dragging=false;pointerDown=null;canvas.classList.remove('dragging');});
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));});
   document.getElementById('modal-close').addEventListener('click',()=>modal.close());document.getElementById('help-button').addEventListener('click',()=>helpModal.showModal());document.getElementById('help-close').addEventListener('click',()=>helpModal.close());document.getElementById('finale-close').addEventListener('click',()=>finaleModal.close());
-  finaleNext.addEventListener('click',()=>{finaleQuizIndex++;const total=ROOM_QUIZZES[finaleQuizRoom.id].questions.length;if(finaleQuizIndex>=total){if(finaleQuizCorrect===total)showFinaleCompletion(finaleQuizRoom,true);else showFinaleRetry(finaleQuizRoom);}else renderFinaleQuestion();});
+  finaleNext.addEventListener('click',()=>{finaleQuizIndex++;const total=finaleQuizQuestions.length;if(finaleQuizIndex>=total){if(finaleQuizCorrect===total)showFinaleCompletion(finaleQuizRoom,true);else showFinaleRetry(finaleQuizRoom);}else renderFinaleQuestion();});
   document.getElementById('finale-again').addEventListener('click',()=>startFinaleQuiz(finaleQuizRoom));
   for(const d of [modal,helpModal,finaleModal])d.addEventListener('click',e=>{if(e.target===d){window.ClassGameSfx?.play('click');d.close();}});
   document.querySelectorAll('.touch-controls button').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;});b.addEventListener('pointerup',()=>keys[k]=false);b.addEventListener('pointercancel',()=>keys[k]=false);});

@@ -71,15 +71,18 @@ assert.doesNotMatch(
 
 assert.match(html, /styles\.css\?v=20260724-2/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-3/);
+assert.match(html, /museum\.js\?v=20260724-4/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
 assert.match(css, /\.finale-modal/);
 assert.match(museumJs, /museumFinaleRoomsV2/);
 assert.match(museumJs, /addFinaleWall\(rooms\[index\],shell\)/);
 assert.doesNotMatch(museumJs, /userData\.finaleTexture=true/, 'generated textures must initialize userData for the bundled Three.js version');
-assert.equal((museumJs.match(/\{q:'/g)||[]).length, 15, 'five galleries should each provide three finale questions');
+assert.equal((museumJs.match(/\{q:'/g)||[]).length, 30, 'five galleries should each provide a six-question finale bank');
 assert.match(museumJs, /finaleQuizCorrect===total/, 'a stamp must require every finale answer to be correct');
 assert.match(museumJs, /showFinaleRetry\(finaleQuizRoom\)/, 'an imperfect finale attempt must end in retry instead of a stamp');
+assert.match(museumJs, /finaleQuizQuestions=shuffled\.slice\(0,3\)/, 'each finale attempt must draw only three questions from its bank');
+assert.match(museumJs, /Math\.random\(\)\*\(i\+1\)/, 'the finale question bank must be shuffled for each attempt');
+assert.match(museumJs, /signature===finaleLastQuestionSet\[room\.id\]/, 'an immediate retry must not repeat the same question set');
 
 console.log('museum-modal-contract: 60 artworks, finale missions, and responsive modal safeguards verified');
