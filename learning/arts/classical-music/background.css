@@ -7,6 +7,7 @@ body {
 
 .hero {
   background: linear-gradient(90deg, #101925d9 0%, #1721319c 46%, #1b120a59 100%);
+  min-height: clamp(320px, 44vh, 420px);
 }
 
 main {
@@ -14,8 +15,68 @@ main {
   box-shadow: 0 0 45px #120b0770;
 }
 
+@media (max-height: 900px) and (min-width: 581px) {
+  .hero {
+    min-height: clamp(300px, 42vh, 370px);
+    padding-top: 22px;
+    padding-bottom: 40px;
+  }
+
+  .eyebrow {
+    margin-top: 34px;
+  }
+
+  .hero h1 {
+    font-size: clamp(3rem, 5.6vw, 4.5rem);
+  }
+
+  .dashboard {
+    margin-top: -24px;
+  }
+
+  .dashboard > div {
+    padding: 18px 22px;
+  }
+
+  .bank {
+    margin-top: 38px;
+    margin-bottom: 46px;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 850px) {
+  nav {
+    gap: 18px;
+  }
+
+  nav a,
+  button,
+  select {
+    min-height: 44px;
+  }
+
+  nav a {
+    display: inline-flex;
+    align-items: center;
+  }
+}
+
 @media (max-width: 580px) {
   body {
     background-attachment: scroll;
+  }
+
+  .hero {
+    padding-top: 16px;
+    padding-bottom: 30px;
+  }
+
+  .eyebrow {
+    margin-top: 30px;
+  }
+
+  .lead {
+    margin-bottom: 0;
   }
 }
