@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0a09">
   <title>빛의 복도 · 어린이 미술관</title>
-  <link rel="stylesheet" href="styles.css?v=20260723-10">
+  <link rel="stylesheet" href="styles.css?v=20260724-1">
   <script src="../../../assets/sound/music-control.js?v=20260723-1" defer></script>
 </head>
 <body>
@@ -46,7 +46,7 @@
 
     <div class="crosshair" aria-hidden="true"><i></i><i></i></div>
     <div class="art-prompt" id="art-prompt" hidden>
-      <span>작품 가까이</span><b id="prompt-title"></b><small>클릭해서 감상하기</small>
+      <span id="prompt-kicker">작품 가까이</span><b id="prompt-title"></b><small id="prompt-action">클릭해서 감상하기</small>
     </div>
     <div class="room-progress"><i id="room-progress"></i></div>
 
@@ -102,6 +102,30 @@
       </div>
     </dialog>
 
+    <dialog class="finale-modal" id="finale-modal" aria-labelledby="finale-title">
+      <button class="modal-close" id="finale-close" type="button" aria-label="닫기" data-sfx="click">×</button>
+      <div class="finale-ornament" aria-hidden="true"><span>M</span></div>
+      <p class="eyebrow" id="finale-kicker">CURATOR'S FINAL WALL</p>
+      <h2 id="finale-title">관람의 마지막 장면</h2>
+      <p class="finale-intro" id="finale-intro"></p>
+      <div class="finale-status">
+        <span id="finale-step">QUESTION 01 / 03</span>
+        <i><b id="finale-progress"></b></i>
+        <span id="finale-total">0 / 5 ROOMS</span>
+      </div>
+      <section class="finale-question" id="finale-question-wrap">
+        <p id="finale-question"></p>
+        <div class="finale-options" id="finale-options"></div>
+        <p class="finale-feedback" id="finale-feedback" aria-live="polite"></p>
+        <button class="finale-next" id="finale-next" type="button" data-sfx="click" hidden>다음 관찰로</button>
+      </section>
+      <section class="finale-complete" id="finale-complete" hidden>
+        <div class="curator-stamp" aria-hidden="true"><span>CURATOR</span><b id="finale-stamp-number">01</b><small>OBSERVED</small></div>
+        <p><strong id="finale-complete-title">관찰의 눈을 얻었어요</strong><span id="finale-complete-copy"></span></p>
+        <button class="finale-next" id="finale-again" type="button" data-sfx="click">다시 풀어보기</button>
+      </section>
+    </dialog>
+
     <div class="touch-controls" aria-hidden="true">
       <button data-key="KeyW" data-sfx="none">↑</button><button data-key="KeyA" data-sfx="none">←</button>
       <button data-key="KeyS" data-sfx="none">↓</button><button data-key="KeyD" data-sfx="none">→</button>
@@ -111,6 +135,6 @@
   <script src="vendor/three.min.js"></script>
   <script src="vendor/GLTFLoader.js"></script>
   <script src="art-data.js?v=20260723-11"></script>
-  <script src="museum.js?v=20260723-33"></script>
+  <script src="museum.js?v=20260724-1"></script>
 </body>
 </html>

@@ -12,11 +12,62 @@
   const loadingText = document.getElementById('loading-text');
   const prompt = document.getElementById('art-prompt');
   const promptTitle = document.getElementById('prompt-title');
+  const promptKicker = document.getElementById('prompt-kicker');
+  const promptAction = document.getElementById('prompt-action');
   const progressEl = document.getElementById('room-progress');
   const modal = document.getElementById('art-modal');
   const helpModal = document.getElementById('help-modal');
+  const finaleModal = document.getElementById('finale-modal');
+  const finaleQuestionWrap = document.getElementById('finale-question-wrap');
+  const finaleComplete = document.getElementById('finale-complete');
+  const finaleOptions = document.getElementById('finale-options');
+  const finaleFeedback = document.getElementById('finale-feedback');
+  const finaleNext = document.getElementById('finale-next');
   const rooms = window.MUSEUM_ROOMS;
   const presenceEl = document.getElementById('class-presence');
+
+  const ROOM_QUIZZES = {
+    portrait:{
+      intro:'얼굴과 자세, 빛을 얼마나 세심하게 보았는지 마지막 세 장면으로 확인해 보세요.',
+      questions:[
+        {q:'〈진주 귀걸이를 한 소녀〉의 얼굴을 드러내는 빛은 주로 어느 쪽에서 올까요?',options:['화면 왼쪽 위','화면 오른쪽 아래','인물의 등 뒤'],answer:0,explain:'왼쪽 위에서 들어온 빛이 이마와 뺨, 진주를 차례로 밝혀요.'},
+        {q:'윤두서의 〈자화상〉에서 화면의 긴장을 가장 강하게 만드는 부분은 무엇일까요?',options:['화려한 배경','정면을 응시하는 눈','손에 든 책'],answer:1,explain:'몸과 배경을 거의 생략하고 정면의 눈빛에 정신과 기운을 집중했어요.'},
+        {q:'〈모나리자〉의 인물이 안정적으로 보이는 데 가장 크게 기여하는 자세는 무엇일까요?',options:['가지런히 포갠 두 손','높이 든 양팔','옆으로 뻗은 다리'],answer:0,explain:'화면 아래 포개진 두 손이 피라미드형 구도를 단단하게 받쳐 줘요.'}
+      ]
+    },
+    nature:{
+      intro:'빛과 계절, 자연을 표현한 붓질 속에서 발견한 것을 세 가지 관찰로 되짚어 보세요.',
+      questions:[
+        {q:'반 고흐의 〈별이 빛나는 밤〉에서 밤하늘의 움직임을 만드는 핵심은 무엇일까요?',options:['곧고 얇은 격자','소용돌이치는 붓질','완전히 평평한 검정'],answer:1,explain:'굽이치며 반복되는 붓질이 별빛과 하늘 전체를 움직이는 것처럼 보여 줘요.'},
+        {q:'모네의 〈수련〉 연작은 주로 어디를 바라본 시점일까요?',options:['하늘 높이 위쪽','멀리 있는 산 정상','가까운 연못 수면'],answer:2,explain:'연못을 내려다보며 물 위 수련과 하늘의 반사를 한 화면에 담았어요.'},
+        {q:'정선의 〈인왕제색도〉에서 비 갠 산의 묵직한 기운을 강조한 재료는 무엇일까요?',options:['짙고 옅은 먹','금박과 은박','파스텔 가루'],answer:0,explain:'번지고 겹쳐진 먹의 농담이 젖은 바위와 피어오르는 안개를 표현해요.'}
+      ]
+    },
+    story:{
+      intro:'장면 속 인물과 시선, 사건의 앞뒤를 떠올리며 이야기의 단서를 다시 찾아보세요.',
+      questions:[
+        {q:'신윤복의 〈단오풍정〉에서 여러 장면을 차례로 살피게 하는 시선의 흐름은 무엇일까요?',options:['한가운데의 완전한 대칭','위아래를 오가는 지그재그','한 점에 멈춘 원'],answer:1,explain:'그네와 냇가의 여러 무리가 지그재그로 이어지며 화면 곳곳을 보게 해요.'},
+        {q:'〈아담의 창조〉에서 가장 큰 긴장을 만드는 작은 공간은 어디일까요?',options:['두 손가락 사이','구름 아래의 산','화면 양끝의 벽'],answer:0,explain:'거의 닿을 듯 남겨 둔 손가락 사이의 틈이 생명이 전해질 순간을 강조해요.'},
+        {q:'김정희의 〈세한도〉에서 변치 않는 마음을 상징하는 것은 무엇일까요?',options:['활짝 핀 장미','소나무와 잣나무','화려한 궁궐'],answer:1,explain:'추운 겨울에도 푸른 나무에 어려운 때에도 변하지 않는 마음을 담았어요.'}
+      ]
+    },
+    shape:{
+      intro:'선과 색, 반복과 변형이 어떻게 생각으로 바뀌었는지 세 가지 조형 단서로 확인해 보세요.',
+      questions:[
+        {q:'몬드리안의 화면을 나누는 두 가지 기본 방향은 무엇일까요?',options:['수직과 수평','나선과 물결','원과 타원'],answer:0,explain:'수직·수평의 검은 선과 기본색 면만으로 비대칭의 균형을 만들었어요.'},
+        {q:'쇠라의 〈그랑드 자트 섬의 일요일 오후〉에서 멀리 볼수록 하나의 색처럼 섞이는 것은?',options:['작은 색점','굵은 연필선','금속 조각'],answer:0,explain:'서로 다른 순수한 색점을 나란히 찍어 관람자의 눈에서 색이 섞이게 했어요.'},
+        {q:'마그리트의 〈이미지의 배반〉이 “이것은 파이프가 아니다”라고 말하는 이유는?',options:['파이프가 너무 작아서','그림은 실제 물건이 아니어서','화가가 제목을 잊어서'],answer:1,explain:'그림 속 파이프는 실제로 사용할 수 있는 물건이 아니라 파이프의 이미지예요.'}
+      ]
+    },
+    space:{
+      intro:'조각의 부피와 거대한 그림 속 깊이를 몸으로 경험했는지 마지막 공간 단서를 찾아보세요.',
+      questions:[
+        {q:'로댕의 〈생각하는 사람〉 원작 대형 주조본의 재료는 무엇일까요?',options:['청동','종이','유리'],answer:0,explain:'거친 표면과 묵직한 근육을 청동으로 주조해 강한 에너지를 만들었어요.'},
+        {q:'〈최후의 만찬〉의 원근선이 모이는 중심은 어디일까요?',options:['예수의 머리 뒤','왼쪽 문 끝','식탁 아래'],answer:0,explain:'벽과 천장의 선이 예수의 머리 뒤 소실점으로 모여 중심과 깊이를 함께 만들어요.'},
+        {q:'〈밀로의 비너스〉가 부드럽게 움직이는 것처럼 보이는 까닭은?',options:['몸 전체가 완전한 직선이라서','어깨와 골반이 반대로 기울어서','좌우가 완벽히 대칭이라서'],answer:1,explain:'한쪽 다리에 무게를 싣고 어깨와 골반을 반대로 기울인 자세가 S자 흐름을 만들어요.'}
+      ]
+    }
+  };
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x191613);
@@ -60,6 +111,9 @@
   let dragging = false;
   let pointerDown = null;
   let nearest = null;
+  let finaleSurface = null;
+  let finaleQuizRoom = null;
+  let finaleQuizIndex = 0;
   let loadTotal = 12;
   let loadDone = 0;
   let roomLoadVersion = 0;
@@ -132,6 +186,109 @@
     const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=8;
     const m=new THREE.Mesh(new THREE.PlaneGeometry(width,width*168/768),new THREE.MeshBasicMaterial({map:t,toneMapped:false}));
     return m;
+  }
+
+  function readFinaleProgress() {
+    try{return JSON.parse(localStorage.getItem('museumFinaleRooms')||'{}')||{};}catch(_){return {};}
+  }
+
+  function writeFinaleProgress(progress) {
+    try{localStorage.setItem('museumFinaleRooms',JSON.stringify(progress));}catch(_){}
+  }
+
+  function finaleTexture(room) {
+    const c=document.createElement('canvas');c.width=1400;c.height=860;const g=c.getContext('2d');
+    const complete=Boolean(readFinaleProgress()[room.id]);
+    const grad=g.createRadialGradient(700,300,20,700,390,760);grad.addColorStop(0,complete?'#382b17':'#282017');grad.addColorStop(1,'#0c0b09');
+    g.fillStyle=grad;g.fillRect(0,0,c.width,c.height);
+    g.strokeStyle=complete?'#d5b565':'#806735';g.lineWidth=3;g.strokeRect(28,28,c.width-56,c.height-56);
+    g.strokeStyle='rgba(211,177,101,.23)';g.lineWidth=1;g.strokeRect(48,48,c.width-96,c.height-96);
+    g.textAlign='center';g.fillStyle='#b89954';g.font='700 22px Georgia';g.letterSpacing='8px';g.fillText("CURATOR'S FINAL WALL",700,142);
+    g.fillStyle='#eadcbf';g.font='700 82px serif';g.fillText(`${room.number}. ${room.title}`,700,282);
+    g.fillStyle='#9f917e';g.font='32px sans-serif';g.fillText(room.subtitle,700,346);
+    g.beginPath();g.arc(700,486,72,0,Math.PI*2);g.strokeStyle=complete?'#e1c778':'#9a7a3b';g.lineWidth=3;g.stroke();
+    g.beginPath();g.arc(700,486,59,0,Math.PI*2);g.strokeStyle='rgba(211,177,101,.3)';g.lineWidth=2;g.stroke();
+    g.fillStyle=complete?'#f0d88d':'#c6a55c';g.font='700 56px Georgia';g.fillText(complete?'✓':'M',700,505);
+    g.fillStyle=complete?'#dbc27c':'#d0b577';g.font='700 27px sans-serif';g.fillText(complete?'관찰 미션 완료':'관람을 마무리하는 3가지 관찰',700,628);
+    g.fillStyle='#8d806d';g.font='24px sans-serif';g.fillText(complete?'클릭하면 다시 도전할 수 있어요':'가까이에서 클릭해 어린이 큐레이터 도전을 시작하세요',700,681);
+    const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;t.anisotropy=Math.min(8,renderer.capabilities.getMaxAnisotropy());t.userData.finaleTexture=true;return t;
+  }
+
+  function addFinaleWall(room,shell) {
+    const grand=room.id==='space',panelW=grand?7.1:5.8,panelH=grand?2.45:3.65,panelY=grand?6.42:3.25,z=GALLERY_END+.38;
+    const group=new THREE.Group();gallery.add(group);
+    mesh([panelW+.62,panelH+.62,.18],materials.black,[0,panelY,z-.08],group);
+    mesh([panelW+.76,.11,.24],materials.brass,[0,panelY+(panelH+.7)/2,z],group);
+    mesh([panelW+.76,.11,.24],materials.brass,[0,panelY-(panelH+.7)/2,z],group);
+    mesh([.11,panelH+.58,.24],materials.brass,[-(panelW+.64)/2,panelY,z],group);
+    mesh([.11,panelH+.58,.24],materials.brass,[(panelW+.64)/2,panelY,z],group);
+    const mat=new THREE.MeshBasicMaterial({map:finaleTexture(room),toneMapped:false});
+    const panel=new THREE.Mesh(new THREE.PlaneGeometry(panelW,panelH),mat);panel.position.set(0,panelY,z+.13);panel.userData.finaleRoom=room;group.add(panel);clickable.push(panel);finaleSurface=panel;
+    for(const side of [-1,1]){
+      const lamp=mesh([.18,.28,.18],materials.darkBrass,[side*(panelW/2+.72),panelY+.45,z+.2],group);
+      lamp.rotation.z=side*.12;
+      const glow=new THREE.PointLight(0xffc56f,grand?26:18,4.2,2);glow.position.set(side*(panelW/2+.58),panelY+.15,z+1);gallery.add(glow);
+    }
+    const wash=new THREE.SpotLight(0xffce84,grand?62:42,8,Math.PI*.25,.75,1.5);wash.position.set(0,Math.min(shell.height-.35,panelY+2.1),z+2.5);wash.target.position.set(0,panelY,z);gallery.add(wash,wash.target);
+  }
+
+  function refreshFinaleWall() {
+    if(!finaleSurface)return;
+    const old=finaleSurface.material.map;
+    finaleSurface.material.map=finaleTexture(finaleSurface.userData.finaleRoom);
+    finaleSurface.material.needsUpdate=true;
+    if(old?.userData?.finaleTexture)old.dispose();
+  }
+
+  function completedFinaleCount() {
+    const progress=readFinaleProgress();return rooms.filter(room=>progress[room.id]).length;
+  }
+
+  function showFinaleCompletion(room,newlyCompleted=false) {
+    const progress=readFinaleProgress();progress[room.id]=true;writeFinaleProgress(progress);refreshFinaleWall();
+    finaleQuestionWrap.hidden=true;finaleComplete.hidden=false;
+    document.getElementById('finale-step').textContent='GALLERY COMPLETE';
+    document.getElementById('finale-progress').style.width='100%';
+    document.getElementById('finale-total').textContent=`${completedFinaleCount()} / ${rooms.length} ROOMS`;
+    document.getElementById('finale-stamp-number').textContent=room.number;
+    document.getElementById('finale-complete-title').textContent=newlyCompleted?'관찰의 눈을 얻었어요':'이미 획득한 큐레이터 도장이에요';
+    document.getElementById('finale-complete-copy').textContent=completedFinaleCount()===rooms.length?'다섯 전시실의 관찰을 모두 마쳤어요. 이제 이 미술관의 어린이 큐레이터입니다.':`${room.title} 전시실의 작품을 세심하게 관찰했다는 표시예요.`;
+  }
+
+  function renderFinaleQuestion() {
+    const set=ROOM_QUIZZES[finaleQuizRoom.id],item=set.questions[finaleQuizIndex];
+    finaleQuestionWrap.hidden=false;finaleComplete.hidden=true;finaleNext.hidden=true;
+    finaleFeedback.textContent='정답이라고 생각하는 장면을 골라보세요.';finaleFeedback.className='finale-feedback';
+    document.getElementById('finale-step').textContent=`QUESTION ${String(finaleQuizIndex+1).padStart(2,'0')} / ${String(set.questions.length).padStart(2,'0')}`;
+    document.getElementById('finale-progress').style.width=`${finaleQuizIndex/set.questions.length*100}%`;
+    document.getElementById('finale-total').textContent=`${completedFinaleCount()} / ${rooms.length} ROOMS`;
+    document.getElementById('finale-question').textContent=item.q;
+    finaleOptions.replaceChildren(...item.options.map((label,index)=>{
+      const button=document.createElement('button');button.type='button';button.className='finale-option';button.dataset.letter=String.fromCharCode(65+index);button.textContent=label;
+      button.addEventListener('click',()=>{
+        if(index!==item.answer){button.disabled=true;button.classList.add('wrong');finaleFeedback.textContent='조금 다르게 보였어요. 작품의 빛·선·자세를 다시 떠올려 보세요.';return;}
+        [...finaleOptions.children].forEach(option=>option.disabled=true);button.classList.add('correct');finaleFeedback.textContent=item.explain;finaleFeedback.classList.add('correct');finaleNext.hidden=false;window.ClassGameSfx?.play('card');
+      });return button;
+    }));
+  }
+
+  function startFinaleQuiz(room) {
+    finaleQuizRoom=room;finaleQuizIndex=0;
+    document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
+    document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
+    document.getElementById('finale-intro').textContent=ROOM_QUIZZES[room.id].intro;
+    renderFinaleQuestion();
+  }
+
+  function showFinale(room) {
+    window.ClassGameSfx?.play('card');keysClear();
+    document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
+    document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
+    document.getElementById('finale-intro').textContent=ROOM_QUIZZES[room.id].intro;
+    finaleQuizRoom=room;
+    if(readFinaleProgress()[room.id])showFinaleCompletion(room);
+    else startFinaleQuiz(room);
+    finaleModal.showModal();
   }
 
   function getDisplaySize(work) {
@@ -448,8 +605,10 @@
     const version=++roomLoadVersion;
     activeRoom=index;clickable.length=0;sculptureObstacles.length=0;nearest=null;prompt.hidden=true;loadDone=0;loadTotal=rooms[index].works.length;
     loading.classList.remove('done');loadingBar.style.width='0';loadingText.textContent='0%';
-    if(gallery){scene.remove(gallery);gallery.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&!Array.isArray(o.material)&&!o.material.map)o.material.dispose();});}
+    finaleSurface=null;
+    if(gallery){scene.remove(gallery);gallery.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material&&!Array.isArray(o.material)){if(o.material.map?.userData?.finaleTexture)o.material.map.dispose();o.material.dispose();}});}
     gallery=new THREE.Group();scene.add(gallery);const roomGallery=gallery,shell=buildShell(rooms[index]);
+    addFinaleWall(rooms[index],shell);
     if(rooms[index].id==='space'){
       const sculptures=rooms[index].works.filter(w=>w.type==='sculpture'), wallWorks=rooms[index].works.filter(w=>w.type!=='sculpture');
       // 광화문 해치는 실제 크기가 큰 독립 석조물이므로, 입구가 아닌
@@ -488,7 +647,7 @@
   function keysClear(){Object.keys(keys).forEach(k=>keys[k]=false);velocity.set(0,0,0);}
 
   function updateMovement(dt){
-    if(modal.open||helpModal.open)return;
+    if(modal.open||helpModal.open||finaleModal.open)return;
     let f=(keys.KeyW||keys.ArrowUp?1:0)-(keys.KeyS||keys.ArrowDown?1:0),s=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0);
     tmpDirection.set(-Math.sin(yaw),0,-Math.cos(yaw));tmpRight.set(Math.cos(yaw),0,-Math.sin(yaw));
     const wish=new THREE.Vector3().addScaledVector(tmpDirection,f).addScaledVector(tmpRight,s);if(wish.lengthSq()>0)wish.normalize();
@@ -502,7 +661,13 @@
 
   function updateFocus(){
     raycaster.setFromCamera(centerPointer,camera);const hits=raycaster.intersectObjects(clickable,false);const hit=hits.find(h=>h.distance<8.5);
-    nearest=hit?hit.object:null;prompt.hidden=!nearest;if(nearest)promptTitle.textContent=nearest.userData.work.title;
+    nearest=hit?hit.object:null;prompt.hidden=!nearest;
+    if(nearest){
+      const finaleRoom=nearest.userData.finaleRoom;
+      promptKicker.textContent=finaleRoom?'전시실 피날레':'작품 가까이';
+      promptTitle.textContent=finaleRoom?`${finaleRoom.title} · 관찰 미션`:nearest.userData.work.title;
+      promptAction.textContent=finaleRoom?'클릭해서 큐레이터 도전하기':'클릭해서 감상하기';
+    }
     for(const entry of remotePeople.values())entry.group.visible=entry.room===rooms[activeRoom].id&&!nearest;
   }
 
@@ -510,20 +675,22 @@
     const forwardX=-Math.sin(yaw),forwardZ=-Math.cos(yaw);
     selfAvatar.position.set(camera.position.x+forwardX*1.05,-.12,camera.position.z+forwardZ*1.05);
     selfAvatar.rotation.y=yaw;
-    selfAvatar.visible=!nearest&&!modal.open&&!helpModal.open;
+    selfAvatar.visible=!nearest&&!modal.open&&!helpModal.open&&!finaleModal.open;
   }
 
   function animate(){requestAnimationFrame(animate);const dt=Math.min(clock.getDelta(),.04);updateMovement(dt);updateFocus();updateSelfAvatar();sendPresence();renderer.render(scene,camera);}
 
-  addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='Escape'&&modal.open){window.ClassGameSfx?.play('click');modal.close();}if(e.code==='Enter'&&nearest&&!modal.open)showWork(nearest.userData.work,nearest.userData.room);});
+  addEventListener('keydown',e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();keys[e.code]=true;if(e.code==='Escape'){if(finaleModal.open){window.ClassGameSfx?.play('click');finaleModal.close();}else if(modal.open){window.ClassGameSfx?.play('click');modal.close();}}if(e.code==='Enter'&&nearest&&!modal.open&&!finaleModal.open){if(nearest.userData.finaleRoom)showFinale(nearest.userData.finaleRoom);else showWork(nearest.userData.work,nearest.userData.room);}});
   addEventListener('keyup',e=>{keys[e.code]=false;});
   canvas.addEventListener('pointerdown',e=>{dragging=true;pointerDown={x:e.clientX,y:e.clientY,lastX:e.clientX,lastY:e.clientY,time:performance.now()};canvas.classList.add('dragging');canvas.setPointerCapture(e.pointerId);});
   canvas.addEventListener('pointermove',e=>{if(!dragging||!pointerDown)return;const dx=e.clientX-pointerDown.lastX,dy=e.clientY-pointerDown.lastY;pointerDown.lastX=e.clientX;pointerDown.lastY=e.clientY;yaw-=dx*.0032;pitch=clamp(pitch-dy*.0025,-1.15,1.15);});
-  canvas.addEventListener('pointerup',e=>{dragging=false;canvas.classList.remove('dragging');if(!pointerDown)return;const moved=Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y);if(moved<8&&performance.now()-pointerDown.time<550){pointer.x=e.clientX/innerWidth*2-1;pointer.y=-(e.clientY/innerHeight)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(clickable,false).find(x=>x.distance<10);if(hit)showWork(hit.object.userData.work,hit.object.userData.room);}pointerDown=null;});
+  canvas.addEventListener('pointerup',e=>{dragging=false;canvas.classList.remove('dragging');if(!pointerDown)return;const moved=Math.hypot(e.clientX-pointerDown.x,e.clientY-pointerDown.y);if(moved<8&&performance.now()-pointerDown.time<550){pointer.x=e.clientX/innerWidth*2-1;pointer.y=-(e.clientY/innerHeight)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(clickable,false).find(x=>x.distance<10);if(hit){if(hit.object.userData.finaleRoom)showFinale(hit.object.userData.finaleRoom);else showWork(hit.object.userData.work,hit.object.userData.room);}}pointerDown=null;});
   canvas.addEventListener('pointercancel',()=>{dragging=false;pointerDown=null;canvas.classList.remove('dragging');});
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));});
-  document.getElementById('modal-close').addEventListener('click',()=>modal.close());document.getElementById('help-button').addEventListener('click',()=>helpModal.showModal());document.getElementById('help-close').addEventListener('click',()=>helpModal.close());
-  for(const d of [modal,helpModal])d.addEventListener('click',e=>{if(e.target===d){window.ClassGameSfx?.play('click');d.close();}});
+  document.getElementById('modal-close').addEventListener('click',()=>modal.close());document.getElementById('help-button').addEventListener('click',()=>helpModal.showModal());document.getElementById('help-close').addEventListener('click',()=>helpModal.close());document.getElementById('finale-close').addEventListener('click',()=>finaleModal.close());
+  finaleNext.addEventListener('click',()=>{finaleQuizIndex++;if(finaleQuizIndex>=ROOM_QUIZZES[finaleQuizRoom.id].questions.length)showFinaleCompletion(finaleQuizRoom,true);else renderFinaleQuestion();});
+  document.getElementById('finale-again').addEventListener('click',()=>startFinaleQuiz(finaleQuizRoom));
+  for(const d of [modal,helpModal,finaleModal])d.addEventListener('click',e=>{if(e.target===d){window.ClassGameSfx?.play('click');d.close();}});
   document.querySelectorAll('.touch-controls button').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;});b.addEventListener('pointerup',()=>keys[k]=false);b.addEventListener('pointercancel',()=>keys[k]=false);});
 
   buildTabs();setRoom(0);connectClassPresence();animate();

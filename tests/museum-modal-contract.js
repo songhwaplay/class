@@ -57,6 +57,7 @@ for (const work of works) {
 
 const css = fs.readFileSync(path.join(museumRoot, 'styles.css'), 'utf8');
 const html = fs.readFileSync(path.join(museumRoot, 'index.html'), 'utf8');
+const museumJs = fs.readFileSync(path.join(museumRoot, 'museum.js'), 'utf8');
 
 assert.match(css, /grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
 assert.match(css, /overflow-wrap:anywhere/);
@@ -68,8 +69,14 @@ assert.doesNotMatch(
   'modal tags must not use a negative margin that can hide text'
 );
 
-assert.match(html, /styles\.css\?v=20260723-10/);
+assert.match(html, /styles\.css\?v=20260724-1/);
 assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260723-33/);
+assert.match(html, /museum\.js\?v=20260724-1/);
+assert.match(html, /id="finale-modal"/);
+assert.match(html, /id="finale-options"/);
+assert.match(css, /\.finale-modal/);
+assert.match(museumJs, /museumFinaleRooms/);
+assert.match(museumJs, /addFinaleWall\(rooms\[index\],shell\)/);
+assert.equal((museumJs.match(/\{q:'/g)||[]).length, 15, 'five galleries should each provide three finale questions');
 
-console.log('museum-modal-contract: 60 artworks and responsive modal safeguards verified');
+console.log('museum-modal-contract: 60 artworks, finale missions, and responsive modal safeguards verified');
