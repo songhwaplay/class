@@ -13,6 +13,6 @@ test("production learning links remain available until Render services are live"
 test("Render blueprint contains both standalone learning services", () => {
   assert.match(renderConfig, /name: songhwaplay-arithmetic/);
   assert.match(renderConfig, /rootDir: learning\/basics\/arithmetics/);
-  assert.match(renderConfig, /name: hanguksa-hanip/);
+  assert.match(renderConfig, /name: songhwaplay-hanguksa/);
   assert.match(renderConfig, /rootDir: learning\/basics\/hanguksa-basic/);
 });

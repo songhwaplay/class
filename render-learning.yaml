@@ -15,7 +15,7 @@ services:
         value: production
 
   - type: web
-    name: hanguksa-hanip
+    name: songhwaplay-hanguksa
     runtime: node
     plan: free
     rootDir: learning/basics/hanguksa-basic
