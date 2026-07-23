@@ -31,6 +31,36 @@ const pieces = [
   ['30','modern','근현대','캐리비안의 해적 〈그는 해적이다〉','클라우스 바델트','영화 음악','관현악','6/8박자','매우 빠르게','모험적이고 박진감 있게','반복되는 추진력 있는 리듬과 금관 선율','오스티나토','짧은 리듬이나 선율을 계속 반복']
 ].map(([no,era,period,title,composer,form,lead,meter,tempo,mood,feature,concept,note])=>({no,era,period,title,composer,form,lead,meter,tempo,mood,feature,concept,note,url:`https://www.youtube.com/results?search_query=${encodeURIComponent(`${composer} ${title}`)}`}));
 
+const originalTitles=[
+  'Le quattro stagioni: “La primavera”, I','Air from Orchestral Suite No. 3 in D major','Brandenburg Concerto No. 5 in D major, I','Water Music: “Alla Hornpipe”','Canon in D major',
+  'Symphony No. 5 in C minor, I','Symphony No. 9 in D minor, IV','Eine kleine Nachtmusik, I','12 Variations on “Ah vous dirai-je, Maman”','Symphony No. 94 “Surprise”, II',
+  'Trumpet Concerto in E-flat major, III','Guillaume Tell Overture: Finale','Piano Quintet in A major “Trout”, IV','Erlkönig, D 328','Nocturne in E-flat major, Op. 9 No. 2',
+  'Hungarian Dance No. 5','The Nutcracker: “Waltz of the Flowers”','Swan Lake: “Scene”','Le Carnaval des animaux: “Le Cygne”','Pictures at an Exhibition: “The Great Gate of Kyiv”',
+  'Symphony No. 9 “From the New World”, II','Boléro','Prélude à l’après-midi d’un faune','The Planets: “Jupiter, the Bringer of Jollity”','Peter and the Wolf, Op. 67',
+  'The Young Person’s Guide to the Orchestra','Rhapsody in Blue','Arirang Fantasy','Korea Fantasy','Pirates of the Caribbean: “He’s a Pirate”'
+];
+const composerOriginal={
+  '비발디':'Antonio Vivaldi','바흐':'Johann Sebastian Bach','헨델':'George Frideric Handel','파헬벨':'Johann Pachelbel','베토벤':'Ludwig van Beethoven','모차르트':'Wolfgang Amadeus Mozart',
+  '하이든':'Joseph Haydn','로시니':'Gioachino Rossini','슈베르트':'Franz Schubert','쇼팽':'Frédéric Chopin','브람스':'Johannes Brahms','차이콥스키':'Pyotr Ilyich Tchaikovsky',
+  '생상스':'Camille Saint-Saëns','무소륵스키':'Modest Mussorgsky','드보르자크':'Antonín Dvořák','라벨':'Maurice Ravel','드뷔시':'Claude Debussy','홀스트':'Gustav Holst',
+  '프로코피예프':'Sergei Prokofiev','브리튼':'Benjamin Britten','거슈윈':'George Gershwin','최성환':'Choi Seong-hwan','안익태':'Ahn Eak-tai','클라우스 바델트':'Klaus Badelt'
+};
+const paired=(ko,foreign)=>`${ko} (${foreign})`;
+const termMaps={
+  period:{'바로크':paired('바로크','Baroque'),'고전':paired('고전','Classical'),'낭만':paired('낭만','Romantic'),'근현대':paired('근현대','Modern & Contemporary')},
+  form:{'협주곡':paired('협주곡','concerto'),'관현악 모음곡':paired('관현악 모음곡','orchestral suite'),'합주 협주곡':paired('합주 협주곡','concerto grosso'),'캐논':paired('캐논','canon'),'교향곡':paired('교향곡','symphony'),'세레나데':paired('세레나데','serenade'),'변주곡':paired('변주곡','variations'),'서곡':paired('서곡','overture'),'예술가곡':paired('예술가곡','Lied / art song'),'녹턴':paired('녹턴','nocturne'),'무곡':paired('무곡','dance'),'발레 음악':paired('발레 음악','ballet music'),'모음곡':paired('모음곡','suite'),'교향시':paired('교향시','symphonic poem'),'음악 동화':paired('음악 동화','musical tale'),'변주곡과 푸가':paired('변주곡과 푸가','variations and fugue'),'랩소디':paired('랩소디','rhapsody'),'관현악 환상곡':paired('관현악 환상곡','orchestral fantasia'),'교향적 환상곡':paired('교향적 환상곡','symphonic fantasia'),'영화 음악':paired('영화 음악','film music')},
+  tempo:{'매우 빠르게':paired('매우 빠르게','Presto'),'빠르게':paired('빠르게','Allegro'),'보통 빠르게':paired('보통 빠르기로','Moderato'),'느리게':paired('느리게','Adagio'),'매우 느리게':paired('매우 느리게','Lento'),'장엄하게':paired('장엄하게','Maestoso'),'느리게 시작해 빨라짐':'느리게에서 빠르게 (Lento → Allegro)','빠르기의 변화가 큼':paired('빠르기를 유연하게','tempo rubato')},
+  meter:{'4박자':paired('4박자','quadruple meter'),'3박자':paired('3박자','triple meter'),'2박자':paired('2박자','duple meter'),'6/4박자':paired('6/4박자','compound duple meter'),'6/8박자':paired('6/8박자','compound duple meter'),'자유로운 박자':paired('자유로운 박자','free meter')},
+  concept:{'표제 음악':paired('표제 음악','program music'),'선율':paired('선율','melody'),'합주 협주곡':paired('합주 협주곡','concerto grosso'),'모음곡':paired('모음곡','suite'),'돌림노래 원리':paired('돌림노래 원리','canon'),'동기':paired('동기','motif'),'주제':paired('주제','theme'),'소나타 형식':paired('소나타 형식','sonata form'),'변주':paired('변주','variation'),'셈여림':paired('셈여림','dynamics'),'협주':paired('협주','concerto'),'서곡':paired('서곡','overture'),'실내악':paired('실내악','chamber music'),'예술가곡':paired('예술가곡','Lied / art song'),'루바토':paired('루바토','rubato'),'아고기크':paired('아고기크','agogics'),'왈츠':paired('왈츠','waltz'),'발레 음악':paired('발레 음악','ballet music'),'음색':paired('음색','timbre'),'민족주의 음악':paired('민족주의 음악','musical nationalism'),'크레셴도':paired('크레셴도','crescendo'),'인상주의':paired('인상주의','Impressionism'),'관현악법':paired('관현악법','orchestration'),'라이트모티프':paired('라이트모티프','Leitmotiv'),'푸가':paired('푸가','fugue'),'글리산도':paired('글리산도','glissando'),'환상곡':paired('환상곡','fantasia'),'오스티나토':paired('오스티나토','ostinato')}
+};
+const instrumentOriginal={'바이올린':'violin','현악 합주':'string ensemble','하프시코드':'harpsichord','금관악기':'brass instruments','관현악':'orchestra','합창과 관현악':'chorus & orchestra','피아노':'piano','트럼펫':'trumpet','피아노와 현악기':'piano & strings','성악과 피아노':'voice & piano','관현악과 하프':'orchestra & harp','오보에와 관현악':'oboe & orchestra','첼로와 피아노':'cello & piano','잉글리시 호른':'English horn','스네어드럼과 관현악':'snare drum & orchestra','플루트':'flute','관현악과 해설':'orchestra & narrator'};
+pieces.forEach((p,i)=>{
+  p.originalTitle=originalTitles[i];
+  p.composer=paired(p.composer,composerOriginal[p.composer]);
+  ['period','form','tempo','meter','concept'].forEach(key=>{p[key]=termMaps[key][p[key]]||p[key]});
+  p.lead=instrumentOriginal[p.lead]?paired(p.lead,instrumentOriginal[p.lead]):p.lead;
+});
+
 const levels=['입문','입문','입문','기본','기본','기본','기본','도전','도전','도전'];
 const templates=[
   ['이 곡의 작곡가는 누구일까요?','composer'],
@@ -49,7 +79,7 @@ const pickWrong=(key,answer,seed)=>{const pool=values(key).filter(x=>x!==answer)
 const shuffle=(arr)=>arr.map(v=>({v,r:Math.random()})).sort((a,b)=>a.r-b.r).map(x=>x.v);
 const allQuestions=pieces.flatMap((p,pi)=>templates.map(([stem,key],ti)=>{
   const answer=p[key], choices=shuffle([answer,...pickWrong(key,answer,pi*11+ti)]);
-  return {id:`${p.no}-${ti+1}`,piece:p,level:levels[ti],stem:`${p.title} — ${stem}`,choices,correct:choices.indexOf(answer),answer,explain:`${p.title}: ${key==='note'?p.note:`${answer}. ${p.note}`}`};
+  return {id:`${p.no}-${ti+1}`,piece:p,level:levels[ti],stem:`${p.title} (${p.originalTitle}) — ${stem}`,choices,correct:choices.indexOf(answer),answer,explain:`${p.title}: ${key==='note'?p.note:`${answer}. ${p.note}`}`};
 }));
 
 const $=s=>document.querySelector(s);
@@ -57,7 +87,7 @@ const playlist=$('#playlist');
 function renderPieces(filter='all'){
   playlist.innerHTML=pieces.filter(p=>filter==='all'||p.era===filter).map(p=>`<article class="piece" data-no="${p.no}">
     <div class="piece-top"><span class="era">${p.period}</span><span>${p.form}</span></div>
-    <h3>${p.title}</h3><p class="composer">${p.composer}</p>
+    <h3>${p.title}</h3><p class="composer original-title">${p.originalTitle}</p><p class="composer">${p.composer}</p>
     <a class="listen" href="${p.url}" target="_blank" rel="noopener">▶ 감상곡 찾아 듣기</a>
     <dl><div><dt>주요 악기</dt><dd>${p.lead}</dd></div><div><dt>빠르기·박자</dt><dd>${p.tempo} · ${p.meter}</dd></div></dl>
     <p class="listen-point"><b>귀 기울일 곳</b>${p.feature}</p><p class="note"><b>${p.concept}</b> · ${p.note}</p>
