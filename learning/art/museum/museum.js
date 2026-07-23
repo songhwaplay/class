@@ -455,7 +455,7 @@
       // 광화문 해치는 실제 크기가 큰 독립 석조물이므로, 입구가 아닌
       // 전시실 맨뒤의 넓은 중앙 공간에 둔다.
       sculptures.forEach((w,i)=>addSculpture(w,i,w.id==='d13'?GALLERY_END+4.6:1-i*4.85,version,roomGallery));
-      wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*8.8,shell.width,version,roomGallery));
+      wallWorks.forEach((w,i)=>addFramedWork(w,i+sculptures.length,i%2===0?-1:1,-2-Math.floor(i/2)*7.1,shell.width,version,roomGallery));
     }else{
       rooms[index].works.forEach((w,i)=>addFramedWork(w,i,i%2===0?-1:1,1-Math.floor(i/2)*5.15,shell.width,version,roomGallery));
     }
