@@ -18,6 +18,10 @@ test("menu-specific asset groups live with their menu", () => {
     "learning/art/assets/images/k1.jpg",
     "learning/art/assets/sound/art-appreciation.mp3",
     "learning/art/assets/sound/art-museum.mp3",
+    "learning/games/omok/assets/images/background.webp",
+    "learning/games/omok/assets/sound/bgm.mp3",
+    "learning/games/connect6/assets/images/background.webp",
+    "learning/games/connect6/assets/sound/bgm.mp3",
   ];
 
   for (const relativePath of expected) {
@@ -30,6 +34,8 @@ test("moved menu assets have no references to their former root locations", () =
     read("learning/basics/vocabulary/app.js"),
     read("learning/art/index.html"),
     read("learning/art/museum/index.html"),
+    read("learning/games/omok/omok.html"),
+    read("learning/games/connect6/connect6.html"),
     ...fs
       .readdirSync(path.join(root, "learning/simulations/body-explorer"))
       .filter((name) => /\.(?:css|html|js)$/.test(name))
@@ -41,6 +47,7 @@ test("moved menu assets have no references to their former root locations", () =
   assert.doesNotMatch(sources, /(?:\.\.\/){3}assets\/images\/body-explorer\//);
   assert.doesNotMatch(sources, /(?:\.\.\/){2}assets\/images\/art\//);
   assert.doesNotMatch(sources, /(?:\.\.\/){2,3}assets\/sound\/art-(?:appreciation|museum)\.mp3/);
+  assert.doesNotMatch(sources, /\/assets\/(?:images|sound)\/stone-board/);
 });
 
 test("relocated static asset URLs resolve to files in the repository", () => {
