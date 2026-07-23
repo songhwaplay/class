@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0b0a09">
+  <title>빛의 복도 · 어린이 디지털 명화 미술관</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="app" aria-label="3D 디지털 명화 미술관">
+    <canvas id="museum-canvas" aria-label="마우스와 키보드로 둘러보는 3D 전시실"></canvas>
+
+    <header class="topbar">
+      <a class="brand" href="../index.html" aria-label="명화 감상으로 돌아가기">
+        <span class="brand-mark" aria-hidden="true">M</span>
+        <span><b>빛의 복도</b><small>어린이 디지털 명화 미술관</small></span>
+      </a>
+      <div class="room-heading" aria-live="polite">
+        <span id="room-kicker">GALLERY 01</span>
+        <strong id="room-title">인물</strong>
+        <span id="room-count">12 WORKS</span>
+      </div>
+      <button class="help-button" id="help-button" type="button" aria-label="관람 방법 보기">?</button>
+    </header>
+
+    <nav class="room-tabs" id="room-tabs" aria-label="전시실 선택"></nav>
+
+    <section class="hud" aria-label="관람 안내">
+      <div class="hud-keyboard">
+        <span class="key">W</span>
+        <span class="key">A</span>
+        <span class="key">S</span>
+        <span class="key">D</span>
+        <p><b>빠르게 걸어보기</b><small>방향키 · Shift를 누르면 달리기</small></p>
+      </div>
+      <div class="hud-mouse">
+        <span aria-hidden="true">↔</span>
+        <p><b>둘러보기</b><small>화면을 누른 채 드래그</small></p>
+      </div>
+    </section>
+
+    <div class="crosshair" aria-hidden="true"><i></i><i></i></div>
+    <div class="art-prompt" id="art-prompt" hidden>
+      <span>작품 가까이</span><b id="prompt-title"></b><small>클릭해서 감상하기</small>
+    </div>
+    <div class="room-progress"><i id="room-progress"></i></div>
+
+    <div class="loading" id="loading" role="status">
+      <div class="loading-emblem">M</div>
+      <p>전시실의 불을 켜고 있어요</p>
+      <div><i id="loading-bar"></i></div>
+      <small id="loading-text">0%</small>
+    </div>
+
+    <dialog class="art-modal" id="art-modal">
+      <button class="modal-close" id="modal-close" type="button" aria-label="닫기">×</button>
+      <div class="modal-image-wrap">
+        <img id="modal-image" alt="">
+        <span id="modal-type">PAINTING</span>
+      </div>
+      <article>
+        <p class="modal-room" id="modal-room"></p>
+        <h2 id="modal-title"></h2>
+        <p class="modal-artist" id="modal-artist"></p>
+        <dl class="facts">
+          <div><dt>제작 시기</dt><dd id="modal-year"></dd></div>
+          <div><dt>재료</dt><dd id="modal-medium"></dd></div>
+          <div><dt>원작 크기</dt><dd id="modal-size"></dd></div>
+        </dl>
+        <section class="docent-card">
+          <span>어린이 도슨트</span>
+          <p id="modal-docent"></p>
+        </section>
+        <section class="look-card">
+          <span>관람 포인트</span>
+          <p id="modal-point"></p>
+        </section>
+        <footer>
+          <span id="modal-rights"></span>
+          <a id="modal-source" href="#" target="_blank" rel="noopener">작품 정보 출처 ↗</a>
+        </footer>
+      </article>
+    </dialog>
+
+    <dialog class="help-modal" id="help-modal">
+      <button class="modal-close" id="help-close" type="button" aria-label="닫기">×</button>
+      <p class="eyebrow">HOW TO EXPLORE</p>
+      <h2>천천히 걸으며 감상해요</h2>
+      <div class="help-grid">
+        <div><b>01</b><strong>걷기와 달리기</strong><p>WASD 또는 방향키로 움직이고, Shift를 함께 누르면 더 빠르게 달려요.</p></div>
+        <div><b>02</b><strong>둘러보기</strong><p>마우스를 누른 채 움직이면 360도로 볼 수 있어요.</p></div>
+        <div><b>03</b><strong>감상하기</strong><p>빛나는 작품을 클릭하면 자세한 이야기가 열려요.</p></div>
+      </div>
+    </dialog>
+
+    <div class="touch-controls" aria-hidden="true">
+      <button data-key="KeyW">↑</button><button data-key="KeyA">←</button>
+      <button data-key="KeyS">↓</button><button data-key="KeyD">→</button>
+    </div>
+    <div class="vignette" aria-hidden="true"></div>
+  </main>
+  <script src="vendor/three.min.js"></script>
+  <script src="art-data.js"></script>
+  <script src="museum.js"></script>
+</body>
+</html>

@@ -91,6 +91,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
         }
 
         .mode-btn:hover {
@@ -512,6 +513,7 @@
         <button class="mode-btn" id="btnModeQuiz" type="button">
             ❓ 2. 명화 퀴즈
         </button>
+        <a class="mode-btn" href="./museum/">🏛️ 3. 3D 박물관 탐험</a>
     </nav>
 
     <main class="container">
@@ -641,12 +643,12 @@
                 { id: 'i4', cat: 'impression', title: '자화상', eng: 'Self-Portrait', artist: '빈센트 반 고흐', year: '1889년', img: '../../assets/images/art/i4.jpg', tip: '고흐의 푸른 눈빛과 배경의 소용돌이치는 청록색 붓질을 관찰하세요.', story: '자신의 내면과 영혼을 있는 그대로 화폭에 담은 반 고흐의 대표 자화상입니다.', dTitle: ["화가의 얼굴", "붉은 수염의 남자", "거울 속의 화가"], dArtist: ["조르주 쇠라", "폴 세잔", "피에르 오귀스트 르누아르"], dEng: ["The Red-Bearded Painter", "Face in the Mirror", "Portrait of the Artist"] },
                 { id: 'i5', cat: 'impression', title: '인상, 해돋이', eng: 'Impression, Sunrise', artist: '클로드 모네', year: '1872년', img: '../../assets/images/art/i5.jpg', tip: '붉은 붉은 태양이 바다 물결에 반사되어 번지는 빛의 찰나를 보세요.', story: '바로 이 그림의 제목에서 "인상파(Impressionism)"라는 미술 사조의 이름이 시작되었습니다!', dTitle: ["안개 속 해돋이", "붉은 해의 항구", "새벽의 인상"], dArtist: ["장 프랑수아 밀레", "에드가 드가", "오귀스트 로댕"], dEng: ["Harbor at Dawn", "Morning Through Mist", "The Orange Sun"] },
                 { id: 'i6', cat: 'impression', title: '양산을 든 여인', eng: 'Woman with a Parasol', artist: '클로드 모네', year: '1875년', img: '../../assets/images/art/i6.jpg', tip: '바람에 날리는 여인의 옷자락과 아들의 모습을 눈부신 햇살 속에서 찾아보세요.', story: '사랑하는 아내 카미유와 아들 장이 언덕 위에서 바람을 맞이하는 따스한 순간의 빛을 그렸습니다.', dTitle: ["바람 속의 여인", "언덕 위의 양산", "구름 아래 산책"], dArtist: ["폴 세잔", "피에르 오귀스트 르누아르", "빈센트 반 고흐"], dEng: ["Wind on the Hill", "A Walk beneath Clouds", "The Lady in the Breeze"] },
-                { id: 'i7', cat: 'impression', title: '수련', eng: 'Water Lilies', artist: '클로드 모네', year: '1916년', img: '../../assets/images/art/i7.jpg', tip: '연못 연못에 반사된 하늘과 연꽃 수련의 잔물결을 확대해 보세요.', story: '지베르니 정원에서 평생 시력을 잃어가면서도 연못 수련을 관찰하며 빛을 그린 모네의 대작입니다.', dTitle: ["물 위의 꽃", "연못의 정원", "수면의 꽃들"], dArtist: ["에드가 드가", "오귀스트 로댕", "조르주 쇠라"], dEng: ["Garden on the Water", "Flowers of the Pond", "Reflections in Bloom"] },
+                { id: 'i7', cat: 'impression', title: '수련', eng: 'Water Lilies', artist: '클로드 모네', year: '1914–1926년', img: '../../assets/images/art/i7.jpg', tip: '세 폭 전체에 이어지는 수면과 구름의 반사, 수련의 잔물결을 확대해 보세요.', story: '모네가 지베르니의 수련 연못을 몰입형 공간처럼 감싸도록 제작한 세 폭짜리 대형 연작입니다.', dTitle: ["물 위의 꽃", "연못의 정원", "수면의 꽃들"], dArtist: ["에드가 드가", "오귀스트 로댕", "조르주 쇠라"], dEng: ["Garden on the Water", "Flowers of the Pond", "Reflections in Bloom"] },
                 { id: 'i8', cat: 'impression', title: '그랑드 자트 섬의 일요일 오후', eng: 'A Sunday on La Grande Jatte', artist: '조르주 쇠라', year: '1886년', img: '../../assets/images/art/i8.jpg', tip: '돋보기로 원숭이와 사람 옷을 확대해 보세요! 선이 아니라 수억 개의 "점(점묘법)"으로 그려졌어요!', story: '물감을 섞지 않고 순수한 점을 찍어 빛을 만든 신인상주의 점묘법의 위대한 명작입니다.', dTitle: ["섬의 일요일", "공원의 오후", "점으로 그린 휴일"], dArtist: ["피에르 오귀스트 르누아르", "빈센트 반 고흐", "장 프랑수아 밀레"], dEng: ["Sunday in the Park", "People by the River", "An Afternoon of Dots"] },
                 { id: 'i9', cat: 'impression', title: '이삭 줍는 사람들', eng: 'The Gleaners', artist: '장 앙리 밀레', year: '1857년', img: '../../assets/images/art/i9.jpg', tip: '수확이 끝난 들판에서 남아있는 이삭을 줍는 세 여인의 고단하지만 숭고한 모습을 관찰하세요.', story: '농민들의 솔직하고 정직한 삶을 따스한 대지의 색감으로 담아낸 사실주의 명작입니다.', dTitle: ["들판의 세 여인", "남은 곡식", "수확 뒤의 사람들"], dArtist: ["오귀스트 로댕", "클로드 모네", "폴 세잔"], dEng: ["Women after Harvest", "Gathering the Field", "The Last Grain"] },
                 { id: 'i10', cat: 'impression', title: '만종', eng: 'The Angelus', artist: '장 앙리 밀레', year: '1859년', img: '../../assets/images/art/i10.jpg', tip: '저녁 종소리에 맞춰 감사 기도를 드리는 두 부부의 모습을 보세요.', story: '하루 일을 마치고 감자의 감사 기도를 올리는 평화롭고 거룩한 농촌의 서정을 표현했습니다.', dTitle: ["저녁 기도", "종소리의 들판", "기도하는 농부"], dArtist: ["빈센트 반 고흐", "조르주 쇠라", "에드가 드가"], dEng: ["Prayer at Dusk", "The Bell across the Field", "Evening in the Farmland"] },
                 { id: 'i11', cat: 'impression', title: '사과와 오렌지', eng: 'Apples and Oranges', artist: '폴 세잔', year: '1899년', img: '../../assets/images/art/i11.jpg', tip: '탁자 위 과일들이 약간 비스듬하게 각기 다른 각도(다점 시점)에서 관찰되는 것을 찾아보세요.', story: '피카소 입체파의 아버지라 불리는 세잔이 과일의 본질적인 형태와 구형을 세련되게 담아낸 정물화 명작입니다.', dTitle: ["과일이 있는 식탁", "사과와 귤", "붉은 과일과 노란 과일"], dArtist: ["클로드 모네", "장 프랑수아 밀레", "피에르 오귀스트 르누아르"], dEng: ["Fruit on a Cloth", "The Table of Fruit", "Red and Golden Fruit"] },
-                { id: 'i12', cat: 'impression', title: '무대 위의 무희', eng: 'Swaying Dancer', artist: '에드가 드가', year: '1878년', img: '../../assets/images/art/i12.jpg', tip: '순간 포착 카메라 프레임처럼 생동감 넘치는 발레리나들의 움직임을 보세요.', story: '발레리나들의 무대 뒤와 순간적인 포즈를 화려하고 순간적인 구도로 그렸습니다.', dTitle: ["무대의 발레리나", "춤추는 소녀", "조명 아래 무희"], dArtist: ["조르주 쇠라", "폴 세잔", "오귀스트 로댕"], dEng: ["Ballerina in the Light", "The Dancer's Moment", "Performance in Pink"] },
+                { id: 'i12', cat: 'impression', title: '흔들리는 무희 (초록 옷의 무희)', eng: 'Swaying Dancer (Dancer in Green)', artist: '에드가 드가', year: '1877–1879년', img: '../../assets/images/art/i12.jpg', tip: '위에서 내려다본 듯한 구도와 초록색 의상으로 이어지는 무희들의 움직임을 보세요.', story: '파스텔과 과슈로 무대 위 무희들의 순간적인 동작을 비대칭 구도와 대담한 시점으로 포착한 작품입니다.', dTitle: ["무대의 발레리나", "춤추는 소녀", "조명 아래 무희"], dArtist: ["조르주 쇠라", "폴 세잔", "오귀스트 로댕"], dEng: ["Ballerina in the Light", "The Dancer's Moment", "Performance in Pink"] },
                 { id: 'i13', cat: 'impression', title: '물랭 드 라 갈레트의 무도회', eng: 'Dance at Le Moulin de la Galette', artist: '오귀스트 르누아르', year: '1876년', img: '../../assets/images/art/i13.jpg', tip: '나뭇잎 사이로 내리쬐는 반짝이는 햇살이 사람들의 옷과 얼굴에 일렁이는 모습을 보세요.', story: '파리 야외 무도회장에서 사람들의 웃음 소리와 행복한 빛을 담아낸 인상파의 밝은 명화입니다.', dTitle: ["파리의 무도회", "야외의 춤", "햇살 속의 파티"], dArtist: ["장 프랑수아 밀레", "에드가 드가", "빈센트 반 고흐"], dEng: ["Paris in Celebration", "Dance under the Trees", "A Sunny Gathering"] },
                 { id: 'i14', cat: 'impression', title: '생각하는 사람', eng: 'The Thinker', artist: '오귀스트 로댕', year: '1904년 (조각)', img: '../../assets/images/art/i14.jpg', tip: '턱을 괴고 온몸의 근육을 굳히며 깊은 생각에 잠긴 남성의 근육 선을 보세요.', story: '세계에서 가장 인지도 높은 조각상으로, 지옥의 문 앞에서 인간의 삶과 고민을 깊이 탐구하는 모습을 형상화했습니다.', dTitle: ["깊은 생각", "앉아 있는 철학자", "고민하는 조각상"], dArtist: ["폴 세잔", "피에르 오귀스트 르누아르", "클로드 모네"], dEng: ["Seated in Silence", "Bronze in Thought", "The Solitary Figure"] },
 
@@ -664,6 +666,30 @@
                 { id: 's11', cat: 'surreal', title: '빨강, 파랑, 노랑의 구성', eng: 'Composition with Red, Blue and Yellow', artist: '피에트 몬드리안', year: '1930년', img: '../../assets/images/art/s11.jpg', tip: '검은 수직·수평선과 삼원색(빨강, 노랑, 파랑)의 비율 균형을 느껴보세요.', story: '불필요한 묘사를 모두 없애고 가장 순수한 선과 색으로 세상의 질서와 균형을 표현한 기하학적 추상화의 정수입니다.', dTitle: ["세 가지 색의 구성", "선과 색의 구성", "빨강과 파랑의 질서"], dArtist: ["파블로 피카소", "앙리 루소", "살바도르 달리"], dEng: ["Grid of Primary Colors", "Lines in Balance", "Red, Blue, and Order"] },
                 { id: 's12', cat: 'surreal', title: '구성 VIII', eng: 'Composition VIII', artist: '바실리 칸딘스키', year: '1923년', img: '../../assets/images/art/s12.jpg', tip: '동그라미, 세모, 선들이 음악 리듬처럼 오케스트라 연주를 하는 듯한 느낌을 관찰하세요.', story: '추상미술의 아버지 칸딘스키가 음악 소리를 눈에 보이는 그림 형태로 시각화한 순수 서정 추상명작입니다.', dTitle: ["도형의 구성", "원과 선의 구성", "기하학적 리듬"], dArtist: ["앙리 마티스", "피에트 몬드리안", "르네 마그리트"], dEng: ["Circles and Lines", "Geometry in Motion", "Rhythm of Shapes"] }
             ];
+
+            // 작품면 기준 실제 크기: width × height, cm. 전시 액자 비율과 상대 크기에 사용합니다.
+            const ARTWORK_DIMENSIONS_CM = {
+                k1:[22.7,27], k2:[22.7,27], k3:[22.7,27], k4:[35.2,28.2],
+                k5:[45.5,114], k6:[28,34], k7:[41.7,29.5], k8:[64.5,29.5],
+                k9:[20.5,38.5], k10:[138.2,79.2], k11:[108.3,23.7], k12:[106.5,38.7],
+                r1:[53,77], r2:[880,460], r3:[570,280], r4:[278.9,172.5],
+                r5:[39,44.5], r6:[41,45.5], r7:[453.5,379.5], r8:[276,318],
+                r9:[770,500], r10:[51,67], r11:[64.2,81], r12:[314,203],
+                i1:[92.1,73.7], i2:[73,92.1], i3:[91.3,72.4], i4:[54,65],
+                i5:[63,48], i6:[81,100], i7:[1276,200], i8:[308,207.6],
+                i9:[111,83.5], i10:[66,55.5], i11:[93,74], i12:[36,64],
+                i13:[175,131], i14:[98,186],
+                s1:[33,24.1], s2:[100,81], s3:[81.1,60.3], s4:[151.4,192.1],
+                s5:[73.5,91], s6:[180,180], s7:[50,60.8], s8:[233.7,243.9],
+                s9:[391,260], s10:[298.5,204.5], s11:[59.5,59.5], s12:[201,140]
+            };
+            MASTERPIECES.forEach(work => {
+                const dimensions = ARTWORK_DIMENSIONS_CM[work.id];
+                if (!dimensions) return;
+                work.physicalWidth = dimensions[0];
+                work.physicalHeight = dimensions[1];
+                work.sizeLabel = `${dimensions[0]} × ${dimensions[1]}cm`;
+            });
 
             // UI Elements
             const btnModeGallery = document.getElementById('btnModeGallery');
@@ -719,7 +745,7 @@
                         <div class="art-info">
                             <div>
                                 <h3 class="art-title">${m.title} <small style="display:block; font-size:0.78em; color:var(--gold-light); font-weight:normal; opacity:0.85; margin-top:2px;">(${m.eng})</small></h3>
-                                <div class="art-artist">${m.artist} (${m.year})</div>
+                                <div class="art-artist">${m.artist} (${m.year}) · ${m.sizeLabel || '크기 미상'}</div>
                             </div>
                             <div class="art-desc-preview">${m.tip}</div>
                         </div>
@@ -758,7 +784,7 @@
                 playSfx('card');
                 modalTag.textContent = getCatName(item.cat);
                 modalTitle.innerHTML = `${item.title} <span style="display:block; font-size:0.65em; color:var(--gold-light); font-weight:normal; opacity:0.85; margin-top:4px;">${item.eng}</span>`;
-                modalMeta.textContent = `${item.artist} · ${item.year}`;
+                modalMeta.textContent = `${item.artist} · ${item.year}${item.sizeLabel ? ` · 작품 크기 ${item.sizeLabel}` : ''}`;
                 modalTip.textContent = item.tip;
                 modalStory.textContent = item.story;
 
@@ -905,7 +931,6 @@
                 
                 viewGallery.classList.add('hidden');
                 viewQuiz.classList.remove('hidden');
-
                 btnModeGallery.classList.remove('active');
                 btnModeQuiz.classList.add('active');
 
@@ -1010,6 +1035,11 @@
 
             // Initial Execution
             renderGallery();
+            window.ART_MASTERPIECES = MASTERPIECES;
+            window.openMuseumArtwork = id => {
+                const work = MASTERPIECES.find(item => item.id === id);
+                if (work) openDocentModal(work);
+            };
         })();
     </script>
 </body>
