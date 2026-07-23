@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>클래식 음악 감상실</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="hero">
+    <a class="back" href="../../../">← 수업 도구로 돌아가기</a>
+    <p class="eyebrow">CLASSICAL LISTENING ROOM</p>
+    <h1>클래식 음악 감상실</h1>
+    <p class="lead">귀로 듣고, 마음으로 느끼고, 내 말로 설명해 보는 음악 시간</p>
+    <div class="steps"><span>① 곡 듣기</span><span>② 감상 포인트 읽기</span><span>③ 퀴즈 풀기</span></div>
+  </header>
+  <main>
+    <section class="intro"><div><p class="section-tag">오늘의 감상</p><h2>음악은 어떤 장면을 들려줄까?</h2><p>제목을 보지 않고 먼저 들어 보세요. 빠르기, 악기, 분위기에서 발견한 단서를 메모하면 감상이 훨씬 선명해집니다.</p></div><aside><b>감상 약속</b><br>처음에는 해설 없이 듣고,<br>두 번째에는 포인트를 찾아 들어요.</aside></section>
+    <section class="filters" aria-label="시대별 곡 선택"><button class="active" data-era="all">전체</button><button data-era="baroque">바로크</button><button data-era="classical">고전</button><button data-era="romantic">낭만</button><button data-era="modern">근현대</button></section>
+    <section id="playlist" class="playlist" aria-label="클래식 필수 감상곡"></section>
+    <section class="quiz-section" id="quiz"><p class="section-tag">감상 확인</p><h2>귀로 푸는 3문제</h2><p>곡을 들은 뒤 골라 보세요. 틀려도 다시 들으면 됩니다.</p><div id="quiz-box"></div><button class="check" id="check-answer">정답 확인</button><p id="result" aria-live="polite"></p></section>
+  </main>
+  <footer>CLASSICAL LISTENING ROOM · 음악을 듣는 나만의 언어를 찾아요.</footer>
+  <script src="app.js"></script>
+</body></html>
