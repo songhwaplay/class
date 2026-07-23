@@ -3,7 +3,7 @@ import fs from "node:fs";
 import test from "node:test";
 
 const html = fs.readFileSync(new URL("../index.html", import.meta.url), "utf8");
-const renderConfig = fs.readFileSync(new URL("../render.yaml", import.meta.url), "utf8");
+const renderConfig = fs.readFileSync(new URL("../render-learning.yaml", import.meta.url), "utf8");
 
 test("production learning links remain available until Render services are live", () => {
   assert.match(html, /https:\/\/fraction-lab-20260720\.stimpack486443\.chatgpt\.site\/arithmetic/);
