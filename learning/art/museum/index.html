@@ -6,7 +6,6 @@
   <meta name="theme-color" content="#0b0a09">
   <title>빛의 복도 · 어린이 미술관</title>
   <link rel="stylesheet" href="styles.css?v=20260723-6">
-  <script src="museum-sfx.js?v=20260723-1" defer></script>
   <script src="../../../assets/sound/music-control.js?v=20260723-1" defer></script>
 </head>
 <body>
@@ -15,17 +14,17 @@
     <canvas id="museum-canvas" aria-label="마우스와 키보드로 둘러보는 미술관 전시실"></canvas>
 
     <header class="topbar">
-      <a class="brand" href="../index.html" aria-label="미술품 감상 메뉴로 돌아가기" data-sfx="none" data-museum-sfx="tap">
+      <a class="brand" href="../index.html" aria-label="미술품 감상 메뉴로 돌아가기" data-sfx="click">
         <span class="brand-mark" aria-hidden="true">M</span>
         <span><b>빛의 복도</b><small>어린이 미술관</small></span>
       </a>
-      <a class="park-link" href="../park/" aria-label="세계 미술 테마파크로 이동" data-sfx="none" data-museum-sfx="tap">🌿 야외 테마파크</a>
+      <a class="park-link" href="../park/" aria-label="세계 미술 테마파크로 이동" data-sfx="click">🌿 야외 테마파크</a>
       <div class="room-heading" aria-live="polite">
         <span id="room-kicker">GALLERY 01</span>
         <strong id="room-title">인물</strong>
         <span id="room-count">12 WORKS</span>
       </div>
-      <button class="help-button" id="help-button" type="button" aria-label="관람 방법 보기" data-sfx="none" data-museum-sfx="help">?</button>
+      <button class="help-button" id="help-button" type="button" aria-label="관람 방법 보기" data-sfx="click">?</button>
     </header>
 
     <nav class="room-tabs" id="room-tabs" aria-label="전시실 선택"></nav>
@@ -59,7 +58,7 @@
     </div>
 
     <dialog class="art-modal" id="art-modal">
-      <button class="modal-close" id="modal-close" type="button" aria-label="닫기" data-sfx="none" data-museum-sfx="close">×</button>
+      <button class="modal-close" id="modal-close" type="button" aria-label="닫기" data-sfx="click">×</button>
       <div class="modal-image-wrap">
         <img id="modal-image" alt="">
         <span id="modal-type">PAINTING</span>
@@ -83,13 +82,13 @@
         </section>
         <footer>
           <span id="modal-rights"></span>
-          <a id="modal-source" href="#" target="_blank" rel="noopener" data-sfx="none" data-museum-sfx="tap">작품 정보 출처 ↗</a>
+          <a id="modal-source" href="#" target="_blank" rel="noopener" data-sfx="click">작품 정보 출처 ↗</a>
         </footer>
       </article>
     </dialog>
 
     <dialog class="help-modal" id="help-modal">
-      <button class="modal-close" id="help-close" type="button" aria-label="닫기" data-sfx="none" data-museum-sfx="close">×</button>
+      <button class="modal-close" id="help-close" type="button" aria-label="닫기" data-sfx="click">×</button>
       <p class="eyebrow">HOW TO EXPLORE</p>
       <h2>천천히 걸으며 감상해요</h2>
       <div class="help-grid">
@@ -108,6 +107,6 @@
   <script src="vendor/three.min.js"></script>
   <script src="vendor/GLTFLoader.js"></script>
   <script src="art-data.js?v=20260723-6"></script>
-  <script src="museum.js?v=20260723-29"></script>
+  <script src="museum.js?v=20260723-30"></script>
 </body>
 </html>
