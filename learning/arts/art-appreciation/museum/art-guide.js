@@ -5,6 +5,15 @@
   const room = rooms.find(item => item.works.some(work => work.id === workId));
   const work = room && room.works.find(item => item.id === workId);
   const text = (id, value) => { document.getElementById(id).textContent = value; };
+  if (window.parent !== window) {
+    document.body.classList.add('is-embedded');
+    document.querySelectorAll('.back-link,.bottom-back').forEach(link => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        window.parent.postMessage('close-art-guide', location.origin);
+      });
+    });
+  }
   if (!work) {
     text('guide-title', '찾으려는 작품을 찾지 못했어요');
     return;

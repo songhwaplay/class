@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0b0a09">
   <title>빛의 복도 · 어린이 미술관</title>
-  <link rel="stylesheet" href="styles.css?v=20260724-3">
+  <link rel="stylesheet" href="styles.css?v=20260724-4">
   <script src="../../../../assets/sound/music-control.js?v=20260723-1" defer></script>
 </head>
 <body>
@@ -106,6 +106,11 @@
       </div>
     </dialog>
 
+    <dialog class="guide-modal" id="guide-modal" aria-label="작품 자세히 알아보기">
+      <button class="modal-close" id="guide-close" type="button" aria-label="상세 설명 닫기" data-sfx="click">×</button>
+      <iframe id="guide-frame" title="작품 자세히 알아보기"></iframe>
+    </dialog>
+
     <dialog class="finale-modal" id="finale-modal" aria-labelledby="finale-title">
       <button class="modal-close" id="finale-close" type="button" aria-label="닫기" data-sfx="click">×</button>
       <div class="finale-ornament" aria-hidden="true"><span>M</span></div>
@@ -143,6 +148,6 @@
   <script src="vendor/three.min.js"></script>
   <script src="vendor/GLTFLoader.js"></script>
   <script src="art-data.js?v=20260723-11"></script>
-  <script src="museum.js?v=20260724-11"></script>
+  <script src="museum.js?v=20260724-12"></script>
 </body>
 </html>
