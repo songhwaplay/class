@@ -459,16 +459,33 @@ function createClassroomPlatform(options = {}) {
   }));
 
   router.get("/museum/presence-ticket", asyncRoute(async (req, res) => {
+    const accessMode = await getSiteAccessMode();
+    const expiresAt = Date.now() + 10 * 60 * 1000;
+    if (accessMode === "open") {
+      const name = normalizePersonName(req.query?.name);
+      const clientId = String(req.query?.clientId || "").trim();
+      if (name.length < 2 || name.length > 6) {
+        throw new HttpError(400, "VALID_NAME_REQUIRED", "Enter a Korean name with 2 to 6 characters.");
+      }
+      if (!/^[a-zA-Z0-9-]{12,80}$/.test(clientId)) {
+        throw new HttpError(400, "VALID_CLIENT_REQUIRED", "The museum visitor ID is not valid.");
+      }
+      const userId = `guest-${crypto.createHash("sha256").update(clientId).digest("hex").slice(0, 16)}`;
+      const ticket = signMuseumPresence({
+        kind: "museum-presence", exp: expiresAt, userId, name, classKey: "open"
+      });
+      return res.json({ ticket, expiresAt, scope: "open" });
+    }
+
     const user = await requireUser(req);
     if (user.role !== "student") throw new HttpError(403, "STUDENT_REQUIRED", "Museum presence is for student accounts only.");
     const membership = await studentMembership(user.id);
     if (!membership) throw new HttpError(403, "CLASS_MEMBERSHIP_REQUIRED", "Join your class before entering the museum.");
-    const expiresAt = Date.now() + 10 * 60 * 1000;
     const ticket = signMuseumPresence({
       kind: "museum-presence", exp: expiresAt, userId: String(user.id), name: membership.name,
       classKey: `${membership.schoolName}|${membership.academicYear}|${membership.grade}|${membership.classNumber}`
     });
-    res.json({ ticket, expiresAt });
+    res.json({ ticket, expiresAt, scope: "class" });
   }));
 
   router.get("/site/access", asyncRoute(async (req, res) => {
