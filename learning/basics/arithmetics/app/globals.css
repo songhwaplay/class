@@ -6465,15 +6465,31 @@ button.prime-number-question:focus-visible {
 }
 
 .geometry-choice-expression {
-  font-size: 24px;
-  line-height: 1.4;
+  font-size: 21px;
+  line-height: 1.35;
+}
+
+.geometry-question-body {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 292px;
+  align-items: center;
+  gap: 16px;
+}
+
+.geometry-question-body.is-answer-sheet {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.geometry-question-prompt {
+  min-width: 0;
 }
 
 .geometry-inline-choices {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 5px;
-  margin-top: 9px;
+  margin-top: 0;
 }
 
 .geometry-inline-choice {
@@ -6529,6 +6545,16 @@ button.prime-number-question:focus-visible {
 .geometry-choice-question .derivative-static-answer {
   margin-top: 12px;
   font-size: 22px;
+}
+
+@media print {
+  .geometry-question-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .geometry-inline-choices {
+    display: none !important;
+  }
 }
 
 .polynomial-page .polynomial-instruction {

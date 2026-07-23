@@ -43,4 +43,6 @@ test("geometry worksheets render directly clickable multiple-choice answers", as
   assert.match(source, /className="geometry-inline-choices"/);
   assert.match(source, /onClick=\{\(\) => selectChoice\(problem\.id, choice\.id\)\}/);
   assert.match(source, /aria-pressed=\{selected\[problem\.id\] === choice\.id\}/);
+  assert.doesNotMatch(source, />답안 입력<\/button>/);
+  assert.doesNotMatch(source, /<WorksheetChoicePanel/);
 });

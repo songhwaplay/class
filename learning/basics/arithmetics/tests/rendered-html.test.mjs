@@ -175,9 +175,9 @@ test("uses four worksheet cards per row on wide catalog screens", async () => {
   assert.match(css, /@media \(max-width: 820px\)[\s\S]*?\.worksheet-catalog\s*\{[^}]*repeat\(2, minmax\(0, 1fr\)\)/);
 });
 
-test("uses the standard high-school formula size on geometry worksheets", async () => {
+test("uses a compact formula size beside geometry answer choices", async () => {
   const css = await readFile("app/globals.css", "utf8");
-  assert.match(css, /\.geometry-choice-expression\s*\{[^}]*font-size:\s*24px/s);
+  assert.match(css, /\.geometry-choice-expression\s*\{[^}]*font-size:\s*21px/s);
   assert.match(css, /\.geometry-choice-question \.polynomial-focus-label\s*\{[^}]*font-size:\s*12px/s);
 });
 
@@ -309,7 +309,12 @@ test("renders the unified arithmetic catalog and high-school worksheets", async 
   assert.match(trigDerivativeHtml, /aria-label="A4 삼각함수 미분 ① 문제지"/);
   assert.match(trigDerivativeHtml, /aria-label="A4 삼각함수 미분 ① 정답지"/);
   assert.doesNotMatch(trigDerivativeHtml, /삼각함수 선택/);
-  assert.doesNotMatch(trigDerivativeHtml, /T(?:₁|₂|1|2)|T_\{[12]\}/);
+  const trigDerivativeLatex = [
+    ...trigDerivativeHtml.matchAll(/data-math-latex="([^"]*)"/g),
+  ]
+    .map((match) => match[1])
+    .join("\n");
+  assert.doesNotMatch(trigDerivativeLatex, /T(?:₁|₂|1|2)|T_\{[12]\}/);
   assert.equal((trigDerivativeHtml.match(/data-testid="trigonometric-derivative-question"/g) ?? []).length, 10);
   assert.equal((trigDerivativeHtml.match(/class="rational-coefficient-input trig-derivative-coefficient-input"/g) ?? []).length, 0);
   assert.equal((trigDerivativeHtml.match(/class="trig-derivative-function-choices"/g) ?? []).length, 0);
@@ -368,6 +373,9 @@ test("vector projection worksheet shows all multiple-choice answers on the sheet
   assert.equal((html.match(/geometry-inline-choice"/g) ?? []).length, 28);
   assert.match(html, /comp/);
   assert.match(html, /proj/);
+  assert.doesNotMatch(html, />답안 입력<\/button>/);
+  const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
+  assert.match(css, /@media print[\s\S]*?\.geometry-inline-choices\s*\{[\s\S]*?display:\s*none\s*!important/);
 });
 
 test("formula-only integral worksheets omit redundant per-question directions", async () => {
