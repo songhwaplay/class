@@ -103,7 +103,6 @@ export const middleSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "중1", name: "소인수분해", title: "소인수분해", route: null },
   { grade: "중1", name: "최대공약수와 최소공배수", title: "최대공약수와 최소공배수", route: null },
   { grade: "중1", name: "정수와 유리수의 혼합계산", title: "정수와 유리수의 혼합계산", route: "/arithmetic/middle-school/rational-mixed" },
-  { grade: "중1", name: "문자식과 식의 값", title: "문자식과 식의 값", route: "/arithmetic/middle-school/expression-values" },
   { grade: "중1", name: "일차식의 계산", title: "일차식의 계산", route: null },
   { grade: "중1", name: "일차방정식", title: "일차방정식", route: null },
   { grade: "중1", name: "좌표와 정비례·반비례", title: "좌표와 정비례·반비례", route: null },

@@ -52,8 +52,8 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   const indexCss = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.equal(indexResponse.status, 200);
   assert.match(indexHtml, /href="\/arithmetic"/);
-  assert.equal((indexHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 132);
-  assert.equal((indexHtml.match(/class="worksheet-grade"/g) ?? []).length, 132);
+  assert.equal((indexHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 131);
+  assert.equal((indexHtml.match(/class="worksheet-grade"/g) ?? []).length, 131);
   assert.doesNotMatch(indexHtml, /data-testid="learning-area-card"/);
   assert.match(indexHtml, /href="\/fraction"[^>]*data-testid="worksheet-choice"/);
   assert.match(indexHtml, /href="\/arithmetic\/high-school\/trigonometric-derivatives-2"[^>]*data-testid="worksheet-choice"/);
@@ -68,13 +68,13 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
 
   const catalogResponse = await render("/arithmetic/personal");
   const catalogHtml = await catalogResponse.text();
-  assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 132);
+  assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 131);
   assert.match(catalogHtml, /기초 연산/);
   assert.match(catalogHtml, /data-stage="elementary"/);
   assert.match(catalogHtml, /data-stage="middle"/);
   assert.match(catalogHtml, /data-stage="high"/);
   assert.match(catalogHtml, /이공계 기초/);
-  assert.equal((catalogHtml.match(/class="worksheet-grade"/g) ?? []).length, 132);
+  assert.equal((catalogHtml.match(/class="worksheet-grade"/g) ?? []).length, 131);
   assert.ok(catalogHtml.indexOf("수세기①") < catalogHtml.indexOf("덧셈뺄셈①"));
   assert.ok(catalogHtml.indexOf("분수①") < catalogHtml.indexOf("분수②"));
   assert.ok(catalogHtml.indexOf("분수②") < catalogHtml.indexOf("무게,들이"));
@@ -147,6 +147,7 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   assert.match(catalogHtml, /href="\/arithmetic\/middle-school\/rational-mixed"[^>]*data-testid="worksheet-choice"/);
   assert.doesNotMatch(catalogHtml, /href="\/arithmetic\/middle-school\/rational-add-subtract"/);
   assert.doesNotMatch(catalogHtml, /href="\/arithmetic\/middle-school\/rational-multiply-divide"/);
+  assert.doesNotMatch(catalogHtml, /href="\/arithmetic\/middle-school\/expression-values"/);
   assert.ok(catalogHtml.indexOf("소인수분해") < catalogHtml.indexOf("유리수와 순환소수"));
   assert.ok(catalogHtml.indexOf("유리수와 순환소수") < catalogHtml.indexOf("제곱근과 실수"));
   assert.ok(catalogHtml.indexOf("제곱근과 실수") < catalogHtml.indexOf("다항식의 곱셈"));
@@ -198,7 +199,7 @@ test("renders the unified arithmetic catalog and high-school worksheets", async 
   const hubResponse = await render("/arithmetic/high-school");
   assert.equal(hubResponse.status, 200);
   const hubHtml = await hubResponse.text();
-  assert.equal((hubHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 132);
+  assert.equal((hubHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 131);
   assert.match(hubHtml, /href="\/fraction"[^>]*data-testid="worksheet-choice"/);
   assert.match(hubHtml, /href="\/arithmetic\/high-school\/polynomial-add-subtract"/);
   assert.match(hubHtml, /href="\/arithmetic\/high-school\/factorization-rational"/);
