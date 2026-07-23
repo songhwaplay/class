@@ -114,6 +114,7 @@
   let finaleSurface = null;
   let finaleQuizRoom = null;
   let finaleQuizIndex = 0;
+  let finaleQuizCorrect = 0;
   let loadTotal = 12;
   let loadDone = 0;
   let roomLoadVersion = 0;
@@ -188,12 +189,14 @@
     return m;
   }
 
+  const FINALE_PROGRESS_KEY = 'museumFinaleRoomsV2';
+
   function readFinaleProgress() {
-    try{return JSON.parse(localStorage.getItem('museumFinaleRooms')||'{}')||{};}catch(_){return {};}
+    try{return JSON.parse(localStorage.getItem(FINALE_PROGRESS_KEY)||'{}')||{};}catch(_){return {};}
   }
 
   function writeFinaleProgress(progress) {
-    try{localStorage.setItem('museumFinaleRooms',JSON.stringify(progress));}catch(_){}
+    try{localStorage.setItem(FINALE_PROGRESS_KEY,JSON.stringify(progress));}catch(_){}
   }
 
   function finaleTexture(room) {
@@ -247,6 +250,7 @@
   function showFinaleCompletion(room,newlyCompleted=false) {
     const progress=readFinaleProgress();progress[room.id]=true;writeFinaleProgress(progress);refreshFinaleWall();
     finaleQuestionWrap.hidden=true;finaleComplete.hidden=false;
+    document.querySelector('.curator-stamp').hidden=false;
     document.getElementById('finale-step').textContent='GALLERY COMPLETE';
     document.getElementById('finale-progress').style.width='100%';
     document.getElementById('finale-total').textContent=`${completedFinaleCount()} / ${rooms.length} ROOMS`;
@@ -255,9 +259,21 @@
     document.getElementById('finale-complete-copy').textContent=completedFinaleCount()===rooms.length?'다섯 전시실의 관찰을 모두 마쳤어요. 이제 이 미술관의 어린이 큐레이터입니다.':`${room.title} 전시실의 작품을 세심하게 관찰했다는 표시예요.`;
   }
 
+  function showFinaleRetry(room) {
+    const total=ROOM_QUIZZES[room.id].questions.length;
+    finaleQuestionWrap.hidden=true;finaleComplete.hidden=false;
+    document.querySelector('.curator-stamp').hidden=true;
+    document.getElementById('finale-step').textContent='TRY AGAIN';
+    document.getElementById('finale-progress').style.width='100%';
+    document.getElementById('finale-total').textContent=`${completedFinaleCount()} / ${rooms.length} ROOMS`;
+    document.getElementById('finale-complete-title').textContent=`${finaleQuizCorrect} / ${total}개를 맞혔어요`;
+    document.getElementById('finale-complete-copy').textContent='큐레이터 도장은 세 문제를 모두 맞혀야 받을 수 있어요. 작품을 다시 살펴보고 재도전해 보세요.';
+  }
+
   function renderFinaleQuestion() {
     const set=ROOM_QUIZZES[finaleQuizRoom.id],item=set.questions[finaleQuizIndex];
     finaleQuestionWrap.hidden=false;finaleComplete.hidden=true;finaleNext.hidden=true;
+    finaleNext.textContent=finaleQuizIndex===set.questions.length-1?'결과 보기':'다음 관찰로';
     finaleFeedback.textContent='정답이라고 생각하는 장면을 골라보세요.';finaleFeedback.className='finale-feedback';
     document.getElementById('finale-step').textContent=`QUESTION ${String(finaleQuizIndex+1).padStart(2,'0')} / ${String(set.questions.length).padStart(2,'0')}`;
     document.getElementById('finale-progress').style.width=`${finaleQuizIndex/set.questions.length*100}%`;
@@ -266,14 +282,18 @@
     finaleOptions.replaceChildren(...item.options.map((label,index)=>{
       const button=document.createElement('button');button.type='button';button.className='finale-option';button.dataset.letter=String.fromCharCode(65+index);button.textContent=label;
       button.addEventListener('click',()=>{
-        if(index!==item.answer){button.disabled=true;button.classList.add('wrong');finaleFeedback.textContent='조금 다르게 보였어요. 작품의 빛·선·자세를 다시 떠올려 보세요.';return;}
-        [...finaleOptions.children].forEach(option=>option.disabled=true);button.classList.add('correct');finaleFeedback.textContent=item.explain;finaleFeedback.classList.add('correct');finaleNext.hidden=false;window.ClassGameSfx?.play('card');
+        [...finaleOptions.children].forEach(option=>option.disabled=true);
+        const correctButton=finaleOptions.children[item.answer];
+        correctButton.classList.add('correct');
+        if(index===item.answer){finaleQuizCorrect++;finaleFeedback.textContent=item.explain;finaleFeedback.classList.add('correct');window.ClassGameSfx?.play('card');}
+        else{button.classList.add('wrong');finaleFeedback.textContent=`아쉬워요. 정답은 ‘${item.options[item.answer]}’예요. ${item.explain}`;}
+        finaleNext.hidden=false;
       });return button;
     }));
   }
 
   function startFinaleQuiz(room) {
-    finaleQuizRoom=room;finaleQuizIndex=0;
+    finaleQuizRoom=room;finaleQuizIndex=0;finaleQuizCorrect=0;
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
     document.getElementById('finale-intro').textContent=ROOM_QUIZZES[room.id].intro;
@@ -688,7 +708,7 @@
   canvas.addEventListener('pointercancel',()=>{dragging=false;pointerDown=null;canvas.classList.remove('dragging');});
   addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);renderer.setPixelRatio(Math.min(devicePixelRatio,1.75));});
   document.getElementById('modal-close').addEventListener('click',()=>modal.close());document.getElementById('help-button').addEventListener('click',()=>helpModal.showModal());document.getElementById('help-close').addEventListener('click',()=>helpModal.close());document.getElementById('finale-close').addEventListener('click',()=>finaleModal.close());
-  finaleNext.addEventListener('click',()=>{finaleQuizIndex++;if(finaleQuizIndex>=ROOM_QUIZZES[finaleQuizRoom.id].questions.length)showFinaleCompletion(finaleQuizRoom,true);else renderFinaleQuestion();});
+  finaleNext.addEventListener('click',()=>{finaleQuizIndex++;const total=ROOM_QUIZZES[finaleQuizRoom.id].questions.length;if(finaleQuizIndex>=total){if(finaleQuizCorrect===total)showFinaleCompletion(finaleQuizRoom,true);else showFinaleRetry(finaleQuizRoom);}else renderFinaleQuestion();});
   document.getElementById('finale-again').addEventListener('click',()=>startFinaleQuiz(finaleQuizRoom));
   for(const d of [modal,helpModal,finaleModal])d.addEventListener('click',e=>{if(e.target===d){window.ClassGameSfx?.play('click');d.close();}});
   document.querySelectorAll('.touch-controls button').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();keys[k]=true;});b.addEventListener('pointerup',()=>keys[k]=false);b.addEventListener('pointercancel',()=>keys[k]=false);});
