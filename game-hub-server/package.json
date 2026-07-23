@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server.js",
-    "postinstall": "npm --prefix ../learning/basics/arithmetics ci --include=dev && npm --prefix ../learning/basics/arithmetics run build && npm --prefix ../learning/basics/hanguksa-basic ci --include=dev && npm --prefix ../learning/basics/hanguksa-basic run build",
+    "postinstall": "npm --prefix ../learning/basics/arithmetics ci --include=dev && npm --prefix ../learning/basics/arithmetics run build && npm --prefix ../learning/academics/korean-history ci --include=dev && npm --prefix ../learning/academics/korean-history run build",
     "build:reading-seed": "node ../scripts/build-reading-seed.js"
   },
   "dependencies": {

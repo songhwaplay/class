@@ -3,9 +3,9 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 
-const html = fs.readFileSync("learning/training/music-studio/index.html", "utf8");
-const app = fs.readFileSync("learning/training/music-studio/app.js", "utf8");
-const css = fs.readFileSync("learning/training/music-studio/styles.css", "utf8");
+const html = fs.readFileSync("learning/arts/music-studio/index.html", "utf8");
+const app = fs.readFileSync("learning/arts/music-studio/app.js", "utf8");
+const css = fs.readFileSync("learning/arts/music-studio/styles.css", "utf8");
 const hub = fs.readFileSync("index.html", "utf8");
 
 [
@@ -72,7 +72,7 @@ assert.match(css, /dictation-grid/);
 assert.match(css, /answer-step\.wrong/);
 assert.match(css, /white-key\.active\.common/);
 assert.match(css, /white-key\.active\.moved/);
-assert.match(hub, /learning\/training\/music-studio\/index\.html/);
+assert.match(hub, /learning\/arts\/music-studio\/index\.html/);
 assert.doesNotMatch(hub, /learning\/basics\/music-studio\/index\.html/);
 assert.doesNotMatch(html, /실용/);
 assert.doesNotMatch(hub, /실용화성학/);

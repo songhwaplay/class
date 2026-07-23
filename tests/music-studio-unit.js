@@ -1,7 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
-const core = require("../learning/training/music-studio/music-core.js");
+const core = require("../learning/arts/music-studio/music-core.js");
 
 const cMajor = core.buildDiatonicChords("C", false);
 assert.equal(cMajor.length, 7);

@@ -3,7 +3,7 @@ services:
     name: world-voyage-classroom
     runtime: node
     plan: free
-    rootDir: learning/simulations/cds95
+    rootDir: learning/academics/age-of-exploration
     buildCommand: npm install --omit=dev
     startCommand: npm start
     healthCheckPath: /health

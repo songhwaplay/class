@@ -81,7 +81,7 @@ const arithmeticApp = startLearningApp(
   "Arithmetic app",
 );
 const hanguksaApp = startLearningApp(
-  "learning/basics/hanguksa-basic",
+  "learning/academics/korean-history",
   HANGUKSA_PORT,
   "Hanguksa app",
 );
@@ -104,11 +104,11 @@ app.use(
 );
 app.use(
   "/hanguksa/assets",
-  express.static(path.join(SITE_ROOT, "learning", "basics", "hanguksa-basic", "dist", "client", "assets")),
+  express.static(path.join(SITE_ROOT, "learning", "academics", "korean-history", "dist", "client", "assets")),
 );
 app.use(
   "/questions",
-  express.static(path.join(SITE_ROOT, "learning", "basics", "hanguksa-basic", "dist", "client", "questions")),
+  express.static(path.join(SITE_ROOT, "learning", "academics", "korean-history", "dist", "client", "questions")),
 );
 const MAX_ROOM_PLAYERS = {
   setgame: 4,
@@ -143,6 +143,21 @@ app.use("/arithmetic", proxyToLearningApp(ARITHMETIC_PORT));
 app.use("/fraction", proxyToLearningApp(ARITHMETIC_PORT));
 app.use("/api/arithmetic-race", proxyToLearningApp(ARITHMETIC_PORT));
 app.use("/hanguksa", proxyToLearningApp(HANGUKSA_PORT));
+
+const LEGACY_LEARNING_PATHS = new Map([
+  ["/learning/reading", "/learning/basics/reading"],
+  ["/learning/basics/idioms", "/learning/academics/classical-chinese-idioms"],
+  ["/learning/simulations/body-explorer", "/learning/academics/body-explorer"],
+  ["/learning/training/music-studio", "/learning/arts/music-studio"],
+  ["/learning/art", "/learning/arts/art-appreciation"],
+  ["/learning/music/classics", "/learning/arts/classical-music"],
+  ["/learning/music/korean", "/learning/arts/korean-music"],
+]);
+for (const [legacyPath, currentPath] of LEGACY_LEARNING_PATHS) {
+  app.use(legacyPath, (req, res) => {
+    res.redirect(308, `${currentPath}${req.url}`);
+  });
+}
 
 app.use(express.json({ limit: "32kb" }));
 app.use((req, res, next) => {

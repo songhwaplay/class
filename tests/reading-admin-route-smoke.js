@@ -47,8 +47,8 @@ async function run() {
       fetch(`${base}/admin/reading/style.css`),
       fetch(`${base}/admin/reading/pilots.html`),
       fetch(`${base}/admin/reading/pilots.js`),
-      fetch(`${base}/learning/reading/`),
-      fetch(`${base}/learning/reading/app.js`),
+      fetch(`${base}/learning/basics/reading/`),
+      fetch(`${base}/learning/basics/reading/app.js`),
       fetch(`${base}/api/auth/config`)
     ]);
     assert.equal(page.status, 200);

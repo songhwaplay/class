@@ -6,7 +6,7 @@ const path = require("node:path");
 const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
-const simulationDir = path.join(root, "learning", "simulations", "body-explorer");
+const simulationDir = path.join(root, "learning", "academics", "body-explorer");
 const files = {
     html: path.join(simulationDir, "index.html"),
     data: path.join(simulationDir, "journey-data.js"),
@@ -19,10 +19,10 @@ const files = {
     server: path.join(root, "game-hub-server", "server.js")
 };
 const imageFiles = [
-    path.join(root, "assets", "images", "body-explorer", "circulation-hero.webp"),
-    path.join(root, "assets", "images", "body-explorer", "heart-interior.webp"),
-    path.join(root, "assets", "images", "body-explorer", "alveoli.webp"),
-    path.join(root, "assets", "images", "body-explorer", "red-cell-explorer.webp")
+    path.join(simulationDir, "assets", "images", "circulation-hero.webp"),
+    path.join(simulationDir, "assets", "images", "heart-interior.webp"),
+    path.join(simulationDir, "assets", "images", "alveoli.webp"),
+    path.join(simulationDir, "assets", "images", "red-cell-explorer.webp")
 ];
 
 for (const file of [...Object.values(files), ...imageFiles]) {
@@ -107,7 +107,7 @@ assert.ok(server.includes("CIRCULATION_STATE"), "Server is missing circulation b
 assert.ok(server.includes("elapsedMs: Math.max(0, Date.now() - game.startedAt)"), "Completion time must be server-authoritative.");
 
 const hub = fs.readFileSync(files.hub, "utf8");
-assert.ok(hub.includes('href="learning/simulations/body-explorer/index.html"'), "Hub is missing the body explorer link.");
+assert.ok(hub.includes('href="learning/academics/body-explorer/index.html"'), "Hub is missing the body explorer link.");
 assert.ok(hub.includes("인체 탐험"), "Hub is missing the Korean title.");
 assert.ok(hub.includes("(Human Body Explorer)"), "Hub is missing the English subtitle.");
 

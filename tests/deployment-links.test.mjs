@@ -14,8 +14,23 @@ test("learning links stay on the main Render service", () => {
 
 test("the main service builds and proxies both learning apps", () => {
   assert.match(serverPackage, /learning\/basics\/arithmetics run build/);
-  assert.match(serverPackage, /learning\/basics\/hanguksa-basic run build/);
+  assert.match(serverPackage, /learning\/academics\/korean-history run build/);
   assert.equal((serverPackage.match(/ci --include=dev/g) || []).length, 2);
   assert.match(serverSource, /app\.use\("\/arithmetic", proxyToLearningApp\(ARITHMETIC_PORT\)\)/);
   assert.match(serverSource, /app\.use\("\/hanguksa", proxyToLearningApp\(HANGUKSA_PORT\)\)/);
+});
+
+test("legacy learning paths redirect to the reorganized domains", () => {
+  for (const legacyPath of [
+    "/learning/reading",
+    "/learning/basics/idioms",
+    "/learning/simulations/body-explorer",
+    "/learning/training/music-studio",
+    "/learning/art",
+    "/learning/music/classics",
+    "/learning/music/korean",
+  ]) {
+    assert.match(serverSource, new RegExp(legacyPath.replaceAll("/", "\\/")));
+  }
+  assert.match(serverSource, /res\.redirect\(308,/);
 });

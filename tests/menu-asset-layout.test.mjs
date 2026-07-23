@@ -10,18 +10,42 @@ function read(relativePath) {
   return fs.readFileSync(path.join(root, relativePath), "utf8");
 }
 
+test("learning menus use the four top-level domains", () => {
+  assert.deepEqual(
+    fs.readdirSync(path.join(root, "learning"), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .sort(),
+    ["academics", "arts", "basics", "games"],
+  );
+
+  const menu = read("index.html");
+  for (const href of [
+    "learning/basics/reading/index.html",
+    "learning/academics/classical-chinese-idioms/index.html",
+    "learning/academics/body-explorer/index.html",
+    "learning/arts/music-studio/index.html",
+    "learning/arts/art-appreciation/museum/",
+    "learning/arts/classical-music/",
+    "learning/arts/korean-music/",
+  ]) {
+    assert.match(menu, new RegExp(`href="${href.replaceAll(".", "\\.")}"`));
+    assert.equal(fs.existsSync(path.join(root, href)), true, href);
+  }
+});
+
 test("menu-specific asset groups live with their menu", () => {
   const expected = [
     "learning/basics/vocabulary/assets/data/english-vocabulary-3000-v2.json",
     "learning/basics/vocabulary/assets/images/apple-v2.webp",
-    "learning/simulations/body-explorer/assets/images/circulation-hero.webp",
-    "learning/art/assets/images/k1.jpg",
-    "learning/art/assets/sound/art-appreciation.mp3",
-    "learning/art/assets/sound/museum/gallery-01-portrait.mp3",
-    "learning/art/assets/sound/museum/gallery-02-nature.mp3",
-    "learning/art/assets/sound/museum/gallery-03-story.mp3",
-    "learning/art/assets/sound/museum/gallery-04-line-color-imagination.mp3",
-    "learning/art/assets/sound/museum/gallery-05-form-space.mp3",
+    "learning/academics/body-explorer/assets/images/circulation-hero.webp",
+    "learning/arts/art-appreciation/assets/images/k1.jpg",
+    "learning/arts/art-appreciation/assets/sound/art-appreciation.mp3",
+    "learning/arts/art-appreciation/assets/sound/museum/gallery-01-portrait.mp3",
+    "learning/arts/art-appreciation/assets/sound/museum/gallery-02-nature.mp3",
+    "learning/arts/art-appreciation/assets/sound/museum/gallery-03-story.mp3",
+    "learning/arts/art-appreciation/assets/sound/museum/gallery-04-line-color-imagination.mp3",
+    "learning/arts/art-appreciation/assets/sound/museum/gallery-05-form-space.mp3",
     "learning/games/omok/assets/images/background.webp",
     "learning/games/omok/assets/sound/bgm.mp3",
     "learning/games/connect6/assets/images/background.webp",
@@ -34,8 +58,8 @@ test("menu-specific asset groups live with their menu", () => {
 });
 
 test("museum galleries switch to their matching background music", () => {
-  const index = read("learning/art/museum/index.html");
-  const script = read("learning/art/museum/museum.js");
+  const index = read("learning/arts/art-appreciation/museum/index.html");
+  const script = read("learning/arts/art-appreciation/museum/museum.js");
 
   assert.match(index, /museum\/gallery-01-portrait\.mp3/);
   for (const name of [
@@ -53,14 +77,14 @@ test("museum galleries switch to their matching background music", () => {
 test("moved menu assets have no references to their former root locations", () => {
   const sources = [
     read("learning/basics/vocabulary/app.js"),
-    read("learning/art/index.html"),
-    read("learning/art/museum/index.html"),
+    read("learning/arts/art-appreciation/index.html"),
+    read("learning/arts/art-appreciation/museum/index.html"),
     read("learning/games/omok/omok.html"),
     read("learning/games/connect6/connect6.html"),
     ...fs
-      .readdirSync(path.join(root, "learning/simulations/body-explorer"))
+      .readdirSync(path.join(root, "learning/academics/body-explorer"))
       .filter((name) => /\.(?:css|html|js)$/.test(name))
-      .map((name) => read(`learning/simulations/body-explorer/${name}`)),
+      .map((name) => read(`learning/academics/body-explorer/${name}`)),
   ].join("\n");
 
   assert.doesNotMatch(sources, /(?:\.\.\/){3}assets\/data\//);
@@ -91,7 +115,7 @@ test("relocated static asset URLs resolve to files in the repository", () => {
   for (const sourcePath of sourceRoots) collect(sourcePath);
 
   const staticUrlPattern =
-    /\/learning\/(?:games|basics|simulations)\/[^"'()\s]+?\.(?:mp3|webp)/g;
+    /\/learning\/(?:games|basics|academics|arts)\/[^"'()\s]+?\.(?:mp3|webp)/g;
   for (const sourceFile of sourceFiles) {
     const source = fs.readFileSync(sourceFile, "utf8");
     for (const url of source.match(staticUrlPattern) || []) {
