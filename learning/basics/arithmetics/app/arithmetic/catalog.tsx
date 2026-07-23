@@ -4,9 +4,9 @@ import { learningWorksheetCatalog } from "../../lib/arithmetic-worksheets";
 type LearningStage = "elementary" | "middle" | "high" | "stem";
 
 const stageMeta: Record<LearningStage, { label: string; shortLabel: string }> = {
-  elementary: { label: "초등", shortLabel: "초등" },
-  middle: { label: "중등", shortLabel: "중등" },
-  high: { label: "고등", shortLabel: "고등" },
+  elementary: { label: "초", shortLabel: "초" },
+  middle: { label: "중", shortLabel: "중" },
+  high: { label: "고", shortLabel: "고" },
   stem: { label: "이공계 기초", shortLabel: "이공계 기초" },
 };
 
