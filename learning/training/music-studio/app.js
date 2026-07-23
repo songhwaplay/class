@@ -41,7 +41,6 @@
         progressionDegrees: PROGRESSIONS.pop.degrees.slice(),
         selectedSlot: 0,
         selectedChord: 0,
-        inversionMode: "auto",
         progressionVoicings: [],
         progressionToken: 0,
         quizTarget: 4,
@@ -333,8 +332,7 @@
 
     function getProgressionVoicings(chords) {
         const progressionChords = state.progressionDegrees.map(function (degree) { return chords[degree]; });
-        const forcedInversion = state.inversionMode === "auto" ? undefined : Number(state.inversionMode);
-        return core.buildVoiceLedProgression(progressionChords, forcedInversion);
+        return core.buildVoiceLedProgression(progressionChords, 0);
     }
 
     function renderHarmony() {
@@ -907,16 +905,6 @@
         toastTimer = window.setTimeout(function () { elements.toast.classList.remove("show"); }, 2200);
     }
 
-    function syncInversionControls() {
-        if (!state.useSevenths && state.inversionMode === "3") state.inversionMode = "auto";
-        document.querySelectorAll("[data-inversion-mode]").forEach(function (button) {
-            button.classList.toggle("active", button.dataset.inversionMode === state.inversionMode);
-        });
-        document.querySelectorAll(".seventh-only").forEach(function (button) {
-            button.classList.toggle("hidden", !state.useSevenths);
-        });
-    }
-
     function setBasicMajorKey(key) {
         const selected = BASIC_MAJOR_KEYS[key] || BASIC_MAJOR_KEYS.C;
         state.basicKey = key in BASIC_MAJOR_KEYS ? key : "C";
@@ -1027,17 +1015,9 @@
             button.addEventListener("click", function () {
                 state.useSevenths = button.dataset.voicing === "seventh";
                 document.querySelectorAll("[data-voicing]").forEach(function (item) { item.classList.toggle("active", item === button); });
-                syncInversionControls();
                 renderHarmony();
                 makeQuiz();
                 makeVoicingQuiz();
-            });
-        });
-        document.querySelectorAll("[data-inversion-mode]").forEach(function (button) {
-            button.addEventListener("click", function () {
-                state.inversionMode = button.dataset.inversionMode;
-                syncInversionControls();
-                renderHarmony();
             });
         });
         document.querySelectorAll("[data-progression]").forEach(function (button) {

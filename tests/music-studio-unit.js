@@ -25,6 +25,11 @@ const cPopVoiceLeading = core.buildVoiceLedProgression([cMajor[0], cMajor[4], cM
 assert.deepEqual(cPopVoiceLeading.map((entry) => entry.inversion), [0, 2, 2, 0]);
 assert.deepEqual(cPopVoiceLeading[1].commonTones, [55]);
 assert.ok(cPopVoiceLeading.slice(1).reduce((sum, entry) => sum + entry.movement, 0) < 20);
+const cPopRootPositions = core.buildVoiceLedProgression([cMajor[0], cMajor[4], cMajor[5], cMajor[3]], 0);
+assert.deepEqual(cPopRootPositions.map((entry) => entry.inversion), [0, 0, 0, 0]);
+assert.deepEqual(cPopRootPositions.map((entry) => entry.notes), [
+    [48, 52, 55], [55, 59, 62], [57, 60, 64], [53, 57, 60]
+]);
 
 const gMajorSevenths = core.buildDiatonicChords("G", true);
 assert.equal(gMajorSevenths[0].name, "Gmaj7");

@@ -132,6 +132,9 @@ button:focus-visible, a:focus-visible, select:focus-visible, input:focus-visible
 .segmented { display: flex; padding: 4px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }
 .segmented button { height: 38px; padding: 0 14px; border: 0; border-radius: 6px; color: var(--muted); background: transparent; font-size: 12px; font-weight: 800; cursor: pointer; }
 .segmented button.active { color: var(--bg); background: var(--mint); }
+.fixed-voicing { min-height: 48px; display: flex; align-items: center; gap: 9px; padding: 0 13px; border: 1px solid rgba(108,229,202,.4); border-radius: 9px; background: rgba(108,229,202,.07); }
+.fixed-voicing b { color: var(--mint); font-size: 11px; }
+.fixed-voicing small { color: var(--muted); font-size: 9px; font-weight: 700; letter-spacing: 0; }
 
 .foundation-course { margin-bottom: 18px; border: 1px solid rgba(108,229,202,.3); border-radius: 18px; background: linear-gradient(145deg, rgba(41,45,70,.96), rgba(24,29,50,.96)); overflow: hidden; }
 .foundation-intro { display: flex; align-items: start; justify-content: space-between; gap: 24px; padding: 28px 30px 24px; border-bottom: 1px solid var(--line); }
