@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import {
   conicProblems,
   conicMoveTangentProblems,
@@ -29,4 +30,14 @@ test("covers the geometry workout sequence without duplicate answers", () => {
   assert.ok(projectionProblems.some(({ label }) => label === "스칼라 정사영"));
   assert.ok(projectionProblems.some(({ label }) => label === "벡터 정사영"));
   assert.ok(projectionProblems.some(({ label }) => label === "평행·수직 성분 분해"));
+});
+
+test("geometry worksheets render directly clickable multiple-choice answers", async () => {
+  const source = await readFile(
+    new URL("../app/arithmetic/high-school/components/geometry-choice-worksheet.tsx", import.meta.url),
+    "utf8",
+  );
+  assert.match(source, /className="geometry-inline-choices"/);
+  assert.match(source, /onClick=\{\(\) => selectChoice\(problem\.id, choice\.id\)\}/);
+  assert.match(source, /aria-pressed=\{selected\[problem\.id\] === choice\.id\}/);
 });

@@ -45,7 +45,7 @@ export const projectionProblems: GeometryChoiceItem[] = [
   item("p4", "스칼라 정사영", String.raw`\vec a=(3,4),\quad\vec b=(4,0),\quad \frac{\vec a\cdot\vec b}{|\vec b|}=?`, String.raw`3`, [String.raw`4`, String.raw`\frac{12}{5}`, String.raw`12`]),
   item("p5", "벡터 정사영", String.raw`\vec a=(2,3),\quad\vec b=(1,1),\quad \frac{\vec a\cdot\vec b}{|\vec b|^2}\vec b=?`, String.raw`\left(\frac52,\frac52\right)`, [String.raw`(5,5)`, String.raw`\left(1,\frac32\right)`, String.raw`\left(-\frac12,\frac12\right)`]),
   item("p6", "평행·수직 성분 분해", String.raw`\vec a=(5,2),\quad\vec b=(1,1),\quad \vec a=\vec a_{\parallel}+\vec a_{\perp},\quad \vec a_{\perp}=?`, String.raw`\vec a_{\perp}=\left(\frac32,-\frac32\right)`, [String.raw`\vec a_{\perp}=\left(\frac72,\frac72\right)`, String.raw`\vec a_{\perp}=(3,-3)`, String.raw`\vec a_{\perp}=\left(-\frac32,\frac32\right)`]),
-  item("p7", "좌표축과 이루는 각", String.raw`\vec a=(3,4)\text{가 }x\text{축과 이루는 각을 }\theta_x\text{라 할 때}\quad \cos\theta_x=?`, String.raw`\frac35`, [String.raw`\frac45`, String.raw`\frac34`, String.raw`\frac53`]),
+  item("p7", "좌표축과 이루는 각", String.raw`\vec a=(3,4),\quad \cos\theta_x=?\quad(\theta_x:\ x\text{축과의 각})`, String.raw`\frac35`, [String.raw`\frac45`, String.raw`\frac34`, String.raw`\frac53`]),
 ];
 
 export const vectorGeometryProblems: GeometryChoiceItem[] = [

@@ -47,6 +47,15 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
     ])));
   }
 
+  function selectChoice(problemId: string, choiceId: string) {
+    setSelected((current) => ({ ...current, [problemId]: choiceId }));
+    setResults((current) => {
+      const next = { ...current };
+      delete next[problemId];
+      return next;
+    });
+  }
+
   function sheet(answerSheet: boolean) {
     return (
       <div className="a4-sheet counting-sheet polynomial-sheet derivative-sheet trig-derivative-sheet geometry-choice-sheet polynomial-sheet-7" style={{ transform: `scale(${scale})` }}>
@@ -61,6 +70,22 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
               <div className="polynomial-question-body">
                 <span className="polynomial-focus-label">{problem.label}</span>
                 <div className="derivative-expression trig-derivative-expression geometry-choice-expression"><MathFormula latex={problem.latex} /></div>
+                {!answerSheet && (
+                  <div className="geometry-inline-choices" role="group" aria-label={`${index + 1}번 답 선택`}>
+                    {problem.choices.map((choice, choiceIndex) => (
+                      <button
+                        className={`geometry-inline-choice${selected[problem.id] === choice.id ? " is-selected" : ""}${problem.id in results ? (choice.correct ? " is-correct-answer" : selected[problem.id] === choice.id ? " is-wrong-answer" : "") : ""}`}
+                        type="button"
+                        key={choice.id}
+                        aria-pressed={selected[problem.id] === choice.id}
+                        onClick={() => selectChoice(problem.id, choice.id)}
+                      >
+                        <span>{choiceIndex + 1}</span>
+                        <MathFormula latex={choice.latex} />
+                      </button>
+                    ))}
+                  </div>
+                )}
                 {answerSheet && <div className="derivative-static-answer"><MathFormula latex={problem.correctLatex} /></div>}
               </div>
             </article>
@@ -83,10 +108,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
           <button className="button primary" onClick={checkAll}>전체 채점</button>
         </div>
       </div>
-      {panelOpen && <WorksheetChoicePanel title={title} problems={displayedProblems} selected={selected} results={results} onSelect={(problemId, choiceId) => {
-        setSelected((current) => ({ ...current, [problemId]: choiceId }));
-        setResults((current) => { const next = { ...current }; delete next[problemId]; return next; });
-      }} onGrade={checkAll} onClose={() => setPanelOpen(false)} />}
+      {panelOpen && <WorksheetChoicePanel title={title} problems={displayedProblems} selected={selected} results={results} onSelect={selectChoice} onGrade={checkAll} onClose={() => setPanelOpen(false)} />}
       <div className="a4-stage counting-a4-stage worksheet-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(false)}</div>
       <div className="a4-stage counting-a4-stage answer-stage" style={{ width: 794 * scale, height: 1123 * scale }}>{sheet(true)}</div>
     </main>
