@@ -1,11 +1,49 @@
 import type { GeometryChoiceItem } from "../app/arithmetic/high-school/components/geometry-choice-worksheet";
 
+const geometryPromptById: Record<string, string> = {
+  c1: "타원의 초점은?",
+  c2: "쌍곡선의 꼭짓점은?",
+  c3: "포물선의 초점은?",
+  c4: "주어진 이차곡선의 표준형은?",
+  c5: "타원의 이심률은?",
+  c6: "쌍곡선의 점근선은?",
+  c7: "포물선의 준선은?",
+  t1: "평행이동한 타원의 방정식은?",
+  t2: "평행이동한 쌍곡선의 방정식은?",
+  t3: "점 P에서의 접선은?",
+  t4: "점 P에서의 접선은?",
+  t5: "점 P에서의 접선은?",
+  t6: "점 P에서의 접선은?",
+  t7: "포물선의 초점은?",
+  v1: "두 벡터의 합은?",
+  v2: "벡터의 크기는?",
+  v3: "벡터의 계산 결과는?",
+  v4: "벡터 a와 같은 방향의 단위벡터는?",
+  v5: "두 벡터가 평행할 때 k는?",
+  v6: "위치벡터 OB는?",
+  v7: "내분점 P의 위치벡터는?",
+  p1: "두 벡터의 내적은?",
+  p2: "두 벡터가 수직일 때 k는?",
+  p3: "두 벡터가 이루는 각 θ는?",
+  p4: "벡터 a의 b 방향 스칼라 정사영은?",
+  p5: "벡터 a의 b 위로의 정사영은?",
+  p6: "벡터 a의 b에 수직인 성분은?",
+  p7: "벡터 a가 x축과 이루는 각의 코사인값은?",
+  g1: "직선의 방향벡터는?",
+  g2: "직선의 법선벡터는?",
+  g3: "점 P를 지나고 방향벡터 d와 평행한 직선의 벡터방정식은?",
+  g4: "점 P와 직선 사이의 거리는?",
+  g5: "삼각형 ABC의 넓이는?",
+  g6: "점 P에서 x축에 내린 수선의 발 H는?",
+  g7: "두 직선이 수직일 때 k는?",
+};
+
 function choices(answer: string, distractors: string[], id: string) {
   return [answer, ...distractors].map((latex, index) => ({ id: `${id}-${index}`, latex, correct: index === 0 }));
 }
 
 function item(id: string, label: string, latex: string, answer: string, distractors: string[]): GeometryChoiceItem {
-  return { id, label, latex, correctLatex: answer, choices: choices(answer, distractors, id) };
+  return { id, label, prompt: geometryPromptById[id], latex, correctLatex: answer, choices: choices(answer, distractors, id) };
 }
 
 export const conicProblems: GeometryChoiceItem[] = [

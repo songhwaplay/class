@@ -1161,6 +1161,16 @@
   line-height: 1.25;
 }
 
+.polynomial-page .worksheet-stage .geometry-choice-prompt {
+  margin: 0 0 7px;
+  color: #17233c;
+  font-family: var(--high-school-korean-font);
+  font-size: var(--high-school-prompt-size);
+  font-weight: 700;
+  line-height: 1.5;
+  letter-spacing: -0.025em;
+}
+
 .polynomial-page .worksheet-stage .polynomial-expression,
 .polynomial-page .worksheet-stage .rational-expression,
 .polynomial-page .worksheet-stage .complex-expression,

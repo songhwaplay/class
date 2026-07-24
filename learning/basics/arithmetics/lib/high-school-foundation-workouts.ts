@@ -1,9 +1,41 @@
 import type { GeometryChoiceItem } from "../app/arithmetic/high-school/components/geometry-choice-worksheet";
 
+const foundationPromptById: Record<string, string> = {
+  r1: "호도법으로 나타낸 각은?",
+  r2: "육십분법으로 나타낸 각은?",
+  r3: "주어진 각과 동경이 같은 각은?",
+  r4: "동경이 놓이는 사분면은?",
+  r5: "동경이 같은 일반각은?",
+  r6: "기준각은?",
+  r7: "주어진 범위에 속하는 θ는?",
+  a1: "호의 길이 l은?",
+  a2: "부채꼴의 넓이 S는?",
+  a3: "중심각 θ는?",
+  a4: "반지름 r은?",
+  a5: "부채꼴의 넓이 S는?",
+  a6: "부채꼴의 둘레는?",
+  a7: "회전수는?",
+  q1: "여사건의 확률 P(Aᶜ)는?",
+  q2: "합사건의 확률 P(A∪B)는?",
+  q3: "조건부확률 P(A|B)는?",
+  q4: "교사건의 확률 P(A∩B)는?",
+  q5: "정확히 2번 성공할 확률은?",
+  q6: "교사건의 확률 P(A∩B)는?",
+  q7: "확률 P(B)는?",
+  d1: "기댓값 E(X)는?",
+  d2: "분산 V(X)는?",
+  d3: "이항분포의 평균 E(X)는?",
+  d4: "이항분포의 분산 V(X)는?",
+  d5: "표준화한 값 Z는?",
+  d6: "표본평균의 평균 E(X̄)는?",
+  d7: "표본평균의 표준편차 σX̄는?",
+};
+
 function item(id: string, label: string, latex: string, answer: string, distractors: string[]): GeometryChoiceItem {
   return {
     id,
     label,
+    prompt: foundationPromptById[id],
     latex,
     correctLatex: answer,
     choices: [answer, ...distractors].map((value, index) => ({ id: `${id}-${index}`, latex: value, correct: index === 0 })),

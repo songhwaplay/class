@@ -48,6 +48,9 @@ test("space-coordinate worksheets rotate genuinely different, nontrivial problem
       assert.equal(problem.choices.length, 4);
       assert.equal(problem.choices.filter(({ correct }) => correct).length, 1);
       assert.equal(new Set(problem.choices.map(({ latex }) => latex)).size, 4);
+      if (!problem.id.startsWith("s")) {
+        assert.match(problem.prompt ?? "", /\?$/, `${problem.id} needs an explicit question`);
+      }
       assert.equal(formulas.has(problem.latex), false, `duplicate formula: ${problem.latex}`);
       formulas.add(problem.latex);
     }
@@ -65,6 +68,7 @@ test("geometry worksheets use the shared slide-over answer panel", async () => {
   assert.match(source, /<WorksheetChoicePanel/);
   assert.match(source, /<MathFormula latex=\{problem\.latex\} displayStyle \/>/);
   assert.match(source, /polynomial-focus-label">\{problem\.label\}/);
+  assert.match(source, /geometry-choice-prompt">\{problem\.prompt\}/);
   assert.doesNotMatch(source, /polynomial-focus-label">\{targetQuestion/);
   assert.match(source, /<WorksheetChoicePanel[^>]*displayStyle/);
   assert.match(source, /onClose=\{\(\) => setPanelOpen\(false\)\}/);

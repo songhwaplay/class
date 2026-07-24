@@ -14,6 +14,7 @@ test("keeps foundational high-school workouts complete and unambiguous", () => {
       assert.equal(problem.choices.length, 4);
       assert.equal(problem.choices.filter(({ correct }) => correct).length, 1);
       assert.equal(new Set(problem.choices.map(({ latex }) => latex)).size, 4);
+      assert.match(problem.prompt ?? "", /\?$/, `${problem.id} needs an explicit question`);
     }
   }
   assert.ok(radianProblems.some(({ label }) => label === "육십분법을 호도법으로"));

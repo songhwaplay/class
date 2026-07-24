@@ -5,7 +5,10 @@ import MathFormula from "../../../components/math-formula";
 import { rotateChoices } from "../../../../lib/worksheet-choice-utils";
 import WorksheetChoicePanel, { type WorksheetChoiceProblem } from "./worksheet-choice-panel";
 
-export type GeometryChoiceItem = WorksheetChoiceProblem & { latex: string };
+export type GeometryChoiceItem = WorksheetChoiceProblem & {
+  latex: string;
+  prompt?: string;
+};
 
 type Props = {
   subject?: string;
@@ -71,6 +74,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
               <div className="polynomial-question-number">{String(index + 1).padStart(2, "0")}</div>
               <div className="polynomial-question-body">
                 <span className="polynomial-focus-label">{problem.label}</span>
+                {problem.prompt && <p className="geometry-choice-prompt">{problem.prompt}</p>}
                 <div className="derivative-expression trig-derivative-expression geometry-choice-expression"><MathFormula latex={problem.latex} displayStyle /></div>
                 {answerSheet && <div className="derivative-static-answer"><MathFormula latex={problem.correctLatex} displayStyle /></div>}
               </div>
