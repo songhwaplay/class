@@ -311,20 +311,12 @@
             color: rgba(255, 255, 255, 0.55);
         }
 
-        /* 교실이 아닌 특별실/이동 수업일 때: 빨간 불빛 강조 하이라이트 🚨 */
+        /* 교실이 아닌 특별실/이동 수업일 때: 눈이 편안하고 세련된 민트톤 뱃지 */
         .period-place-badge.highlight {
-            background: rgba(255, 77, 77, 0.2);
-            border: 1px solid #ff4d4d;
-            color: #ff9999;
+            background: rgba(46, 196, 182, 0.16);
+            border: 1px solid rgba(46, 196, 182, 0.45);
+            color: #7ce4ff;
             font-weight: 800;
-            box-shadow: 0 0 8px rgba(255, 77, 77, 0.3);
-            animation: pulse-red-border 2s infinite ease-in-out;
-        }
-
-        @keyframes pulse-red-border {
-            0% { border-color: #ff4d4d; box-shadow: 0 0 4px rgba(255, 77, 77, 0.2); }
-            50% { border-color: #ff6666; box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); }
-            100% { border-color: #ff4d4d; box-shadow: 0 0 4px rgba(255, 77, 77, 0.2); }
         }
 
         .prep-input {
@@ -1117,7 +1109,7 @@
                     if (isNormalClassroom) {
                         placeTag = `<span class="period-place-badge default">📍 교실</span>`;
                     } else {
-                        placeTag = `<span class="period-place-badge highlight">🚨 ${item.place}</span>`;
+                        placeTag = `<span class="period-place-badge highlight">📍 ${item.place}</span>`;
                     }
                 }
                 const prepVal = savedPreps[item.p] || "";
