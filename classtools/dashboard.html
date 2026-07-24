@@ -296,15 +296,36 @@
         }
 
         .period-place-badge {
-            background: rgba(117, 214, 159, 0.15);
-            border: 1px solid rgba(117, 214, 159, 0.3);
-            color: var(--accent-green);
             font-size: 0.78rem;
             font-weight: 700;
             padding: 2px 7px;
             border-radius: 12px;
             white-space: nowrap;
             flex-shrink: 0;
+            transition: all 0.2s ease;
+        }
+
+        /* 일반 교실일 때: 불빛 없는 차분한 그레이/다크 톤 */
+        .period-place-badge.default {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: rgba(255, 255, 255, 0.55);
+        }
+
+        /* 교실이 아닌 특별실/이동 수업일 때: 빨간 불빛 강조 하이라이트 🚨 */
+        .period-place-badge.highlight {
+            background: rgba(255, 77, 77, 0.2);
+            border: 1px solid #ff4d4d;
+            color: #ff9999;
+            font-weight: 800;
+            box-shadow: 0 0 8px rgba(255, 77, 77, 0.3);
+            animation: pulse-red-border 2s infinite ease-in-out;
+        }
+
+        @keyframes pulse-red-border {
+            0% { border-color: #ff4d4d; box-shadow: 0 0 4px rgba(255, 77, 77, 0.2); }
+            50% { border-color: #ff6666; box-shadow: 0 0 10px rgba(255, 77, 77, 0.5); }
+            100% { border-color: #ff4d4d; box-shadow: 0 0 4px rgba(255, 77, 77, 0.2); }
         }
 
         .prep-input {
@@ -1004,7 +1025,15 @@
                     div.classList.add("active");
                 }
 
-                const placeTag = item.place ? `<span class="period-place-badge">📍 ${item.place}</span>` : '';
+                let placeTag = '';
+                if (item.place) {
+                    const isNormalClassroom = (item.place === '교실' || item.place === '우리교실');
+                    if (isNormalClassroom) {
+                        placeTag = `<span class="period-place-badge default">📍 교실</span>`;
+                    } else {
+                        placeTag = `<span class="period-place-badge highlight">🚨 ${item.place}</span>`;
+                    }
+                }
                 const prepVal = savedPreps[item.p] || "";
                 const hasVal = prepVal.trim().length > 0;
                 const prepBadge = `<span class="prep-active-badge" id="prepBadge_${dayName}_${item.p}" style="${hasVal ? '' : 'display:none;'}">🔴 🎒</span>`;
