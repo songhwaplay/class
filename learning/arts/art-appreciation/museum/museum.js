@@ -788,6 +788,38 @@
   function buildTabs(){rooms.forEach((room,i)=>{const b=document.createElement('button');b.type='button';b.className='room-tab';b.dataset.sfx='click';b.innerHTML=`<b>${room.number}. ${room.title}</b><small>${room.subtitle}</small>`;b.addEventListener('click',()=>{if(i!==activeRoom)setRoom(i);});roomTabs.appendChild(b);});}
 
   function formatSize(work){if(work.size.label)return work.size.label;const parts=[];if(work.size.h)parts.push(`높이 ${work.size.h}cm`);if(work.size.w)parts.push(`너비 ${work.size.w}cm`);if(work.size.d)parts.push(`깊이 ${work.size.d}cm`);return parts.join(' × ');}
+  const movementGuide={
+    '르네상스':{title:'르네상스',description:'사람과 자연을 자세히 관찰하고, 원근법과 균형 잡힌 구도로 현실 같은 공간을 만들려 한 미술이에요.'},
+    '초기 르네상스':{title:'초기 르네상스',description:'고대 그리스·로마 문화에 다시 관심을 두며, 자연스러운 인물과 이야기 장면을 새롭게 그리기 시작한 시기예요.'},
+    '성기 르네상스':{title:'성기 르네상스',description:'이상적인 인체, 안정된 구도, 정확한 원근법을 조화롭게 발전시킨 르네상스의 전성기예요.'},
+    '바로크':{title:'바로크',description:'강한 빛과 어둠, 깊은 공간, 극적인 순간을 사용해 그림이 눈앞에서 벌어지는 듯 보이게 한 미술이에요.'},
+    '로코코':{title:'로코코',description:'밝은 색과 우아한 곡선, 놀이와 사랑 같은 사적인 장면으로 가볍고 경쾌한 분위기를 만든 18세기 미술이에요.'},
+    '사실주의':{title:'사실주의',description:'영웅이나 신화보다 당대 사람들이 일하고 살아가는 현실을 진지하게 바라본 19세기 미술이에요.'},
+    '인상주의':{title:'인상주의',description:'사물의 정확한 윤곽보다 빛·날씨·색이 만들어 내는 순간의 첫인상을 빠른 붓질로 포착한 미술이에요.'},
+    '후기 인상주의':{title:'후기 인상주의',description:'인상주의 이후, 화가가 본 빛의 순간을 넘어 자신의 감정·색·붓질·화면 구조를 더 강하게 드러낸 여러 흐름을 말해요.'},
+    '신인상주의':{title:'신인상주의',description:'색채 이론을 바탕으로 작은 순수 색점을 나란히 놓아, 멀리서 볼 때 눈에서 색이 섞여 보이도록 한 미술이에요.'},
+    '상징주의':{title:'상징주의',description:'눈앞의 현실을 그대로 설명하기보다, 꿈·불안·소망처럼 보이지 않는 생각과 감정을 상징으로 나타낸 미술이에요.'},
+    '입체주의':{title:'입체주의',description:'하나의 대상을 여러 방향에서 본 모습으로 나누고 다시 조합해, 한 화면에 시간과 시점을 함께 담으려 한 미술이에요.'},
+    '원시 입체주의':{title:'원시 입체주의',description:'입체주의가 막 시작되던 시기로, 인물과 공간을 날카로운 면으로 단순화하며 기존 원근법을 흔들기 시작했어요.'},
+    '야수파':{title:'야수파',description:'자연의 실제 색보다 강렬하고 단순한 색면, 대담한 윤곽선으로 감정과 에너지를 표현한 미술이에요.'},
+    '초현실주의':{title:'초현실주의',description:'꿈과 무의식에서 떠오르는 낯선 장면을 사실적으로 그려, 우리가 익숙하다고 믿는 현실을 새롭게 보게 한 미술이에요.'},
+    '신조형주의':{title:'신조형주의',description:'수직·수평선과 기본색처럼 아주 제한된 요소로, 누구에게나 통하는 균형과 질서를 찾으려 한 추상 미술이에요.'},
+    '절대주의':{title:'절대주의',description:'현실의 사물을 재현하지 않고 단순한 도형과 색만으로 순수한 느낌을 표현하려 한 추상 미술이에요.'},
+    '빈 분리파':{title:'빈 분리파',description:'19세기 말 빈에서 기존 미술 제도에서 벗어나, 회화·장식·디자인의 경계를 넘는 새 아름다움을 찾은 예술가 모임이에요.'},
+    '매너리즘':{title:'매너리즘',description:'르네상스의 안정된 비례에서 벗어나 길어진 인체, 복잡한 구성, 낯선 아름다움으로 긴장감을 만든 16세기 미술이에요.'},
+    '헬레니즘':{title:'헬레니즘',description:'고대 그리스 문화가 넓게 퍼진 시대의 미술로, 인체의 움직임·감정·공간감을 더 생생하게 표현했어요.'},
+    '조선 후기':{title:'조선 후기 미술',description:'사람들의 일상, 실제 우리 산천, 생활 속 바람을 가까이 관찰하며 다양한 그림으로 펼쳐 낸 시기예요.'},
+    '조선 민화':{title:'조선 민화',description:'생활 가까이에서 그려진 그림으로, 복·장수·좋은 소식 같은 바람을 친근한 상징에 담았어요.'},
+    '한국 근대미술':{title:'한국 근대미술',description:'전통과 새로운 시대의 표현을 함께 고민하며, 개인의 감정과 삶을 자신만의 선·색·형태로 드러낸 미술이에요.'},
+    '근대 회화':{title:'근대 회화',description:'19세기 후반 화가들이 전통적인 역사화와 사실 묘사에서 벗어나, 지금 살아가는 사람과 새로운 화면 방식을 탐색하며 연 미술이에요.'},
+    '조선 시대':{title:'조선 시대 회화',description:'먹과 채색, 세밀한 관찰을 바탕으로 자연·사람·생활의 의미를 담아낸 우리 옛 그림의 흐름이에요.'},
+    '소박파':{title:'소박파',description:'전문 미술 교육의 규칙보다 자신만의 선명한 형태와 풍부한 상상력을 따라 독특한 세계를 만든 미술이에요.'},
+    '조선 전기':{title:'조선 전기 산수화',description:'산과 물을 따라 시선이 이동하도록 화면을 펼쳐, 현실의 경치와 이상적인 세계를 함께 보여 준 그림이에요.'},
+    '기하학적 추상':{title:'기하학적 추상',description:'사물을 그대로 그리지 않고 원·선·삼각형 같은 도형과 색의 관계로 화면의 리듬과 균형을 만든 추상 미술이에요.'},
+    '근대 조각':{title:'근대 조각',description:'고전 조각의 매끈한 이상미에서 벗어나, 거친 표면과 긴장된 몸을 통해 인물의 에너지와 내면을 드러낸 조각이에요.'},
+    '근대 미술':{title:'근대 미술',description:'19세기 말부터 화가들이 현실을 그대로 재현하는 방식에서 벗어나, 개인의 시선과 새로운 형태를 실험한 미술이에요.'}
+  };
+  function getMovement(work){return (work.tags||[]).map(tag=>[tag,movementGuide[tag]]).find(([,guide])=>guide);}
   function getExtendedGuide(work){
     if(work.id==='p09')return{
       background:'밀레가 이 그림을 그린 19세기 프랑스에는 농사를 지어 살아가는 사람이 아주 많았어요. 당시 미술에서는 왕이나 영웅을 크게 그리는 일이 흔했지만, 밀레는 평범한 농민의 고된 노동도 중요한 이야기라고 생각했어요. 이런 태도를 사실주의라고 해요.'
@@ -806,6 +838,9 @@
     document.getElementById('modal-artist').textContent=work.artist;document.getElementById('modal-year').textContent=work.year;document.getElementById('modal-medium').textContent=work.medium;
     const extendedGuide=getExtendedGuide(work);
     document.getElementById('modal-size').textContent=formatSize(work);document.getElementById('modal-docent').textContent=work.docent;document.getElementById('modal-background').textContent=extendedGuide.background;document.getElementById('modal-point').textContent=work.point;
+    const movement=getMovement(work),movementCard=document.getElementById('movement-card');
+    movementCard.hidden=!movement;
+    if(movement){const [tag,guide]=movement;document.getElementById('movement-title').textContent=guide.title;document.getElementById('movement-description').textContent=guide.description;document.getElementById('movement-connection').textContent=`이 작품에서는 ${tag}의 특징을 찾아볼 수 있어요.`;}
     const legal=document.getElementById('modal-legal'),rights=String(work.rights||''),needsCredit=/©|CC BY|공공누리|저작권자|출처 표시/.test(rights);
     legal.hidden=!needsCredit;legal.open=false;document.getElementById('modal-rights').textContent=needsCredit?rights:'';document.getElementById('modal-source').href=work.source;modal.showModal();keysClear();
   }
