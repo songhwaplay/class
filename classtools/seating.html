@@ -92,10 +92,12 @@
         }
 
         .desk {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            width: 100%;
             min-height: 90px;
             border: 2px solid var(--line);
             border-radius: 14px;
@@ -103,6 +105,7 @@
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
             cursor: pointer;
             transition: all 0.15s ease;
+            font: inherit;
         }
 
         .desk:hover {
@@ -123,6 +126,33 @@
             color: var(--brand);
         }
 
+        .desk.is-empty .desk-name { color: #6f7b80; }
+
+        .desk.is-unused {
+            border-style: dashed;
+            border-color: #b9a58a;
+            background: repeating-linear-gradient(-45deg, #f8f3ea 0 10px, #f2eadc 10px 20px);
+        }
+
+        .desk.is-unused::after {
+            content: "×";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            color: #9a473a;
+            font-size: 4rem;
+            font-weight: 300;
+            line-height: 1;
+            transform: translate(-50%, -48%);
+        }
+
+        .desk.is-unused .desk-num,
+        .desk.is-unused .desk-name { opacity: 0.35; }
+
+        .desk.is-unused .desk-name { color: #7f3a30; }
+
+        .desk:focus-visible { outline: 3px solid var(--brand-light); outline-offset: 3px; }
+
         .controls-row {
             display: flex;
             align-items: center;
@@ -131,9 +161,34 @@
             flex-wrap: wrap;
         }
 
+        .control-group { display: flex; gap: 10px; flex-wrap: wrap; }
+
+        .btn-toggle[aria-pressed="true"] {
+            border-color: #9a473a;
+            color: #fff;
+            background: #9a473a;
+        }
+
+        .seat-summary {
+            margin: 0 0 18px;
+            padding: 12px 14px;
+            border: 1px solid #e4dacb;
+            border-radius: 10px;
+            color: var(--muted);
+            background: #fbf7ef;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .seat-summary strong { color: var(--brand); }
+
+        .mode-note { color: #9a473a; }
+
         @media (max-width: 768px) {
             .seating-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(6, minmax(108px, 1fr));
+                overflow-x: auto;
+                padding-bottom: 8px;
             }
         }
 
@@ -162,10 +217,15 @@
             <div class="blackboard">칠 판 (앞)</div>
 
             <!-- 자리 배치 배치도 그리드 -->
-            <div class="seating-grid" id="seating-grid"></div>
+            <p class="seat-summary" id="seat-summary" aria-live="polite"></p>
+            <div class="seating-grid" id="seating-grid" aria-label="6행 6열 자리 배치"></div>
 
             <div class="controls-row">
-                <button class="btn btn-primary" id="shuffle-btn" type="button">🎲 자리 무작위 섞기</button>
+                <div class="control-group">
+                    <button class="btn btn-toggle" id="unused-mode-btn" type="button" aria-pressed="false">✕ 사용 안 함 표시</button>
+                    <button class="btn btn-primary" id="shuffle-btn" type="button">🎲 자리 무작위 섞기</button>
+                    <button class="btn" id="reset-unused-btn" type="button">↺ X 표시 모두 해제</button>
+                </div>
                 <button class="btn" onclick="window.print()" type="button">🖨️ 배치도 인쇄하기</button>
             </div>
         </section>
@@ -177,8 +237,15 @@
             const seatingGrid = document.getElementById('seating-grid');
             const classHeader = document.getElementById('class-header');
             const shuffleBtn = document.getElementById('shuffle-btn');
+            const unusedModeBtn = document.getElementById('unused-mode-btn');
+            const resetUnusedBtn = document.getElementById('reset-unused-btn');
+            const seatSummary = document.getElementById('seat-summary');
+            const TOTAL_DESKS = 36;
 
             let students = [];
+            let unavailableSeats = new Set();
+            let isUnusedMode = false;
+            let storageKey = 'classroom-seating-unused-default';
 
             async function api(path) {
                 const res = await fetch(path);
@@ -187,18 +254,62 @@
 
             function renderDesks() {
                 seatingGrid.innerHTML = '';
-                const totalDesks = Math.max(30, students.length);
-                for (let i = 0; i < totalDesks; i++) {
-                    const desk = document.createElement('div');
-                    desk.className = 'desk';
-                    const student = students[i];
+                const availableSeats = Array.from({ length: TOTAL_DESKS }, (_, index) => index)
+                    .filter((index) => !unavailableSeats.has(index));
+                const assignedSeats = new Map(availableSeats.map((seatIndex, studentIndex) => [seatIndex, students[studentIndex]]));
+
+                for (let i = 0; i < TOTAL_DESKS; i++) {
+                    const isUnused = unavailableSeats.has(i);
+                    const student = assignedSeats.get(i);
+                    const desk = document.createElement('button');
+                    desk.type = 'button';
+                    desk.className = `desk${isUnused ? ' is-unused' : ''}${!student && !isUnused ? ' is-empty' : ''}`;
+                    desk.setAttribute('aria-label', isUnused
+                        ? `${i + 1}번 좌석, 사용 안 함. 클릭하여 사용으로 전환`
+                        : `${i + 1}번 좌석, ${student ? student.name : '빈자리'}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : ''}`);
+                    desk.title = isUnusedMode ? '클릭하여 사용 안 함(X) 표시를 전환합니다.' : 'X 표시 버튼을 눌러 사용 안 함 모드로 바꿀 수 있습니다.';
                     const genderBadge = student && student.gender ? `<small style="opacity:0.7; font-size:0.8rem; margin-left:3px;">(${student.gender})</small>` : '';
                     desk.innerHTML = `
                         <span class="desk-num">${i + 1}번 좌석</span>
-                        <span class="desk-name">${student ? student.name + genderBadge : '빈자리'}</span>
+                        <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name + genderBadge : '빈자리')}</span>
                     `;
+                    desk.addEventListener('click', () => {
+                        if (!isUnusedMode && !isUnused) return;
+                        toggleUnusedSeat(i);
+                    });
                     seatingGrid.appendChild(desk);
                 }
+
+                const activeDeskCount = TOTAL_DESKS - unavailableSeats.size;
+                const unassignedCount = Math.max(0, students.length - activeDeskCount);
+                seatSummary.innerHTML = `<strong>전체 36석</strong> · 사용 가능 ${activeDeskCount}석 · 사용 안 함 ${unavailableSeats.size}석 · 학생 ${students.length}명${unassignedCount ? ` <span class="mode-note">(배정되지 않은 학생 ${unassignedCount}명)</span>` : ''}${isUnusedMode ? ' <span class="mode-note">— 좌석을 클릭해 X 표시를 켜거나 끄세요.</span>' : ''}`;
+            }
+
+            function saveUnavailableSeats() {
+                localStorage.setItem(storageKey, JSON.stringify([...unavailableSeats]));
+            }
+
+            function loadUnavailableSeats() {
+                try {
+                    const saved = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                    unavailableSeats = new Set(saved.filter((seat) => Number.isInteger(seat) && seat >= 0 && seat < TOTAL_DESKS));
+                } catch (_) {
+                    unavailableSeats = new Set();
+                }
+            }
+
+            function toggleUnusedSeat(index) {
+                if (unavailableSeats.has(index)) unavailableSeats.delete(index);
+                else unavailableSeats.add(index);
+                saveUnavailableSeats();
+                renderDesks();
+            }
+
+            function setUnusedMode(nextMode) {
+                isUnusedMode = nextMode;
+                unusedModeBtn.setAttribute('aria-pressed', String(isUnusedMode));
+                unusedModeBtn.textContent = isUnusedMode ? '✕ X 표시 중지' : '✕ 사용 안 함 표시';
+                renderDesks();
             }
 
             function shuffleStudents() {
@@ -220,6 +331,7 @@
                     if (classRes && classRes.classroom) {
                         const c = classRes.classroom;
                         classHeader.textContent = `${c.schoolName} ${c.grade}학년 ${c.classNumber}반 (${c.teacherName} 선생님)`;
+                        storageKey = `classroom-seating-unused-${c.id || `${c.schoolName}-${c.grade}-${c.classNumber}`}`;
                         students = (c.students || []).map(s => ({ number: s.number, name: s.name, gender: s.gender || '남' }));
                     } else {
                         classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
@@ -232,10 +344,17 @@
                 } catch (_) {
                     classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
                 }
+                loadUnavailableSeats();
                 renderDesks();
             }
 
             shuffleBtn.addEventListener('click', shuffleStudents);
+            unusedModeBtn.addEventListener('click', () => setUnusedMode(!isUnusedMode));
+            resetUnusedBtn.addEventListener('click', () => {
+                unavailableSeats.clear();
+                saveUnavailableSeats();
+                renderDesks();
+            });
             init();
         })();
     </script>
