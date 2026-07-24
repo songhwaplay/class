@@ -22,6 +22,10 @@ const common = catalog.books.filter((book) => book.shelves.includes('공통'));
 assert.equal(common.length, 5);
 const collectionByLabel = new Map(catalog.collections.map((collection) => [collection.label, collection]));
 const assigned = new Set();
+const kilwa = cities.find((city) => city.name === '킬와');
+
+assert.ok(kilwa, '킬와 도시 자료를 찾을 수 있어야 한다');
+assert.equal(kilwa.region, '동아프리카', '킬와의 실제 지역은 동아프리카여야 한다');
 
 for (const city of cities) {
   const shelf = finalQuiz.libraryShelfForCity(city);
@@ -39,6 +43,9 @@ assert.equal(assigned.size, 225);
 assert.equal(catalog.collections.reduce((sum, collection) => sum + collection.cityIds.length, 0), 225);
 
 assert.match(student, /const LIBRARY_SHELF_BY_REGION=Object\.freeze/);
+assert.match(student, /function libraryRegionLabelForCity\(city\)\{return String\(city\?\.region\|\|city\?\.libraryRegion\|\|'공통'\)\}/);
+assert.match(student, /libraryBtn\.textContent=`도서관 · \$\{regionLabel\}`/);
+assert.doesNotMatch(student, /libraryBtn\.textContent=`도서관 · \$\{shelf\}`/);
 assert.match(student, /return \{\.\.\.catalogCity,libraryRegion:libraryShelfForCity\(catalogCity\),hasLibrary:true\}/);
 assert.match(student, /libraryBtn\.hidden=false/);
 assert.match(student, /book\.shelves\.includes\(shelf\)/);

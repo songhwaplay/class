@@ -416,6 +416,7 @@ finalQuizCard.addEventListener('submit',event=>{event.preventDefault();if(finalQ
 finalQuizContinue.addEventListener('click',()=>{dismissedFinalQuizMissionId=activeMission?.id||'';lastFinalQuizRenderKey='';finalQuizView.classList.remove('show')});
 const LIBRARY_SHELF_BY_REGION=Object.freeze({'이베리아':'이베리아','프랑스':'지중해','이탈리아':'지중해','발칸':'지중해','브리튼':'북유럽','북유럽':'북유럽','네덜란드':'북유럽','독일':'북유럽','동유럽':'중근동·북아프리카','흑해':'중근동·북아프리카','근동':'중근동·북아프리카','중동':'중근동·북아프리카','북아프리카':'중근동·북아프리카','인도':'인도','중앙아시아':'중앙아시아','동북아시아':'중국·조선','동남아시아':'인도','서아프리카':'중근동·북아프리카','동아프리카':'인도','중앙아메리카':'아메리카','서인도제도':'아메리카','남동아메리카':'아메리카','남서아메리카':'아메리카'});
 function libraryShelfForCity(city){if(city?.countryCode==='JP')return'일본';return city?.libraryRegion||LIBRARY_SHELF_BY_REGION[String(city?.region||'')]||'공통'}
+function libraryRegionLabelForCity(city){return String(city?.region||city?.libraryRegion||'공통')}
 function currentLibraryCity(city=serverSelf){
   const cityId=String(city?.currentCityId||'');
   const catalogCity=cityCatalogById.get(cityId);if(!catalogCity)return null;
@@ -442,17 +443,17 @@ function openLibrary(){
   if(mode!=='city')return;
   const catalogCity=currentLibraryCity(serverSelf);
   if(!catalogCity){closeLibrary();showToast('도시 정보를 불러오지 못했습니다.');return}
-  const books=cityBooks(serverSelf);libraryTitle.textContent=`${serverSelf?.currentCityName||'도시'} 도서관 · ${catalogCity.libraryRegion} 장서`;
-  const hasCityHistory=books.some(book=>book.contextKind==='cityHistory');libraryHint.textContent=hasCityHistory?`${catalogCity.libraryRegion} 지역사 · ${catalogCity.name} 특별 도시사 · 총 ${books.length}권`:`${catalogCity.libraryRegion} 지역사 · 총 ${books.length}권`;bookList.replaceChildren();
+  const books=cityBooks(serverSelf),regionLabel=libraryRegionLabelForCity(catalogCity),shelfLabel=String(catalogCity.libraryRegion||'공통');libraryTitle.textContent=`${serverSelf?.currentCityName||'도시'} 도서관 · ${regionLabel}`;
+  const hasCityHistory=books.some(book=>book.contextKind==='cityHistory');libraryHint.textContent=hasCityHistory?`${regionLabel} 지역사 · ${shelfLabel} 공동 장서 · ${catalogCity.name} 특별 도시사 · 총 ${books.length}권`:`${regionLabel} 지역사 · ${shelfLabel} 공동 장서 · 총 ${books.length}권`;bookList.replaceChildren();
   for(const book of books){const button=document.createElement('button');button.type='button';button.dataset.bookId=book.id;if(book.contextKind)button.classList.add(book.contextKind);const title=document.createElement('b');title.textContent=book.title;const meta=document.createElement('small');meta.textContent=[book.category,book.author,book.period].filter(Boolean).join(' · ');button.append(title,meta);button.onclick=()=>renderBook(book);bookList.append(button)}
   libraryView.classList.add('show');renderBook(books.find(book=>book.id===openedBookId)||books[0]);
 }
 function closeLibrary(){libraryView.classList.remove('show')}
 function renderCityView(){
   if(mode!=='city'||!serverSelf?.currentCityId)return;
-  const cityId=serverSelf.currentCityId,catalogCity=cityCatalogById.get(String(cityId)),shelf=libraryShelfForCity(catalogCity);
-  libraryBtn.hidden=false;libraryBtn.textContent=`도서관 · ${shelf}`;
-  if(renderedCityId!==cityId){renderedCityId=cityId;cityScene.src=serverSelf.currentCityImage||catalogCity?.interiorImage||'';cityScene.alt=`${serverSelf.currentCityName||'도시'} 내부`;cityTitle.textContent=serverSelf.currentCityName||'도시';cityInfo.textContent=[serverSelf.currentCityRegion,'도시 내부',`${shelf} 도서관`].filter(Boolean).join(' · ');openedBookId='';closeLibrary()}
+  const cityId=serverSelf.currentCityId,catalogCity=cityCatalogById.get(String(cityId)),regionLabel=libraryRegionLabelForCity(catalogCity);
+  libraryBtn.hidden=false;libraryBtn.textContent=`도서관 · ${regionLabel}`;
+  if(renderedCityId!==cityId){renderedCityId=cityId;cityScene.src=serverSelf.currentCityImage||catalogCity?.interiorImage||'';cityScene.alt=`${serverSelf.currentCityName||'도시'} 내부`;cityTitle.textContent=serverSelf.currentCityName||'도시';cityInfo.textContent=[serverSelf.currentCityRegion,'도시 내부',`${regionLabel} 도서관`].filter(Boolean).join(' · ');openedBookId='';closeLibrary()}
 }
 function applyModeUI(){
   const busy=!!serverSelf?.transition,travelAllowed=canTravelNow(),inCity=mode==='city';
