@@ -227,7 +227,7 @@
         textarea {
             display: block;
             width: 100%;
-            min-height: 200px;
+            min-height: 760px;
             resize: vertical;
             border: 1.5px solid var(--line);
             border-radius: 12px;
@@ -236,7 +236,7 @@
             color: var(--ink);
             background: #fffefa;
             font-size: 0.95rem;
-            line-height: 1.65;
+            line-height: 1.5;
             font-variant-numeric: tabular-nums;
             transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
         }
@@ -1013,6 +1013,20 @@
             signOutButton.addEventListener("click", async () => {
                 await api("/api/auth/logout", { method: "POST", body: "{}" }).catch(() => {});
                 location.replace("/");
+            });
+
+            const allTextareas = [numbersInput, namesInput, gendersInput, birthdatesInput, passwordsInput].filter(Boolean);
+            let isSyncingScroll = false;
+            allTextareas.forEach((ta) => {
+                ta.addEventListener("scroll", (e) => {
+                    if (isSyncingScroll) return;
+                    isSyncingScroll = true;
+                    const top = e.target.scrollTop;
+                    allTextareas.forEach((other) => {
+                        if (other !== e.target) other.scrollTop = top;
+                    });
+                    requestAnimationFrame(() => { isSyncingScroll = false; });
+                });
             });
 
             populateYearOptions();
