@@ -177,6 +177,14 @@
         }
     }
 
+    function setMusicMuted(muted) {
+        musicMuted = Boolean(muted);
+        storeState();
+        render();
+        applyAudioState();
+        announceState();
+    }
+
     async function startPlayback() {
         applyAudioState();
         try {
@@ -191,11 +199,7 @@
     }
 
     musicMuteBtn.addEventListener("click", () => {
-        musicMuted = !musicMuted;
-        storeState();
-        render();
-        applyAudioState();
-        announceState();
+        setMusicMuted(!musicMuted);
         startPlayback();
     });
 
@@ -256,6 +260,9 @@
         savePlaybackState();
         pageIsHiding = true;
     });
+    // Multiplayer guests start muted by default. They can still use UNMUTE
+    // when they are far enough from the host that they need local audio.
+    window.addEventListener("classroommultiplayerjoined", () => setMusicMuted(true));
     window.addEventListener("pageshow", () => {
         pageIsHiding = false;
         shouldResumePlayback = true;

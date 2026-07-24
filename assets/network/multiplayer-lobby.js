@@ -291,6 +291,11 @@
                 if (message.playerId != null) this.myId = String(message.playerId);
                 this.connected = true;
                 this.players = this.myId ? { [this.myId]: { name: this.playerName } } : {};
+                // Nearby Chromebooks should not play the same music as the host.
+                // Only signal after the server confirms a successful join.
+                window.dispatchEvent(new CustomEvent("classroommultiplayerjoined", {
+                    detail: { gameId: this.gameId, roomCode: this.roomCode }
+                }));
                 this._setStatus(`방 ${this.roomCode}에 입장했습니다.`);
                 this.render();
                 return;

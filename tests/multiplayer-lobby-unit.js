@@ -44,6 +44,12 @@ Object.defineProperty(global, "navigator", {
 });
 global.location = { reload() {} };
 global.window = new EventTarget();
+global.CustomEvent = class CustomEvent extends Event {
+    constructor(type, options = {}) {
+        super(type);
+        this.detail = options.detail;
+    }
+};
 window.document = document;
 window.navigator = navigator;
 window.location = location;
@@ -129,6 +135,8 @@ assert.deepStrictEqual(hostStart.data, { seed: 7 });
 const guestIds = makeElements("guest");
 let guestStart = null;
 let guestLobbyData = null;
+let joinedRoom = null;
+window.addEventListener("classroommultiplayerjoined", event => { joinedRoom = event.detail; });
 const guest = window.ClassroomMultiplayerLobby.create({
     gameId: "test-game",
     ids: guestIds,
@@ -147,6 +155,7 @@ assert.deepStrictEqual(guestSocket.sent.at(-1), {
     type: "JOIN_ROOM", gameId: "test-game", roomCode: "2468", name: "손님"
 });
 guestSocket.receive({ type: "ROOM_JOINED", playerId: "guest-1", roomCode: "2468" });
+assert.deepStrictEqual(joinedRoom, { gameId: "test-game", roomCode: "2468" });
 guestSocket.receive({ type: "GAME_MESSAGE", senderId: "host-1", payload: lobbyStatePayload });
 guestSocket.receive({ type: "GAME_MESSAGE", senderId: "host-1", payload: startPayload });
 
