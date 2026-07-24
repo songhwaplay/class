@@ -5911,13 +5911,13 @@ button.prime-number-question:focus-visible {
   }
 
   .stage-elementary {
-    --stage-color: #946d57;
-    --stage-soft: #fff4ec;
+    --stage-color: #527d72;
+    --stage-soft: #f0faf7;
   }
 
   .stage-middle {
-    --stage-color: #527d72;
-    --stage-soft: #f0faf7;
+    --stage-color: #8a7340;
+    --stage-soft: #fffbea;
   }
 
   .stage-high {
