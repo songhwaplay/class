@@ -172,6 +172,7 @@
             align-items: center;
             justify-content: space-between;
             width: 100%;
+            min-height: 24px;
         }
 
         .desk-coord {
@@ -184,27 +185,25 @@
             line-height: 1.2;
         }
 
+        .desk-avatar {
+            font-size: 2.2rem;
+            line-height: 1;
+            margin: 0 4px;
+            transform: translateY(-2px);
+        }
+
         .desk-body {
-            position: relative;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 100%;
-            min-height: 48px;
-            margin-top: 2px;
-        }
-
-        .desk-avatar {
-            font-size: 2.3rem;
-            line-height: 1;
-            position: absolute;
-            left: 4px;
-            top: 50%;
-            transform: translateY(-50%);
+            flex: 1;
+            margin-top: 4px;
+            margin-bottom: 2px;
         }
 
         .desk-name {
-            font-size: 1.55rem;
+            font-size: 1.65rem;
             font-weight: 900;
             color: var(--brand);
             line-height: 1;
@@ -596,11 +595,13 @@
                     desk.innerHTML = `
                         <div class="desk-header-row">
                             <span class="desk-coord">${coordStr}</span>
-                            ${lockedStudent && !isUnused ? `<span class="desk-student-lock" style="position:static; padding:1px 6px;">${lockedStudent.name} 고정</span>` : ''}
-                            ${genderLock && !isUnused ? `<span class="desk-lock ${genderLock === '남' ? 'male' : 'female'}" style="position:static; padding:1px 6px;">${genderLock} 고정</span>` : ''}
+                            ${avatarBadge}
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                ${lockedStudent && !isUnused ? `<span class="desk-student-lock" style="position:static; padding:1px 6px;">${lockedStudent.name} 고정</span>` : ''}
+                                ${genderLock && !isUnused ? `<span class="desk-lock ${genderLock === '남' ? 'male' : 'female'}" style="position:static; padding:1px 6px;">${genderLock} 고정</span>` : ''}
+                            </div>
                         </div>
                         <div class="desk-body">
-                            ${avatarBadge}
                             <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name : '빈자리')}</span>
                         </div>
                     `;
