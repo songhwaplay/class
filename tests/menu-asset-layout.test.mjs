@@ -39,8 +39,6 @@ test("menu-specific asset groups live with their menu", () => {
     "learning/basics/vocabulary/assets/data/english-vocabulary-3000-v2.json",
     "learning/basics/vocabulary/assets/images/apple-v2.webp",
     "learning/academics/body-explorer/assets/images/circulation-hero.webp",
-    "learning/arts/art-appreciation/assets/images/k1.jpg",
-    "learning/arts/art-appreciation/assets/sound/art-appreciation.mp3",
     "learning/arts/art-appreciation/assets/sound/museum/gallery-01-portrait.mp3",
     "learning/arts/art-appreciation/assets/sound/museum/gallery-02-nature.mp3",
     "learning/arts/art-appreciation/assets/sound/museum/gallery-03-story.mp3",
@@ -92,7 +90,6 @@ test("museum galleries switch to their matching background music", () => {
 test("moved menu assets have no references to their former root locations", () => {
   const sources = [
     read("learning/basics/vocabulary/app.js"),
-    read("learning/arts/art-appreciation/index.html"),
     read("learning/arts/art-appreciation/museum/index.html"),
     read("learning/games/omok/omok.html"),
     read("learning/games/connect6/connect6.html"),

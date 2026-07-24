@@ -149,7 +149,7 @@ const LEGACY_LEARNING_PATHS = new Map([
   ["/learning/basics/idioms", "/learning/academics/classical-chinese-idioms"],
   ["/learning/simulations/body-explorer", "/learning/academics/body-explorer"],
   ["/learning/training/music-studio", "/learning/arts/music-studio"],
-  ["/learning/art", "/learning/arts/art-appreciation"],
+  ["/learning/art", "/learning/arts/art-appreciation/museum/"],
   ["/learning/music/classics", "/learning/arts/classical-music"],
   ["/learning/music/korean", "/learning/arts/korean-music"],
 ]);
