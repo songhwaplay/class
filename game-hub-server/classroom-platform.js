@@ -244,7 +244,11 @@ function createClassroomPlatform(options = {}) {
         UNIQUE (name, google_domain)
       )`,
       `ALTER TABLE classroom_schools
+        ADD COLUMN IF NOT EXISTS office_code TEXT`,
+      `ALTER TABLE classroom_schools
         ADD COLUMN IF NOT EXISTS school_code TEXT`,
+      `ALTER TABLE classroom_schools
+        ADD COLUMN IF NOT EXISTS location_name TEXT`,
       `ALTER TABLE classroom_schools
         ADD COLUMN IF NOT EXISTS enabled BOOLEAN NOT NULL DEFAULT TRUE`,
       `ALTER TABLE classroom_schools
@@ -313,6 +317,8 @@ function createClassroomPlatform(options = {}) {
         ADD COLUMN IF NOT EXISTS password_hash TEXT`,
       `ALTER TABLE classroom_students
         ADD COLUMN IF NOT EXISTS gender TEXT NOT NULL DEFAULT '남'`,
+      `ALTER TABLE classroom_students
+        ADD COLUMN IF NOT EXISTS birth_date TEXT`,
       `CREATE INDEX IF NOT EXISTS classroom_students_class_idx
         ON classroom_students (class_id)`,
       `ALTER TABLE classroom_classes
@@ -659,10 +665,68 @@ function createClassroomPlatform(options = {}) {
     res.json({ ok: true, mode });
   }));
 
+  router.get("/school/search", asyncRoute(async (req, res) => {
+    const query = String(req.query?.query || "").trim();
+    if (!query) return res.json({ schools: [] });
+    const keyParam = process.env.NEIS_API_KEY ? `&KEY=${process.env.NEIS_API_KEY}` : "";
+    const neisUrl = `https://open.neis.go.kr/hub/schoolInfo?Type=json&pIndex=1&pSize=20${keyParam}&SCHUL_NM=${encodeURIComponent(query)}`;
+    try {
+      const response = await fetch(neisUrl);
+      const data = await response.json();
+      const rows = data?.schoolInfo?.[1]?.row || [];
+      const schools = rows.map((r) => ({
+        name: r.SCHUL_NM,
+        officeCode: r.ATPT_OFCDC_SC_CODE,
+        schoolCode: r.SD_SCHUL_CODE,
+        locationName: r.LCTN_SC_NM || r.ATPT_OFCDC_SC_NM || "",
+        address: r.ORG_RDNMA || ""
+      }));
+      res.json({ schools });
+    } catch (err) {
+      res.json({ schools: [] });
+    }
+  }));
+
+  router.get("/school/meal", asyncRoute(async (req, res) => {
+    const { officeCode, schoolCode, date } = req.query;
+    if (!officeCode || !schoolCode) {
+      throw new HttpError(400, "MISSING_PARAMS", "officeCode and schoolCode are required.");
+    }
+    const targetDate = String(date || "").replace(/\D/g, "") || new Date().toISOString().slice(0, 10).replace(/-/g, "");
+    const keyParam = process.env.NEIS_API_KEY ? `&KEY=${process.env.NEIS_API_KEY}` : "";
+    const neisUrl = `https://open.neis.go.kr/hub/mealServiceDietInfo?Type=json${keyParam}&ATPT_OFCDC_SC_CODE=${officeCode}&SD_SCHUL_CODE=${schoolCode}&MLSV_YMD=${targetDate}`;
+    try {
+      const response = await fetch(neisUrl);
+      const data = await response.json();
+      const rows = data?.mealServiceDietInfo?.[1]?.row || [];
+      const meals = rows.map((r) => {
+        const rawDish = r.DDISH_NM || "";
+        // Clean allergy tags like (1.2.5.6) or 1.2.5.6.
+        const cleanedDish = rawDish
+          .replace(/<br\s*\/?>/gi, "\n")
+          .replace(/\([0-9\.]+\)/g, "")
+          .replace(/[0-9]+\./g, "")
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean);
+        return {
+          mealType: r.MMEAL_SC_NM || "점심",
+          date: r.MLSV_YMD,
+          dishes: cleanedDish,
+          calories: r.CAL_INFO || "",
+          nutrition: r.NTR_INFO || ""
+        };
+      });
+      res.json({ date: targetDate, meals });
+    } catch (err) {
+      res.json({ date: targetDate, meals: [] });
+    }
+  }));
+
   router.get("/admin/schools", asyncRoute(async (req, res) => {
     await requireAdmin(req);
     const schoolsResult = await pool.query(
-      `SELECT id, name, google_domain, enabled
+      `SELECT id, name, google_domain, office_code, school_code, location_name, enabled
        FROM classroom_schools
        ORDER BY name, id`
     );
@@ -704,6 +768,9 @@ function createClassroomPlatform(options = {}) {
         id: String(school.id),
         name: school.name,
         domain: school.google_domain || "",
+        officeCode: school.office_code || "",
+        schoolCode: school.school_code || "",
+        locationName: school.location_name || "",
         enabled: school.enabled,
         teachers: teachersBySchool.get(String(school.id)) || []
       }))
@@ -713,23 +780,42 @@ function createClassroomPlatform(options = {}) {
   router.post("/admin/schools", asyncRoute(async (req, res) => {
     await requireAdmin(req);
     const name = String(req.body?.name || "").trim();
+    const officeCode = String(req.body?.officeCode || "").trim();
+    const schoolCode = String(req.body?.schoolCode || "").trim();
+    const locationName = String(req.body?.locationName || "").trim();
+
     if (!name || name.length > 80) {
       throw new HttpError(400, "INVALID_SCHOOL", "Enter a school name.");
     }
     const existing = await pool.query(
       `UPDATE classroom_schools
-       SET enabled = TRUE, updated_at = NOW()
+       SET enabled = TRUE,
+           office_code = COALESCE(NULLIF($2, ''), office_code),
+           school_code = COALESCE(NULLIF($3, ''), school_code),
+           location_name = COALESCE(NULLIF($4, ''), location_name),
+           updated_at = NOW()
        WHERE id = (SELECT id FROM classroom_schools WHERE name = $1 ORDER BY id LIMIT 1)
-       RETURNING id, name, enabled`,
-      [name]
+       RETURNING id, name, office_code, school_code, location_name, enabled`,
+      [name, officeCode, schoolCode, locationName]
     );
     const result = existing.rows[0] ? existing : await pool.query(
-      `INSERT INTO classroom_schools (name, google_domain, enabled)
-       VALUES ($1, '', TRUE)
-       RETURNING id, name, enabled`,
-      [name]
+      `INSERT INTO classroom_schools (name, google_domain, office_code, school_code, location_name, enabled)
+       VALUES ($1, '', $2, $3, $4, TRUE)
+       RETURNING id, name, office_code, school_code, location_name, enabled`,
+      [name, officeCode, schoolCode, locationName]
     );
-    res.json({ ok: true, school: { id: String(result.rows[0].id), name: result.rows[0].name, enabled: result.rows[0].enabled } });
+    const row = result.rows[0];
+    res.json({
+      ok: true,
+      school: {
+        id: String(row.id),
+        name: row.name,
+        officeCode: row.office_code || "",
+        schoolCode: row.school_code || "",
+        locationName: row.location_name || "",
+        enabled: row.enabled
+      }
+    });
   }));
 
   router.patch("/admin/schools/:schoolId", asyncRoute(async (req, res) => {
@@ -737,15 +823,24 @@ function createClassroomPlatform(options = {}) {
     const schoolId = Number(req.params.schoolId);
     const name = String(req.body?.name || "").trim();
     const enabled = req.body?.enabled;
+    const officeCode = String(req.body?.officeCode || "").trim();
+    const schoolCode = String(req.body?.schoolCode || "").trim();
+    const locationName = String(req.body?.locationName || "").trim();
+
     if (!Number.isInteger(schoolId) || schoolId < 1 || !name || name.length > 80 || typeof enabled !== "boolean") {
       throw new HttpError(400, "INVALID_SCHOOL", "Check the school name and access setting.");
     }
     const result = await pool.query(
       `UPDATE classroom_schools
-       SET name = $1, enabled = $2
-       WHERE id = $3
+       SET name = $1,
+           enabled = $2,
+           office_code = $3,
+           school_code = $4,
+           location_name = $5,
+           updated_at = NOW()
+       WHERE id = $6
        RETURNING id`,
-      [name, enabled, schoolId]
+      [name, enabled, officeCode, schoolCode, locationName, schoolId]
     );
     if (!result.rows[0]) throw new HttpError(404, "SCHOOL_NOT_FOUND", "School not found.");
     res.json({ ok: true });
@@ -1039,7 +1134,8 @@ function createClassroomPlatform(options = {}) {
     if (!classroom) return res.json({ classroom: null });
 
     const studentsResult = await pool.query(
-      `SELECT student_number, roster_name, COALESCE(gender, '남') AS gender, user_id IS NOT NULL AS linked,
+      `SELECT student_number, roster_name, COALESCE(gender, '남') AS gender, birth_date,
+              user_id IS NOT NULL AS linked,
               password_hash IS NOT NULL AS password_configured
        FROM classroom_students
        WHERE class_id = $1
@@ -1059,6 +1155,7 @@ function createClassroomPlatform(options = {}) {
           number: student.student_number,
           name: student.roster_name,
           gender: student.gender === '여' ? '여' : '남',
+          birthDate: student.birth_date || "",
           linked: student.linked,
           passwordConfigured: student.password_configured
         }))
@@ -1207,15 +1304,17 @@ function createClassroomPlatform(options = {}) {
         const passwordHash = student.password
           ? hashStudentPassword(student.password)
           : existingPasswords.get(student.number) || hashStudentPassword(DEFAULT_STUDENT_PASSWORD);
+        const birthDate = String(student.birthDate || student.birth_date || "").replace(/\D/g, "").slice(0, 6);
         await client.query(
-          `INSERT INTO classroom_students (class_id, student_number, roster_name, gender, password_hash)
-           VALUES ($1, $2, $3, $4, $5)
+          `INSERT INTO classroom_students (class_id, student_number, roster_name, gender, birth_date, password_hash)
+           VALUES ($1, $2, $3, $4, $5, $6)
            ON CONFLICT (class_id, student_number) DO UPDATE SET
              roster_name = EXCLUDED.roster_name,
              gender = EXCLUDED.gender,
+             birth_date = EXCLUDED.birth_date,
              password_hash = EXCLUDED.password_hash,
              updated_at = NOW()`,
-          [classroom.id, student.number, student.name, student.gender, passwordHash]
+          [classroom.id, student.number, student.name, student.gender, birthDate, passwordHash]
         );
       }
       await client.query("COMMIT");

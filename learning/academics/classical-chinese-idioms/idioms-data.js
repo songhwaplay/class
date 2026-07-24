@@ -469,11 +469,171 @@
             lesson: "남의 잘못을 비웃기 전에 나에게도 비슷한 잘못이 없는지 돌아보세요.",
             source: "《맹자(孟子)》 〈양혜왕 상(梁惠王上)〉", sourceNote: "원문의 ‘오십보소백보(五十步笑百步)’를 우리말에서 줄여 쓰는 형태입니다.",
             reference: "https://dict.idioms.moe.edu.tw/idiomView.jsp?ID=-384&la=0&webMd=1", verification: "원전 확인"
+        },
+        {
+            id: "sipjungpalgu", word: "십중팔구", hanja: "十中八九", theme: "지혜",
+            meaning: "열 가운데 여덟이나 아홉이라는 뜻으로, 거의 틀림없이 그러함.",
+            story: "열 번 가운데 여덟 번이나 아홉 번은 같은 결과가 나온다는 말입니다. 가능성이 매우 높아 거의 확실한 상황을 나타냅니다.",
+            lesson: "가능성이 높더라도 예외는 있을 수 있으므로 마지막까지 확인하는 태도가 필요합니다.",
+            source: "일반 한자성어", sourceNote: "열 십, 가운데 중, 여덟 팔, 아홉 구를 써서 대부분 그러하다는 뜻입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%8B%AD%EC%A4%91%ED%8C%94%EA%B5%AC", verification: "사전 확인"
+        },
+        {
+            id: "cheonsinmango", word: "천신만고", hanja: "千辛萬苦", theme: "노력",
+            meaning: "천 가지 매운 것과 만 가지 쓴 것이라는 뜻으로, 온갖 어려운 고비.",
+            story: "셀 수 없이 많은 맵고 쓴 일을 겪는다는 표현입니다. 목적을 이루기까지 수많은 고생과 어려움을 견딘 상황을 나타냅니다.",
+            lesson: "힘든 과정에서 얻은 경험은 다음 어려움을 이겨 내는 든든한 힘이 됩니다.",
+            source: "일반 한자성어", sourceNote: "일천 천, 매울 신, 일만 만, 쓸 고를 써서 매우 많은 고생을 나타냅니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%B2%9C%EC%8B%A0%EB%A7%8C%EA%B3%A0", verification: "사전 확인"
+        },
+        {
+            id: "samsaileon", word: "삼사일언", hanja: "三思一言", theme: "지혜",
+            meaning: "세 번 생각한 뒤 한 번 말한다는 뜻으로, 말을 신중히 함.",
+            story: "한마디를 하기 전에 여러 번 깊이 생각하라는 가르침입니다. 한번 내뱉은 말은 되돌리기 어려우므로 말의 영향까지 살펴야 한다는 뜻입니다.",
+            lesson: "중요한 말을 하기 전에는 사실인지, 필요한지, 상대를 배려하는지 먼저 생각해야 합니다.",
+            source: "일반 한자성어", sourceNote: "석 삼, 생각 사, 한 일, 말씀 언을 써서 신중한 말하기를 강조합니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%82%BC%EC%82%AC%EC%9D%BC%EC%96%B8", verification: "사전 확인"
+        },
+        {
+            id: "geungeomjeoryak", word: "근검절약", hanja: "勤儉節約", theme: "노력",
+            meaning: "부지런하고 검소하게 생활하며 아껴 씀.",
+            story: "맡은 일에 부지런히 힘쓰고, 필요한 만큼만 쓰며 낭비하지 않는 생활 태도를 함께 이르는 말입니다.",
+            lesson: "작은 물건과 시간도 소중히 쓰는 습관이 모이면 안정된 생활과 큰 성과로 이어집니다.",
+            source: "일반 한자성어", sourceNote: "부지런할 근, 검소할 검, 마디 절, 맺을 약을 써서 부지런하고 알뜰한 생활을 뜻합니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EA%B7%BC%EA%B2%80%EC%A0%88%EC%95%BD", verification: "사전 확인"
+        },
+        {
+            id: "jamunjadap", word: "자문자답", hanja: "自問自答", theme: "지혜",
+            meaning: "스스로 묻고 스스로 대답함.",
+            story: "자신에게 질문을 던지고 그 답을 스스로 찾아가는 모습을 나타냅니다. 생각을 정리하거나 문제의 해답을 깊이 탐색할 때 쓰입니다.",
+            lesson: "무엇을 모르는지 스스로 묻고 답을 찾아보면 생각하는 힘과 문제 해결력이 자랍니다.",
+            source: "일반 한자성어", sourceNote: "스스로 자, 물을 문, 스스로 자, 대답 답을 써서 혼자 묻고 답하는 모습을 뜻합니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%9E%90%EB%AC%B8%EC%9E%90%EB%8B%B5", verification: "사전 확인"
+        },
+        {
+            id: "bulmungaji", word: "불문가지", hanja: "不問可知", theme: "지혜",
+            meaning: "묻지 않아도 능히 알 수 있음.",
+            story: "직접 묻거나 자세히 설명을 듣지 않아도 드러난 단서와 상황만으로 충분히 알 수 있다는 뜻입니다.",
+            lesson: "주변을 세심하게 살피면 말로 설명하지 않은 사실도 스스로 알아차릴 수 있습니다.",
+            source: "일반 한자성어", sourceNote: "아닐 불, 물을 문, 옳을 가, 알 지를 써서 묻지 않아도 알 수 있다는 뜻입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EB%B6%88%EB%AC%B8%EA%B0%80%EC%A7%80", verification: "사전 확인"
+        },
+        {
+            id: "suguchosim", word: "수구초심", hanja: "首丘初心", theme: "관계",
+            meaning: "여우가 죽을 때 머리를 고향 언덕으로 둔다는 뜻으로, 고향을 그리워하는 마음.",
+            story: "《예기》에는 여우가 죽을 때 자신이 살던 언덕 쪽으로 머리를 둔다는 이야기가 전합니다. 근본과 고향을 잊지 않는 마음을 비유합니다.",
+            lesson: "새로운 곳에서 살아가더라도 자신이 자란 곳과 처음의 마음을 소중히 여겨야 합니다.",
+            source: "《예기(禮記)》 〈단궁상(檀弓上)〉", sourceNote: "여우가 죽을 때 머리를 자기가 살던 언덕으로 향한다는 구절과 관련된 표현입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%88%98%EA%B5%AC%EC%B4%88%EC%8B%AC", verification: "원전·사전 확인"
+        },
+        {
+            id: "yongdusami", word: "용두사미", hanja: "龍頭蛇尾", theme: "지혜",
+            meaning: "시작은 훌륭하지만 끝이 흐지부지하고 약해짐.",
+            story: "머리는 위엄 있는 용인데 꼬리는 가느다란 뱀이라는 모습에 빗댄 말입니다. 처음의 기세와 달리 마무리가 보잘것없는 상황을 나타냅니다.",
+            lesson: "좋은 시작만큼 끝까지 책임 있게 마무리하는 태도가 중요합니다.",
+            source: "중국 고전에서 유래한 한자성어", sourceNote: "용의 머리와 뱀의 꼬리를 대비하여 시작과 끝의 차이를 나타냅니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%9A%A9%EB%91%90%EC%82%AC%EB%AF%B8", verification: "사전 확인"
+        },
+        {
+            id: "cheonjaeilu", word: "천재일우", hanja: "千載一遇", theme: "지혜",
+            meaning: "천 년에 한 번 만날 정도로 좀처럼 얻기 어려운 좋은 기회.",
+            story: "천 년이라는 긴 세월 동안 한 번 만날까 말까 한 귀한 만남이나 기회를 뜻합니다. 다시 오기 어려운 때를 놓치지 말라는 의미로 쓰입니다.",
+            lesson: "좋은 기회가 찾아왔을 때 알아보고 붙잡을 수 있도록 평소에 준비해야 합니다.",
+            source: "중국 고전에서 유래한 한자성어", sourceNote: "일천 천, 해 재, 한 일, 만날 우를 써서 매우 드문 기회를 나타냅니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%B2%9C%EC%9E%AC%EC%9D%BC%EC%9A%B0", verification: "사전 확인"
+        },
+        {
+            id: "gogunbuntu", word: "고군분투", hanja: "孤軍奮鬪", theme: "노력",
+            meaning: "도와주는 사람 없이 혼자 힘으로 힘겹게 싸우거나 노력함.",
+            story: "지원군이 없는 외로운 군대가 홀로 온 힘을 다해 싸운다는 말입니다. 오늘날에는 어려운 일을 혼자 애써 해결하는 상황에도 널리 쓰입니다.",
+            lesson: "혼자 버티는 용기도 중요하지만, 필요할 때 도움을 요청하고 협력하는 지혜도 필요합니다.",
+            source: "일반 한자성어", sourceNote: "외로울 고, 군사 군, 떨칠 분, 싸울 투를 써서 홀로 힘껏 노력하는 모습을 나타냅니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EA%B3%A0%EA%B5%B0%EB%B6%84%ED%88%AC", verification: "사전 확인"
+        },
+        {
+            id: "gojingamrae", word: "고진감래", hanja: "苦盡甘來", theme: "노력",
+            meaning: "쓴 것이 다하면 단 것이 온다는 뜻으로, 고생 끝에 즐거움이 찾아옴.",
+            story: "쓴맛을 견딘 뒤 단맛을 느낀다는 자연스러운 경험에 빗대어, 어려운 시기를 참고 이겨 내면 좋은 때가 온다는 뜻을 전합니다.",
+            lesson: "지금의 어려움만 보고 포기하지 말고, 꾸준히 노력하며 좋은 결과를 기다려야 합니다.",
+            source: "일반 한자성어", sourceNote: "괴로울 고, 다할 진, 달 감, 올 래를 써서 고생 뒤의 기쁨을 나타냅니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EA%B3%A0%EC%A7%84%EA%B0%90%EB%9E%98", verification: "사전 확인"
+        },
+        {
+            id: "isimjeonsim", word: "이심전심", hanja: "以心傳心", theme: "관계",
+            meaning: "말이나 글을 쓰지 않고 마음에서 마음으로 뜻을 전함.",
+            story: "석가모니가 대중 앞에서 말없이 꽃을 들어 보이자 가섭만 그 뜻을 알아차리고 미소 지었다는 선종의 염화미소 설화와 함께 전해집니다.",
+            lesson: "깊은 이해와 공감은 많은 말이 없어도 서로의 뜻을 알아차리게 합니다.",
+            source: "선종의 염화미소 설화", sourceNote: "마음으로 마음을 전한다는 선종의 가르침을 나타내는 표현입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%9D%B4%EC%8B%AC%EC%A0%84%EC%8B%AC", verification: "사전 확인"
+        },
+        {
+            id: "yeokjisaji", word: "역지사지", hanja: "易地思之", theme: "관계",
+            meaning: "처지를 바꾸어 상대방의 입장에서 생각함.",
+            story: "서로의 자리를 바꾸어 생각해 본다는 뜻입니다. 자신의 기준만 고집하지 않고 상대가 놓인 상황과 마음을 헤아릴 때 갈등을 더 잘 풀 수 있습니다.",
+            lesson: "의견이 다를 때 먼저 상대방의 자리에서 상황을 바라보면 이해의 폭이 넓어집니다.",
+            source: "일반 한자성어", sourceNote: "바꿀 역, 땅 지, 생각 사, 갈 지를 써서 입장을 바꾸어 생각한다는 뜻을 나타냅니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%97%AD%EC%A7%80%EC%82%AC%EC%A7%80", verification: "사전 확인"
+        },
+        {
+            id: "jumagapyeon", word: "주마가편", hanja: "走馬加鞭", theme: "노력",
+            meaning: "달리는 말에 채찍을 더한다는 뜻으로, 잘하는 사람을 더욱 힘쓰게 함.",
+            story: "이미 힘차게 달리는 말에 박차를 가해 더 빠르게 나아가게 한다는 표현입니다. 일이 잘되고 있을 때 노력을 더해 성과를 높이는 상황을 비유합니다.",
+            lesson: "잘하고 있을 때에도 자만하지 않고 한 번 더 힘쓰면 더 큰 성장을 이룰 수 있습니다.",
+            source: "일반 한자성어", sourceNote: "달릴 주, 말 마, 더할 가, 채찍 편을 써서 좋은 흐름에 노력을 더한다는 뜻입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%A3%BC%EB%A7%88%EA%B0%80%ED%8E%B8", verification: "사전 확인"
+        },
+        {
+            id: "chiljeonpalgi", word: "칠전팔기", hanja: "七顚八起", theme: "노력",
+            meaning: "일곱 번 넘어져도 여덟 번 일어난다는 뜻으로, 실패해도 굽히지 않음.",
+            story: "여러 번 넘어져도 그보다 한 번 더 일어난다는 말입니다. 실패의 횟수보다 다시 시작하는 의지가 중요하다는 뜻을 전합니다.",
+            lesson: "실패는 끝이 아니라 다음 시도를 위한 경험이므로 포기하지 않고 다시 도전해야 합니다.",
+            source: "일반 한자성어", sourceNote: "외부 자료의 七戰八起가 아니라 표준적으로 쓰이는 七顚八起로 바로잡았습니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%B9%A0%EC%A0%84%ED%8C%94%EA%B8%B0", verification: "사전 확인"
+        },
+        {
+            id: "jagsimsamil", word: "작심삼일", hanja: "作心三日", theme: "노력",
+            meaning: "단단히 먹은 마음이 사흘을 가지 못함.",
+            story: "굳게 결심한 일도 실천이 이어지지 않으면 며칠 만에 흐지부지되기 쉽습니다. 결심보다 꾸준한 행동이 중요하다는 뜻으로 쓰입니다.",
+            lesson: "큰 결심보다 매일 반복할 수 있는 작은 습관을 만드는 것이 오래가는 힘이 됩니다.",
+            source: "일반 한자성어", sourceNote: "결심이 오래 지속되지 않는 모습을 경계하는 뜻으로 널리 쓰입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%9E%91%EC%8B%AC%EC%82%BC%EC%9D%BC", verification: "사전 확인"
+        },
+        {
+            id: "jaeopjadeuk", word: "자업자득", hanja: "自業自得", theme: "지혜",
+            meaning: "자기가 저지른 일의 결과를 자기가 받음.",
+            story: "불교에서 사람의 행동인 업은 그에 맞는 결과를 낳는다고 설명합니다. 자신이 만든 원인이 결국 자신에게 돌아온다는 가르침이 일상적인 한자성어로 자리 잡았습니다.",
+            lesson: "행동에는 결과가 따르므로 선택하기 전에 그 영향까지 생각해야 합니다.",
+            source: "불교 경전의 업보 사상", sourceNote: "자신의 행위가 그에 맞는 결과를 가져온다는 불교의 가르침에서 비롯되었습니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%9E%90%EC%97%85%EC%9E%90%EB%93%9D", verification: "사전 확인"
+        },
+        {
+            id: "dongsangimong", word: "동상이몽", hanja: "同床異夢", theme: "관계",
+            meaning: "같은 처지에 있으면서도 서로 다른 생각이나 목적을 가짐.",
+            story: "한 침상에서 함께 자면서도 서로 다른 꿈을 꾼다는 표현입니다. 겉으로는 함께 행동하지만 속마음과 목표는 다른 관계를 비유합니다.",
+            lesson: "함께 일할 때는 겉모습만 맞추지 말고 서로의 목표와 생각을 확인해야 합니다.",
+            source: "중국 고전에서 유래한 한자성어", sourceNote: "같은 자리에 있어도 뜻은 서로 다를 수 있음을 잠자리와 꿈에 빗댄 표현입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EB%8F%99%EC%83%81%EC%9D%B4%EB%AA%BD", verification: "사전 확인"
+        },
+        {
+            id: "gyeoljahaeji", word: "결자해지", hanja: "結者解之", theme: "관계",
+            meaning: "일을 맺은 사람이 그 일을 풀고 해결해야 함.",
+            story: "매듭을 묶은 사람이 그 매듭을 풀어야 한다는 말입니다. 문제를 만든 사람이 책임지고 해결해야 한다는 뜻으로 널리 쓰입니다.",
+            lesson: "자신이 만든 문제를 피하지 않고 끝까지 책임지는 태도가 신뢰를 만듭니다.",
+            source: "한국에서 널리 쓰이는 한자성어", sourceNote: "맺을 결, 놈 자, 풀 해, 갈 지를 써서 문제를 만든 주체의 책임을 강조합니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EA%B2%B0%EC%9E%90%ED%95%B4%EC%A7%80", verification: "사전 확인"
+        },
+        {
+            id: "ilseogijo", word: "일석이조", hanja: "一石二鳥", theme: "지혜",
+            meaning: "한 가지 일을 하여 두 가지 이익을 얻음.",
+            story: "돌 하나로 새 두 마리를 잡는다는 말에서 나온 표현입니다. 한 번의 행동으로 두 가지 성과를 함께 얻는 상황을 비유합니다.",
+            lesson: "목표를 세울 때 서로 연결되는 일을 함께 살피면 시간과 노력을 더 효과적으로 쓸 수 있습니다.",
+            source: "일반 한자성어", sourceNote: "두 가지 이득을 한 번에 얻는다는 뜻으로 널리 쓰이는 사자성어입니다.",
+            reference: "https://stdict.korean.go.kr/search/searchResult.do?pageNo=1&searchKeyword=%EC%9D%BC%EC%84%9D%EC%9D%B4%EC%A1%B0", verification: "사전 확인"
         }
     ];
 
     const excludedIds = new Set([
-        "sujudaeto", "gakjuguggeom", "wanbyeokgwijo", "mungyeongjigyo",
+        "sujudaeto", "wanbyeokgwijo", "mungyeongjigyo",
         "iljacheongeum", "nakyangjiga", "baegajeolhyeon", "namgailmong",
         "mangyangboro", "nomajiji", "gyemyeonggudo", "sunmangchihan",
         "baejungsayeong", "chomokgaebyeong"
@@ -481,7 +641,9 @@
 
     const intermediateIds = new Set([
         "ugongisan", "hogahowi", "jirokwima", "bulchihamun", "maengmosamcheon",
-        "gyeolchooseun", "pajukjise", "dongbyeongsangryeon", "gwontojungrae", "gyereuk"
+        "gyeolchooseun", "pajukjise", "dongbyeongsangryeon", "gwontojungrae", "gyereuk",
+        "isimjeonsim", "jumagapyeon", "suguchosim", "cheonjaeilu", "gogunbuntu",
+        "cheonsinmango", "samsaileon", "geungeomjeoryak"
     ]);
 
     const advancedIds = new Set([

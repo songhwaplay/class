@@ -617,6 +617,14 @@
 
                 <div class="field">
                     <div class="field-head">
+                        <label for="birthdates">생년월일 (YYMMDD)</label>
+                        <span class="line-count" id="birthdate-count">0행</span>
+                    </div>
+                    <textarea id="birthdates" inputmode="numeric" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="150524&#10;150812&#10;151103" aria-describedby="input-status"></textarea>
+                </div>
+
+                <div class="field">
+                    <div class="field-head">
                         <label for="passwords">비밀번호</label>
                         <span class="line-count" id="password-count">0행</span>
                     </div>
@@ -660,10 +668,12 @@
             const numbersInput = document.querySelector("#numbers");
             const namesInput = document.querySelector("#names");
             const gendersInput = document.querySelector("#genders");
+            const birthdatesInput = document.querySelector("#birthdates");
             const passwordsInput = document.querySelector("#passwords");
             const numberCount = document.querySelector("#number-count");
             const nameCount = document.querySelector("#name-count");
             const genderCount = document.querySelector("#gender-count");
+            const birthdateCount = document.querySelector("#birthdate-count");
             const passwordCount = document.querySelector("#password-count");
             const status = document.querySelector("#input-status");
             const saveButton = document.querySelector("#save-button");
@@ -682,7 +692,7 @@
             }
 
             function splitLines(value) {
-                const normalized = value.replace(/\r\n?/g, "\n");
+                const normalized = (value || "").replace(/\r\n?/g, "\n");
                 if (!normalized.trim()) return [];
 
                 const lines = normalized.split("\n");
@@ -701,6 +711,7 @@
                 const numbers = splitLines(numbersInput.value);
                 const names = splitLines(namesInput.value);
                 const rawGenders = splitLines(gendersInput.value);
+                const rawBirthdates = birthdatesInput ? splitLines(birthdatesInput.value) : [];
                 const rawPasswords = splitLines(passwordsInput.value);
                 const genders = rawGenders;
                 const passwords = rawPasswords;
@@ -724,14 +735,15 @@
                     !hasMismatchedPasswords &&
                     invalidPasswords.length === 0;
 
-                return { numbers, names, genders, passwords, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidGenders, invalidPasswords, hasMismatchedGenders, hasMismatchedPasswords, isComplete };
+                return { numbers, names, genders, rawBirthdates, passwords, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidGenders, invalidPasswords, hasMismatchedGenders, hasMismatchedPasswords, isComplete };
             }
 
-            function createRoster(numbers, names, genders, passwords) {
+            function createRoster(numbers, names, genders, passwords, rawBirthdates = []) {
                 return numbers.map((number, index) => ({
                     number,
                     name: names[index],
                     gender: genders[index] || "남",
+                    birthDate: rawBirthdates[index] ? rawBirthdates[index].replace(/\D/g, "").slice(0, 6) : "",
                     password: passwords[index] === displayedPasswordRows.get(number) ? "" : (passwords[index] || ""),
                 }));
             }
@@ -791,6 +803,7 @@
                 numbersInput.value = classroom.students.map((student) => student.number).join("\n");
                 namesInput.value = classroom.students.map((student) => student.name).join("\n");
                 gendersInput.value = classroom.students.map((student) => student.gender || "남").join("\n");
+                if (birthdatesInput) birthdatesInput.value = classroom.students.map((student) => student.birthDate || "").join("\n");
                 passwordsInput.value = classroom.students.map(() => DISPLAY_DEFAULT_STUDENT_PASSWORD).join("\n");
                 displayedPasswordRows.clear();
                 classroom.students.forEach((student) => displayedPasswordRows.set(student.number, DISPLAY_DEFAULT_STUDENT_PASSWORD));
@@ -803,6 +816,7 @@
                 numberCount.textContent = `${state.numbers.length}행`;
                 nameCount.textContent = `${state.names.length}행`;
                 if (genderCount) genderCount.textContent = `${state.genders.length}행`;
+                if (birthdateCount) birthdateCount.textContent = `${state.rawBirthdates.length}행`;
                 if (passwordCount) passwordCount.textContent = `${state.passwords.length}행`;
 
                 const hasAnyInput = state.numbers.length > 0 || state.names.length > 0;
@@ -815,7 +829,7 @@
                 saveButton.disabled = saving || !authorized || !state.isComplete || !isProfileComplete();
 
                 if (!hasAnyInput) {
-                    setStatus("엑셀에서 학번, 성명, 성별 열을 복사하여 붙여넣으세요.");
+                    setStatus("엑셀에서 학번, 성명, 성별, 생년월일 열을 복사하여 붙여넣으세요.");
                     return;
                 }
 
@@ -870,7 +884,7 @@
                 const profile = getProfile();
                 if (!authorized || !state.isComplete || !isProfileComplete(profile) || saving) return;
 
-                const roster = createRoster(state.numbers, state.names, state.genders, state.passwords);
+                const roster = createRoster(state.numbers, state.names, state.genders, state.passwords, state.rawBirthdates);
                 saving = true;
                 saveButton.textContent = "SAVING…";
                 update();

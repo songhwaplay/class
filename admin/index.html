@@ -190,6 +190,32 @@
         .danger-button { border-color: #9c4943; color: #ffd6d2; background: #3c1d1a; }
         [hidden] { display: none !important; }
 
+        .search-results-dropdown {
+            position: absolute;
+            top: calc(100% + 4px);
+            left: 0;
+            right: 0;
+            z-index: 100;
+            max-height: 240px;
+            overflow-y: auto;
+            background: #141a17;
+            border: 1px solid var(--green);
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+        }
+        .search-result-item {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--line);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:hover { background: var(--green-dark); }
+        .search-result-title { font-weight: 700; color: #fff; font-size: 14px; }
+        .search-result-sub { font-size: 12px; color: var(--muted); }
+
         @media (max-width: 560px) {
             body { padding: 32px 14px; }
             .choice-grid { grid-template-columns: 1fr; }
@@ -235,8 +261,11 @@
                 <section class="management" aria-labelledby="school-management-title">
                     <h2 id="school-management-title">School management</h2>
                     <p class="management-copy">Assign each homeroom teacher a school year, grade, and class. Teachers can manage only the student roster for the class assigned here.</p>
-                    <div class="form-row">
-                        <input class="control" id="newSchoolName" maxlength="80" placeholder="School name">
+                    <div class="form-row" style="position: relative;">
+                        <div style="position: relative; flex: 1;">
+                            <input class="control" id="newSchoolName" maxlength="80" placeholder="School name (e.g. 계상초)" autocomplete="off" style="width: 100%;">
+                            <div id="schoolSearchResults" class="search-results-dropdown" hidden></div>
+                        </div>
                         <button class="action-button" id="addSchoolButton" type="button">ADD SCHOOL</button>
                     </div>
                     <div class="school-directory" id="schoolDirectory" aria-label="All schools"></div>
@@ -288,6 +317,7 @@
             const status = document.querySelector("#status");
             const modeButtons = Array.from(document.querySelectorAll("[data-mode]"));
             const newSchoolName = document.querySelector("#newSchoolName");
+            const schoolSearchResults = document.querySelector("#schoolSearchResults");
             const addSchoolButton = document.querySelector("#addSchoolButton");
             const schoolDirectory = document.querySelector("#schoolDirectory");
             const schoolSelect = document.querySelector("#schoolSelect");
@@ -304,6 +334,8 @@
             const teacherList = document.querySelector("#teacherList");
             let saving = false;
             let schools = [];
+            let selectedNeisSchool = null;
+            let searchTimeout = null;
             const currentYear = new Date().getFullYear();
 
             function fillYearSelect(select, value = currentYear) {
@@ -367,6 +399,20 @@
                     const name = document.createElement("div");
                     name.className = "school-directory-name";
                     name.append(school.name);
+
+                    if (school.locationName || school.schoolCode) {
+                        const meta = document.createElement("span");
+                        meta.className = "school-directory-state";
+                        meta.style.color = "#75d69f";
+                        meta.style.fontSize = "11px";
+                        meta.style.marginLeft = "6px";
+                        const metaParts = [];
+                        if (school.locationName) metaParts.push(school.locationName);
+                        if (school.schoolCode) metaParts.push(`NEIS: ${school.schoolCode}`);
+                        meta.textContent = `[${metaParts.join(" | ")}]`;
+                        name.append(meta);
+                    }
+
                     const state = document.createElement("span");
                     state.className = "school-directory-state";
                     state.textContent = school.enabled ? "Enabled" : "Disabled";
@@ -522,6 +568,56 @@
                 setStatus("");
             }
 
+            newSchoolName.addEventListener("input", () => {
+                selectedNeisSchool = null;
+                const query = newSchoolName.value.trim();
+                clearTimeout(searchTimeout);
+                if (!query || query.length < 2) {
+                    schoolSearchResults.hidden = true;
+                    schoolSearchResults.replaceChildren();
+                    return;
+                }
+                searchTimeout = setTimeout(async () => {
+                    try {
+                        const result = await api(`/api/school/search?query=${encodeURIComponent(query)}`);
+                        if (!result.schools || result.schools.length === 0) {
+                            schoolSearchResults.hidden = true;
+                            return;
+                        }
+                        schoolSearchResults.replaceChildren();
+                        result.schools.forEach((item) => {
+                            const el = document.createElement("div");
+                            el.className = "search-result-item";
+                            
+                            const title = document.createElement("div");
+                            title.className = "search-result-title";
+                            title.textContent = item.name;
+                            
+                            const sub = document.createElement("div");
+                            sub.className = "search-result-sub";
+                            sub.textContent = `${item.locationName} · ${item.address || "나이스 연동"}`;
+
+                            el.append(title, sub);
+                            el.addEventListener("click", () => {
+                                newSchoolName.value = item.name;
+                                selectedNeisSchool = item;
+                                schoolSearchResults.hidden = true;
+                            });
+                            schoolSearchResults.append(el);
+                        });
+                        schoolSearchResults.hidden = false;
+                    } catch (err) {
+                        schoolSearchResults.hidden = true;
+                    }
+                }, 250);
+            });
+
+            document.addEventListener("click", (e) => {
+                if (!newSchoolName.contains(e.target) && !schoolSearchResults.contains(e.target)) {
+                    schoolSearchResults.hidden = true;
+                }
+            });
+
             newTeacherPassword.addEventListener("input", () => {
                 newTeacherPassword.value = newTeacherPassword.value.replace(/\D/g, "").slice(0, 6);
             });
@@ -530,11 +626,21 @@
                 renderSchoolDirectory();
             });
             addSchoolButton.addEventListener("click", async () => {
+                const name = newSchoolName.value.trim();
+                if (!name) return setStatus("Enter a school name.", true);
                 try {
-                    const result = await api("/api/admin/schools", { method: "POST", body: JSON.stringify({ name: newSchoolName.value.trim() }) });
+                    const payload = {
+                        name: selectedNeisSchool ? selectedNeisSchool.name : name,
+                        officeCode: selectedNeisSchool ? selectedNeisSchool.officeCode : "",
+                        schoolCode: selectedNeisSchool ? selectedNeisSchool.schoolCode : "",
+                        locationName: selectedNeisSchool ? selectedNeisSchool.locationName : ""
+                    };
+                    const result = await api("/api/admin/schools", { method: "POST", body: JSON.stringify(payload) });
                     newSchoolName.value = "";
+                    selectedNeisSchool = null;
+                    schoolSearchResults.hidden = true;
                     await loadSchools(result.school.id);
-                    setStatus("School added.");
+                    setStatus(`School added: ${result.school.name}`);
                 } catch (error) { setStatus(error.message, true); }
             });
             saveSchoolButton.addEventListener("click", async () => {
