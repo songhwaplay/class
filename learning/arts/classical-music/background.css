@@ -7,7 +7,9 @@ body {
 
 .hero {
   background: linear-gradient(90deg, #101925d9 0%, #1721319c 46%, #1b120a59 100%);
-  min-height: clamp(320px, 44vh, 420px);
+  min-height: clamp(230px, 30vh, 290px);
+  padding-top: 22px;
+  padding-bottom: 34px;
 }
 
 main {
@@ -17,13 +19,9 @@ main {
 
 @media (max-height: 900px) and (min-width: 581px) {
   .hero {
-    min-height: clamp(300px, 42vh, 370px);
-    padding-top: 22px;
-    padding-bottom: 40px;
-  }
-
-  .eyebrow {
-    margin-top: 34px;
+    min-height: clamp(215px, 28vh, 260px);
+    padding-top: 18px;
+    padding-bottom: 28px;
   }
 
   .hero h1 {
@@ -31,7 +29,7 @@ main {
   }
 
   .dashboard {
-    margin-top: -24px;
+    margin-top: -18px;
   }
 
   .dashboard > div {
