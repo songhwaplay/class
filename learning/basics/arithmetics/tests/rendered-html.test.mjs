@@ -46,7 +46,7 @@ test("renders the fraction conversion practice product", async () => {
   assert.doesNotMatch(html, /codex-preview|SkeletonPreview|react-loading-skeleton/);
 });
 
-test("renders the learning index, arithmetic mode choice, and catalog in workbook order", async () => {
+test("renders the learning index and arithmetic catalog in workbook order", async () => {
   const indexResponse = await render("/");
   const indexHtml = await indexResponse.text();
   const indexCss = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
@@ -59,6 +59,7 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   assert.match(indexHtml, /href="\/arithmetic\/high-school\/trigonometric-derivatives-2"[^>]*data-testid="worksheet-choice"/);
   assert.match(indexCss, /@font-face[\s\S]*?STIXTwoMath-Regular\.woff2/);
 
+  /* Legacy mode-chooser assertions: /arithmetic now renders the catalog directly.
   const modeResponse = await render("/arithmetic");
   const modeHtml = await modeResponse.text();
   assert.match(modeHtml, /href="\/arithmetic\/personal"/);
@@ -66,8 +67,10 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   assert.match(modeHtml, /href="\/arithmetic\/race"/);
   assert.match(modeHtml, /순위 모드/);
 
-  const catalogResponse = await render("/arithmetic/personal");
+  */
+  const catalogResponse = await render("/arithmetic");
   const catalogHtml = await catalogResponse.text();
+  assert.match(catalogHtml, /href="\/arithmetic\/race"/);
   assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 131);
   assert.match(catalogHtml, /기초 연산/);
   assert.match(catalogHtml, /초·중·고부터 이공계 기초까지/);
@@ -446,10 +449,9 @@ test("renders student and teacher ranking mode entry screens", async () => {
   assert.match(teacherHtml, /방 만들기/);
   assert.match(teacherHtml, /2구구단⑤/);
 
-  const modeSource = await readFile(new URL("../app/arithmetic/page.tsx", import.meta.url), "utf8");
+  const catalogSource = await readFile(new URL("../app/arithmetic/catalog.tsx", import.meta.url), "utf8");
   const raceSource = await readFile(new URL("../app/arithmetic/race/page.tsx", import.meta.url), "utf8");
-  assert.match(modeSource, /params\.get\("name"\)/);
-  assert.match(modeSource, /localStorage\.setItem\(PLAYER_NAME_KEY, resolvedName\)/);
+  assert.match(catalogSource, /href="\/arithmetic\/race"/);
   assert.match(raceSource, /setName\(resolvedName\)/);
 });
 

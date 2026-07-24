@@ -26,6 +26,7 @@ export default function ArithmeticCatalog() {
         <header className="catalog-header">
           <a className="catalog-back" href="/arithmetic" aria-label="연산 모드 선택으로 돌아가기">← 연산</a>
           <div className="catalog-header-copy">
+            <a className="catalog-race-link" href="/arithmetic/race">순위 모드 <span aria-hidden="true">→</span></a>
             <h1>기초 연산</h1>
             <p>초·중·고부터 이공계 기초까지, 필요한 연산을 골라 연습하세요.</p>
           </div>
