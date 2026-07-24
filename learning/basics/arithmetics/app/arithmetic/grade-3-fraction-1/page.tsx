@@ -165,9 +165,11 @@ export default function GradeThreeFractionOnePage() {
     return (
       <div className={`multiplication-question grade-three-fraction-question value${resultClass(problem)}`} data-testid="grade-three-fraction-question" key={problem.id}>
         <span className="grade-three-fraction-index">{index + 1}</span>
-        <strong>{problem.whole}</strong><span>의</span>
-        <FractionStack numerator={problem.numerator} denominator={problem.denominator} />
-        <span>{[1, 3, 6, 7, 8].includes(problem.numerator) ? "은" : "는"}</span>
+        <span className="grade-three-fraction-word"><strong>{problem.whole}</strong>의</span>
+        <span className="grade-three-fraction-word">
+          <FractionStack numerator={problem.numerator} denominator={problem.denominator} />
+          {[1, 3, 6, 7, 8].includes(problem.numerator) ? "은" : "는"}
+        </span>
         {answerSheet
           ? <strong className="grade-three-fraction-static">{problem.answer}</strong>
           : <input className="grade-three-fraction-value-input" type="text" inputMode="numeric" pattern="[0-9]*" maxLength={2} value={answer.value} onChange={(event) => updateAnswer(problem.id, "value", event.target.value)} data-fraction-answer-input="true" onKeyDown={moveBetweenFractionAnswerInputs} aria-label={`${index + 1}번 답`} />}
@@ -191,10 +193,12 @@ export default function GradeThreeFractionOnePage() {
       <div className={`multiplication-question grade-three-fraction-question relation${resultClass(problem)}`} data-testid="grade-three-fraction-question" key={problem.id}>
         <span className="grade-three-fraction-index">{index + 1}</span>
         <span className="grade-three-fraction-sentence">
-          <strong>{problem.whole}</strong><span>{vowelEnding(problem.whole) ? "를" : "을"}</span>
-          <strong>{problem.part}</strong><span>씩 묶으면</span>
-          <strong>{problem.selected}</strong><span>{vowelEnding(problem.selected) ? "는" : "은"}</span>
-          <strong>{problem.whole}</strong><span>의</span>{fraction}<span>입니다.</span>
+          <span className="grade-three-fraction-word"><strong>{problem.whole}</strong>{vowelEnding(problem.whole) ? "를" : "을"}</span>
+          <span className="grade-three-fraction-word"><strong>{problem.part}</strong>씩</span>
+          <span>묶으면</span>
+          <span className="grade-three-fraction-word"><strong>{problem.selected}</strong>{vowelEnding(problem.selected) ? "는" : "은"}</span>
+          <span className="grade-three-fraction-word"><strong>{problem.whole}</strong>의</span>
+          <span className="grade-three-fraction-word">{fraction}입니다.</span>
         </span>
         {!answerSheet && problem.id in results && <span className={`counting-result ${isCorrect ? "correct" : "wrong"}`} role="status">{isCorrect ? "맞음" : "틀림"}</span>}
       </div>

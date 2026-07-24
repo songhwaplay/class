@@ -1494,9 +1494,9 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .grade-three-fraction-question.value {
-  grid-template-columns: 24px 42px 22px 54px 22px 60px;
+  grid-template-columns: 24px auto auto 60px;
   justify-content: center;
-  gap: 4px;
+  gap: 8px;
   padding: 5px 8px 10px;
   font-size: 20px;
 }
@@ -6568,6 +6568,13 @@ button.prime-number-question:focus-visible {
   margin-bottom: 5px;
   padding: 3px 8px;
   font-size: 10px;
+  white-space: nowrap;
+}
+
+.grade-three-fraction-word {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
   white-space: nowrap;
 }
 
