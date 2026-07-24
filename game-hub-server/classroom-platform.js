@@ -1047,8 +1047,7 @@ function createClassroomPlatform(options = {}) {
     }
 
     const cleanStudents = students.map((student) => {
-      const rawGender = String(student?.gender || "").trim().toLowerCase();
-      const gender = (rawGender.includes("여") || rawGender === "f" || rawGender === "female") ? "여" : "남";
+      const gender = String(student?.gender || "").normalize("NFC").trim();
       return {
         number: String(student?.number || "").trim(),
         name: String(student?.name || "").normalize("NFC").trim(),
@@ -1061,6 +1060,9 @@ function createClassroomPlatform(options = {}) {
     }
     if (cleanStudents.some((student) => !/^[가-힣]{2,6}$/.test(student.name))) {
       throw new HttpError(400, "INVALID_STUDENT_NAME", "Student names must be 2 to 6 Korean characters.");
+    }
+    if (cleanStudents.some((student) => !["남", "여"].includes(student.gender))) {
+      throw new HttpError(400, "INVALID_STUDENT_GENDER", "Student gender must be either 남 or 여.");
     }
     if (new Set(cleanStudents.map((student) => student.number)).size !== cleanStudents.length) {
       throw new HttpError(400, "DUPLICATE_STUDENT_NUMBER", "Student numbers must be unique.");

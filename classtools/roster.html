@@ -694,15 +694,16 @@
                 const names = splitLines(namesInput.value);
                 const rawGenders = splitLines(gendersInput.value);
                 const rawPasswords = splitLines(passwordsInput.value);
-                const genders = numbers.map((_, index) => normalizeGenderValue(rawGenders[index]));
+                const genders = rawGenders;
                 const passwords = numbers.map((number, index) => rawPasswords[index] || (savedPasswordNumbers.has(number) ? "" : DEFAULT_STUDENT_PASSWORD));
 
                 const hasBlank = numbers.some((value) => !value) || names.some((value) => !value);
                 const duplicateNumbers = numbers.filter((value, index) => value && numbers.indexOf(value) !== index);
                 const invalidNumbers = numbers.filter((value) => value && !/^\d{1,3}$/.test(value));
                 const invalidNames = names.filter((value) => value && !/^[가-힣]{2,6}$/.test(value));
+                const invalidGenders = rawGenders.filter((gender) => !["남", "여"].includes(gender));
                 const invalidPasswords = passwords.filter((password) => password && !STUDENT_PASSWORD_PATTERN.test(password));
-                const hasMismatchedGenders = rawGenders.length > 0 && rawGenders.length !== numbers.length;
+                const hasMismatchedGenders = rawGenders.length !== numbers.length;
                 const hasMismatchedPasswords = rawPasswords.length > 0 && rawPasswords.length !== numbers.length;
                 const isComplete = numbers.length > 0 &&
                     numbers.length === names.length &&
@@ -710,11 +711,12 @@
                     duplicateNumbers.length === 0 &&
                     invalidNumbers.length === 0 &&
                     invalidNames.length === 0 &&
+                    invalidGenders.length === 0 &&
                     !hasMismatchedGenders &&
                     !hasMismatchedPasswords &&
                     invalidPasswords.length === 0;
 
-                return { numbers, names, genders, passwords, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidPasswords, hasMismatchedGenders, hasMismatchedPasswords, isComplete };
+                return { numbers, names, genders, passwords, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidGenders, invalidPasswords, hasMismatchedGenders, hasMismatchedPasswords, isComplete };
             }
 
             function createRoster(numbers, names, genders, passwords) {
@@ -802,6 +804,8 @@
 
                 numbersInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.duplicateNumbers.length > 0 || state.invalidNumbers.length > 0));
                 namesInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.invalidNames.length > 0));
+                gendersInput.setAttribute("aria-invalid", String(state.hasMismatchedGenders || state.invalidGenders.length > 0));
+                passwordsInput.setAttribute("aria-invalid", String(state.hasMismatchedPasswords || state.invalidPasswords.length > 0));
                 saveButton.disabled = saving || !authorized || !state.isComplete || !isProfileComplete();
 
                 if (!hasAnyInput) {
@@ -834,6 +838,11 @@
 
                 if (state.invalidNames.length > 0) {
                     setStatus("이름은 2~6자의 한글이어야 합니다.", "error");
+                    return;
+                }
+
+                if (state.invalidGenders.length > 0 || state.hasMismatchedGenders) {
+                    setStatus("성별은 남 또는 여만 입력해 주세요.", "error");
                     return;
                 }
 
@@ -947,9 +956,32 @@
                 }
             });
             [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", markUnsaved));
-            numbersInput.addEventListener("input", update);
-            namesInput.addEventListener("input", update);
-            gendersInput.addEventListener("input", update);
+            function limitEachLine(input, allowedCharacters, maxLength) {
+                const cleaned = input.value
+                    .replace(allowedCharacters, "")
+                    .replace(/\r\n?/g, "\n")
+                    .split("\n")
+                    .map((line) => line.slice(0, maxLength));
+                input.value = cleaned.join("\n");
+            }
+
+            numbersInput.addEventListener("input", () => {
+                limitEachLine(numbersInput, /[^\d\r\n]/g, 3);
+                update();
+            });
+            namesInput.addEventListener("input", () => {
+                limitEachLine(namesInput, /[^가-힣\r\n]/g, 6);
+                update();
+            });
+            gendersInput.addEventListener("input", () => {
+                const cleaned = gendersInput.value
+                    .replace(/[^남여\r\n]/g, "")
+                    .replace(/\r\n?/g, "\n")
+                    .split("\n")
+                    .map((line) => line.slice(0, 1));
+                gendersInput.value = cleaned.join("\n");
+                update();
+            });
             passwordsInput.addEventListener("input", () => {
                 const cleanLines = passwordsInput.value
                     .replace(/[^\d\r\n]/g, "")
