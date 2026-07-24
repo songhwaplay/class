@@ -102,6 +102,19 @@ app.use(
   "/fonts",
   express.static(path.join(SITE_ROOT, "learning", "basics", "arithmetics", "dist", "client", "fonts")),
 );
+app.get("/math-learning-banner.webp", (_req, res) => {
+  res.sendFile(
+    path.join(
+      SITE_ROOT,
+      "learning",
+      "basics",
+      "arithmetics",
+      "dist",
+      "client",
+      "math-learning-banner.webp",
+    ),
+  );
+});
 app.use(
   "/hanguksa/assets",
   express.static(path.join(SITE_ROOT, "learning", "academics", "korean-history", "dist", "client", "assets")),
