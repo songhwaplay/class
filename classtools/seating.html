@@ -287,7 +287,6 @@
             .desk-num,
             .desk-lock,
             .desk-student-lock { display: none !important; }
-            .desk-name { color: #111 !important; font-size: 16pt; }
         }
     </style>
 </head>
@@ -297,8 +296,13 @@
             <div>
                 <a class="btn" href="index.html">← 교사 메인으로</a>
             </div>
-            <div style="font-weight: 800; color: var(--muted);" id="class-header">
-                학급 정보 불러오는 중...
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <select id="class-switcher-select" class="btn" style="background: var(--paper); cursor: pointer; outline: none; font-weight: 700;" hidden>
+                    <option value="">학급 선택...</option>
+                </select>
+                <div style="font-weight: 800; color: var(--muted);" id="class-header">
+                    로스터 연동 대기 중…
+                </div>
             </div>
         </div>
 
@@ -371,7 +375,52 @@
             const studentRemoveDescription = document.getElementById('student-remove-description');
             const resetUnusedBtn = document.getElementById('reset-unused-btn');
             const seatSummary = document.getElementById('seat-summary');
+            const classSwitcherSelect = document.getElementById('class-switcher-select');
             const TOTAL_DESKS = 36;
+
+            const ANIMAL_AVATARS = [
+                { num: 1,  name: "판다", icon: "🐼" },
+                { num: 2,  name: "토끼", icon: "🐰" },
+                { num: 3,  name: "여우", icon: "🦊" },
+                { num: 4,  name: "곰", icon: "🐻" },
+                { num: 5,  name: "사자", icon: "🦁" },
+                { num: 6,  name: "호랑이", icon: "🐯" },
+                { num: 7,  name: "고양이", icon: "🐱" },
+                { num: 8,  name: "강아지", icon: "🐶" },
+                { num: 9,  name: "개구리", icon: "🐸" },
+                { num: 10, name: "아기새", icon: "🐥" },
+                { num: 11, name: "유니콘", icon: "🦄" },
+                { num: 12, name: "공룡", icon: "🦖" },
+                { num: 13, name: "꿀벌", icon: "🐝" },
+                { num: 14, name: "아기쥐", icon: "🐭" },
+                { num: 15, name: "코끼리", icon: "🐘" },
+                { num: 16, name: "아기말", icon: "🐴" },
+                { num: 17, name: "아기양", icon: "🐑" },
+                { num: 18, name: "펭귄", icon: "🐧" },
+                { num: 19, name: "부엉이", icon: "🦉" },
+                { num: 20, name: "다람쥐", icon: "🐿️" },
+                { num: 21, name: "너구리", icon: "🦝" },
+                { num: 22, name: "수달", icon: "🦦" },
+                { num: 23, name: "사슴", icon: "🦌" },
+                { num: 24, name: "돌고래", icon: "🐬" },
+                { num: 25, name: "늑대", icon: "🐺" },
+                { num: 26, name: "원숭이", icon: "🐒" },
+                { num: 27, name: "코알라", icon: "🐨" },
+                { num: 28, name: "캥거루", icon: "🦘" },
+                { num: 29, name: "바다표범", icon: "🦭" },
+                { num: 30, name: "고슴도치", icon: "🦔" },
+                { num: 31, name: "나무늘보", icon: "🦥" },
+                { num: 32, name: "악어", icon: "🐊" },
+                { num: 33, name: "햄스터", icon: "🐹" },
+                { num: 34, name: "아기돼지", icon: "🐷" },
+                { num: 35, name: "병아리", icon: "🐣" },
+                { num: 36, name: "아기드래곤", icon: "🐲" }
+            ];
+
+            function getAvatarForStudent(num) {
+                const idx = (parseInt(num, 10) - 1) % ANIMAL_AVATARS.length;
+                return ANIMAL_AVATARS[idx >= 0 ? idx : 0];
+            }
 
             let students = [];
             let unavailableSeats = new Set();
@@ -431,8 +480,12 @@
                         : `${i + 1}번 좌석, ${student ? student.name : '빈자리'}${genderLock ? `, ${genderLock}학생 고정` : ''}${lockedStudent ? `, ${lockedStudent.name} 자리 고정` : ''}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : genderLockMode ? `. 클릭하여 ${genderLockMode}학생 고정` : isStudentLockMode ? '. 클릭하여 선택 학생 자리로 고정' : ''}`);
                     desk.title = isUnusedMode ? '클릭하여 사용 안 함(X) 표시를 전환합니다.' : genderLockMode ? `클릭하여 ${genderLockMode}학생 고정을 전환합니다.` : isStudentLockMode ? '클릭하여 선택한 학생을 이 자리에 고정합니다.' : 'X 표시, 성별 고정 또는 학생 자리 고정 버튼을 눌러 좌석을 설정할 수 있습니다.';
                     const genderBadge = student && student.gender ? `<small style="opacity:0.7; font-size:0.8rem; margin-left:3px;">(${student.gender})</small>` : '';
+                    const avatarIcon = student ? getAvatarForStudent(student.number).icon : '';
+                    const avatarBadge = avatarIcon ? `<span style="font-size: 1.5rem; line-height: 1; margin: 2px 0;">${avatarIcon}</span>` : '';
+
                     desk.innerHTML = `
                         <span class="desk-num">${i + 1}번 좌석</span>
+                        ${avatarBadge}
                         <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name + genderBadge : '빈자리')}</span>
                         ${lockedStudent && !isUnused ? `<span class="desk-student-lock">${lockedStudent.name} 고정</span>` : ''}
                         ${genderLock && !isUnused ? `<span class="desk-lock ${genderLock === '남' ? 'male' : 'female'}">${genderLock} 고정</span>` : ''}
@@ -686,6 +739,64 @@
                 renderDesks();
             }
 
+            async function loadClassroom(classId = null) {
+                try {
+                    const availableRes = await api('/api/teacher/available-classes').catch(() => null);
+                    if (availableRes && availableRes.classes && availableRes.classes.length > 0 && classSwitcherSelect) {
+                        classSwitcherSelect.hidden = false;
+                        const prevVal = classSwitcherSelect.value;
+                        classSwitcherSelect.replaceChildren();
+                        availableRes.classes.forEach(c => {
+                            const opt = document.createElement("option");
+                            opt.value = c.id;
+                            opt.textContent = `${c.grade}학년 ${c.classNumber}반 (${c.teacherName})`;
+                            classSwitcherSelect.appendChild(opt);
+                        });
+                        if (classId) classSwitcherSelect.value = classId;
+                        else if (prevVal) classSwitcherSelect.value = prevVal;
+                    }
+
+                    const fetchUrl = classId ? `/api/teacher/class?classId=${classId}` : '/api/teacher/class';
+                    const classRes = await api(fetchUrl).catch(() => null);
+                    if (classRes && classRes.classroom) {
+                        const c = classRes.classroom;
+                        classHeader.textContent = `${c.schoolName} ${c.grade}학년 ${c.classNumber}반 (${c.teacherName} 선생님)`;
+                        storageKey = `classroom-seating-unused-${c.id || `${c.schoolName}-${c.grade}-${c.classNumber}`}`;
+                        students = (c.students || []).map(s => ({ number: String(s.number), name: s.name, gender: s.gender || '남' }));
+                        if (c.id && classSwitcherSelect) classSwitcherSelect.value = c.id;
+                    } else {
+                        classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
+                        students = [
+                            { number: "1", name: '김민준', gender: '남' }, { number: "2", name: '이서연', gender: '여' },
+                            { number: "3", name: '박지우', gender: '남' }, { number: "4", name: '최하늘', gender: '여' },
+                            { number: "5", name: '정예준', gender: '남' }, { number: "6", name: '강도윤', gender: '남' }
+                        ];
+                    }
+                } catch (_) {
+                    classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
+                }
+                loadSeatSettings();
+                updateTeacherViewButton();
+                populateStudentLockOptions();
+                renderDesks();
+            }
+
+            async function init() {
+                const session = await api('/api/auth/me').catch(() => ({ signedIn: false }));
+                if (!session.signedIn || session.user?.role !== 'teacher') {
+                    location.replace('/');
+                    return;
+                }
+                await loadClassroom();
+            }
+
+            if (classSwitcherSelect) {
+                classSwitcherSelect.addEventListener('change', (e) => {
+                    const selectedId = e.target.value;
+                    if (selectedId) loadClassroom(selectedId);
+                });
+            }
+
             function populateStudentLockOptions() {
                 const currentValue = studentLockSelect.value;
                 studentLockSelect.replaceChildren(new Option('학생 선택', ''));
@@ -702,36 +813,6 @@
                     [students[i], students[j]] = [students[j], students[i]];
                 }
                 saveSeatSettings();
-                renderDesks();
-            }
-
-            async function init() {
-                try {
-                    const session = await api('/api/auth/me').catch(() => ({ signedIn: false }));
-                    if (!session.signedIn || session.user?.role !== 'teacher') {
-                        location.replace('/');
-                        return;
-                    }
-                    const classRes = await api('/api/teacher/class').catch(() => null);
-                    if (classRes && classRes.classroom) {
-                        const c = classRes.classroom;
-                        classHeader.textContent = `${c.schoolName} ${c.grade}학년 ${c.classNumber}반 (${c.teacherName} 선생님)`;
-                        storageKey = `classroom-seating-unused-${c.id || `${c.schoolName}-${c.grade}-${c.classNumber}`}`;
-                        students = (c.students || []).map(s => ({ number: s.number, name: s.name, gender: s.gender || '남' }));
-                    } else {
-                        classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
-                        students = [
-                            { name: '김민준' }, { name: '이서연' }, { name: '박지우' }, { name: '최하늘' },
-                            { name: '정예준' }, { name: '강도윤' }, { name: '조은서' }, { name: '윤하은' },
-                            { name: '장민서' }, { name: '임주원' }, { name: '한지후' }, { name: '오서진' }
-                        ];
-                    }
-                } catch (_) {
-                    classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
-                }
-                loadSeatSettings();
-                updateTeacherViewButton();
-                populateStudentLockOptions();
                 renderDesks();
             }
 
