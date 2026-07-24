@@ -26,7 +26,7 @@ export const complexPolarDemoivreProblems: GeometryChoiceItem[] = [
   make(
     "cp1",
     "절댓값과 편각",
-    "절댓값 r과 주편각 θ는?",
+    "절댓값 $r$과 주편각 $\\theta$는?",
     String.raw`z=1+i`,
     String.raw`r=\sqrt2,\quad\theta=\frac{\pi}{4}`,
     [String.raw`r=2,\quad\theta=\frac{\pi}{4}`, String.raw`r=\sqrt2,\quad\theta=\frac{3\pi}{4}`, String.raw`r=1,\quad\theta=\frac{\pi}{2}`],
@@ -46,7 +46,7 @@ export const complexPolarDemoivreProblems: GeometryChoiceItem[] = [
   make(
     "cp3",
     "극형식에서 직교형식으로",
-    "a+bi의 꼴로 나타낸 것은?",
+    "$a+bi$의 꼴로 나타낸 것은?",
     String.raw`2\left(\cos\frac{\pi}{3}+i\sin\frac{\pi}{3}\right)`,
     String.raw`1+\sqrt3i`,
     [String.raw`\sqrt3+i`, String.raw`1-\sqrt3i`, String.raw`\sqrt3-i`],
@@ -54,7 +54,7 @@ export const complexPolarDemoivreProblems: GeometryChoiceItem[] = [
   make(
     "cp4",
     "극형식의 곱셈",
-    "곱 z₁z₂는?",
+    "곱 $z_1z_2$는?",
     String.raw`z_1=2\left(\cos\frac{\pi}{6}+i\sin\frac{\pi}{6}\right),\quad z_2=3\left(\cos\frac{3\pi}{4}+i\sin\frac{3\pi}{4}\right)`,
     String.raw`6\left(\cos\frac{11\pi}{12}+i\sin\frac{11\pi}{12}\right)`,
     [
@@ -66,7 +66,7 @@ export const complexPolarDemoivreProblems: GeometryChoiceItem[] = [
   make(
     "cp5",
     "극형식의 나눗셈",
-    "몫 z₁/z₂는?",
+    "몫 $\\dfrac{z_1}{z_2}$는?",
     String.raw`z_1=6\left(\cos\frac{5\pi}{6}+i\sin\frac{5\pi}{6}\right),\quad z_2=2\left(\cos\frac{\pi}{3}+i\sin\frac{\pi}{3}\right)`,
     String.raw`3\left(\cos\frac{\pi}{2}+i\sin\frac{\pi}{2}\right)`,
     [

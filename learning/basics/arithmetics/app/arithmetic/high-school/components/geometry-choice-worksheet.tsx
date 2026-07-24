@@ -18,6 +18,15 @@ type Props = {
   problemSets?: GeometryChoiceItem[][];
 };
 
+function InlineMathPrompt({ text }: { text: string }) {
+  return text.split(/(\$[^$]+\$)/g).map((part, index) => {
+    if (part.startsWith("$") && part.endsWith("$")) {
+      return <MathFormula key={`${part}-${index}`} latex={part.slice(1, -1)} />;
+    }
+    return part;
+  });
+}
+
 export default function GeometryChoiceWorksheet({ subject = "기하", title, seed, problems, problemSets }: Props) {
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
@@ -74,7 +83,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
               <div className="polynomial-question-number">{String(index + 1).padStart(2, "0")}</div>
               <div className="polynomial-question-body">
                 <span className="polynomial-focus-label">{problem.label}</span>
-                {problem.prompt && <p className="geometry-choice-prompt">{problem.prompt}</p>}
+                {problem.prompt && <p className="geometry-choice-prompt"><InlineMathPrompt text={problem.prompt} /></p>}
                 <div className="derivative-expression trig-derivative-expression geometry-choice-expression"><MathFormula latex={problem.latex} displayStyle /></div>
                 {answerSheet && <div className="derivative-static-answer"><MathFormula latex={problem.correctLatex} displayStyle /></div>}
               </div>

@@ -34,3 +34,10 @@ test("극형식은 cos θ+i sin θ 표기를 사용한다", () => {
   assert.ok(formulas.some((formula) => formula.includes(String.raw`\cos`) && formula.includes(String.raw`i\sin`)));
   assert.ok(formulas.every((formula) => !formula.includes("cis")));
 });
+
+test("문장 속 수학 기호는 인라인 수식으로 표시한다", () => {
+  const prompts = complexPolarDemoivreProblems.map(({ prompt }) => prompt ?? "");
+  assert.ok(prompts.includes("$a+bi$의 꼴로 나타낸 것은?"));
+  assert.ok(prompts.includes("곱 $z_1z_2$는?"));
+  assert.ok(prompts.includes("몫 $\\dfrac{z_1}{z_2}$는?"));
+});
