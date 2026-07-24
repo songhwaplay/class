@@ -1117,20 +1117,35 @@
 
 /* Shared high-school worksheet rhythm: keep type and writing space consistent. */
 .polynomial-page {
-  --high-school-title-size: 27px;
+  --high-school-title-size: 23px;
   --high-school-subject-size: 13px;
   --high-school-prompt-size: 14px;
   --high-school-math-size: 19px;
   --high-school-label-size: 10px;
 }
 
+.polynomial-page .polynomial-sheet-header .counting-sheet-title {
+  min-width: 0;
+  gap: 10px;
+}
+
 .polynomial-page .polynomial-sheet-header .counting-sheet-title > span {
+  flex: 0 0 auto;
   font-size: var(--high-school-subject-size) !important;
+  line-height: 1.25;
+  white-space: nowrap;
 }
 
 .polynomial-page .polynomial-sheet-header .counting-sheet-title > strong {
+  min-width: 0;
   font-size: var(--high-school-title-size) !important;
-  line-height: 1.15;
+  line-height: 1.2;
+  letter-spacing: -0.045em;
+  white-space: nowrap;
+}
+
+.polynomial-page .polynomial-sheet-header .counting-sheet-info {
+  flex: 0 0 auto;
 }
 
 .polynomial-page .worksheet-stage .polynomial-question {
@@ -1142,6 +1157,12 @@
   z-index: 1;
   max-width: 46%;
   font-size: var(--high-school-prompt-size) !important;
+}
+
+/* Formula-led worksheets need the whole row so long equations never break mid-formula. */
+.polynomial-page.formula-only-page .worksheet-stage .polynomial-question-body,
+.polynomial-page.numeric-choice-page .worksheet-stage .polynomial-question-body {
+  max-width: 100%;
 }
 
 .polynomial-page .polynomial-sheet-7 .polynomial-problem-grid {
@@ -1157,6 +1178,7 @@
 }
 
 .polynomial-page .worksheet-stage .polynomial-focus-label {
+  font-family: var(--high-school-math-font);
   font-size: var(--high-school-label-size) !important;
   line-height: 1.25;
 }
@@ -1164,7 +1186,7 @@
 .polynomial-page .worksheet-stage .geometry-choice-prompt {
   margin: 0 0 7px;
   color: #17233c;
-  font-family: var(--high-school-korean-font);
+  font-family: var(--high-school-math-font);
   font-size: var(--high-school-prompt-size);
   font-weight: 700;
   line-height: 1.5;
@@ -1192,6 +1214,19 @@
 .polynomial-page .worksheet-stage .geometry-choice-expression {
   font-size: var(--high-school-math-size) !important;
   line-height: 1.35;
+}
+
+.polynomial-page.formula-only-page .worksheet-stage .geometry-choice-expression,
+.polynomial-page.numeric-choice-page .worksheet-stage .logarithm-expression {
+  max-width: 100%;
+  overflow: visible;
+  white-space: nowrap;
+}
+
+.polynomial-page.formula-only-page .worksheet-stage .geometry-choice-expression .katex-display,
+.polynomial-page.numeric-choice-page .worksheet-stage .logarithm-expression .katex-display {
+  margin: 5px 0 0;
+  text-align: left;
 }
 
 /* Word-heavy and diagram-led questions need the full row width. */
