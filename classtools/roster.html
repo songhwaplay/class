@@ -638,6 +638,7 @@
             "use strict";
 
             const STUDENT_PASSWORD_PATTERN = /^\d{6}$/;
+            const DISPLAY_DEFAULT_STUDENT_PASSWORD = "123456";
             const currentYear = new Date().getFullYear();
             const allowedYears = [currentYear - 1, currentYear, currentYear + 1];
             const teacherAccount = document.querySelector("#teacher-account");
@@ -666,6 +667,7 @@
             const passwordCount = document.querySelector("#password-count");
             const status = document.querySelector("#input-status");
             const saveButton = document.querySelector("#save-button");
+            const displayedPasswordRows = new Map();
             let authorized = false;
             let saving = false;
 
@@ -730,7 +732,7 @@
                     number,
                     name: names[index],
                     gender: genders[index] || "남",
-                    password: passwords[index] || "",
+                    password: passwords[index] === displayedPasswordRows.get(number) ? "" : (passwords[index] || ""),
                 }));
             }
 
@@ -789,7 +791,9 @@
                 numbersInput.value = classroom.students.map((student) => student.number).join("\n");
                 namesInput.value = classroom.students.map((student) => student.name).join("\n");
                 gendersInput.value = classroom.students.map((student) => student.gender || "남").join("\n");
-                passwordsInput.value = "";
+                passwordsInput.value = classroom.students.map(() => DISPLAY_DEFAULT_STUDENT_PASSWORD).join("\n");
+                displayedPasswordRows.clear();
+                classroom.students.forEach((student) => displayedPasswordRows.set(student.number, DISPLAY_DEFAULT_STUDENT_PASSWORD));
                 profileStatus.textContent = "Saved on the server";
                 updateClassSummary(getProfile());
             }
