@@ -1013,7 +1013,7 @@ textarea,
 </head>
 <body>
 
-<audio id="bgm" src="/learning/games/setgame/assets/sound/bgm.mp3" loop preload="auto"></audio>
+<audio id="bgm" src="/learning/games/setgame/assets/sound/pattern-trio-01-main-theme.mp3" preload="auto"></audio>
 
 
 <div class="lobby-card hidden" id="missingScreen">
@@ -1215,6 +1215,11 @@ textarea,
     let audioCtx = null;
     let currentMusicVolume = 0.6;
     let musicStarted = false;
+    const backgroundMusicTracks = [
+        "/learning/games/setgame/assets/sound/pattern-trio-01-main-theme.mp3",
+        "/learning/games/setgame/assets/sound/pattern-trio-02-soft-bell-drift.mp3",
+        "/learning/games/setgame/assets/sound/pattern-trio-03-card-wind.mp3"
+    ];
 
     const KOREAN_NAME_PATTERN = /^[가-힣]{2,6}$/;
 
@@ -1945,6 +1950,20 @@ textarea,
         }).catch(() => {});
     }
 
+    function playNextBackgroundTrack() {
+        const bgm = document.getElementById("bgm");
+        if (!bgm) return;
+
+        const currentTrack = new URL(bgm.currentSrc || bgm.src, window.location.href).pathname;
+        const currentIndex = backgroundMusicTracks.findIndex((track) => track === currentTrack);
+        const nextTrack = backgroundMusicTracks[(currentIndex + 1) % backgroundMusicTracks.length];
+
+        bgm.src = nextTrack;
+        bgm.load();
+        bgm.volume = currentMusicVolume;
+        bgm.play().catch(() => {});
+    }
+
     function updateMusicControlUI(level) {
         document.querySelectorAll(".music-segment").forEach((segment, index) => {
             const keepClass = segment.classList.contains("game-music-segment")
@@ -2132,6 +2151,7 @@ textarea,
     }
 
     document.addEventListener("pointerdown", startBackgroundMusic, { once: true });
+    document.getElementById("bgm").addEventListener("ended", playNextBackgroundTrack);
 
     window.addEventListener("load", () => setMusicVolume(0.6, 3));
 
