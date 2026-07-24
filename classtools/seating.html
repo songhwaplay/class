@@ -335,6 +335,17 @@
         </form>
     </dialog>
 
+    <dialog class="student-picker" id="student-remove-dialog">
+        <form method="dialog">
+            <h2>학생 배치 해제</h2>
+            <p id="student-remove-description"></p>
+            <div class="dialog-actions">
+                <button class="btn" value="cancel" type="submit">취소</button>
+                <button class="btn btn-primary" value="confirm" type="submit">배치 해제</button>
+            </div>
+        </form>
+    </dialog>
+
     <script>
         (() => {
             'use strict';
@@ -349,6 +360,8 @@
             const studentPicker = document.getElementById('student-picker');
             const studentPickerSelect = document.getElementById('student-picker-select');
             const studentPickerConfirm = document.getElementById('student-picker-confirm');
+            const studentRemoveDialog = document.getElementById('student-remove-dialog');
+            const studentRemoveDescription = document.getElementById('student-remove-description');
             const resetUnusedBtn = document.getElementById('reset-unused-btn');
             const seatSummary = document.getElementById('seat-summary');
             const TOTAL_DESKS = 36;
@@ -362,6 +375,7 @@
             let unassignedStudents = new Set();
             let currentAssignments = new Map();
             let pickerSeatIndex = null;
+            let pendingRemoval = null;
             let isUnusedMode = false;
             let genderLockMode = null;
             let isStudentLockMode = false;
@@ -538,7 +552,7 @@
                 else if (isStudentLockMode) toggleStudentLock(index);
                 else {
                     const student = currentAssignments.get(index);
-                    if (student) removeStudentFromSeat(index, student);
+                    if (student) openStudentRemoveDialog(index, student);
                     else openStudentPicker(index);
                 }
             }
@@ -567,6 +581,12 @@
                 unassignedStudents.add(student.number);
                 saveSeatSettings();
                 renderDesks();
+            }
+
+            function openStudentRemoveDialog(index, student) {
+                pendingRemoval = { index, student };
+                studentRemoveDescription.textContent = `${student.name} 학생을 ${index + 1}번 좌석에서 배치 해제할까요?`;
+                studentRemoveDialog.showModal();
             }
 
             function openStudentPicker(index) {
@@ -693,6 +713,12 @@
             studentPicker.addEventListener('close', () => {
                 if (studentPicker.returnValue === 'confirm') assignStudentToSeat();
                 pickerSeatIndex = null;
+            });
+            studentRemoveDialog.addEventListener('close', () => {
+                if (studentRemoveDialog.returnValue === 'confirm' && pendingRemoval) {
+                    removeStudentFromSeat(pendingRemoval.index, pendingRemoval.student);
+                }
+                pendingRemoval = null;
             });
             resetUnusedBtn.addEventListener('click', () => {
                 unavailableSeats.clear();
