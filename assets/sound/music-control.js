@@ -53,7 +53,10 @@
 
     let applyingAudioState = false;
     let playbackUnlocked = false;
-    let shouldResumePlayback = sessionStorage.getItem(PLAYBACK_STATE_KEY) !== "paused";
+    // Music controls expose mute rather than a stop action. Always try to
+    // resume when a menu opens; browser autoplay rules still require a user
+    // gesture where applicable.
+    let shouldResumePlayback = true;
     let pageIsHiding = false;
 
     function savePlaybackState() {
@@ -156,7 +159,6 @@
     }
 
     async function startPlayback() {
-        if (!shouldResumePlayback) return false;
         applyAudioState();
         try {
             await audio.play();
@@ -237,8 +239,8 @@
     });
     window.addEventListener("pageshow", () => {
         pageIsHiding = false;
-        shouldResumePlayback = sessionStorage.getItem(PLAYBACK_STATE_KEY) === "playing";
-        if (shouldResumePlayback) startPlayback();
+        shouldResumePlayback = true;
+        startPlayback();
     });
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") savePlaybackState();
