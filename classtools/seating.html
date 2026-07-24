@@ -274,6 +274,7 @@
             .student-lock-select { display: none !important; }
             .card { margin: 0; padding: 0; border: 0; border-radius: 0; background: #fff; box-shadow: none; break-inside: avoid; }
             .blackboard { width: min(160mm, 100%); margin: 0 auto 5mm; padding: 4mm; font-size: 15pt; box-shadow: none; }
+            .seating-grid + .blackboard { margin: 5mm auto 0; }
             .seating-grid {
                 grid-template-columns: repeat(6, 1fr);
                 grid-template-rows: repeat(6, 20mm);
@@ -354,6 +355,7 @@
         (() => {
             'use strict';
             const seatingGrid = document.getElementById('seating-grid');
+            const blackboard = document.querySelector('.blackboard');
             const classHeader = document.getElementById('class-header');
             const shuffleBtn = document.getElementById('shuffle-btn');
             const teacherViewBtn = document.getElementById('teacher-view-btn');
@@ -532,6 +534,8 @@
             function updateTeacherViewButton() {
                 teacherViewBtn.setAttribute('aria-pressed', String(isTeacherView));
                 teacherViewBtn.textContent = isTeacherView ? '🧑‍🎓 학생 시야로 보기' : '👩‍🏫 교사 시야로 보기';
+                if (isTeacherView) seatingGrid.after(blackboard);
+                else seatSummary.before(blackboard);
             }
 
             function toggleTeacherView() {
