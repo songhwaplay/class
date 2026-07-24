@@ -45,6 +45,8 @@ test("geometry worksheets use the shared slide-over answer panel", async () => {
   assert.match(source, />답안 입력<\/button>/);
   assert.match(source, /<WorksheetChoicePanel/);
   assert.match(source, /<MathFormula latex=\{problem\.latex\} displayStyle \/>/);
+  assert.match(source, /polynomial-focus-label">\{problem\.label\}/);
+  assert.doesNotMatch(source, /polynomial-focus-label">\{targetQuestion/);
   assert.match(source, /<WorksheetChoicePanel[^>]*displayStyle/);
   assert.match(source, /onClose=\{\(\) => setPanelOpen\(false\)\}/);
 });

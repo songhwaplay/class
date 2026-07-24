@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import MathFormula from "../../../components/math-formula";
 import { rotateChoices } from "../../../../lib/worksheet-choice-utils";
-import { targetQuestion } from "../../../../lib/worksheet-question";
 import WorksheetChoicePanel, { type WorksheetChoiceProblem } from "./worksheet-choice-panel";
 
 export type GeometryChoiceItem = WorksheetChoiceProblem & { latex: string };
@@ -69,7 +68,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
             <article className="polynomial-question derivative-question trig-derivative-question geometry-choice-question" key={problem.id} data-testid="geometry-question">
               <div className="polynomial-question-number">{String(index + 1).padStart(2, "0")}</div>
               <div className="polynomial-question-body">
-                <span className="polynomial-focus-label">{targetQuestion(problem.label)}</span>
+                <span className="polynomial-focus-label">{problem.label}</span>
                 <div className="derivative-expression trig-derivative-expression geometry-choice-expression"><MathFormula latex={problem.latex} displayStyle /></div>
                 {answerSheet && <div className="derivative-static-answer"><MathFormula latex={problem.correctLatex} displayStyle /></div>}
               </div>
