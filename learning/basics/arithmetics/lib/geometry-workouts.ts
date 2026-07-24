@@ -58,12 +58,34 @@ export const vectorGeometryProblems: GeometryChoiceItem[] = [
   item("g7", "두 직선의 수직", String.raw`\vec d_1=(2,-1),\quad\vec d_2=(k,4)`, String.raw`k=2`, [String.raw`k=-2`, String.raw`k=4`, String.raw`k=-4`]),
 ];
 
-export const spaceCoordinateProblems: GeometryChoiceItem[] = [
-  item("s1", "공간에서 두 점 사이의 거리", String.raw`A(1,-2,3),\quad B(5,1,-1)`, String.raw`\sqrt{41}`, [String.raw`\sqrt{33}`, String.raw`5`, String.raw`41`]),
-  item("s2", "선분의 중점", String.raw`A(1,2,-3),\quad B(5,-4,7)`, String.raw`(3,-1,2)`, [String.raw`(6,-2,4)`, String.raw`(2,-3,5)`, String.raw`(3,1,-2)`]),
-  item("s3", "내분점", String.raw`AP:PB=2:1,\quad A(0,3,6),\ B(6,0,-3)`, String.raw`P=(4,1,0)`, [String.raw`P=(2,2,3)`, String.raw`P=(3,1,0)`, String.raw`P=(4,2,-1)`]),
-  item("s4", "구의 중심과 반지름", String.raw`x^2+y^2+z^2-4x+6y-2z-11=0`, String.raw`C=(2,-3,1),\ r=5`, [String.raw`C=(-2,3,-1),\ r=5`, String.raw`C=(2,-3,1),\ r=25`, String.raw`C=(4,-6,2),\ r=5`]),
-  item("s5", "구의 방정식", String.raw`C=(-1,2,3),\quad r=4`, String.raw`(x+1)^2+(y-2)^2+(z-3)^2=16`, [String.raw`(x-1)^2+(y+2)^2+(z+3)^2=16`, String.raw`(x+1)^2+(y-2)^2+(z-3)^2=4`, String.raw`(x-1)^2+(y-2)^2+(z-3)^2=16`]),
-  item("s6", "좌표평면에 대칭인 점", String.raw`P(2,-5,3)\text{를 }xy\text{평면에 대칭}`, String.raw`(2,-5,-3)`, [String.raw`(-2,5,3)`, String.raw`(2,5,3)`, String.raw`(-2,-5,3)`]),
-  item("s7", "공간에서의 위치 관계", String.raw`P(a,b,c)\text{가 }yz\text{평면 위}`, String.raw`a=0`, [String.raw`b=0`, String.raw`c=0`, String.raw`a=b=c`]),
+export const spaceCoordinateProblemSets: GeometryChoiceItem[][] = [
+  [
+    item("s1a", "거리 조건을 만족하는 k는?", String.raw`A(1,-2,3),\ B(k,2,-1),\quad AB=6`, String.raw`k=-1,\ 3`, [String.raw`k=1,\ 3`, String.raw`k=-2,\ 4`, String.raw`k=3`]),
+    item("s2a", "내분점 P의 좌표는?", String.raw`AP:PB=2:1,\quad A(0,3,6),\ B(6,0,-3)`, String.raw`P=(4,1,0)`, [String.raw`P=(2,2,3)`, String.raw`P=(3,1,0)`, String.raw`P=(4,2,-1)`]),
+    item("s3a", "구의 중심과 반지름은?", String.raw`x^2+y^2+z^2-4x+6y-2z-11=0`, String.raw`C=(2,-3,1),\ r=5`, [String.raw`C=(-2,3,-1),\ r=5`, String.raw`C=(2,-3,1),\ r=25`, String.raw`C=(4,-6,2),\ r=5`]),
+    item("s4a", "xy평면에 접하는 구의 방정식은?", String.raw`C=(2,-3,5),\quad \text{구가 }xy\text{평면에 접한다}`, String.raw`(x-2)^2+(y+3)^2+(z-5)^2=25`, [String.raw`(x-2)^2+(y+3)^2+(z-5)^2=5`, String.raw`(x+2)^2+(y-3)^2+(z+5)^2=25`, String.raw`(x-2)^2+(y+3)^2+z^2=25`]),
+    item("s5a", "대칭점 Q와 P 사이의 거리는?", String.raw`P(4,-2,3)\text{를 }yz\text{평면에 대칭이동한 점을 }Q\text{라 하자}`, String.raw`PQ=8`, [String.raw`PQ=4`, String.raw`PQ=6`, String.raw`PQ=10`]),
+    item("s6a", "두 점에서 같은 거리에 있을 때 t는?", String.raw`P=(0,t,2),\ A=(1,0,2),\ B=(-1,4,2),\quad PA=PB`, String.raw`t=2`, [String.raw`t=-2`, String.raw`t=1`, String.raw`t=4`]),
+    item("s7a", "두 점에서 같은 거리에 있는 점의 자취는?", String.raw`A=(2,0,0),\quad B=(-2,0,0)`, String.raw`yz\text{평면 }(x=0)`, [String.raw`xz\text{평면 }(y=0)`, String.raw`xy\text{평면 }(z=0)`, String.raw`x\text{축}`]),
+  ],
+  [
+    item("s1b", "거리 조건을 만족하는 k는?", String.raw`A(2,1,-1),\ B(-2,k,2),\quad AB=\sqrt{34}`, String.raw`k=-2,\ 4`, [String.raw`k=-1,\ 3`, String.raw`k=2,\ 4`, String.raw`k=-4,\ 2`]),
+    item("s2b", "내분점 P의 좌표는?", String.raw`AP:PB=3:2,\quad A(-2,4,1),\ B(8,-1,6)`, String.raw`P=(4,1,4)`, [String.raw`P=(2,1,3)`, String.raw`P=(3,2,4)`, String.raw`P=(4,-1,4)`]),
+    item("s3b", "구의 중심과 반지름은?", String.raw`x^2+y^2+z^2+6x-4y-8z-11=0`, String.raw`C=(-3,2,4),\ r=2\sqrt{10}`, [String.raw`C=(3,-2,-4),\ r=2\sqrt{10}`, String.raw`C=(-3,2,4),\ r=40`, String.raw`C=(-6,4,8),\ r=\sqrt{10}`]),
+    item("s4b", "xz평면에 접하는 구의 방정식은?", String.raw`C=(-1,6,2),\quad \text{구가 }xz\text{평면에 접한다}`, String.raw`(x+1)^2+(y-6)^2+(z-2)^2=36`, [String.raw`(x+1)^2+(y-6)^2+(z-2)^2=6`, String.raw`(x-1)^2+(y+6)^2+(z+2)^2=36`, String.raw`(x+1)^2+y^2+(z-2)^2=36`]),
+    item("s5b", "대칭점 Q와 P 사이의 거리는?", String.raw`P(-3,5,1)\text{를 }xz\text{평면에 대칭이동한 점을 }Q\text{라 하자}`, String.raw`PQ=10`, [String.raw`PQ=5`, String.raw`PQ=6`, String.raw`PQ=8`]),
+    item("s6b", "두 점에서 같은 거리에 있을 때 t는?", String.raw`P=(t,0,-1),\ A=(0,2,-1),\ B=(6,-2,-1),\quad PA=PB`, String.raw`t=3`, [String.raw`t=-3`, String.raw`t=2`, String.raw`t=6`]),
+    item("s7b", "두 점에서 같은 거리에 있는 점의 자취는?", String.raw`A=(0,3,0),\quad B=(0,-3,0)`, String.raw`xz\text{평면 }(y=0)`, [String.raw`yz\text{평면 }(x=0)`, String.raw`xy\text{평면 }(z=0)`, String.raw`y\text{축}`]),
+  ],
+  [
+    item("s1c", "거리 조건을 만족하는 k는?", String.raw`A(-1,2,0),\ B(3,-2,k),\quad AB=\sqrt{41}`, String.raw`k=-3,\ 3`, [String.raw`k=-2,\ 2`, String.raw`k=3`, String.raw`k=-4,\ 4`]),
+    item("s2c", "내분점 P의 좌표는?", String.raw`AP:PB=1:2,\quad A(6,-3,0),\ B(0,6,9)`, String.raw`P=(4,0,3)`, [String.raw`P=(2,3,6)`, String.raw`P=(3,1,4)`, String.raw`P=(4,1,3)`]),
+    item("s3c", "구의 중심과 반지름은?", String.raw`x^2+y^2+z^2-2x+10y+4z+5=0`, String.raw`C=(1,-5,-2),\ r=5`, [String.raw`C=(-1,5,2),\ r=5`, String.raw`C=(1,-5,-2),\ r=25`, String.raw`C=(2,-10,-4),\ r=5`]),
+    item("s4c", "yz평면에 접하는 구의 방정식은?", String.raw`C=(4,1,-3),\quad \text{구가 }yz\text{평면에 접한다}`, String.raw`(x-4)^2+(y-1)^2+(z+3)^2=16`, [String.raw`(x-4)^2+(y-1)^2+(z+3)^2=4`, String.raw`(x+4)^2+(y+1)^2+(z-3)^2=16`, String.raw`x^2+(y-1)^2+(z+3)^2=16`]),
+    item("s5c", "대칭점 Q와 P 사이의 거리는?", String.raw`P(2,-1,-4)\text{를 }xy\text{평면에 대칭이동한 점을 }Q\text{라 하자}`, String.raw`PQ=8`, [String.raw`PQ=4`, String.raw`PQ=6`, String.raw`PQ=10`]),
+    item("s6c", "두 점에서 같은 거리에 있을 때 t는?", String.raw`P=(1,t,0),\ A=(1,-2,3),\ B=(1,4,-3),\quad PA=PB`, String.raw`t=1`, [String.raw`t=-1`, String.raw`t=2`, String.raw`t=3`]),
+    item("s7c", "두 점에서 같은 거리에 있는 점의 자취는?", String.raw`A=(0,0,5),\quad B=(0,0,-5)`, String.raw`xy\text{평면 }(z=0)`, [String.raw`yz\text{평면 }(x=0)`, String.raw`xz\text{평면 }(y=0)`, String.raw`z\text{축}`]),
+  ],
 ];
+
+export const spaceCoordinateProblems = spaceCoordinateProblemSets[0];

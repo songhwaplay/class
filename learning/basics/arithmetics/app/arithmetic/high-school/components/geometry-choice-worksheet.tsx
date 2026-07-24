@@ -12,21 +12,23 @@ type Props = {
   title: string;
   seed: number;
   problems: GeometryChoiceItem[];
+  problemSets?: GeometryChoiceItem[][];
 };
 
-export default function GeometryChoiceWorksheet({ subject = "기하", title, seed, problems }: Props) {
+export default function GeometryChoiceWorksheet({ subject = "기하", title, seed, problems, problemSets }: Props) {
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [panelOpen, setPanelOpen] = useState(false);
   const [scale, setScale] = useState(0.6);
   const [arrangement, setArrangement] = useState(0);
   const displayedProblems = useMemo(() => {
-    const ordered = rotateChoices(problems, `${seed}-problems-${arrangement}`);
+    const source = problemSets?.[arrangement % problemSets.length] ?? problems;
+    const ordered = rotateChoices(source, `${seed}-problems-${arrangement}`);
     return ordered.map((problem) => ({
       ...problem,
       choices: rotateChoices(problem.choices, `${seed}-${problem.id}-${arrangement}`),
     }));
-  }, [arrangement, problems, seed]);
+  }, [arrangement, problemSets, problems, seed]);
 
   useEffect(() => {
     const fit = () => setScale(Math.min((window.innerWidth - 32) / 794, 1));
@@ -85,7 +87,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
         <a className="counting-back" href="/arithmetic">← 연산</a>
         <div className="counting-progress"><strong>{Object.values(results).filter(Boolean).length}<small>/{displayedProblems.length} 정답</small></strong></div>
         <div className="toolbar">
-          <button className="button secondary" onClick={() => { setArrangement((value) => value + 1); reset(); }}>새 배열</button>
+          <button className="button secondary" onClick={() => { setArrangement((value) => value + 1); reset(); }}>{problemSets ? "새 문제" : "새 배열"}</button>
           <button className="button ghost" onClick={reset}>다시 풀기</button>
           <button className="button secondary" onClick={() => setPanelOpen(true)}>답안 입력</button>
           <button className="button ghost" onClick={() => window.print()}>인쇄</button>

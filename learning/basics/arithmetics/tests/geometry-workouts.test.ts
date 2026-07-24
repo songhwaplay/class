@@ -7,6 +7,7 @@ import {
   planeVectorProblems,
   projectionProblems,
   vectorGeometryProblems,
+  spaceCoordinateProblemSets,
   spaceCoordinateProblems,
 } from "../lib/geometry-workouts.ts";
 
@@ -34,6 +35,24 @@ test("covers the geometry workout sequence without duplicate answers", () => {
   assert.match(projectionProblems.find(({ id }) => id === "p5")?.latex ?? "", /a_\{\\parallel\}=\?/);
   assert.match(projectionProblems.find(({ id }) => id === "p6")?.latex ?? "", /a_\{\\perp\}=\?/);
   assert.doesNotMatch(projectionProblems.map(({ latex }) => latex).join(" "), /operatorname|theta_x:/);
+});
+
+test("space-coordinate worksheets rotate genuinely different, nontrivial problem sets", () => {
+  assert.equal(spaceCoordinateProblemSets.length, 3);
+  const formulas = new Set<string>();
+  for (const problems of spaceCoordinateProblemSets) {
+    assert.equal(problems.length, 7);
+    assert.equal(problems.some(({ label }) => label === "선분의 중점"), false);
+    assert.equal(problems.some(({ label }) => label === "구의 방정식"), false);
+    for (const problem of problems) {
+      assert.equal(problem.choices.length, 4);
+      assert.equal(problem.choices.filter(({ correct }) => correct).length, 1);
+      assert.equal(new Set(problem.choices.map(({ latex }) => latex)).size, 4);
+      assert.equal(formulas.has(problem.latex), false, `duplicate formula: ${problem.latex}`);
+      formulas.add(problem.latex);
+    }
+  }
+  assert.equal(formulas.size, 21);
 });
 
 test("geometry worksheets use the shared slide-over answer panel", async () => {
