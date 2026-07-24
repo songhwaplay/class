@@ -973,19 +973,8 @@
                 limitEachLine(numbersInput, /[^\d\r\n]/g, 3);
                 update();
             });
-            namesInput.addEventListener("input", () => {
-                limitEachLine(namesInput, /[^가-힣\r\n]/g, 6);
-                update();
-            });
-            gendersInput.addEventListener("input", () => {
-                const cleaned = gendersInput.value
-                    .replace(/[^남여\r\n]/g, "")
-                    .replace(/\r\n?/g, "\n")
-                    .split("\n")
-                    .map((line) => line.slice(0, 1));
-                gendersInput.value = cleaned.join("\n");
-                update();
-            });
+            namesInput.addEventListener("input", update);
+            gendersInput.addEventListener("input", update);
             passwordsInput.addEventListener("input", () => {
                 const cleanLines = passwordsInput.value
                     .replace(/[^\d\r\n]/g, "")
