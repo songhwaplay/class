@@ -18,7 +18,10 @@ test("both composition orders and their difference are calculated exactly", () =
 });
 test("answers and problems are emitted as mathematical LaTeX", () => {
   for (const problem of createFunctionTransformationProblemSet(17).problems) {
-    assert.match(formatFunctionProblemLatex(problem), /\\begin\{gathered\}/);
+    const latex = formatFunctionProblemLatex(problem);
+    assert.match(latex, /\\begin\{aligned\}&/);
+    assert.match(latex, /\\\\\[0\.5em\]&/);
+    assert.doesNotMatch(latex, /\\begin\{gathered\}/);
     assert.ok(formatFunctionAnswerLatex(problem).length > 2);
   }
 });

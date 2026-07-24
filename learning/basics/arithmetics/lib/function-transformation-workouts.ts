@@ -63,10 +63,10 @@ export function formatFunctionProblem(problem: FunctionTransformationProblem) { 
 export function formatFunctionProblemLatex(problem: FunctionTransformationProblem) {
   if (problem.f && problem.g) {
     const target = problem.kind === "compose-fg" ? "f(g(x))" : problem.kind === "compose-gf" ? "g(f(x))" : "f(g(x))-g(f(x))";
-    return `\\begin{gathered}f(x)=${formatQuadraticLatex(problem.f)},\\quad g(x)=${formatLinearLatex(problem.g)}\\\\[0.5em]${target}\\end{gathered}`;
+    return `\\begin{aligned}&f(x)=${formatQuadraticLatex(problem.f)},\\quad g(x)=${formatLinearLatex(problem.g)}\\\\[0.5em]&${target}\\end{aligned}`;
   }
-  if (problem.kind === "linear-inverse") return `\\begin{gathered}f(x)=${formatLinearLatex(problem.numerator!)}\\\\[0.5em]f^{-1}(x)\\end{gathered}`;
-  return `\\begin{gathered}f(x)=\\dfrac{${formatLinearLatex(problem.numerator!)}}{${formatLinearLatex(problem.denominator!)}}\\\\[0.5em]f^{-1}(x)\\end{gathered}`;
+  if (problem.kind === "linear-inverse") return `\\begin{aligned}&f(x)=${formatLinearLatex(problem.numerator!)}\\\\[0.5em]&f^{-1}(x)\\end{aligned}`;
+  return `\\begin{aligned}&f(x)=\\dfrac{${formatLinearLatex(problem.numerator!)}}{${formatLinearLatex(problem.denominator!)}}\\\\[0.5em]&f^{-1}(x)\\end{aligned}`;
 }
 export function formatFunctionAnswerLatex(problem: FunctionTransformationProblem) {
   if (problem.answer.type === "polynomial") return formatQuadraticLatex(problem.answer.coefficients);
