@@ -56,15 +56,17 @@ for (const [relative, ...patterns] of pageContracts) {
 }
 
 const visibleLobbyEnglishTitles = [
-  ["learning/games/omok/omok.html", /<p class="subtitle">FIVE IN A ROW · 2 PLAYERS<\/p>/],
-  ["learning/games/janggi/janggi.html", /<div class="sub">KOREAN CHESS · 1대1 대국<\/div>/],
-  ["learning/games/diamondgame/diamondgame.html", /<p class="subtitle">DIAMOND GAME · 2–3 PLAYERS<\/p>/],
-  ["learning/games/loveletter/loveletter.html", /<p class="subtitle">COURT DEDUCTION · 3–4 PLAYERS<\/p>/],
-  ["learning/games/drawrelay/drawrelay.html", /<div class="hero-note">DRAW RELAY · 4–8 PLAYERS · 모두 동시에 진행<\/div>/]
+  ["learning/games/connect6/connect6.html", /<h1 class="title">CONNECT SIX<\/h1>\s*<p class="subtitle">육목 · 2 PLAYERS<\/p>/],
+  ["learning/games/omok/omok.html", /<h1 class="title">FIVE IN A ROW<\/h1>\s*<p class="subtitle">오목 · 2 PLAYERS<\/p>/],
+  ["learning/games/janggi/janggi.html", /<h1 class="title">KOREAN CHESS<\/h1><div class="sub">장기 · 1대1 대국<\/div>/],
+  ["learning/games/diamondgame/diamondgame.html", /<h1 class="title">DIAMOND GAME<\/h1>\s*<p class="subtitle">다이아몬드 게임 · 2–3 PLAYERS<\/p>/],
+  ["learning/games/loveletter/loveletter.html", /<h1 class="title">COURT DEDUCTION<\/h1>\s*<p class="subtitle">궁정 추리 · 3–4 PLAYERS<\/p>/],
+  ["learning/games/rummikub/rummikub.html", /<h1 class="title">NUMBER TILES<\/h1>\s*<p class="subtitle">숫자 타일 · 2–4 PLAYERS<\/p>/],
+  ["learning/games/drawrelay/drawrelay.html", /<h1>DRAW<br><span>RELAY<\/span><\/h1>[\s\S]*?<div class="hero-note">그림 릴레이 · 4–8 PLAYERS · 모두 동시에 진행<\/div>/]
 ];
 
 for (const [relative, titlePattern] of visibleLobbyEnglishTitles) {
-  assert.match(read(relative), titlePattern, `${relative}: the lobby must visibly pair its English title with the Korean title.`);
+  assert.match(read(relative), titlePattern, `${relative}: the lobby must use the English title as its prominent heading and pair the Korean title below it.`);
 }
 
 const patternTrio = read("learning/games/setgame/setgame.html");
