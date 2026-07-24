@@ -1312,10 +1312,12 @@ function createClassroomPlatform(options = {}) {
 
     const cleanStudents = students.map((student) => {
       const gender = String(student?.gender || "").normalize("NFC").trim();
+      const birthDate = String(student?.birthDate || student?.birth_date || "").replace(/\D/g, "").slice(0, 6);
       return {
         number: String(student?.number || "").trim(),
         name: String(student?.name || "").normalize("NFC").trim(),
         gender,
+        birthDate,
         password: String(student?.password || "").trim()
       };
     });
