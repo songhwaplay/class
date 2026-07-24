@@ -5,6 +5,7 @@ const { Pool } = require("pg");
 const { createReadingBank } = require("./reading-bank");
 
 const SESSION_COOKIE = "class_session";
+const GUEST_ACCESS_COOKIE = "class_guest_access";
 const SESSION_MAX_AGE_SECONDS = 60 * 60 * 24 * 30;
 const JOIN_CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const DEFAULT_STUDENT_PASSWORD = "123456";
@@ -119,6 +120,7 @@ function createClassroomPlatform(options = {}) {
     : null;
   const googleClient = googleClientId ? new OAuth2Client(googleClientId) : null;
   const museumPresenceSecret = crypto.randomBytes(32);
+  const guestAccessSecret = crypto.randomBytes(32);
   const router = express.Router();
   let databaseReady = false;
   let initializationError = null;
@@ -174,6 +176,34 @@ function createClassroomPlatform(options = {}) {
     ];
     if (isProduction) attributes.push("Secure");
     res.append("Set-Cookie", attributes.join("; "));
+  }
+
+  function setGuestAccessCookie(res, name) {
+    const body = Buffer.from(JSON.stringify({ name, exp: Date.now() + SESSION_MAX_AGE_SECONDS * 1000 })).toString("base64url");
+    const signature = crypto.createHmac("sha256", guestAccessSecret).update(body).digest("base64url");
+    const attributes = [
+      `${GUEST_ACCESS_COOKIE}=${encodeURIComponent(`${body}.${signature}`)}`,
+      "Path=/",
+      "HttpOnly",
+      "SameSite=Lax",
+      `Max-Age=${SESSION_MAX_AGE_SECONDS}`
+    ];
+    if (isProduction) attributes.push("Secure");
+    res.append("Set-Cookie", attributes.join("; "));
+  }
+
+  function guestAccess(req) {
+    const [body, signature] = readCookie(req, GUEST_ACCESS_COOKIE).split(".");
+    if (!body || !signature) return null;
+    const expected = crypto.createHmac("sha256", guestAccessSecret).update(body).digest("base64url");
+    if (signature.length !== expected.length || !crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))) return null;
+    try {
+      const payload = JSON.parse(Buffer.from(body, "base64url").toString("utf8"));
+      const name = normalizePersonName(payload.name);
+      return payload.exp > Date.now() && name.length >= 2 && name.length <= 6 ? { name } : null;
+    } catch (_) {
+      return null;
+    }
   }
 
   async function initialize() {
@@ -422,6 +452,20 @@ function createClassroomPlatform(options = {}) {
     };
   }
 
+  async function hasSiteAccess(req) {
+    const mode = await getSiteAccessMode();
+    if (mode === "open") return Boolean(guestAccess(req));
+    const user = await sessionUser(req);
+    if (!user) return false;
+    return user.role === "admin" || user.role === "teacher" || Boolean(await studentMembership(user.id));
+  }
+
+  const requireSiteAccess = asyncRoute(async (req, res, next) => {
+    if (await hasSiteAccess(req)) return next();
+    if (req.method === "GET") return res.redirect(302, "/?access=required");
+    throw new HttpError(403, "SITE_ACCESS_REQUIRED", "Complete site sign-in before opening this page.");
+  });
+
   function signMuseumPresence(payload) {
     const body = Buffer.from(JSON.stringify(payload)).toString("base64url");
     const signature = crypto.createHmac("sha256", museumPresenceSecret).update(body).digest("base64url");
@@ -457,6 +501,18 @@ function createClassroomPlatform(options = {}) {
       user: publicUser(user),
       membership
     });
+  }));
+
+  router.post("/auth/guest", asyncRoute(async (req, res) => {
+    if (await getSiteAccessMode() !== "open") {
+      throw new HttpError(403, "GUEST_ACCESS_DISABLED", "Guest access is available only while the site is open.");
+    }
+    const name = normalizePersonName(req.body?.name);
+    if (name.length < 2 || name.length > 6) {
+      throw new HttpError(400, "VALID_NAME_REQUIRED", "Enter a Korean name with 2 to 6 characters.");
+    }
+    setGuestAccessCookie(res, name);
+    res.json({ ok: true, name });
   }));
 
   router.get("/museum/presence-ticket", asyncRoute(async (req, res) => {
@@ -1275,7 +1331,7 @@ function createClassroomPlatform(options = {}) {
     return res.status(500).json({ error: "INTERNAL_ERROR", message: "The server could not complete the request." });
   });
 
-  return { router, initialize, configuration, verifyMuseumPresenceTicket };
+  return { router, initialize, configuration, requireSiteAccess, verifyMuseumPresenceTicket };
 }
 
 module.exports = {

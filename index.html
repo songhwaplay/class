@@ -558,6 +558,7 @@
             const hubLinks = Array.from(hubContent.querySelectorAll('a[href]'));
             const playerLearningLinks = Array.from(document.querySelectorAll('[data-requires-player="true"]'));
             let openAccess = false;
+            let restrictedPreview = false;
             let currentPlayerName = '';
             let isTeacherSignedIn = false;
 
@@ -636,6 +637,11 @@
                 authStatus.classList.toggle('error', error);
             }
 
+            function showRestrictedPreview() {
+                restrictedPreview = true;
+                hubContent.hidden = false;
+            }
+
             function showStudentHome(state) {
                 const membership = state.membership;
                 const playerName = normalizePlayerName(membership?.name || state.user?.name);
@@ -643,6 +649,7 @@
                     setStatus('The roster name is not valid. Ask your teacher to update it.', true);
                     return;
                 }
+                restrictedPreview = false;
                 authTitle.textContent = 'STUDENT';
                 authMessage.hidden = true;
                 googleSignInButton.hidden = true;
@@ -660,6 +667,7 @@
 
             function showOpenAccess() {
                 openAccess = true;
+                restrictedPreview = false;
                 authTitle.textContent = 'DEVELOPMENT ACCESS · OPEN';
                 authMessage.hidden = false;
                 authMessage.textContent = 'Google sign-in is not required while the site is being developed.';
@@ -672,10 +680,19 @@
                 const savedName = normalizePlayerName(localStorage.getItem('classPlayerName') || '');
                 guestNameInput.value = savedName;
                 if (isValidPlayerName(savedName)) {
-                    currentPlayerName = savedName;
-                    updatePlayerLearningLinks(savedName);
-                    setHubLocked(false);
-                    setStatus(`PLAYER · ${savedName}`);
+                    setHubLocked(true);
+                    api('/api/auth/guest', {
+                        method: 'POST',
+                        body: JSON.stringify({ name: savedName }),
+                    }).then((guest) => {
+                        currentPlayerName = guest.name;
+                        updatePlayerLearningLinks(guest.name);
+                        setHubLocked(false);
+                        setStatus(`PLAYER · ${guest.name}`);
+                    }).catch((error) => {
+                        currentPlayerName = '';
+                        setStatus(error.message, true);
+                    });
                 } else {
                     currentPlayerName = '';
                     updatePlayerLearningLinks('');
@@ -713,6 +730,7 @@
 
             async function showTeacherHome(state) {
                 isTeacherSignedIn = true;
+                restrictedPreview = false;
                 authTitle.textContent = 'TEACHER';
                 authMessage.hidden = true;
                 googleSignInButton.hidden = true;
@@ -797,7 +815,7 @@
                 });
             }
 
-            guestForm.addEventListener('submit', (event) => {
+            guestForm.addEventListener('submit', async (event) => {
                 event.preventDefault();
                 const playerName = guestNameInput.value.trim();
                 if (!isValidPlayerName(playerName)) {
@@ -805,13 +823,30 @@
                     guestNameInput.focus();
                     return;
                 }
-                currentPlayerName = playerName;
-                localStorage.setItem('classPlayerName', playerName);
-                updatePlayerLearningLinks(playerName);
-                setHubLocked(false);
-                setStatus(`PLAYER · ${playerName}`);
+                try {
+                    const guest = await api('/api/auth/guest', {
+                        method: 'POST',
+                        body: JSON.stringify({ name: playerName }),
+                    });
+                    currentPlayerName = guest.name;
+                    localStorage.setItem('classPlayerName', guest.name);
+                    updatePlayerLearningLinks(guest.name);
+                    setHubLocked(false);
+                    setStatus(`PLAYER · ${guest.name}`);
+                } catch (error) {
+                    setStatus(error.message, true);
+                }
             });
             hubContent.addEventListener('click', (event) => {
+                if (restrictedPreview) {
+                    const link = event.target.closest('a');
+                    if (link && hubContent.contains(link)) {
+                        event.preventDefault();
+                        setStatus('접근이 제한되어 있습니다. 이 메뉴를 열려면 학교 Google Workspace 계정으로 로그인하세요.', true);
+                        googleSignInButton.focus();
+                    }
+                    return;
+                }
                 if (!openAccess || isValidPlayerName(currentPlayerName)) return;
                 const link = event.target.closest('a');
                 if (link && hubContent.contains(link)) {
@@ -884,6 +919,7 @@
                         showOpenAccess();
                         return;
                     }
+                    showRestrictedPreview();
                     const config = await api('/api/auth/config');
                     if (!config.enabled) {
                         authTitle.textContent = 'LOGIN SETUP REQUIRED';

@@ -152,6 +152,7 @@ const FINISHER_DATA_FILE =
   process.env.FINISHERS_DATA_PATH ||
   path.join(__dirname, "finishers.json");
 
+app.use(["/admin", "/arithmetic", "/fraction", "/api/arithmetic-race", "/hanguksa", "/classtools", "/learning"], classroomPlatform.requireSiteAccess);
 app.use("/arithmetic", proxyToLearningApp(ARITHMETIC_PORT));
 app.use("/fraction", proxyToLearningApp(ARITHMETIC_PORT));
 app.use("/api/arithmetic-race", proxyToLearningApp(ARITHMETIC_PORT));
