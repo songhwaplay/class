@@ -257,10 +257,18 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "이공계 기초", name: "곡선의 길이와 회전체의 겉넓이", title: "곡선의 길이와 회전체의 겉넓이", route: "/arithmetic/stem/arc-length-surface-area" },
 ];
 
+export const stemWorksheetCatalog: ArithmeticWorksheet[] = [
+  { grade: "이공계 기초", name: "편미분", title: "편미분", route: "/arithmetic/stem/partial-derivatives" },
+  { grade: "이공계 기초", name: "오일러 공식과 복소지수", title: "오일러 공식과 복소지수", route: "/arithmetic/stem/euler-complex" },
+  { grade: "이공계 기초", name: "행렬의 필수 계산", title: "행렬의 필수 계산", route: "/arithmetic/stem/matrices" },
+  { grade: "이공계 기초", name: "곡선 길이와 회전체", title: "곡선 길이와 회전체", route: "/arithmetic/stem/integral-applications" },
+];
+
 export const learningWorksheetCatalog = [
   ...arithmeticWorksheetCatalog,
   ...middleSchoolWorksheetCatalog,
   ...highSchoolWorksheetCatalog,
+  ...stemWorksheetCatalog,
 ];
 
 export const raceReadyWorksheets = arithmeticWorksheetCatalog.filter(
