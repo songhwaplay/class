@@ -271,7 +271,20 @@
             display: flex;
             align-items: center;
             justify-content: flex-end;
+            gap: 5px;
             min-width: 0;
+        }
+
+        .prep-active-badge {
+            font-size: 0.85rem;
+            animation: pulse-red 1.8s infinite ease-in-out;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse-red {
+            0% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.18); opacity: 1; filter: drop-shadow(0 0 6px rgba(255, 77, 77, 0.9)); }
+            100% { transform: scale(1); opacity: 0.9; }
         }
 
         .period-subject {
@@ -296,19 +309,28 @@
 
         .prep-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 8px;
-            padding: 6px 10px;
-            color: #7ce4ff;
+            padding: 5px 8px;
+            color: #b0c0ca;
             font-size: 0.85rem;
             font-weight: 600;
             outline: none;
             white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .prep-input.has-value {
+            background: rgba(255, 77, 77, 0.16);
+            border-color: #ff4d4d;
+            color: #ffb3b3;
+            font-weight: 800;
+            box-shadow: 0 0 10px rgba(255, 77, 77, 0.25);
         }
 
         .prep-input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
+            color: rgba(255, 255, 255, 0.22);
         }
 
         .prep-input:focus {
@@ -984,6 +1006,8 @@
 
                 const placeTag = item.place ? `<span class="period-place-badge">📍 ${item.place}</span>` : '';
                 const prepVal = savedPreps[item.p] || "";
+                const hasVal = prepVal.trim().length > 0;
+                const prepBadge = `<span class="prep-active-badge" id="prepBadge_${dayName}_${item.p}" style="${hasVal ? '' : 'display:none;'}">🔴 🎒</span>`;
 
                 div.innerHTML = `
                     <div class="period-col-left">
@@ -999,7 +1023,8 @@
                         ${placeTag}
                     </div>
                     <div class="period-col-right">
-                        <input class="prep-input" data-day="${dayName}" data-p="${item.p}" value="${prepVal}" placeholder="🎒 준비물 입력..." draggable="false" autocomplete="off">
+                        ${prepBadge}
+                        <input class="prep-input${hasVal ? ' has-value' : ''}" data-day="${dayName}" data-p="${item.p}" value="${prepVal}" placeholder="준비물 입력..." draggable="false" autocomplete="off">
                     </div>
                 `;
                 listEl.append(div);
@@ -1013,6 +1038,12 @@
                     const p = e.target.dataset.p;
                     const day = e.target.dataset.day;
                     const val = e.target.value;
+                    const isFilled = val.trim().length > 0;
+                    
+                    e.target.classList.toggle("has-value", isFilled);
+                    const badgeEl = document.getElementById(`prepBadge_${day}_${p}`);
+                    if (badgeEl) badgeEl.style.display = isFilled ? "inline-block" : "none";
+
                     const preps = JSON.parse(localStorage.getItem(`dashboardPreps_${day}`) || "{}");
                     preps[p] = val;
                     localStorage.setItem(`dashboardPreps_${day}`, JSON.stringify(preps));
