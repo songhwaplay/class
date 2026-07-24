@@ -1718,8 +1718,11 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 
 .measurement-quantity strong,
 .measurement-static-answer strong {
+  box-sizing: border-box;
+  padding-right: 6px;
   font-size: 20px;
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 .measurement-quantity span,
@@ -1744,21 +1747,24 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .measurement-answer input {
-  width: 42px;
+  box-sizing: border-box;
+  width: 44px;
   height: 37px;
+  padding: 0 6px 0 2px;
   border: 1.5px solid #968f85;
   border-radius: 6px;
   background: white;
   color: #17233c;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 850;
-  text-align: center;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
   outline: none;
   justify-self: end;
 }
 
 .measurement-answer input:nth-of-type(2) {
-  width: 55px;
+  width: 56px;
 }
 
 .measurement-answer input:focus {

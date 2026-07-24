@@ -1186,6 +1186,8 @@ test("renders the grade-three weight and capacity worksheet in three by three ve
   assert.match(css, /\.measurement-operation\s*\{[^}]*width:\s*180px[^}]*justify-self:\s*center/s);
   assert.match(css, /\.measurement-quantity,[\s\S]*?grid-template-columns:\s*44px 24px 56px 28px/);
   assert.match(css, /\.measurement-answer,[\s\S]*?width:\s*158px[^}]*margin-left:\s*22px/s);
+  assert.match(css, /\.measurement-answer input\s*\{[^}]*width:\s*44px[^}]*padding:\s*0 6px 0 2px[^}]*font-variant-numeric:\s*tabular-nums[^}]*text-align:\s*right/s);
+  assert.match(css, /\.measurement-answer input:nth-of-type\(2\)\s*\{[^}]*width:\s*56px/s);
 });
 
 test("renders the third grade unit fraction worksheet in two columns with fixed fraction rules", async () => {
