@@ -346,7 +346,7 @@
 
             function fillGradeSelect(select, value = 1) {
                 select.replaceChildren();
-                for (let grade = 1; grade <= 12; grade += 1) select.add(new Option(`Grade ${grade}`, String(grade)));
+                for (let grade = 1; grade <= 6; grade += 1) select.add(new Option(`${grade}학년 (Grade ${grade})`, String(grade)));
                 select.value = String(value || 1);
             }
 
