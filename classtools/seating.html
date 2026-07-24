@@ -319,6 +319,7 @@
                     <select class="student-lock-select" id="student-lock-select" aria-label="고정할 학생 선택"><option value="">학생 선택</option></select>
                     <button class="btn btn-student-lock" id="student-lock-btn" type="button" aria-pressed="false">📌 학생 자리 고정</button>
                     <button class="btn btn-primary" id="shuffle-btn" type="button">🎲 자리 무작위 섞기</button>
+                    <button class="btn btn-toggle" id="teacher-view-btn" type="button" aria-pressed="false">👩‍🏫 교사 시야로 보기</button>
                     <button class="btn" id="reset-unused-btn" type="button">↺ X 표시 모두 해제</button>
                 </div>
                 <button class="btn" onclick="window.print()" type="button">🖨️ 배치도 인쇄하기</button>
@@ -355,6 +356,7 @@
             const seatingGrid = document.getElementById('seating-grid');
             const classHeader = document.getElementById('class-header');
             const shuffleBtn = document.getElementById('shuffle-btn');
+            const teacherViewBtn = document.getElementById('teacher-view-btn');
             const unusedModeBtn = document.getElementById('unused-mode-btn');
             const maleLockBtn = document.getElementById('male-lock-btn');
             const femaleLockBtn = document.getElementById('female-lock-btn');
@@ -382,6 +384,7 @@
             let isUnusedMode = false;
             let genderLockMode = null;
             let isStudentLockMode = false;
+            let isTeacherView = false;
             let storageKey = 'classroom-seating-unused-default';
 
             async function api(path) {
@@ -409,7 +412,10 @@
                 const assignedSeats = buildAssignments(availableSeats);
                 currentAssignments = assignedSeats;
 
-                for (let i = 0; i < TOTAL_DESKS; i++) {
+                const visualSeatIndexes = Array.from({ length: TOTAL_DESKS }, (_, index) => index);
+                if (isTeacherView) visualSeatIndexes.reverse();
+
+                for (const i of visualSeatIndexes) {
                     const isUnused = unavailableSeats.has(i);
                     const genderLock = genderLocks.get(i);
                     const studentLockNumber = studentLocks.get(i);
@@ -485,7 +491,8 @@
                     studentLocks: Object.fromEntries(studentLocks),
                     manualAssignments: Object.fromEntries(manualAssignments),
                     manualVacantSeats: [...manualVacantSeats],
-                    unassignedStudents: [...unassignedStudents]
+                    unassignedStudents: [...unassignedStudents],
+                    teacherView: isTeacherView
                 }));
             }
 
@@ -510,6 +517,7 @@
                     manualVacantSeats = new Set((savedManualVacantSeats || []).filter((seat) => Number.isInteger(seat) && seat >= 0 && seat < TOTAL_DESKS && !unavailableSeats.has(seat)));
                     const savedUnassignedStudents = Array.isArray(saved) ? [] : saved.unassignedStudents;
                     unassignedStudents = new Set((savedUnassignedStudents || []).map(String).filter((studentNumber) => students.some((student) => student.number === studentNumber)));
+                    isTeacherView = !Array.isArray(saved) && saved.teacherView === true;
                 } catch (_) {
                     unavailableSeats = new Set();
                     genderLocks = new Map();
@@ -517,7 +525,20 @@
                     manualAssignments = new Map();
                     manualVacantSeats = new Set();
                     unassignedStudents = new Set();
+                    isTeacherView = false;
                 }
+            }
+
+            function updateTeacherViewButton() {
+                teacherViewBtn.setAttribute('aria-pressed', String(isTeacherView));
+                teacherViewBtn.textContent = isTeacherView ? '🧑‍🎓 학생 시야로 보기' : '👩‍🏫 교사 시야로 보기';
+            }
+
+            function toggleTeacherView() {
+                isTeacherView = !isTeacherView;
+                updateTeacherViewButton();
+                saveSeatSettings();
+                renderDesks();
             }
 
             function toggleUnusedSeat(index) {
@@ -705,11 +726,13 @@
                     classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
                 }
                 loadSeatSettings();
+                updateTeacherViewButton();
                 populateStudentLockOptions();
                 renderDesks();
             }
 
             shuffleBtn.addEventListener('click', shuffleStudents);
+            teacherViewBtn.addEventListener('click', toggleTeacherView);
             unusedModeBtn.addEventListener('click', () => setUnusedMode(!isUnusedMode));
             maleLockBtn.addEventListener('click', () => setGenderLockMode('남'));
             femaleLockBtn.addEventListener('click', () => setGenderLockMode('여'));
