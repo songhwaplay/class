@@ -52,8 +52,8 @@ test("renders the learning index and arithmetic catalog in workbook order", asyn
   const indexCss = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.equal(indexResponse.status, 200);
   assert.match(indexHtml, /href="\/arithmetic"/);
-  assert.equal((indexHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 135);
-  assert.equal((indexHtml.match(/class="worksheet-grade"/g) ?? []).length, 135);
+  assert.equal((indexHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 151);
+  assert.equal((indexHtml.match(/class="worksheet-grade"/g) ?? []).length, 151);
   assert.doesNotMatch(indexHtml, /data-testid="learning-area-card"/);
   assert.match(indexHtml, /href="\/fraction"[^>]*data-testid="worksheet-choice"/);
   assert.match(indexHtml, /href="\/arithmetic\/high-school\/trigonometric-derivatives-2"[^>]*data-testid="worksheet-choice"/);
@@ -71,14 +71,14 @@ test("renders the learning index and arithmetic catalog in workbook order", asyn
   const catalogResponse = await render("/arithmetic");
   const catalogHtml = await catalogResponse.text();
   assert.match(catalogHtml, /href="\/arithmetic\/race"/);
-  assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 135);
+  assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 151);
   assert.match(catalogHtml, /기초 연산/);
   assert.match(catalogHtml, /초·중·고부터 이공계 기초까지/);
   assert.match(catalogHtml, /data-stage="elementary"/);
   assert.match(catalogHtml, /data-stage="middle"/);
   assert.match(catalogHtml, /data-stage="high"/);
   assert.match(catalogHtml, /이공계 기초/);
-  assert.equal((catalogHtml.match(/class="worksheet-grade"/g) ?? []).length, 135);
+  assert.equal((catalogHtml.match(/class="worksheet-grade"/g) ?? []).length, 151);
   assert.match(catalogHtml, /href="\/arithmetic\/stem\/partial-derivatives"/);
   assert.match(catalogHtml, /href="\/arithmetic\/stem\/euler-complex"/);
   assert.ok(catalogHtml.indexOf("수 세기") < catalogHtml.indexOf("덧셈·뺄셈 ①"));
@@ -211,7 +211,7 @@ test("renders the unified arithmetic catalog and high-school worksheets", async 
   const hubResponse = await render("/arithmetic/high-school");
   assert.equal(hubResponse.status, 200);
   const hubHtml = await hubResponse.text();
-  assert.equal((hubHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 135);
+  assert.equal((hubHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 151);
   assert.match(hubHtml, /href="\/fraction"[^>]*data-testid="worksheet-choice"/);
   assert.match(hubHtml, /href="\/arithmetic\/high-school\/polynomial-add-subtract"/);
   assert.match(hubHtml, /href="\/arithmetic\/high-school\/factorization-rational"/);
@@ -1317,7 +1317,7 @@ test("renders the fourth grade division worksheet in the workbook's three-by-fou
   const source = await readFile(new URL("../app/arithmetic/grade-4-division/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.match(html, /4학년/);
-  assert.match(html, /나눗셈/);
+  assert.match(html, /몫, 나머지/);
   assert.match(html, /aria-label="A4 4학년 나눗셈 문제지"/);
   assert.match(html, /aria-label="A4 4학년 나눗셈 전체 답지"/);
   assert.equal((html.match(/data-testid="grade-four-division-question"/g) ?? []).length, 24);
@@ -1336,7 +1336,7 @@ test("renders the fourth grade division worksheet in the workbook's three-by-fou
   assert.match(source, /<small>\/12 정답<\/small>/);
   assert.match(css, /\.grade-four-division-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,/);
   assert.match(css, /\.grade-four-division-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(4,/);
-  assert.match(css, /\.grade-four-division-bracket b\s*\{[\s\S]*?border-top:\s*2px solid/);
+  assert.match(css, /\.grade-four-division-ellipsis\s*\{/);
 });
 
 test("renders the fourth grade fraction worksheet in the workbook's ten-problem order", async () => {
@@ -1512,8 +1512,8 @@ test("renders the fifth grade prime-number hundred chart from the workbook", asy
   const source = await readFile(new URL("../app/arithmetic/grade-5-prime-numbers/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.match(html, /5학년/);
-  assert.match(html, /프라임넘버/);
-  assert.match(html, /1과 자기 자신 이외에는 약수가 없는 수에 ○표 하세요/);
+  assert.match(html, /소수\(素數\) 찾기/);
+  assert.match(html, /소수\(素數, prime number\)는 1보다 큰 자연수 중 약수가 1과 자기 자신뿐인 수입니다\. 모두 찾아 ○표 하세요\./);
   assert.match(html, /aria-label="A4 5학년 프라임넘버 문제지"/);
   assert.match(html, /aria-label="A4 5학년 프라임넘버 전체 답지"/);
   assert.equal((html.match(/data-testid="prime-number-question"/g) ?? []).length, 200);

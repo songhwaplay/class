@@ -12,11 +12,11 @@ function build(kind: RationalRadicalKind, next: () => number, id: string): Ratio
   const h = integer(next, -5, 5); const k = integer(next, -5, 5); const a = nonzero(next);
   if (kind === "rational-asymptotes") return { id, kind, label: "점근선", prompt: "수직점근선과 수평점근선은?", latex: rational(a, h, k), answer: [h, k], answerLabels: ["x", "y"] };
   if (kind === "rational-coefficient") {
-    const offset = nonzero(next, -4, 4); const x = h + offset; const y = k + a;
+    const offset = nonzero(next, -4, 4); const x = h + offset;
     return { id, kind, label: "상수 결정", prompt: "그래프가 점 P를 지날 때, 𝑐는?", latex: `y=\\dfrac{c}{x${signed(-h)}}${signed(k)},\\qquad P${point(x, k + a * offset / offset)}`, answer: [a * offset], answerLabels: ["c"] };
   }
   if (kind === "rational-equation") {
-    const offset = nonzero(next, -4, 4); const target = k + a; const x = h + 1;
+    const offset = nonzero(next, -4, 4); const target = k + a;
     return { id, kind, label: "유리방정식의 해", prompt: "주어진 함수값을 만족하는 𝑥는?", latex: `${rational(a * offset, h, k)},\\qquad y=${target}`, answer: [h + offset], answerLabels: ["x"] };
   }
   if (kind === "radical-endpoint") return { id, kind, label: "시작점", prompt: "그래프의 시작점은?", latex: radical(a, h, k), answer: [h, k], answerLabels: ["x", "y"] };

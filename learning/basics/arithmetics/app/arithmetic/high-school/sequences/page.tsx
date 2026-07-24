@@ -12,6 +12,7 @@ export default function SequencesPage() {
     initialSeed={20260806}
     subject="대수"
     title="등차수열과 등비수열"
+    showPromptOnWorksheet={false}
     instruction="수열의 규칙을 찾아 일반항과 합을 구하세요."
     createSet={(seed) => { const set = createSequenceSet(seed); return { seed: set.seed, problems: set.problems.map(adapt) }; }}
     createReviews={(kinds, seed) => createSequenceReviews(kinds as never[], seed).map(adapt)}

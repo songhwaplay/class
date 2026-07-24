@@ -28,6 +28,7 @@ export default function DerivativePracticePage() {
     initialSeed={20260727}
     subject="미적분Ⅰ"
     title="미분"
+    showPromptOnWorksheet={false}
     instruction="곱·몫·합성함수의 미분법을 적용하여 도함수를 구하세요."
     createSet={(seed) => { const set = createDerivativeProblemSet(seed); return { seed: set.seed, problems: set.problems.map(adapt) }; }}
     createReviews={(kinds, seed) => createDerivativeReviewProblems(kinds as never[], seed).map(adapt)}
