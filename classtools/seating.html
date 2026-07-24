@@ -22,6 +22,30 @@
         * { box-sizing: border-box; }
 
         body {
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#173f45">
+    <title>교실 자리 배치 · Classroom Seating</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --ink: #172033;
+            --muted: #5b6770;
+            --paper: #fffdf7;
+            --canvas: #f3eee3;
+            --line: #dcd5c7;
+            --brand: #173f45;
+            --brand-light: #2ec4b6;
+            --accent: #e79437;
+            --shadow: 0 16px 45px rgba(23, 32, 51, 0.10);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
             margin: 0;
             min-width: 320px;
             min-height: 100vh;
@@ -31,16 +55,16 @@
         }
 
         main {
-            width: min(100% - 32px, 1080px);
+            width: min(100% - 32px, 1420px);
             margin: 0 auto;
-            padding: 40px 0 80px;
+            padding: 20px 0 60px;
         }
 
         .header-nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .btn {
@@ -63,22 +87,71 @@
         .card {
             border: 1px solid var(--line);
             border-radius: 20px;
-            padding: 28px;
+            padding: 24px;
             background: var(--paper);
             box-shadow: var(--shadow);
             margin-bottom: 24px;
         }
 
+        .seating-container {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        @media (max-width: 1080px) {
+            .seating-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .seating-main-panel {
+            min-width: 0;
+        }
+
+        .seating-sidebar-panel {
+            background: #fbf7ef;
+            border: 1.5px solid var(--line);
+            border-radius: 18px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .sidebar-title {
+            font-size: 1.1rem;
+            font-weight: 900;
+            color: var(--brand);
+            margin-bottom: 4px;
+        }
+
+        .sidebar-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 800;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+
+        .sidebar-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
         .blackboard {
-            width: min(480px, 90%);
-            margin: 0 auto 32px;
-            padding: 14px;
+            width: min(540px, 92%);
+            margin: 0 auto 24px;
+            padding: 12px;
             border: 6px solid #6b4c2b;
             border-radius: 8px;
             background: #193b2d;
             color: #e5f5ec;
             text-align: center;
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             font-weight: 900;
             letter-spacing: 0.2em;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
@@ -87,18 +160,18 @@
         .seating-grid {
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            gap: 14px;
-            margin-bottom: 24px;
+            gap: 12px;
+            margin-bottom: 16px;
         }
 
         .desk {
             position: relative;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            justify-content: space-between;
             width: 100%;
-            min-height: 90px;
+            min-height: 94px;
+            padding: 10px 12px;
             border: 2px solid var(--line);
             border-radius: 14px;
             background: #fff;
@@ -111,22 +184,49 @@
         .desk:hover {
             border-color: var(--brand-light);
             transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
         }
 
-        .desk-num {
-            font-size: 0.75rem;
-            color: var(--muted);
-            font-weight: 700;
-            margin-bottom: 4px;
+        .desk-header-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .desk-coord {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #5c6b73;
+            background: #ede6d9;
+            padding: 2px 7px;
+            border-radius: 6px;
+            line-height: 1.2;
+        }
+
+        .desk-body {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            margin-top: 4px;
+        }
+
+        .desk-avatar {
+            font-size: 2.2rem;
+            line-height: 1;
+            flex-shrink: 0;
         }
 
         .desk-name {
-            font-size: 1.1rem;
+            font-size: 1.35rem;
             font-weight: 900;
             color: var(--brand);
+            line-height: 1.2;
+            word-break: keep-all;
         }
 
-        .desk.is-empty .desk-name { color: #6f7b80; }
+        .desk.is-empty .desk-name { color: #8e9ca0; font-size: 1.1rem; }
 
         .desk.is-unused {
             border-style: dashed;
@@ -306,28 +406,44 @@
             </div>
         </div>
 
-        <section class="card">
-            <h1 style="margin: 0 0 16px; font-size: 1.8rem; font-weight: 900;">🪑 교실 자리 배치</h1>
-            
-            <!-- 칠판 위치 표시 -->
-            <div class="blackboard">칠 판 (앞)</div>
+        <section class="card" style="padding: 20px 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h1 style="margin: 0; font-size: 1.7rem; font-weight: 900; display: flex; align-items: center; gap: 8px;">🪑 교실 자리 배치 <span style="font-size: 0.85rem; font-weight: 800; color: #5c6b73; background: #eee7da; padding: 3px 10px; border-radius: 20px;">📍 엑셀 좌표 (A1 ~ F6)</span></h1>
+            </div>
 
-            <!-- 자리 배치 배치도 그리드 -->
-            <p class="seat-summary" id="seat-summary" aria-live="polite"></p>
-            <div class="seating-grid" id="seating-grid" aria-label="6행 6열 자리 배치"></div>
-
-            <div class="controls-row">
-                <div class="control-group">
-                    <button class="btn btn-toggle" id="unused-mode-btn" type="button" aria-pressed="false">✕ 사용 안 함 표시</button>
-                    <button class="btn btn-male" id="male-lock-btn" type="button" aria-pressed="false">🔒 남학생 고정</button>
-                    <button class="btn btn-female" id="female-lock-btn" type="button" aria-pressed="false">🔒 여학생 고정</button>
-                    <select class="student-lock-select" id="student-lock-select" aria-label="고정할 학생 선택"><option value="">학생 선택</option></select>
-                    <button class="btn btn-student-lock" id="student-lock-btn" type="button" aria-pressed="false">📌 학생 자리 고정</button>
-                    <button class="btn btn-primary" id="shuffle-btn" type="button">🎲 자리 무작위 섞기</button>
-                    <button class="btn btn-toggle" id="teacher-view-btn" type="button" aria-pressed="false">👩‍🏫 교사 시야로 보기</button>
-                    <button class="btn" id="reset-unused-btn" type="button">↺ X 표시 모두 해제</button>
+            <div class="seating-container">
+                <!-- 메인 교실 영역 (왼쪽) -->
+                <div class="seating-main-panel">
+                    <div class="blackboard">칠 판 (앞)</div>
+                    <p class="seat-summary" id="seat-summary" aria-live="polite"></p>
+                    <div class="seating-grid" id="seating-grid" aria-label="6행 6열 자리 배치"></div>
                 </div>
-                <button class="btn" onclick="window.print()" type="button">🖨️ 배치도 인쇄하기</button>
+
+                <!-- 우측 사이드바 제어 패널 -->
+                <aside class="seating-sidebar-panel">
+                    <h3 class="sidebar-title">⚙️ 배치 제어 패널</h3>
+                    
+                    <button class="btn btn-primary btn-xl" id="shuffle-btn" type="button" style="width: 100%; font-size: 1.1rem; font-weight: 900; padding: 14px; margin-bottom: 6px; border-radius: 14px; box-shadow: 0 4px 12px rgba(23,63,69,0.3);">🎲 자리 무작위 섞기</button>
+                    
+                    <div class="sidebar-group">
+                        <label class="sidebar-label">좌석 설정 모드</label>
+                        <button class="btn btn-toggle" id="unused-mode-btn" type="button" aria-pressed="false" style="width: 100%;">✕ 사용 안 함 표시</button>
+                        <button class="btn btn-male" id="male-lock-btn" type="button" aria-pressed="false" style="width: 100%;">🔒 남학생 고정</button>
+                        <button class="btn btn-female" id="female-lock-btn" type="button" aria-pressed="false" style="width: 100%;">🔒 여학생 고정</button>
+                    </div>
+
+                    <div class="sidebar-group">
+                        <label class="sidebar-label">특정 학생 위치 고정</label>
+                        <select class="student-lock-select" id="student-lock-select" aria-label="고정할 학생 선택" style="width: 100%; margin-bottom: 4px;"><option value="">학생 선택</option></select>
+                        <button class="btn btn-student-lock" id="student-lock-btn" type="button" aria-pressed="false" style="width: 100%;">📌 학생 자리 고정</button>
+                    </div>
+
+                    <div class="sidebar-group" style="margin-top: auto; display: flex; flex-direction: column; gap: 8px;">
+                        <button class="btn btn-toggle" id="teacher-view-btn" type="button" aria-pressed="false" style="width: 100%;">👩‍🏫 교사 시야로 보기</button>
+                        <button class="btn" id="reset-unused-btn" type="button" style="width: 100%;">↺ X 표시 모두 해제</button>
+                        <button class="btn" onclick="window.print()" type="button" style="width: 100%; background: #eae4d8;">🖨️ 배치도 인쇄하기</button>
+                    </div>
+                </aside>
             </div>
         </section>
     </main>
@@ -456,6 +572,12 @@
                 }
             }
 
+            function getExcelCoord(index) {
+                const col = String.fromCharCode(65 + (index % 6));
+                const row = Math.floor(index / 6) + 1;
+                return `${col}${row}`;
+            }
+
             function renderSeatGrid() {
                 seatingGrid.innerHTML = '';
                 const availableSeats = Array.from({ length: TOTAL_DESKS }, (_, index) => index)
@@ -475,20 +597,26 @@
                     const desk = document.createElement('button');
                     desk.type = 'button';
                     desk.className = `desk${student ? ' is-occupied' : ''}${isUnused ? ' is-unused' : ''}${genderLock === '남' ? ' is-gender-male' : ''}${genderLock === '여' ? ' is-gender-female' : ''}${!student && !isUnused ? ' is-empty' : ''}`;
+                    
+                    const coordStr = getExcelCoord(i);
                     desk.setAttribute('aria-label', isUnused
-                        ? `${i + 1}번 좌석, 사용 안 함. 클릭하여 사용으로 전환`
-                        : `${i + 1}번 좌석, ${student ? student.name : '빈자리'}${genderLock ? `, ${genderLock}학생 고정` : ''}${lockedStudent ? `, ${lockedStudent.name} 자리 고정` : ''}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : genderLockMode ? `. 클릭하여 ${genderLockMode}학생 고정` : isStudentLockMode ? '. 클릭하여 선택 학생 자리로 고정' : ''}`);
+                        ? `${coordStr} 좌석, 사용 안 함. 클릭하여 사용으로 전환`
+                        : `${coordStr} 좌석, ${student ? student.name : '빈자리'}${genderLock ? `, ${genderLock}학생 고정` : ''}${lockedStudent ? `, ${lockedStudent.name} 자리 고정` : ''}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : genderLockMode ? `. 클릭하여 ${genderLockMode}학생 고정` : isStudentLockMode ? '. 클릭하여 선택 학생 자리로 고정' : ''}`);
                     desk.title = isUnusedMode ? '클릭하여 사용 안 함(X) 표시를 전환합니다.' : genderLockMode ? `클릭하여 ${genderLockMode}학생 고정을 전환합니다.` : isStudentLockMode ? '클릭하여 선택한 학생을 이 자리에 고정합니다.' : 'X 표시, 성별 고정 또는 학생 자리 고정 버튼을 눌러 좌석을 설정할 수 있습니다.';
-                    const genderBadge = student && student.gender ? `<small style="opacity:0.7; font-size:0.8rem; margin-left:3px;">(${student.gender})</small>` : '';
+                    const genderBadge = student && student.gender ? `<small style="opacity:0.65; font-size:0.85rem; font-weight:700; margin-left:2px;">(${student.gender})</small>` : '';
                     const avatarIcon = student ? getAvatarForStudent(student.number).icon : '';
-                    const avatarBadge = avatarIcon ? `<span style="font-size: 1.5rem; line-height: 1; margin: 2px 0;">${avatarIcon}</span>` : '';
+                    const avatarBadge = avatarIcon ? `<span class="desk-avatar">${avatarIcon}</span>` : '';
 
                     desk.innerHTML = `
-                        <span class="desk-num">${i + 1}번 좌석</span>
-                        ${avatarBadge}
-                        <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name + genderBadge : '빈자리')}</span>
-                        ${lockedStudent && !isUnused ? `<span class="desk-student-lock">${lockedStudent.name} 고정</span>` : ''}
-                        ${genderLock && !isUnused ? `<span class="desk-lock ${genderLock === '남' ? 'male' : 'female'}">${genderLock} 고정</span>` : ''}
+                        <div class="desk-header-row">
+                            <span class="desk-coord">${coordStr}</span>
+                            ${lockedStudent && !isUnused ? `<span class="desk-student-lock" style="position:static; padding:1px 6px;">${lockedStudent.name} 고정</span>` : ''}
+                            ${genderLock && !isUnused ? `<span class="desk-lock ${genderLock === '남' ? 'male' : 'female'}" style="position:static; padding:1px 6px;">${genderLock} 고정</span>` : ''}
+                        </div>
+                        <div class="desk-body">
+                            ${avatarBadge}
+                            <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name + genderBadge : '빈자리')}</span>
+                        </div>
                     `;
                     desk.addEventListener('click', () => handleDeskClick(i));
                     seatingGrid.appendChild(desk);
