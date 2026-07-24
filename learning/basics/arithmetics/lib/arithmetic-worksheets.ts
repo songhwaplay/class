@@ -253,6 +253,8 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "이공계 기초", name: "복소수의 극형식과 드므아브르 정리", title: "복소수의 극형식과 드므아브르 정리", route: "/arithmetic/stem/complex-polar-demoivre" },
   { grade: "이공계 기초", name: "행렬식과 역행렬", title: "행렬식과 역행렬", route: "/arithmetic/stem/determinants-inverses" },
   { grade: "이공계 기초", name: "케일리–해밀턴 정리와 회전행렬", title: "케일리–해밀턴 정리와 회전행렬", route: "/arithmetic/stem/cayley-hamilton-rotation" },
+  { grade: "이공계 기초", name: "이차곡선의 적분과 넓이", title: "이차곡선의 적분과 넓이", route: "/arithmetic/stem/conic-integral-areas" },
+  { grade: "이공계 기초", name: "곡선의 길이와 회전체의 겉넓이", title: "곡선의 길이와 회전체의 겉넓이", route: "/arithmetic/stem/arc-length-surface-area" },
 ];
 
 export const learningWorksheetCatalog = [
