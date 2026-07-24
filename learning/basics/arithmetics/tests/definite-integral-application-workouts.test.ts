@@ -18,7 +18,8 @@ test("정적분의 활용은 넓이와 이동거리 여섯 유형을 만든다",
   for (const problem of set.problems) {
     assert.equal(problem.answers.length, 1);
     assert.ok(problem.answers[0] > 0);
-    assert.ok(problem.prompt.length > 0);
+    assert.match(problem.prompt, /(?:은|는)\?$/);
+    assert.doesNotMatch(problem.prompt, /구하세요/);
   }
   assert.equal(set.problems[0].label, "𝑥축과 둘러싸인 넓이");
   assert.match(set.problems[0].prompt, /𝑥축/);

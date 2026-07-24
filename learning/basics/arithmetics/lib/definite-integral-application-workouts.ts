@@ -49,7 +49,7 @@ function build(
   if (kind === "axis-crossing-area") {
     return {
       id, kind, label: "𝑥축과 둘러싸인 넓이",
-      prompt: "곡선과 𝑥축으로 둘러싸인 부분의 넓이를 구하세요.",
+      prompt: "곡선과 𝑥축으로 둘러싸인 부분의 넓이는?",
       latex: `y=${scale}(x^2-9)\\quad(-3\\le x\\le3)`,
       answerLabels: ["넓이"], answers: [36 * scale],
     };
@@ -63,7 +63,7 @@ function build(
       : `\\dfrac{${height}}{${width ** 2}}`;
     return {
       id, kind, label: "두 곡선 사이의 넓이",
-      prompt: "두 그래프로 둘러싸인 부분의 넓이를 구하세요.",
+      prompt: "두 곡선 사이의 넓이는?",
       latex: `y=${height},\\quad y=${coefficient}x^2\\quad(-${width}\\le x\\le${width})`,
       answerLabels: ["넓이"], answers: [(2 * height * width) / 3],
     };
@@ -72,7 +72,7 @@ function build(
   if (kind === "intersection-split") {
     return {
       id, kind, label: "교점과 넓이",
-      prompt: "두 곡선의 교점을 구한 뒤, 둘러싸인 부분의 넓이를 구하세요.",
+      prompt: "두 곡선으로 둘러싸인 부분의 넓이는?",
       latex: `y=${scale}x^2,\\quad y=${6 * scale}x`,
       answerLabels: ["넓이"], answers: [36 * scale],
     };
@@ -82,7 +82,7 @@ function build(
     const turningTime = integer(next, 2, 4);
     return {
       id, kind, label: "속도의 부호 변화",
-      prompt: "0초부터 주어진 시각까지 움직인 거리를 구하세요.",
+      prompt: "0초부터 주어진 시각까지의 이동 거리는?",
       latex: `v(t)=${scale}(t-${turningTime})\\quad(0\\le t\\le${2 * turningTime})`,
       answerLabels: ["거리"], answers: [scale * turningTime ** 2],
     };
@@ -91,7 +91,7 @@ function build(
   if (kind === "quadratic-velocity-distance") {
     return {
       id, kind, label: "여러 번 바뀌는 운동 방향",
-      prompt: "속도가 0이 되는 시각을 기준으로 나누어 이동거리를 구하세요.",
+      prompt: "주어진 시간 동안의 이동 거리는?",
       latex: `v(t)=${scale}(t-1)(t-3)\\quad(0\\le t\\le4)`,
       answerLabels: ["거리"], answers: [4 * scale],
     };
@@ -99,7 +99,7 @@ function build(
 
   return {
     id, kind, label: "위치와 이동거리",
-    prompt: "위치함수에서 방향이 바뀌는 시각을 찾아 이동거리를 구하세요.",
+    prompt: "주어진 시간 동안의 이동 거리는?",
     latex: `s(t)=${scale}(t^3-6t^2+9t)\\quad(0\\le t\\le4)`,
     answerLabels: ["거리"], answers: [12 * scale],
   };
