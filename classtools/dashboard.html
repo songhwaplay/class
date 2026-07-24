@@ -205,18 +205,18 @@
         .timetable-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-height: 420px;
-            overflow-y: auto;
+            gap: 5px;
+            max-height: none;
+            overflow-y: visible;
         }
 
         .timetable-item {
             display: grid;
-            grid-template-columns: 65px minmax(110px, 1.1fr) 1fr;
-            gap: 10px;
+            grid-template-columns: 60px minmax(110px, 1.1fr) 1fr;
+            gap: 8px;
             align-items: center;
-            padding: 6px 12px;
-            border-radius: 14px;
+            padding: 4px 10px;
+            border-radius: 12px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
             transition: all 0.2s ease;
@@ -926,6 +926,9 @@
         const schoolNameTag = document.getElementById("schoolNameTag");
 
         // 1. Clock & Timetable
+        let lastRenderedMin = -1;
+        let lastRenderedDay = "";
+
         function updateClock() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -945,7 +948,14 @@
             currentDayLabel.textContent = `${dayName}요일`;
             selectedDayTab = (["월","화","수","목","금"].includes(dayName)) ? dayName : "월";
 
-            renderTimetable(selectedDayTab, now);
+            const currentTotalMin = now.getHours() * 60 + now.getMinutes();
+            const isInputActive = document.activeElement && document.activeElement.classList.contains("prep-input");
+
+            if (!isInputActive && (currentTotalMin !== lastRenderedMin || selectedDayTab !== lastRenderedDay)) {
+                lastRenderedMin = currentTotalMin;
+                lastRenderedDay = selectedDayTab;
+                renderTimetable(selectedDayTab, now);
+            }
         }
 
         function renderTimetable(dayName, now = new Date()) {
