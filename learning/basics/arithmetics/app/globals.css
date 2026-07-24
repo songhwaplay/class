@@ -5804,12 +5804,27 @@ button.prime-number-question:focus-visible {
   }
 
   .catalog-header {
+    position: relative;
+    isolation: isolate;
+    min-height: 230px;
     display: grid;
-    grid-template-columns: 100px minmax(0, 1fr);
-    align-items: end;
-    gap: 18px;
-    border-bottom: 2px solid var(--ink);
-    padding: 16px 0 28px;
+    grid-template-columns: 120px minmax(0, 1fr);
+    align-items: center;
+    gap: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(24, 35, 59, 0.12);
+    border-radius: 26px 26px 26px 8px;
+    background: url("/math-learning-banner.webp") center 46% / cover no-repeat;
+    padding: 32px;
+    box-shadow: 0 18px 45px rgba(37, 56, 92, 0.13);
+  }
+
+  .catalog-header::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: linear-gradient(90deg, rgba(255, 253, 248, 0.96) 0%, rgba(255, 253, 248, 0.88) 40%, rgba(255, 253, 248, 0.58) 72%, rgba(255, 253, 248, 0.34) 100%);
+    content: "";
   }
 
   .catalog-back {
@@ -5825,7 +5840,17 @@ button.prime-number-question:focus-visible {
   }
 
   .catalog-header h1 {
+    margin: 0;
     font-size: clamp(32px, 4.5vw, 50px);
+  }
+
+  .catalog-header-copy p {
+    max-width: 510px;
+    margin: 9px 0 0;
+    color: #3f4d66;
+    font-size: 15px;
+    font-weight: 750;
+    line-height: 1.55;
   }
 
   .catalog-stage-nav {
@@ -6027,6 +6052,10 @@ button.prime-number-question:focus-visible {
     .catalog-header {
       grid-template-columns: 1fr;
       align-items: start;
+      min-height: 210px;
+      gap: 18px;
+      background-position: 42% center;
+      padding: 24px;
     }
 
     .worksheet-catalog {

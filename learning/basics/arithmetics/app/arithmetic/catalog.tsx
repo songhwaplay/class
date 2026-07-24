@@ -25,7 +25,10 @@ export default function ArithmeticCatalog() {
       <div className="catalog-shell">
         <header className="catalog-header">
           <a className="catalog-back" href="/arithmetic" aria-label="연산 모드 선택으로 돌아가기">← 연산</a>
-          <div><h1>기초 연산</h1></div>
+          <div className="catalog-header-copy">
+            <h1>기초 연산</h1>
+            <p>초·중·고부터 이공계 기초까지, 필요한 연산을 골라 연습하세요.</p>
+          </div>
         </header>
         <nav className="catalog-stage-nav" aria-label="수학 과정">
           {(Object.keys(stageMeta) as LearningStage[]).map((stage) => {

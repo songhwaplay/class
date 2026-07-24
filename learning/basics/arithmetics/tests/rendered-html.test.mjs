@@ -70,6 +70,7 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   const catalogHtml = await catalogResponse.text();
   assert.equal((catalogHtml.match(/data-testid="worksheet-choice"/g) ?? []).length, 131);
   assert.match(catalogHtml, /기초 연산/);
+  assert.match(catalogHtml, /초·중·고부터 이공계 기초까지/);
   assert.match(catalogHtml, /data-stage="elementary"/);
   assert.match(catalogHtml, /data-stage="middle"/);
   assert.match(catalogHtml, /data-stage="high"/);
