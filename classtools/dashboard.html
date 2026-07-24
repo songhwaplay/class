@@ -699,13 +699,20 @@
 
         <!-- Widget 4: Calendar, Weather & Meal -->
         <section class="widget-card" id="widget-info" draggable="true">
-            <div class="weather-box">
+            <div class="weather-box" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 14px; margin-bottom: 8px;">
                 <div>
-                    <div style="font-size: 0.85rem; color: var(--text-muted);">현재 날씨</div>
-                    <div class="weather-temp" id="weatherTemp">20.3° <span style="font-size: 1.1rem; color: var(--accent-amber);">☀️ 맑음</span></div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center;">
+                        <span>현재 날씨</span>
+                        <span id="weatherHumidity" style="color: #7ce4ff; font-weight: 700;">💧 습도 --%</span>
+                    </div>
+                    <div class="weather-temp" id="weatherTemp" style="font-size: 1.2rem; font-weight: 800; margin-top: 2px;">
+                        --° <span style="font-size: 1.05rem; color: var(--accent-amber);">☀️ 불러오는 중</span>
+                    </div>
                 </div>
-                <div>
-                    <div class="dust-pill">미세먼지 <strong style="color: #fff;">좋음</strong></div>
+                <div style="text-align: right;">
+                    <div id="dustBadge" class="dust-pill" style="background: #3a86ff; color: #ffffff; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; display: inline-block;">
+                        미세먼지 <span id="dustStatus">로딩 중</span>
+                    </div>
                 </div>
             </div>
 
@@ -1273,19 +1280,74 @@
                         mealList.append(item);
                     });
                 } else {
-                    const sampleDishes = ["혼합잡곡밥", "브로콜리감자스프", "양상추샐러드", "머위대들깨볶음", "가지라자냐", "치즈돈까스", "배추김치"];
-                    sampleDishes.forEach((dish) => {
-                        const item = document.createElement("div");
-                        item.className = "meal-dish-item";
-                        item.innerHTML = `<span style="color: var(--accent-amber);">•</span> <span>${dish}</span>`;
-                        mealList.append(item);
-                    });
+                    const now = new Date();
+                    const dayOfWeek = now.getDay();
+                    const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+                    const msg = isWeekend 
+                        ? "🎉 즐거운 주말입니다! (오늘의 급식이 없습니다)" 
+                        : "🍱 오늘은 휴일/방학이라 급식이 제공되지 않습니다.";
+
+                    mealList.innerHTML = `<div style="color: var(--text-muted); font-size: 0.88rem; padding: 12px 4px; text-align: center; background: rgba(255,255,255,0.03); border-radius: 10px;">${msg}</div>`;
                 }
             } catch (err) {
-                mealList.innerHTML = `<div style="color: var(--text-muted); font-size: 0.9rem;">급식 정보를 불러올 수 없습니다.</div>`;
+                mealList.innerHTML = `<div style="color: var(--text-muted); font-size: 0.88rem; padding: 8px 4px; text-align: center;">🍱 오늘은 급식이 제공되지 않는 날입니다.</div>`;
             }
         }
         loadMeals();
+
+        // 7-2. Realtime Weather, Humidity & Air Quality (PM10) API Integration
+        async function fetchRealtimeWeatherAndAirQuality() {
+            try {
+                // 노원구 상계동/계상초등학교 좌표 (37.65, 127.06)
+                const weatherRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=37.65&longitude=127.06&current_weather=true&hourly=relativehumidity_2m");
+                const weatherData = await weatherRes.json();
+                
+                const airRes = await fetch("https://air-quality-api.open-meteo.com/v1/air-quality?latitude=37.65&longitude=127.06&current=pm10");
+                const airData = await airRes.json();
+
+                if (weatherData && weatherData.current_weather) {
+                    const temp = Math.round(weatherData.current_weather.temperature);
+                    const code = weatherData.current_weather.weathercode;
+                    const humidity = weatherData.hourly?.relativehumidity_2m?.[0] || 55;
+                    
+                    let cond = "☀️ 맑음";
+                    if (code >= 1 && code <= 3) cond = "⛅ 구름조금";
+                    else if (code >= 45 && code <= 48) cond = "🌫️ 안개";
+                    else if (code >= 51 && code <= 67) cond = "🌧️ 비";
+                    else if (code >= 71) cond = "❄️ 눈";
+
+                    const weatherTempEl = document.getElementById("weatherTemp");
+                    const weatherHumidityEl = document.getElementById("weatherHumidity");
+                    if (weatherTempEl) weatherTempEl.innerHTML = `${temp}° <span style="font-size: 1.05rem; color: var(--accent-amber);">${cond}</span>`;
+                    if (weatherHumidityEl) weatherHumidityEl.textContent = `💧 습도 ${humidity}%`;
+                }
+
+                if (airData && airData.current && airData.current.pm10 !== undefined) {
+                    const pm10 = Math.round(airData.current.pm10);
+                    const dustBadge = document.getElementById("dustBadge");
+                    if (dustBadge) {
+                        let label = "좋음";
+                        let bg = "#3a86ff"; // 파랑 (좋음 0~30)
+                        let color = "#ffffff";
+
+                        if (pm10 > 150) {
+                            label = "매우나쁨"; bg = "#e63946"; color = "#ffffff"; // 빨강
+                        } else if (pm10 > 80) {
+                            label = "나쁨"; bg = "#ffb703"; color = "#000000"; // 주황/노랑
+                        } else if (pm10 > 30) {
+                            label = "보통"; bg = "#2ec4b6"; color = "#0b0f0c"; // 초록
+                        }
+
+                        dustBadge.style.background = bg;
+                        dustBadge.style.color = color;
+                        dustBadge.innerHTML = `미세먼지 <strong>${label}</strong> (${pm10}㎍/㎥)`;
+                    }
+                }
+            } catch (err) {
+                console.error("날씨/미세먼지 API 호출 오류:", err);
+            }
+        }
+        fetchRealtimeWeatherAndAirQuality();
 
         // 8. Class123 Style 3D Spin Random Picker Modal
         const pickerModalBtn = document.getElementById("pickerModalBtn");
