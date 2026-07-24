@@ -416,10 +416,10 @@
                     assignedStudents.add(student);
                 };
                 for (const seatIndex of availableSeats.filter((seat) => !manualVacantSeats.has(seat) && studentLocks.has(seat))) {
-                    assignStudent(seatIndex, studentLocks.get(seat));
+                    assignStudent(seatIndex, studentLocks.get(seatIndex));
                 }
                 for (const seatIndex of availableSeats.filter((seat) => !manualVacantSeats.has(seat) && !studentLocks.has(seat) && manualAssignments.has(seat))) {
-                    assignStudent(seatIndex, manualAssignments.get(seat));
+                    assignStudent(seatIndex, manualAssignments.get(seatIndex));
                 }
                 for (const gender of ['남', '여']) {
                     const matchingStudents = students.filter((student) => student.gender === gender && !unassignedStudents.has(student.number));
