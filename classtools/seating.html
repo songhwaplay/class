@@ -257,10 +257,33 @@
             }
         }
 
+        @page {
+            size: A4 landscape;
+            margin: 10mm;
+        }
+
         @media print {
-            .header-nav, .controls-row, .btn { display: none !important; }
-            main { padding: 0; }
-            .card { box-shadow: none; border: 0; }
+            body { min-width: 0; background: #fff; }
+            main { width: 100%; margin: 0; padding: 0; }
+            .header-nav,
+            .card > h1,
+            .seat-summary,
+            .controls-row,
+            .btn,
+            .student-lock-select { display: none !important; }
+            .card { margin: 0; padding: 0; border: 0; border-radius: 0; background: #fff; box-shadow: none; }
+            .blackboard { width: min(160mm, 100%); margin: 0 auto 10mm; padding: 8mm; font-size: 16pt; }
+            .seating-grid {
+                grid-template-columns: repeat(auto-fit, minmax(34mm, 1fr));
+                gap: 7mm;
+                margin: 0;
+            }
+            .desk { min-height: 26mm; break-inside: avoid; box-shadow: none; }
+            .desk:not(.is-occupied) { display: none !important; }
+            .desk-num,
+            .desk-lock,
+            .desk-student-lock { display: none !important; }
+            .desk-name { color: #111 !important; font-size: 16pt; }
         }
     </style>
 </head>
@@ -377,7 +400,7 @@
                     const student = assignedSeats.get(i);
                     const desk = document.createElement('button');
                     desk.type = 'button';
-                    desk.className = `desk${isUnused ? ' is-unused' : ''}${genderLock === '남' ? ' is-gender-male' : ''}${genderLock === '여' ? ' is-gender-female' : ''}${!student && !isUnused ? ' is-empty' : ''}`;
+                    desk.className = `desk${student ? ' is-occupied' : ''}${isUnused ? ' is-unused' : ''}${genderLock === '남' ? ' is-gender-male' : ''}${genderLock === '여' ? ' is-gender-female' : ''}${!student && !isUnused ? ' is-empty' : ''}`;
                     desk.setAttribute('aria-label', isUnused
                         ? `${i + 1}번 좌석, 사용 안 함. 클릭하여 사용으로 전환`
                         : `${i + 1}번 좌석, ${student ? student.name : '빈자리'}${genderLock ? `, ${genderLock}학생 고정` : ''}${lockedStudent ? `, ${lockedStudent.name} 자리 고정` : ''}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : genderLockMode ? `. 클릭하여 ${genderLockMode}학생 고정` : isStudentLockMode ? '. 클릭하여 선택 학생 자리로 고정' : ''}`);
