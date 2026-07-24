@@ -185,51 +185,42 @@
         }
 
         .desk-body {
+            position: relative;
             display: flex;
             align-items: center;
-            gap: 10px;
+            justify-content: center;
             width: 100%;
+            min-height: 48px;
             margin-top: 2px;
         }
 
         .desk-avatar {
-            font-size: 2.4rem;
+            font-size: 2.3rem;
             line-height: 1;
-            flex-shrink: 0;
-        }
-
-        .desk-info {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex: 1;
-            min-width: 0;
+            position: absolute;
+            left: 4px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .desk-name {
-            font-size: 1.45rem;
+            font-size: 1.55rem;
             font-weight: 900;
             color: var(--brand);
-            line-height: 1.15;
-            text-align: center;
-            white-space: nowrap;
-        }
-
-        .desk-gender {
-            font-size: 0.84rem;
-            font-weight: 800;
-            color: var(--muted);
             line-height: 1;
-            margin-top: 3px;
+            text-align: center;
+            width: 100%;
+            white-space: nowrap;
         }
 
         .desk.is-empty .desk-name { color: #8e9ca0; font-size: 1.15rem; }
 
         .desk.is-unused {
-            border-style: dashed;
-            border-color: #b9a58a;
-            background: repeating-linear-gradient(-45deg, #f8f3ea 0 10px, #f2eadc 10px 20px);
+            border-style: solid;
+            border-color: #2c353d;
+            background: #39434c;
+            box-shadow: none;
+            opacity: 0.88;
         }
 
         .desk.is-unused::after {
@@ -237,17 +228,19 @@
             position: absolute;
             top: 50%;
             left: 50%;
-            color: #9a473a;
-            font-size: 4rem;
+            color: #21272d;
+            font-size: 4.5rem;
             font-weight: 300;
             line-height: 1;
-            transform: translate(-50%, -48%);
+            transform: translate(-50%, -52%);
         }
 
-        .desk.is-unused .desk-num,
-        .desk.is-unused .desk-name { opacity: 0.35; }
+        .desk.is-unused .desk-coord {
+            background: #2b333a;
+            color: #637280;
+        }
 
-        .desk.is-unused .desk-name { color: #7f3a30; }
+        .desk.is-unused .desk-name { color: #5d6b77; }
 
         .desk.is-gender-male { border-color: #d4a62d; background: #fff8d8; }
         .desk.is-gender-female { border-color: #6b9fd1; background: #edf6ff; }
@@ -597,7 +590,6 @@
                         ? `${coordStr} 좌석, 사용 안 함. 클릭하여 사용으로 전환`
                         : `${coordStr} 좌석, ${student ? student.name : '빈자리'}${genderLock ? `, ${genderLock}학생 고정` : ''}${lockedStudent ? `, ${lockedStudent.name} 자리 고정` : ''}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : genderLockMode ? `. 클릭하여 ${genderLockMode}학생 고정` : isStudentLockMode ? '. 클릭하여 선택 학생 자리로 고정' : ''}`);
                     desk.title = isUnusedMode ? '클릭하여 사용 안 함(X) 표시를 전환합니다.' : genderLockMode ? `클릭하여 ${genderLockMode}학생 고정을 전환합니다.` : isStudentLockMode ? '클릭하여 선택한 학생을 이 자리에 고정합니다.' : 'X 표시, 성별 고정 또는 학생 자리 고정 버튼을 눌러 좌석을 설정할 수 있습니다.';
-                    const genderBadge = student && student.gender ? `<span class="desk-gender">(${student.gender})</span>` : '';
                     const avatarIcon = student ? getAvatarForStudent(student.number).icon : '';
                     const avatarBadge = avatarIcon ? `<span class="desk-avatar">${avatarIcon}</span>` : '';
 
@@ -609,10 +601,7 @@
                         </div>
                         <div class="desk-body">
                             ${avatarBadge}
-                            <div class="desk-info">
-                                <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name : '빈자리')}</span>
-                                ${isUnused || !student ? '' : genderBadge}
-                            </div>
+                            <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name : '빈자리')}</span>
                         </div>
                     `;
                     desk.addEventListener('click', () => handleDeskClick(i));
