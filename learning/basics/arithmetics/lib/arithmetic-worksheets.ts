@@ -250,6 +250,7 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "확통", name: "확률의 계산", title: "확률의 계산", route: "/arithmetic/high-school/probability-rules" },
   { grade: "확통", name: "확률분포와 통계", title: "확률분포와 통계", route: "/arithmetic/high-school/probability-distributions" },
   { grade: "확통", name: "모집단과 표본·통계적 추정", title: "모집단과 표본·통계적 추정", route: "/arithmetic/high-school/statistical-inference" },
+  { grade: "이공계 기초", name: "복소수의 극형식과 드므아브르 정리", title: "복소수의 극형식과 드므아브르 정리", route: "/arithmetic/stem/complex-polar-demoivre" },
 ];
 
 export const learningWorksheetCatalog = [
