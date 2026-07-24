@@ -16,31 +16,7 @@
             --brand: #173f45;
             --brand-light: #2ec4b6;
             --accent: #e79437;
-            --shadow: 0 16px 45px rgba(23, 32, 51, 0.10);
-        }
-
-        * { box-sizing: border-box; }
-
-        body {
-<!doctype html>
-<html lang="ko">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#173f45">
-    <title>교실 자리 배치 · Classroom Seating</title>
-    <style>
-        :root {
-            color-scheme: light;
-            --ink: #172033;
-            --muted: #5b6770;
-            --paper: #fffdf7;
-            --canvas: #f3eee3;
-            --line: #dcd5c7;
-            --brand: #173f45;
-            --brand-light: #2ec4b6;
-            --accent: #e79437;
-            --shadow: 0 16px 45px rgba(23, 32, 51, 0.10);
+            --shadow: 0 20px 50px rgba(23, 32, 51, 0.18);
         }
 
         * { box-sizing: border-box; }
@@ -50,7 +26,11 @@
             min-width: 320px;
             min-height: 100vh;
             color: var(--ink);
-            background: var(--canvas);
+            background: 
+                radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.45) 0%, rgba(0, 0, 0, 0.25) 100%),
+                repeating-linear-gradient(90deg, #dfd0b7 0px, #dfd0b7 220px, #d5c4a8 221px, #d5c4a8 440px),
+                linear-gradient(180deg, #e4d7bf 0%, #c1a27b 100%);
+            background-attachment: fixed;
             font-family: Pretendard, "Malgun Gothic", system-ui, sans-serif;
         }
 
@@ -432,6 +412,12 @@
             <div class="seating-container">
                 <!-- 메인 교실 영역 (왼쪽) -->
                 <div class="seating-main-panel">
+                    <!-- 교실 칠판 상단 벽면 디테일 -->
+                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; font-size: 0.82rem; font-weight: 800; color: #6b5c4d;">
+                        <span style="background: #ede3d3; padding: 3px 12px; border-radius: 14px; border: 1px solid #d8c8b1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🇰🇷 태극기</span>
+                        <span style="background: #ede3d3; padding: 3px 12px; border-radius: 14px; border: 1px solid #d8c8b1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">⏰ 교실 시계</span>
+                        <span style="background: #ede3d3; padding: 3px 12px; border-radius: 14px; border: 1px solid #d8c8b1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🌱 급훈: 바르고 솔선수범하자</span>
+                    </div>
                     <div class="blackboard">칠 판 (앞)</div>
                     <p class="seat-summary" id="seat-summary" aria-live="polite"></p>
                     <div class="seating-grid" id="seating-grid" aria-label="6행 6열 자리 배치"></div>
