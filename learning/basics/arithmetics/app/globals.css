@@ -5876,10 +5876,17 @@ button.prime-number-question:focus-visible {
   }
 
   .catalog-stage-nav {
+    position: sticky;
+    top: 0;
+    z-index: 20;
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
-    padding-top: 22px;
+    margin: 10px -12px 0;
+    padding: 12px;
+    background: rgba(248, 245, 238, 0.94);
+    box-shadow: 0 10px 24px rgba(43, 42, 36, 0.08);
+    backdrop-filter: blur(12px);
   }
 
   .catalog-stage-link {
@@ -5940,7 +5947,7 @@ button.prime-number-question:focus-visible {
 
   .worksheet-stage-heading {
     grid-column: 1 / -1;
-    scroll-margin-top: 18px;
+    scroll-margin-top: 84px;
     padding: 24px 2px 2px;
     color: var(--stage-color);
   }
@@ -6048,6 +6055,10 @@ button.prime-number-question:focus-visible {
 
     .catalog-stage-nav {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .worksheet-stage-heading {
+      scroll-margin-top: 132px;
     }
   }
 
