@@ -5,8 +5,8 @@
     const MUSIC_MUTED_KEY = "classMusicMuted";
     const SFX_LEVEL_KEY = "classSfxVolumeLevel";
     const SFX_MUTED_KEY = "classSfxMuted";
-    // This is session state: it follows a learner between menus, but does not
-    // unexpectedly start music again in a later browser session.
+    // Playback state is shared between tabs so opening the home page in a new
+    // tab can continue the current track from its last saved position.
     const PLAYBACK_STATE_KEY = "classMusicPlaybackState";
     const PLAYBACK_SOURCE_KEY = "classMusicPlaybackSource";
     const PLAYBACK_TIME_KEY = "classMusicPlaybackTime";
@@ -62,7 +62,7 @@
 
     function readPlaybackPositions() {
         try {
-            const saved = JSON.parse(sessionStorage.getItem(PLAYBACK_POSITIONS_KEY) || "{}");
+            const saved = JSON.parse(localStorage.getItem(PLAYBACK_POSITIONS_KEY) || "{}");
             return saved && typeof saved === "object" ? saved : {};
         } catch (_) {
             return {};
@@ -71,24 +71,24 @@
 
     function savePlaybackState() {
         const isPlaying = !audio.paused && !audio.ended;
-        sessionStorage.setItem(PLAYBACK_STATE_KEY, isPlaying ? "playing" : "paused");
+        localStorage.setItem(PLAYBACK_STATE_KEY, isPlaying ? "playing" : "paused");
 
         if (!isPlaying || !Number.isFinite(audio.currentTime)) return;
         const source = audio.currentSrc || audio.src;
         const positions = readPlaybackPositions();
         positions[source] = audio.currentTime;
-        sessionStorage.setItem(PLAYBACK_POSITIONS_KEY, JSON.stringify(positions));
+        localStorage.setItem(PLAYBACK_POSITIONS_KEY, JSON.stringify(positions));
         // Keep these keys for sessions created before per-track resume support.
-        sessionStorage.setItem(PLAYBACK_SOURCE_KEY, source);
-        sessionStorage.setItem(PLAYBACK_TIME_KEY, String(audio.currentTime));
+        localStorage.setItem(PLAYBACK_SOURCE_KEY, source);
+        localStorage.setItem(PLAYBACK_TIME_KEY, String(audio.currentTime));
     }
 
     function restorePlaybackPosition() {
         const source = audio.currentSrc || audio.src;
         const positions = readPlaybackPositions();
         const savedTime = Number(
-            positions[source] ?? (sessionStorage.getItem(PLAYBACK_SOURCE_KEY) === source
-                ? sessionStorage.getItem(PLAYBACK_TIME_KEY)
+            positions[source] ?? (localStorage.getItem(PLAYBACK_SOURCE_KEY) === source
+                ? localStorage.getItem(PLAYBACK_TIME_KEY)
                 : NaN)
         );
         if (!Number.isFinite(savedTime) || savedTime < 0) return;
@@ -131,9 +131,23 @@
 
     function storeState() {
         localStorage.setItem(MUSIC_LEVEL_KEY, String(musicLevel));
-        localStorage.setItem(MUSIC_MUTED_KEY, musicMuted ? "1" : "0");
+        // Older game pages read this value as the literal strings "true" and
+        // "false". Keep that canonical format so the shared state survives
+        // transitions between the index and every game.
+        localStorage.setItem(MUSIC_MUTED_KEY, musicMuted ? "true" : "false");
         localStorage.setItem(SFX_LEVEL_KEY, String(sfxLevel));
         localStorage.setItem(SFX_MUTED_KEY, sfxMuted ? "1" : "0");
+    }
+
+    function reloadSharedMusicState() {
+        const storedLevel = Number(localStorage.getItem(MUSIC_LEVEL_KEY));
+        if (Number.isInteger(storedLevel) && storedLevel >= 1 && storedLevel <= 5) {
+            musicLevel = storedLevel;
+        }
+        musicMuted = ["1", "true"].includes(localStorage.getItem(MUSIC_MUTED_KEY));
+        render();
+        applyAudioState();
+        announceState();
     }
 
     function render() {
@@ -285,6 +299,15 @@
         pageIsHiding = false;
         shouldResumePlayback = true;
         startPlayback();
+    });
+    // Some older game pages set their own default audio state during load.
+    // Apply the shared choice afterwards so opening a game cannot reset the
+    // music setting selected on the index page.
+    window.addEventListener("load", reloadSharedMusicState);
+    window.addEventListener("storage", event => {
+        if (event.key === MUSIC_LEVEL_KEY || event.key === MUSIC_MUTED_KEY) {
+            reloadSharedMusicState();
+        }
     });
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") savePlaybackState();
