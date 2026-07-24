@@ -204,6 +204,7 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "공수1", name: "부등식", title: "부등식", route: "/arithmetic/high-school/inequality-intervals" },
   { grade: "공수1", name: "순열", title: "순열", route: "/arithmetic/high-school/permutations-combinations" },
   { grade: "공수1", name: "조합", title: "조합", route: "/arithmetic/high-school/combinations" },
+  { grade: "공수1", name: "행렬의 뜻과 기본 연산", title: "행렬의 뜻과 기본 연산", route: "/arithmetic/high-school/matrices" },
   { grade: "공수2", name: "좌표와 직선의 방정식", title: "좌표와 직선의 방정식", route: "/arithmetic/high-school/coordinate-lines" },
   { grade: "공수2", name: "원의 방정식", title: "원의 방정식", route: "/arithmetic/high-school/circle-equations" },
   { grade: "공수2", name: "도형의 이동", title: "도형의 이동", route: "/arithmetic/high-school/geometric-transformations" },
