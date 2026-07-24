@@ -251,6 +251,8 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "확통", name: "확률분포와 통계", title: "확률분포와 통계", route: "/arithmetic/high-school/probability-distributions" },
   { grade: "확통", name: "모집단과 표본·통계적 추정", title: "모집단과 표본·통계적 추정", route: "/arithmetic/high-school/statistical-inference" },
   { grade: "이공계 기초", name: "복소수의 극형식과 드므아브르 정리", title: "복소수의 극형식과 드므아브르 정리", route: "/arithmetic/stem/complex-polar-demoivre" },
+  { grade: "이공계 기초", name: "행렬식과 역행렬", title: "행렬식과 역행렬", route: "/arithmetic/stem/determinants-inverses" },
+  { grade: "이공계 기초", name: "케일리–해밀턴 정리와 회전행렬", title: "케일리–해밀턴 정리와 회전행렬", route: "/arithmetic/stem/cayley-hamilton-rotation" },
 ];
 
 export const learningWorksheetCatalog = [
