@@ -241,6 +241,7 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "확통", name: "이항정리", title: "이항정리", route: "/arithmetic/high-school/binomial-theorem" },
   { grade: "확통", name: "확률의 계산", title: "확률의 계산", route: "/arithmetic/high-school/probability-rules" },
   { grade: "확통", name: "확률분포와 통계", title: "확률분포와 통계", route: "/arithmetic/high-school/probability-distributions" },
+  { grade: "확통", name: "모집단과 표본·통계적 추정", title: "모집단과 표본·통계적 추정", route: "/arithmetic/high-school/statistical-inference" },
 ];
 
 export const learningWorksheetCatalog = [
