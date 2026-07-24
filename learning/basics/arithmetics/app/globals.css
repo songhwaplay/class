@@ -5860,6 +5860,7 @@ button.prime-number-question:focus-visible {
     font-size: 14px;
     font-weight: 900;
     text-decoration: none;
+    cursor: pointer;
   }
 
   .catalog-stage-link small {

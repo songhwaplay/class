@@ -1,3 +1,5 @@
+"use client";
+
 import { Fragment } from "react";
 import { learningWorksheetCatalog } from "../../lib/arithmetic-worksheets";
 
@@ -20,6 +22,10 @@ function worksheetStage(grade: string): LearningStage {
 export default function ArithmeticCatalog() {
   const availableStages = new Set(learningWorksheetCatalog.map(({ grade }) => worksheetStage(grade)));
 
+  function scrollToStage(stage: LearningStage) {
+    document.getElementById(`stage-${stage}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <main className="portal-page catalog-page">
       <div className="catalog-shell">
@@ -35,7 +41,7 @@ export default function ArithmeticCatalog() {
             const meta = stageMeta[stage];
             const isAvailable = availableStages.has(stage);
             return isAvailable
-              ? <a key={stage} className={`catalog-stage-link stage-${stage}`} href={`#stage-${stage}`}>{meta.label}</a>
+              ? <button key={stage} className={`catalog-stage-link stage-${stage}`} type="button" onClick={() => scrollToStage(stage)}>{meta.label}</button>
               : <span key={stage} className={`catalog-stage-link stage-${stage} is-upcoming`} aria-disabled="true">{meta.label}<small>준비 중</small></span>;
           })}
         </nav>
