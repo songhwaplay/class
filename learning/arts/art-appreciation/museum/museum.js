@@ -381,16 +381,14 @@
     const allWorks=rooms.flatMap(item=>item.works);
     const config={
       title:{key:'title',question:'이 작품의 제목은 무엇일까요?'},
-      artist:{key:'artist',question:'이 작품을 만든 작가는 누구일까요?'},
-      english:{key:'englishTitle',question:'What is the title of this artwork?'}
+      artist:{key:'artist',question:'이 작품을 만든 작가는 누구일까요?'}
     }[mode];
     const correct=target[config.key];
     const source=mode==='artist'?allWorks:room.works;
     const distractors=shuffledCopy([...new Set(source.map(work=>work[config.key]).filter(value=>value&&value!==correct))]).slice(0,3);
     const explanations={
       title:`이 작품은 ${target.artist}의 〈${target.title}〉예요.`,
-      artist:`〈${target.title}〉를 만든 작가는 ${target.artist}예요.`,
-      english:`〈${target.title}〉의 영어 제목은 ‘${target.englishTitle}’이에요.`
+      artist:`〈${target.title}〉를 만든 작가는 ${target.artist}예요.`
     };
     return {kind:`image-${mode}`,image:target.image,q:config.question,options:[correct,...distractors],answer:0,explain:explanations[mode]};
   }
@@ -398,18 +396,18 @@
   function startFinaleQuiz(room) {
     finaleQuizRoom=room;finaleQuizIndex=0;finaleQuizCorrect=0;
     const works=shuffledCopy(room.works);
-    const imageWorks=works.slice(0,3);
+    const imageWorks=works.slice(0,2);
     const imageWorkIds=new Set(imageWorks.map(work=>work.id));
     const observations=shuffledCopy(ROOM_QUIZZES[room.id].questions.map((question,index)=>({
       ...question,workId:OBSERVATION_WORK_IDS[room.id][index]
     })).filter(question=>!imageWorkIds.has(question.workId)));
-    const imageModes=['title','artist','english'];
+    const imageModes=['title','artist'];
     const selected=[
       buildImageQuestion(room,imageModes[0],imageWorks[0]),
       buildImageQuestion(room,imageModes[1],imageWorks[1]),
-      buildImageQuestion(room,imageModes[2],imageWorks[2]),
       observations[0],
-      observations[1]
+      observations[1],
+      observations[2]
     ];
     let signature=selected.map(item=>`${item.kind||'observation'}:${item.image||''}:${item.q}`).sort().join('|');
     if(signature===finaleLastQuestionSet[room.id]&&observations[2]){selected[4]=observations[2];signature=selected.map(item=>`${item.kind||'observation'}:${item.image||''}:${item.q}`).sort().join('|');}
@@ -421,7 +419,7 @@
     }));
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 서로 다른 작품 5점에서 한글 제목·화가·영어 제목 문제와 관찰 문제 2개가 무작위 순서로 출제됩니다.`;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 작품 설명에서 찾을 수 있는 핵심 관찰 문제 3개와 제목·화가 확인 문제 2개가 무작위 순서로 출제됩니다.`;
     renderFinaleQuestion();
   }
 
@@ -429,7 +427,7 @@
     window.ClassGameSfx?.play('card');keysClear();
     document.getElementById('finale-kicker').textContent=`GALLERY ${room.number} · CURATOR'S FINAL WALL`;
     document.getElementById('finale-title').textContent=`${room.title} · 관람의 마지막 장면`;
-    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 서로 다른 작품 5점에서 한글 제목·화가·영어 제목 문제와 관찰 문제 2개가 무작위 순서로 출제됩니다.`;
+    document.getElementById('finale-intro').textContent=`${ROOM_QUIZZES[room.id].intro} 작품 설명에서 찾을 수 있는 핵심 관찰 문제 3개와 제목·화가 확인 문제 2개가 무작위 순서로 출제됩니다.`;
     finaleQuizRoom=room;
     if(readFinaleProgress()[room.id])showFinaleCompletion(room);
     else startFinaleQuiz(room);

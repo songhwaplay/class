@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const root = path.resolve(__dirname, '..');
-const museumRoot = path.join(root, 'learning', 'art', 'museum');
+const museumRoot = path.join(root, 'learning', 'arts', 'art-appreciation', 'museum');
 
 global.window = {};
 require(path.join(museumRoot, 'art-data.js'));
@@ -44,7 +44,7 @@ for (const work of works) {
   }
 
   assert.ok(
-    fs.existsSync(path.join(museumRoot, work.image)),
+    fs.existsSync(path.join(museumRoot, work.image.split('?')[0])),
     `${work.id} is missing image ${work.image}`
   );
 
@@ -71,9 +71,9 @@ assert.doesNotMatch(
   'modal tags must not use a negative margin that can hide text'
 );
 
-assert.match(html, /styles\.css\?v=20260724-3/);
-assert.match(html, /art-data\.js\?v=20260723-11/);
-assert.match(html, /museum\.js\?v=20260724-9/);
+assert.match(html, /styles\.css\?v=20260724-5/);
+assert.match(html, /art-data\.js\?v=20260724-12/);
+assert.match(html, /museum\.js\?v=20260725-14/);
 assert.match(html, /id="finale-modal"/);
 assert.match(html, /id="finale-options"/);
 assert.match(html, /id="finale-artwork-image"/);
@@ -86,7 +86,7 @@ assert.doesNotMatch(museumJs, /userData\.finaleTexture=true/, 'generated texture
 assert.equal((museumJs.match(/\{q:'/g)||[]).length, 60, 'every displayed artwork should contribute one finale-bank question');
 const finaleEntries = [...museumJs.matchAll(/\{q:'([^']+)',options:\[([^\]]+)\],answer:(\d),explain:'([^']+)'\}/g)];
 assert.equal(finaleEntries.length, 60, 'all finale questions must follow the validated question schema');
-assert.equal(finaleEntries.length + works.length * 3, 240, 'observation plus title, artist, and English-title modes should provide 240 question variants');
+assert.equal(finaleEntries.length + works.length * 2, 180, 'observation plus title and artist modes should provide 180 question variants');
 assert.equal(new Set(finaleEntries.map(match => match[1])).size, 60, 'finale question text must not be duplicated');
 for (const [, question, rawOptions, rawAnswer, explanation] of finaleEntries) {
   const options = [...rawOptions.matchAll(/'([^']+)'/g)].map(match => match[1]);
@@ -97,21 +97,20 @@ for (const [, question, rawOptions, rawAnswer, explanation] of finaleEntries) {
 }
 for (const room of rooms) {
   assert.equal(new Set(room.works.map(work => work.title)).size, room.works.length, `${room.id} title choices must be unique`);
-  assert.equal(new Set(room.works.map(work => work.englishTitle)).size, room.works.length, `${room.id} English-title choices must be unique`);
 }
 assert.match(museumJs, /finaleQuizCorrect===total/, 'a stamp must require every finale answer to be correct');
 assert.match(museumJs, /showFinaleRetry\(finaleQuizRoom\)/, 'an imperfect finale attempt must end in retry instead of a stamp');
 assert.match(museumJs, /buildImageQuestion\(room,imageModes\[0\],imageWorks\[0\]\)/, 'each finale attempt must include a visible artwork question');
 assert.match(museumJs, /buildImageQuestion\(room,imageModes\[1\],imageWorks\[1\]\)/, 'each finale attempt must include two visible artwork questions');
-assert.match(museumJs, /buildImageQuestion\(room,imageModes\[2\],imageWorks\[2\]\)/, 'each finale attempt must include three visible artwork questions');
-assert.match(museumJs, /const imageModes=\['title','artist','english'\]/, 'every finale must include title, artist, and English-title modes');
+assert.doesNotMatch(museumJs, /buildImageQuestion\(room,imageModes\[2\],imageWorks\[2\]\)/, 'finale must not include an English-title image question');
+assert.match(museumJs, /const imageModes=\['title','artist'\]/, 'every finale must include title and artist image-question modes');
 assert.match(museumJs, /question:'이 작품의 제목은 무엇일까요\?'/, 'Korean title prompt should be natural and concise');
-assert.match(museumJs, /question:'What is the title of this artwork\?'/, 'English title prompt should ask the question naturally in English');
+assert.doesNotMatch(museumJs, /What is the title of this artwork\?/, 'finale must not ask for English titles');
 assert.doesNotMatch(museumJs, /question:'[^']*(한글 제목|영어 제목)/, 'quiz prompts should not explain their language mode');
-assert.match(museumJs, /observations\[0\],\s*observations\[1\]/, 'every finale must include two observation questions');
-assert.match(museumJs, /imageWorkIds\.has\(question\.workId\)/, 'observation questions must exclude all three image-question artworks');
+assert.match(museumJs, /observations\[0\],\s*observations\[1\],\s*observations\[2\]/, 'every finale must include three observation questions');
+assert.match(museumJs, /imageWorkIds\.has\(question\.workId\)/, 'observation questions must exclude the image-question artworks');
 assert.match(museumJs, /options:\[correct,\.\.\.distractors\]/, 'image questions must restore four-choice answer construction');
-assert.match(museumJs, /서로 다른 작품 5점에서/, 'the finale instructions must explain that all five artworks are distinct');
+assert.match(museumJs, /핵심 관찰 문제 3개/, 'the finale instructions must explain the three description-based questions');
 assert.match(museumJs, /다섯 문제를 모두 맞혀야/, 'the retry message must explain the perfect-score stamp rule');
 
 const observationMapSource = museumJs.match(/const OBSERVATION_WORK_IDS = \{([\s\S]*?)\n  \};/);
