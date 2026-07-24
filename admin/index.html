@@ -276,11 +276,15 @@
                         <button class="action-button danger-button" id="deleteSchoolButton" type="button">DELETE SCHOOL</button>
                     </div>
                     <div id="teacherManagement" hidden>
-                        <div class="form-row teacher-form">
+                        <div class="form-row teacher-form" style="grid-template-columns: 110px 100px 90px 75px 120px 110px auto;">
+                            <select class="control" id="newTeacherType" aria-label="Teacher type">
+                                <option value="homeroom">🏫 담임</option>
+                                <option value="subject">🎨 전담</option>
+                            </select>
                             <select class="control" id="newTeacherYear" aria-label="School year"></select>
                             <select class="control" id="newTeacherGrade" aria-label="Grade"></select>
                             <input class="control" id="newTeacherClass" type="number" min="1" max="30" value="1" aria-label="Class">
-                            <input class="control" id="newTeacherName" maxlength="30" placeholder="Teacher name">
+                            <input class="control" id="newTeacherName" maxlength="30" placeholder="교사 성명">
                             <input class="control" id="newTeacherPassword" type="password" inputmode="numeric" maxlength="6" value="123456" aria-label="Initial teacher password">
                             <button class="action-button" id="addTeacherButton" type="button">ADD TEACHER</button>
                         </div>
@@ -663,6 +667,7 @@
                     await api(`/api/admin/schools/${school.id}/teachers`, {
                         method: "POST",
                         body: JSON.stringify({
+                            teacherType: document.querySelector("#newTeacherType") ? document.querySelector("#newTeacherType").value : "homeroom",
                             academicYear: Number(newTeacherYear.value),
                             grade: Number(newTeacherGrade.value),
                             classNumber: Number(newTeacherClass.value),

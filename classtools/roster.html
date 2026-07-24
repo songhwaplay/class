@@ -807,7 +807,18 @@
                 passwordsInput.value = classroom.students.map(() => DISPLAY_DEFAULT_STUDENT_PASSWORD).join("\n");
                 displayedPasswordRows.clear();
                 classroom.students.forEach((student) => displayedPasswordRows.set(student.number, DISPLAY_DEFAULT_STUDENT_PASSWORD));
-                profileStatus.textContent = "Saved on the server";
+                if (classroom.isReadOnly || classroom.teacherType === 'subject') {
+                    numbersInput.disabled = true;
+                    namesInput.disabled = true;
+                    gendersInput.disabled = true;
+                    if (birthdatesInput) birthdatesInput.disabled = true;
+                    passwordsInput.disabled = true;
+                    saveButton.disabled = true;
+                    setStatus("🔒 전담 교사 모드: 학생 명단 수정은 담임 교사만 가능합니다. 담임 교사가 등록한 명단이 연동됩니다.");
+                    profileStatus.textContent = "🔒 전담 교사 모드 (Read-Only)";
+                } else {
+                    profileStatus.textContent = "Saved on the server";
+                }
                 updateClassSummary(getProfile());
             }
 

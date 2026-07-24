@@ -277,6 +277,12 @@ function createClassroomPlatform(options = {}) {
       `CREATE UNIQUE INDEX IF NOT EXISTS classroom_teachers_class_assignment_idx
         ON classroom_teachers (school_id, academic_year, grade, class_number)
         WHERE academic_year IS NOT NULL AND grade IS NOT NULL AND class_number IS NOT NULL`,
+      `ALTER TABLE classroom_teachers
+        ADD COLUMN IF NOT EXISTS teacher_type TEXT NOT NULL DEFAULT 'homeroom'`,
+      `ALTER TABLE classroom_teachers
+        ADD COLUMN IF NOT EXISTS subject_name TEXT`,
+      `ALTER TABLE classroom_teachers
+        ADD COLUMN IF NOT EXISTS room_name TEXT`,
       `CREATE UNIQUE INDEX IF NOT EXISTS classroom_teachers_email_idx
         ON classroom_teachers (LOWER(google_email))
         WHERE google_email IS NOT NULL`,
@@ -851,18 +857,26 @@ function createClassroomPlatform(options = {}) {
     const schoolId = Number(req.params.schoolId);
     const teacherName = String(req.body?.name || "").normalize("NFC").trim();
     const password = String(req.body?.password || DEFAULT_TEACHER_PASSWORD).trim();
+    const teacherType = String(req.body?.teacherType || "homeroom").trim();
+    const subjectName = String(req.body?.subjectName || "").trim();
+    const roomName = String(req.body?.roomName || "").trim();
+
     const academicYear = Number(req.body?.academicYear);
     const grade = Number(req.body?.grade);
     const classNumber = Number(req.body?.classNumber);
     const currentYear = new Date().getFullYear();
-    if (
-      !Number.isInteger(schoolId) || schoolId < 1 ||
-      !teacherName || teacherName.length > 30 ||
-      ![currentYear - 1, currentYear, currentYear + 1].includes(academicYear) ||
-      !Number.isInteger(grade) || grade < 1 || grade > 12 ||
-      !Number.isInteger(classNumber) || classNumber < 1 || classNumber > 30
-    ) {
-      throw new HttpError(400, "INVALID_TEACHER", "Check the school year, grade, class, and teacher name.");
+
+    if (!Number.isInteger(schoolId) || schoolId < 1 || !teacherName || teacherName.length > 30) {
+      throw new HttpError(400, "INVALID_TEACHER", "Check the teacher name.");
+    }
+    if (teacherType === "homeroom") {
+      if (
+        ![currentYear - 1, currentYear, currentYear + 1].includes(academicYear) ||
+        !Number.isInteger(grade) || grade < 1 || grade > 12 ||
+        !Number.isInteger(classNumber) || classNumber < 1 || classNumber > 30
+      ) {
+        throw new HttpError(400, "INVALID_TEACHER", "Check the school year, grade, and class.");
+      }
     }
     if (!STUDENT_PASSWORD_PATTERN.test(password)) {
       throw new HttpError(400, "INVALID_TEACHER_PASSWORD", "Teacher passwords must contain exactly 6 digits.");
@@ -871,10 +885,16 @@ function createClassroomPlatform(options = {}) {
     try {
       result = await pool.query(
       `INSERT INTO classroom_teachers
-        (school_id, teacher_name, password_hash, academic_year, grade, class_number)
-       VALUES ($1, $2, $3, $4, $5, $6)
+        (school_id, teacher_name, password_hash, academic_year, grade, class_number, teacher_type, subject_name, room_name)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
        RETURNING id`,
-      [schoolId, teacherName, hashStudentPassword(password), academicYear, grade, classNumber]
+      [
+        schoolId, teacherName, hashStudentPassword(password),
+        teacherType === "homeroom" ? academicYear : null,
+        teacherType === "homeroom" ? grade : null,
+        teacherType === "homeroom" ? classNumber : null,
+        teacherType, subjectName, roomName
+      ]
       );
     } catch (error) {
       if (error.code === "23505") {
@@ -1119,19 +1139,92 @@ function createClassroomPlatform(options = {}) {
     }
   }));
 
-  router.get("/teacher/class", asyncRoute(async (req, res) => {
+  router.get("/teacher/available-classes", asyncRoute(async (req, res) => {
     const teacher = await requireTeacher(req);
-    const classResult = await pool.query(
-      `SELECT c.*, sc.name AS school_name, sc.school_code
-       FROM classroom_classes c
-       JOIN classroom_schools sc ON sc.id = c.school_id
-       WHERE c.teacher_user_id = $1
-       ORDER BY c.updated_at DESC
-       LIMIT 1`,
+    const teacherResult = await pool.query(
+      `SELECT school_id, teacher_type, subject_name, room_name FROM classroom_teachers WHERE user_id = $1`,
       [teacher.id]
     );
-    const classroom = classResult.rows[0];
-    if (!classroom) return res.json({ classroom: null });
+    const teacherInfo = teacherResult.rows[0];
+    if (!teacherInfo) return res.json({ classes: [] });
+
+    const classesResult = await pool.query(
+      `SELECT c.id, c.academic_year, c.grade, c.class_number, c.teacher_name,
+              COUNT(s.id) AS student_count
+       FROM classroom_classes c
+       LEFT JOIN classroom_students s ON s.class_id = c.id
+       WHERE c.school_id = $1
+       GROUP BY c.id
+       ORDER BY c.grade ASC, c.class_number ASC`,
+      [teacherInfo.school_id]
+    );
+    return res.json({
+      teacherType: teacherInfo.teacher_type || 'homeroom',
+      subjectName: teacherInfo.subject_name || '',
+      roomName: teacherInfo.room_name || '',
+      classes: classesResult.rows.map((row) => ({
+        id: row.id,
+        academicYear: row.academic_year,
+        grade: row.grade,
+        classNumber: row.class_number,
+        teacherName: row.teacher_name,
+        studentCount: Number(row.student_count || 0)
+      }))
+    });
+  }));
+
+  router.get("/teacher/class", asyncRoute(async (req, res) => {
+    const teacher = await requireTeacher(req);
+
+    const teacherInfoResult = await pool.query(
+      `SELECT school_id, teacher_type, subject_name, room_name FROM classroom_teachers WHERE user_id = $1`,
+      [teacher.id]
+    );
+    const teacherInfo = teacherInfoResult.rows[0];
+    const isSubjectTeacher = teacherInfo?.teacher_type === 'subject';
+
+    let classroom = null;
+    const requestedClassId = req.query.classId;
+
+    if (requestedClassId) {
+      const classResult = await pool.query(
+        `SELECT c.*, sc.name AS school_name, sc.school_code
+         FROM classroom_classes c
+         JOIN classroom_schools sc ON sc.id = c.school_id
+         WHERE c.id = $1 AND c.school_id = $2`,
+        [requestedClassId, teacherInfo?.school_id]
+      );
+      classroom = classResult.rows[0];
+    }
+
+    if (!classroom) {
+      const classResult = await pool.query(
+        `SELECT c.*, sc.name AS school_name, sc.school_code
+         FROM classroom_classes c
+         JOIN classroom_schools sc ON sc.id = c.school_id
+         WHERE c.teacher_user_id = $1
+         ORDER BY c.updated_at DESC
+         LIMIT 1`,
+        [teacher.id]
+      );
+      classroom = classResult.rows[0];
+    }
+
+    if (!classroom && isSubjectTeacher) {
+      // Fallback for subject teacher: grab first class in school
+      const firstClassResult = await pool.query(
+        `SELECT c.*, sc.name AS school_name, sc.school_code
+         FROM classroom_classes c
+         JOIN classroom_schools sc ON sc.id = c.school_id
+         WHERE c.school_id = $1
+         ORDER BY c.grade ASC, c.class_number ASC
+         LIMIT 1`,
+        [teacherInfo.school_id]
+      );
+      classroom = firstClassResult.rows[0];
+    }
+
+    if (!classroom) return res.json({ classroom: null, isReadOnly: isSubjectTeacher });
 
     const studentsResult = await pool.query(
       `SELECT student_number, roster_name, COALESCE(gender, '남') AS gender, birth_date,
@@ -1143,14 +1236,20 @@ function createClassroomPlatform(options = {}) {
                 student_number`,
       [classroom.id]
     );
+
     return res.json({
       classroom: {
+        id: classroom.id,
         schoolName: classroom.school_name,
         schoolCode: classroom.school_code,
         academicYear: classroom.academic_year,
         grade: classroom.grade,
         classNumber: classroom.class_number,
         teacherName: classroom.teacher_name,
+        teacherType: teacherInfo?.teacher_type || 'homeroom',
+        subjectName: teacherInfo?.subject_name || '',
+        roomName: teacherInfo?.room_name || '',
+        isReadOnly: isSubjectTeacher,
         students: studentsResult.rows.map((student) => ({
           number: student.student_number,
           name: student.roster_name,
@@ -1165,6 +1264,14 @@ function createClassroomPlatform(options = {}) {
 
   router.put("/teacher/class", asyncRoute(async (req, res) => {
     const teacher = await requireTeacher(req);
+
+    const teacherCheck = await pool.query(
+      `SELECT teacher_type FROM classroom_teachers WHERE user_id = $1`,
+      [teacher.id]
+    );
+    if (teacherCheck.rows[0]?.teacher_type === 'subject') {
+      throw new HttpError(403, "SUBJECT_TEACHER_READONLY", "전담 교사는 학생 명단을 직접 수정할 수 없습니다. 담임 교사가 등록한 명단이 자동 동기화됩니다.");
+    }
     const assignmentResult = await pool.query(
       `SELECT t.school_id, t.teacher_name, t.academic_year, t.grade, t.class_number,
               sc.name AS school_name, sc.school_code
