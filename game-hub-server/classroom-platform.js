@@ -466,7 +466,11 @@ function createClassroomPlatform(options = {}) {
 
   async function hasSiteAccess(req) {
     const mode = await getSiteAccessMode();
-    if (mode === "open") return Boolean(guestAccess(req));
+    // Open mode is intended for development and demonstrations.  A display
+    // name is still useful for game hand-off, but it must not gate routes
+    // served by separate learning apps (for example /arithmetic and
+    // /hanguksa), because those requests can otherwise lose the guest cookie.
+    if (mode === "open") return true;
     const user = await sessionUser(req);
     if (!user) return false;
     return user.role === "admin" || user.role === "teacher" || Boolean(await studentMembership(user.id));
