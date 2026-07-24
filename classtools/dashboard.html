@@ -724,6 +724,73 @@
             padding: 10px;
         }
 
+        /* Multi-Student Bubble Touch Picker (Class123 Style) */
+        .bubble-picker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 16px;
+            padding: 20px 10px;
+            overflow-y: auto;
+            max-height: 60vh;
+            justify-items: center;
+            align-items: center;
+        }
+
+        .bubble-card {
+            position: relative;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 35%, #4a5863 0%, #22292f 70%, #151a1e 100%);
+            border: 3px solid #5a6a77;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4), inset 0 3px 6px rgba(255,255,255,0.2);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+        }
+
+        .bubble-card:hover:not(.revealed) {
+            transform: scale(1.1);
+            border-color: #2ec4b6;
+            box-shadow: 0 12px 25px rgba(46, 196, 182, 0.5), inset 0 4px 8px rgba(255,255,255,0.3);
+        }
+
+        .bubble-card.revealed {
+            border-radius: 20px;
+            width: 102px;
+            height: 108px;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            border: 3px solid #ffe600;
+            box-shadow: 0 12px 30px rgba(255, 230, 0, 0.45);
+            animation: pop-bounce 0.45s ease-out forwards;
+            cursor: default;
+        }
+
+        @keyframes pop-bounce {
+            0% { transform: scale(0.3) rotate(-15deg); opacity: 0; }
+            65% { transform: scale(1.16) rotate(6deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .bubble-avatar {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .bubble-name {
+            font-size: 1.05rem;
+            font-weight: 900;
+            color: #ffffff;
+            margin-top: 3px;
+            text-align: center;
+            white-space: nowrap;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
         @media (max-width: 1280px) {
             .dashboard-grid {
                 grid-template-columns: 1fr 1fr;
@@ -848,7 +915,8 @@
     <footer class="toolbar">
         <div class="toolbar-group">
             <button class="tool-btn" id="toggleEditBtn">편집 모드 [OFF]</button>
-            <button class="tool-btn" id="pickerModalBtn">🎲 발표자 뽑기</button>
+            <button class="tool-btn" id="pickerModalBtn">🎲 1명 뽑기</button>
+            <button class="tool-btn" id="multiPickerModalBtn" style="background: rgba(46, 196, 182, 0.18); border-color: var(--brand-light); color: #7ce4ff; font-weight: 800;">🎯 발표자 뽑기(다수)</button>
             <button class="tool-btn" id="timerModalBtn">⏱️ 집중 타이머</button>
             <button class="tool-btn" id="resetBtn">배치 초기화</button>
         </div>
@@ -875,10 +943,10 @@
                 <div class="day-tab" data-day="목">목요일</div>
                 <div class="day-tab" data-day="금">금요일</div>
             </div>
-            <div style="display: flex; flex-direction: column; gap: 8px;" id="periodEditForm">
-                <!-- 1 ~ 8 period inputs -->
+            <div style="display: flex; flex-direction: column; gap: 8px;" id="periodEditForm"></div>
+            <div style="margin-top: 16px; text-align: right;">
+                <button class="btn btn-primary" id="saveTimetableBtn" style="width: 100%; padding: 12px; font-weight: 800;">시간표 저장하기</button>
             </div>
-            <button class="tool-btn active" id="saveTimetableBtn" style="padding: 12px; margin-top: 10px;">시간표 저장하기</button>
         </div>
     </div>
 
@@ -886,11 +954,32 @@
     <div class="modal-overlay" id="pickerModal" hidden>
         <div class="modal-box">
             <div class="modal-title">
-                <span>🎲 발표자 랜덤 뽑기</span>
+                <span>🎲 3D 룰렛 1명 발표자 뽑기</span>
                 <button class="modal-close" id="closePickerModal">&times;</button>
             </div>
-            <div class="picker-result" id="pickerResult">🎯 버튼을 눌러주세요</div>
-            <button class="tool-btn active" id="startPickBtn" style="padding: 14px; font-size: 1.1rem;">랜덤 추첨 시작!</button>
+            <div class="picker-result" id="pickerResult">클릭하여 뽑기!</div>
+            <button class="btn btn-primary" id="startPickBtn" style="width: 100%; margin-top: 16px; padding: 14px; font-size: 1.2rem; font-weight: 900;">🎲 1명 뽑기 시작!</button>
+        </div>
+    </div>
+
+    <!-- Modal 4: Class123 Style Multi-Student Bubble Touch Picker Modal -->
+    <div class="modal-overlay" id="multiPickerModal" hidden>
+        <div class="modal-box" style="width: min(94vw, 1100px); max-height: 90vh; background: #111619; border: 2px solid #2ec4b6; border-radius: 24px; box-shadow: 0 25px 60px rgba(0,0,0,0.6); display: flex; flex-direction: column;">
+            <div class="modal-title" style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 14px;">
+                <span style="font-size: 1.3rem; font-weight: 900; color: #7ce4ff; display: flex; align-items: center; gap: 8px;">🎯 Class123 학생 뽑기 (동그라미 터치)</span>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button class="btn" id="shuffleBubblesBtn" type="button" style="background: var(--brand-light); color: #0b0f0c; font-weight: 900; padding: 6px 14px; border-radius: 12px; border: none; cursor: pointer;">🎲 학생 섞기</button>
+                    <button class="btn" id="resetBubblesBtn" type="button" style="background: rgba(255,255,255,0.1); color: #fff; font-weight: 700; padding: 6px 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer;">🔄 전부 뒤집기</button>
+                    <button class="modal-close" id="closeMultiPickerModal" type="button" style="font-size: 1.8rem; background: none; border: none; color: #fff; cursor: pointer;">&times;</button>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin: 12px 0 4px; color: #a0b0b8; font-size: 1rem; font-weight: 700;">
+                🔮 동그라미를 손가락으로 터치하면 <strong style="color: #ffe600;">"띵~!"</strong> 소리와 함께 발표자가 뽑힙니다!
+            </div>
+
+            <!-- 동그라미 그리드 캔버스 -->
+            <div class="bubble-picker-grid" id="bubblePickerGrid"></div>
         </div>
     </div>
 
@@ -1558,6 +1647,108 @@
                     `;
                 }
             }, 60);
+        });
+
+        // 8-2. Class123 Style Multi-Student Bubble Touch Picker JS & Web Audio API Ting Sound
+        const multiPickerModalBtn = document.getElementById("multiPickerModalBtn");
+        const multiPickerModal = document.getElementById("multiPickerModal");
+        const closeMultiPickerModal = document.getElementById("closeMultiPickerModal");
+        const shuffleBubblesBtn = document.getElementById("shuffleBubblesBtn");
+        const resetBubblesBtn = document.getElementById("resetBubblesBtn");
+        const bubblePickerGrid = document.getElementById("bubblePickerGrid");
+
+        let bubbleList = [];
+
+        function playTingSound() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                
+                const osc1 = ctx.createOscillator();
+                const osc2 = ctx.createOscillator();
+                const gain = ctx.createGain();
+
+                osc1.type = 'sine';
+                osc1.frequency.setValueAtTime(1046.50, ctx.currentTime); // C6 맑은 띵 소리
+                osc1.frequency.exponentialRampToValueAtTime(2093.00, ctx.currentTime + 0.15); // C7
+
+                osc2.type = 'triangle';
+                osc2.frequency.setValueAtTime(1318.51, ctx.currentTime); // E6
+                osc2.frequency.exponentialRampToValueAtTime(2637.02, ctx.currentTime + 0.15); // E7
+
+                gain.gain.setValueAtTime(0.6, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.45);
+
+                osc1.connect(gain);
+                osc2.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc1.start();
+                osc2.start();
+                osc1.stop(ctx.currentTime + 0.45);
+                osc2.stop(ctx.currentTime + 0.45);
+            } catch(err) {
+                console.error("Audio error:", err);
+            }
+        }
+
+        function renderBubblePicker(shouldShuffle = true) {
+            if (!bubblePickerGrid) return;
+            bubblePickerGrid.replaceChildren();
+
+            let targetStudents = [...rosterStudents];
+            if (targetStudents.length === 0) {
+                for (let i = 1; i <= 20; i++) {
+                    targetStudents.push({ number: String(i), name: `${i}번` });
+                }
+            }
+
+            if (shouldShuffle) {
+                for (let i = targetStudents.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [targetStudents[i], targetStudents[j]] = [targetStudents[j], targetStudents[i]];
+                }
+            }
+
+            bubbleList = targetStudents;
+
+            bubbleList.forEach((student) => {
+                const avatar = getAvatarForStudent(student.number);
+                const card = document.createElement("div");
+                card.className = "bubble-card";
+                card.title = "손가락으로 터치하여 발표자를 뽑아보세요!";
+                card.innerHTML = `<span style="font-size: 2.2rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));">❓</span>`;
+
+                card.addEventListener("click", () => {
+                    if (card.classList.contains("revealed")) return;
+                    playTingSound();
+                    card.classList.add("revealed");
+                    card.innerHTML = `
+                        <div class="bubble-avatar">${avatar.icon}</div>
+                        <div class="bubble-name">${student.number}번 ${student.name}</div>
+                    `;
+                });
+
+                bubblePickerGrid.append(card);
+            });
+        }
+
+        multiPickerModalBtn.addEventListener("click", () => {
+            multiPickerModal.hidden = false;
+            renderBubblePicker(true);
+        });
+
+        closeMultiPickerModal.addEventListener("click", () => {
+            multiPickerModal.hidden = true;
+        });
+
+        shuffleBubblesBtn.addEventListener("click", () => {
+            renderBubblePicker(true);
+        });
+
+        resetBubblesBtn.addEventListener("click", () => {
+            renderBubblePicker(false);
         });
 
         // 9. Focus Timer Modal
