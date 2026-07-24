@@ -10,18 +10,18 @@ function radical(a: number, h: number, k: number) { const coefficient = a === 1 
 function point(x: number, y: number) { return `(${x},\\ ${y})`; }
 function build(kind: RationalRadicalKind, next: () => number, id: string): RationalRadicalProblem {
   const h = integer(next, -5, 5); const k = integer(next, -5, 5); const a = nonzero(next);
-  if (kind === "rational-asymptotes") return { id, kind, label: "점근선", prompt: "두 점근선의 방정식에 들어갈 값을 구하세요.", latex: rational(a, h, k), answer: [h, k], answerLabels: ["x", "y"] };
+  if (kind === "rational-asymptotes") return { id, kind, label: "점근선", prompt: "수직점근선과 수평점근선은?", latex: rational(a, h, k), answer: [h, k], answerLabels: ["x", "y"] };
   if (kind === "rational-coefficient") {
     const offset = nonzero(next, -4, 4); const x = h + offset; const y = k + a;
-    return { id, kind, label: "그래프가 지나는 점", prompt: "그래프가 주어진 점을 지날 때 상수의 값을 구하세요.", latex: `y=\\dfrac{c}{x${signed(-h)}}${signed(k)},\\qquad P${point(x, k + a * offset / offset)}`, answer: [a * offset], answerLabels: ["c"] };
+    return { id, kind, label: "상수 결정", prompt: "그래프가 점 P를 지날 때, 𝑐는?", latex: `y=\\dfrac{c}{x${signed(-h)}}${signed(k)},\\qquad P${point(x, k + a * offset / offset)}`, answer: [a * offset], answerLabels: ["c"] };
   }
   if (kind === "rational-equation") {
     const offset = nonzero(next, -4, 4); const target = k + a; const x = h + 1;
-    return { id, kind, label: "유리함수의 방정식", prompt: "주어진 함수값을 만족하는 값을 구하세요.", latex: `${rational(a * offset, h, k)},\\qquad y=${target}`, answer: [h + offset], answerLabels: ["x"] };
+    return { id, kind, label: "유리방정식의 해", prompt: "주어진 함수값을 만족하는 𝑥는?", latex: `${rational(a * offset, h, k)},\\qquad y=${target}`, answer: [h + offset], answerLabels: ["x"] };
   }
-  if (kind === "radical-endpoint") return { id, kind, label: "시작점", prompt: "그래프의 시작점 좌표를 구하세요.", latex: radical(a, h, k), answer: [h, k], answerLabels: ["x", "y"] };
+  if (kind === "radical-endpoint") return { id, kind, label: "시작점", prompt: "그래프의 시작점은?", latex: radical(a, h, k), answer: [h, k], answerLabels: ["x", "y"] };
   const step = integer(next, 1, 4); const x = h + step * step; const target = a * step + k;
-  return { id, kind, label: "무리함수의 방정식", prompt: "주어진 함수값을 만족하는 값을 구하세요.", latex: `${radical(a, h, k)},\\qquad y=${target}`, answer: [x], answerLabels: ["x"] };
+  return { id, kind, label: "무리방정식의 해", prompt: "주어진 함수값을 만족하는 𝑥는?", latex: `${radical(a, h, k)},\\qquad y=${target}`, answer: [x], answerLabels: ["x"] };
 }
 export function createRationalRadicalProblemSet(seed: number) { const next = random(seed); return { seed, problems: KINDS.map((kind, index) => build(kind, next, `rational-radical-${index}`)) }; }
 export function createRationalRadicalReviewProblems(kinds: RationalRadicalKind[], seed: number) { const next = random(seed); return [...new Set(kinds)].slice(0, 2).map((kind, index) => build(kind, next, `rational-radical-review-${index}-${seed}`)); }

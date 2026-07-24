@@ -41,7 +41,7 @@ function answerLatex(problem: NumericWorksheetProblem, values: number[]) {
   }).join(",\\quad ");
 }
 
-export default function NumericChoiceWorksheet({ initialSeed, subject, title, instruction, createSet, createReviews, formatChoice = answerLatex, makeChoices, showLatexOnWorksheet = true, showPromptOnWorksheet = false }: Props) {
+export default function NumericChoiceWorksheet({ initialSeed, subject, title, instruction, createSet, createReviews, formatChoice = answerLatex, makeChoices, showLatexOnWorksheet = true, showPromptOnWorksheet = true }: Props) {
   const [set, setSet] = useState(() => createSet(initialSeed));
   const [reviews, setReviews] = useState<NumericWorksheetProblem[]>([]);
   const [selected, setSelected] = useState<Record<string, string>>({});
@@ -52,7 +52,7 @@ export default function NumericChoiceWorksheet({ initialSeed, subject, title, in
   const wrong = set.problems.filter((problem) => results[problem.id] === false);
   const choiceProblems: WorksheetChoiceProblem[] = problems.map((problem) => ({
     id: problem.id,
-    label: problem.label,
+    label: problem.prompt,
     correctLatex: formatChoice(problem, problem.answers),
     choices: (makeChoices?.(problem) ?? createNumericChoices(problem.answers, problem.id)).map((choice) => ({
       id: choice.id,
