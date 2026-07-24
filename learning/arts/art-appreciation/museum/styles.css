@@ -69,3 +69,9 @@ body.class-music-ready .unified-music-control {
 @media(max-width:900px){.art-modal[open]{grid-template-rows:minmax(240px,42vh) auto}.art-modal article{overflow:visible;scrollbar-gutter:auto}.modal-image-wrap{min-height:0}.facts{grid-template-columns:1fr}}
 @media(max-width:520px){.art-modal article{padding:26px 18px 34px}.art-modal h2{font-size:26px}.modal-close{right:12px;top:12px}}
 @media(max-width:620px){.finale-modal{max-height:calc(100vh - 18px);padding:34px 22px 28px}.finale-modal>h2{font-size:25px}.finale-question{padding:18px}.finale-question>p:first-of-type{font-size:16px}.finale-artwork{height:min(220px,28vh)}.finale-status{gap:8px}.finale-complete{display:block;text-align:center}.curator-stamp{width:104px;margin:0 auto 20px}.finale-complete .finale-next{margin:16px auto 0}}
+
+/* 작품 설명은 작은 화면에서도 편하게 읽히도록 본문과 태그를 한 단계 키운다. */
+.docent-card p,.look-card p{font-size:14px;line-height:1.8}
+.modal-tags span{padding:6px 10px;font-size:12px}
+.docent-details h3{font-size:13px;line-height:1.45}
+.docent-details section p{margin-top:8px;font-size:14px;line-height:1.8;text-align:left}
