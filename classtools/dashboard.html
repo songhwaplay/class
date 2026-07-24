@@ -212,10 +212,10 @@
 
         .timetable-item {
             display: grid;
-            grid-template-columns: 105px 1fr minmax(130px, 160px);
+            grid-template-columns: 65px minmax(110px, 1.1fr) 1fr;
             gap: 10px;
             align-items: center;
-            padding: 8px 12px;
+            padding: 6px 12px;
             border-radius: 14px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -232,60 +232,79 @@
         .period-col-left {
             display: flex;
             flex-direction: column;
+            align-items: center;
+        }
+
+        .period-label {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--accent-green);
+        }
+
+        .period-time-stack {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            line-height: 1.1;
+            margin-top: 1px;
+        }
+
+        .period-time-stack .wave {
+            font-size: 0.65rem;
+            opacity: 0.5;
+            margin: -1px 0;
         }
 
         .period-col-center {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             text-align: center;
+            white-space: nowrap;
+            min-width: 0;
         }
 
         .period-col-right {
             display: flex;
             align-items: center;
             justify-content: flex-end;
-        }
-
-        .period-label {
-            font-weight: 800;
-            font-size: 0.95rem;
+            min-width: 0;
         }
 
         .period-subject {
             font-weight: 900;
             font-size: 1.25rem;
             color: #ffffff;
-        }
-
-        .period-time {
-            font-size: 0.76rem;
-            color: var(--text-sub);
-            margin-top: 2px;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .period-place-badge {
             background: rgba(117, 214, 159, 0.15);
             border: 1px solid rgba(117, 214, 159, 0.3);
             color: var(--accent-green);
-            font-size: 0.8rem;
+            font-size: 0.78rem;
             font-weight: 700;
-            padding: 2px 8px;
+            padding: 2px 7px;
             border-radius: 12px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
 
         .prep-input {
             width: 100%;
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 8px;
-            padding: 5px 8px;
+            padding: 6px 10px;
             color: #7ce4ff;
-            font-size: 0.82rem;
+            font-size: 0.85rem;
             font-weight: 600;
             outline: none;
+            white-space: nowrap;
         }
 
         .prep-input::placeholder {
@@ -294,7 +313,8 @@
 
         .prep-input:focus {
             border-color: var(--accent-green);
-            background: rgba(0, 0, 0, 0.45);
+            background: rgba(0, 0, 0, 0.55);
+            box-shadow: 0 0 0 2px rgba(117, 214, 159, 0.25);
         }
 
         .timetable-item.active .period-subject {
@@ -957,22 +977,28 @@
 
                 div.innerHTML = `
                     <div class="period-col-left">
-                        <div class="period-label">${item.p}교시</div>
-                        <div class="period-time">${item.s || ""} - ${item.e || ""}</div>
+                        <span class="period-label">${item.p}교시</span>
+                        <div class="period-time-stack">
+                            <span>${item.s || ""}</span>
+                            <span class="wave">~</span>
+                            <span>${item.e || ""}</span>
+                        </div>
                     </div>
                     <div class="period-col-center">
                         <span class="period-subject">${item.sub || "과목"}</span>
                         ${placeTag}
                     </div>
                     <div class="period-col-right">
-                        <input class="prep-input" data-day="${dayName}" data-p="${item.p}" value="${prepVal}" placeholder="🎒 준비물 입력...">
+                        <input class="prep-input" data-day="${dayName}" data-p="${item.p}" value="${prepVal}" placeholder="🎒 준비물 입력..." draggable="false" autocomplete="off">
                     </div>
                 `;
                 listEl.append(div);
             });
 
-            // 준비물 입력 이벤트 리스너
+            // 준비물 입력 및 드래그 간섭 방지 이벤트 리스너
             listEl.querySelectorAll(".prep-input").forEach(input => {
+                input.addEventListener("mousedown", (e) => e.stopPropagation());
+                input.addEventListener("dragstart", (e) => e.stopPropagation());
                 input.addEventListener("input", (e) => {
                     const p = e.target.dataset.p;
                     const day = e.target.dataset.day;
