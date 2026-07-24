@@ -12,6 +12,7 @@ export default function DefiniteIntegralApplicationsPage() {
     subject="미적분Ⅱ"
     title="정적분의 활용"
     instruction=""
+    showPromptOnWorksheet
     createSet={(seed) => createDefiniteIntegralApplicationSet(seed) as { seed: number; problems: NumericWorksheetProblem[] }}
     createReviews={(kinds, seed) => createDefiniteIntegralApplicationReviews(kinds as never[], seed) as NumericWorksheetProblem[]}
     formatChoice={(_problem, values) => String(values[0])}

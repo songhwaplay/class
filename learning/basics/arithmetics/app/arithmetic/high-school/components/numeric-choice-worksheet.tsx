@@ -41,7 +41,7 @@ function answerLatex(problem: NumericWorksheetProblem, values: number[]) {
   }).join(",\\quad ");
 }
 
-export default function NumericChoiceWorksheet({ initialSeed, subject, title, instruction, createSet, createReviews, formatChoice = answerLatex, makeChoices, showLatexOnWorksheet = true, showPromptOnWorksheet = true }: Props) {
+export default function NumericChoiceWorksheet({ initialSeed, subject, title, instruction, createSet, createReviews, formatChoice = answerLatex, makeChoices, showLatexOnWorksheet = true, showPromptOnWorksheet = false }: Props) {
   const [set, setSet] = useState(() => createSet(initialSeed));
   const [reviews, setReviews] = useState<NumericWorksheetProblem[]>([]);
   const [selected, setSelected] = useState<Record<string, string>>({});
