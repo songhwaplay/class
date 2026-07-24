@@ -539,7 +539,6 @@
 
             function removeStudentFromSeat(index, student) {
                 studentLocks.delete(index);
-                genderLocks.delete(index);
                 manualAssignments.delete(index);
                 manualVacantSeats.add(index);
                 unassignedStudents.add(student.number);
@@ -549,7 +548,10 @@
 
             function openStudentPicker(index) {
                 const assignedNumbers = new Set([...currentAssignments.values()].map((student) => student.number));
-                const availableStudents = students.filter((student) => !assignedNumbers.has(student.number));
+                const requiredGender = genderLocks.get(index);
+                const availableStudents = students.filter((student) =>
+                    !assignedNumbers.has(student.number) && (!requiredGender || student.gender === requiredGender)
+                );
                 if (!availableStudents.length) return;
                 pickerSeatIndex = index;
                 studentPickerSelect.replaceChildren(...availableStudents.map((student) => new Option(`${student.number}번 ${student.name}`, student.number)));
