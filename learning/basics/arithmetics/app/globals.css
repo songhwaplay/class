@@ -5910,23 +5910,23 @@ button.prime-number-question:focus-visible {
   }
 
   .stage-elementary {
-    --stage-color: #c95f43;
-    --stage-soft: #fff1eb;
+    --stage-color: #9a6700;
+    --stage-soft: #fff3bf;
   }
 
   .stage-middle {
-    --stage-color: #267b68;
-    --stage-soft: #edf8f4;
+    --stage-color: #14745f;
+    --stage-soft: #dff7ef;
   }
 
   .stage-high {
-    --stage-color: #4266a8;
-    --stage-soft: #eef3fc;
+    --stage-color: #6847a5;
+    --stage-soft: #eee5ff;
   }
 
   .stage-stem {
-    --stage-color: #7655a8;
-    --stage-soft: #f4effb;
+    --stage-color: #b54d57;
+    --stage-soft: #ffe4e7;
   }
 
   .catalog-stage-link {
