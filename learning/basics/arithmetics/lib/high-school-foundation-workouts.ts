@@ -41,11 +41,11 @@ export const probabilityProblems: GeometryChoiceItem[] = [
 ];
 
 export const distributionProblems: GeometryChoiceItem[] = [
-  item("d1", "기댓값", String.raw`P(X=0,1,2)=\frac14,\frac12,\frac14`, String.raw`E(X)=1`, [String.raw`E(X)=\frac12`, String.raw`E(X)=\frac34`, String.raw`E(X)=2`]),
-  item("d2", "분산", String.raw`E(X)=2,\quad E(X^2)=7`, String.raw`V(X)=3`, [String.raw`V(X)=5`, String.raw`V(X)=7`, String.raw`V(X)=9`]),
-  item("d3", "이항분포의 평균", String.raw`X\sim B(20,0.3)`, String.raw`E(X)=6`, [String.raw`E(X)=3`, String.raw`E(X)=14`, String.raw`E(X)=20`]),
-  item("d4", "이항분포의 분산", String.raw`X\sim B\left(10,\frac25\right)`, String.raw`V(X)=\frac{12}{5}`, [String.raw`V(X)=4`, String.raw`V(X)=\frac{24}{5}`, String.raw`V(X)=\frac65`]),
-  item("d5", "표준화", String.raw`X\sim N(50,10^2),\quad X=65`, String.raw`Z=1.5`, [String.raw`Z=0.15`, String.raw`Z=5`, String.raw`Z=15`]),
-  item("d6", "표본평균의 평균", String.raw`E(X)=12,\quad n=25`, String.raw`E(\overline X)=12`, [String.raw`E(\overline X)=\frac{12}{25}`, String.raw`E(\overline X)=60`, String.raw`E(\overline X)=300`]),
-  item("d7", "표본평균의 표준편차", String.raw`\sigma=15,\quad n=25`, String.raw`\sigma_{\overline X}=3`, [String.raw`\sigma_{\overline X}=\frac35`, String.raw`\sigma_{\overline X}=5`, String.raw`\sigma_{\overline X}=15`]),
+  item("d1", "기댓값", String.raw`P(X=0,1,2)=\frac14,\frac12,\frac14,\quad E(X)=?`, String.raw`E(X)=1`, [String.raw`E(X)=\frac12`, String.raw`E(X)=\frac34`, String.raw`E(X)=2`]),
+  item("d2", "분산", String.raw`E(X)=2,\quad E(X^2)=7,\quad V(X)=?`, String.raw`V(X)=3`, [String.raw`V(X)=5`, String.raw`V(X)=7`, String.raw`V(X)=9`]),
+  item("d3", "이항분포의 평균", String.raw`X\sim B(20,0.3),\quad E(X)=?`, String.raw`E(X)=6`, [String.raw`E(X)=3`, String.raw`E(X)=14`, String.raw`E(X)=20`]),
+  item("d4", "이항분포의 분산", String.raw`X\sim B\left(10,\frac25\right),\quad V(X)=?`, String.raw`V(X)=\frac{12}{5}`, [String.raw`V(X)=4`, String.raw`V(X)=\frac{24}{5}`, String.raw`V(X)=\frac65`]),
+  item("d5", "표준화", String.raw`X\sim N(50,10^2),\quad X=65,\quad Z=?`, String.raw`Z=1.5`, [String.raw`Z=0.15`, String.raw`Z=5`, String.raw`Z=15`]),
+  item("d6", "표본평균의 평균", String.raw`E(X)=12,\quad n=25,\quad E(\overline X)=?`, String.raw`E(\overline X)=12`, [String.raw`E(\overline X)=\frac{12}{25}`, String.raw`E(\overline X)=60`, String.raw`E(\overline X)=300`]),
+  item("d7", "표본평균의 표준편차", String.raw`\sigma=15,\quad n=25,\quad \sigma_{\overline X}=?`, String.raw`\sigma_{\overline X}=3`, [String.raw`\sigma_{\overline X}=\frac35`, String.raw`\sigma_{\overline X}=5`, String.raw`\sigma_{\overline X}=15`]),
 ];

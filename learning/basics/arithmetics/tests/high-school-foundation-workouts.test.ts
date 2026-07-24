@@ -21,3 +21,19 @@ test("keeps foundational high-school workouts complete and unambiguous", () => {
   assert.ok(probabilityProblems.some(({ label }) => label === "조건부확률"));
   assert.ok(distributionProblems.some(({ label }) => label === "표준화"));
 });
+
+test("확률분포와 통계 문제는 구할 대상을 수식에 명시한다", () => {
+  const targets = [
+    String.raw`E(X)=?`,
+    String.raw`V(X)=?`,
+    String.raw`E(X)=?`,
+    String.raw`V(X)=?`,
+    String.raw`Z=?`,
+    String.raw`E(\overline X)=?`,
+    String.raw`\sigma_{\overline X}=?`,
+  ];
+
+  distributionProblems.forEach((problem, index) => {
+    assert.ok(problem.latex.includes(targets[index]));
+  });
+});
