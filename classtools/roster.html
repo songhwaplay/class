@@ -207,6 +207,13 @@
             margin: 0 2px 9px;
         }
 
+        .field-help {
+            margin: 7px 0 0;
+            color: var(--muted);
+            font-size: 0.76rem;
+            line-height: 1.45;
+        }
+
         label {
             font-weight: 800;
         }
@@ -613,7 +620,8 @@
                         <label for="passwords">비밀번호</label>
                         <span class="line-count" id="password-count">0행</span>
                     </div>
-                    <textarea id="passwords" inputmode="numeric" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="123456&#10;123456&#10;123456&#10;123456" aria-describedby="input-status"></textarea>
+                    <textarea id="passwords" inputmode="numeric" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="새 비밀번호만 6자리 숫자로 입력" aria-describedby="input-status password-help"></textarea>
+                    <p class="field-help" id="password-help">수정할 학생의 행에만 새 비밀번호를 입력하세요. 빈칸은 기존 비밀번호를 유지합니다.</p>
                 </div>
             </div>
 
@@ -629,7 +637,6 @@
         (() => {
             "use strict";
 
-            const DEFAULT_STUDENT_PASSWORD = "123456";
             const STUDENT_PASSWORD_PATTERN = /^\d{6}$/;
             const currentYear = new Date().getFullYear();
             const allowedYears = [currentYear - 1, currentYear, currentYear + 1];
@@ -659,7 +666,6 @@
             const passwordCount = document.querySelector("#password-count");
             const status = document.querySelector("#input-status");
             const saveButton = document.querySelector("#save-button");
-            const savedPasswordNumbers = new Set();
             let authorized = false;
             let saving = false;
 
@@ -695,7 +701,7 @@
                 const rawGenders = splitLines(gendersInput.value);
                 const rawPasswords = splitLines(passwordsInput.value);
                 const genders = rawGenders;
-                const passwords = numbers.map((number, index) => rawPasswords[index] || (savedPasswordNumbers.has(number) ? "" : DEFAULT_STUDENT_PASSWORD));
+                const passwords = rawPasswords;
 
                 const hasBlank = numbers.some((value) => !value) || names.some((value) => !value);
                 const duplicateNumbers = numbers.filter((value, index) => value && numbers.indexOf(value) !== index);
@@ -784,10 +790,6 @@
                 namesInput.value = classroom.students.map((student) => student.name).join("\n");
                 gendersInput.value = classroom.students.map((student) => student.gender || "남").join("\n");
                 passwordsInput.value = "";
-                savedPasswordNumbers.clear();
-                classroom.students.forEach((student) => {
-                    if (student.passwordConfigured) savedPasswordNumbers.add(student.number);
-                });
                 profileStatus.textContent = "Saved on the server";
                 updateClassSummary(getProfile());
             }
@@ -882,8 +884,6 @@
                         }),
                     });
                     profileStatus.textContent = "Saved on the server";
-                    savedPasswordNumbers.clear();
-                    roster.forEach((student) => savedPasswordNumbers.add(student.number));
                     setStatus(`${roster.length} students saved.`, "success");
                 } catch (error) {
                     setStatus(error.message, "error");
