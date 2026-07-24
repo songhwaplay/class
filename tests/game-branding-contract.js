@@ -43,7 +43,7 @@ const pageContracts = [
   ["learning/games/loveletter/loveletter.html", /궁정 추리/, /Court Deduction/],
   ["learning/games/rummikub/rummikub.html", /숫자 타일/, /NUMBER TILES/],
   ["learning/games/blokus/blokus.html", /코너 블록/, /CORNER BLOCKS/],
-  ["learning/games/setgame/setgame.html", /PATTERN TRIO/, /pattern3-bg\.png/],
+  ["learning/games/setgame/setgame.html", /PATTERN TRIO/, /pattern3-bg\.webp/],
   ["learning/games/davincicode/davincicode.html", /NUMBER CODE/, /숫자 암호/],
   ["learning/games/traverse/traverse.html", /SHAPE CROSSING/, /도형 건너기/],
   ["learning/games/avalon/avalon.html", /QUEST DEDUCTION/, /원정대 추리/],
@@ -53,6 +53,18 @@ const pageContracts = [
 for (const [relative, ...patterns] of pageContracts) {
   const html = read(relative);
   patterns.forEach(pattern => assert.match(html, pattern, `${relative}: 새 독자 명칭이 필요합니다.`));
+}
+
+const visibleLobbyEnglishTitles = [
+  ["learning/games/omok/omok.html", /<p class="subtitle">FIVE IN A ROW · 2 PLAYERS<\/p>/],
+  ["learning/games/janggi/janggi.html", /<div class="sub">KOREAN CHESS · 1대1 대국<\/div>/],
+  ["learning/games/diamondgame/diamondgame.html", /<p class="subtitle">DIAMOND GAME · 2–3 PLAYERS<\/p>/],
+  ["learning/games/loveletter/loveletter.html", /<p class="subtitle">COURT DEDUCTION · 3–4 PLAYERS<\/p>/],
+  ["learning/games/drawrelay/drawrelay.html", /<div class="hero-note">DRAW RELAY · 4–8 PLAYERS · 모두 동시에 진행<\/div>/]
+];
+
+for (const [relative, titlePattern] of visibleLobbyEnglishTitles) {
+  assert.match(read(relative), titlePattern, `${relative}: the lobby must visibly pair its English title with the Korean title.`);
 }
 
 const patternTrio = read("learning/games/setgame/setgame.html");
