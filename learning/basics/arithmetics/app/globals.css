@@ -5813,10 +5813,10 @@ button.prime-number-question:focus-visible {
     grid-template-columns: 120px minmax(0, 1fr);
     align-items: center;
     gap: 24px;
-    border-bottom: 2px solid var(--ink);
-    background: rgba(255, 253, 248, 0.68);
+    border-bottom: 0;
+    background: transparent;
     padding: 20px 22px 24px;
-    backdrop-filter: blur(10px);
+    backdrop-filter: none;
   }
 
   .catalog-back {
@@ -5834,6 +5834,7 @@ button.prime-number-question:focus-visible {
   .catalog-header h1 {
     margin: 0;
     font-size: clamp(32px, 4.5vw, 50px);
+    text-shadow: 0 1px 5px rgba(255, 255, 255, 0.72);
   }
 
   .catalog-header-copy p {
@@ -5880,11 +5881,11 @@ button.prime-number-question:focus-visible {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 10px;
-    margin: 10px -12px 0;
-    padding: 12px;
-    background: rgba(248, 245, 238, 0.94);
-    box-shadow: 0 10px 24px rgba(43, 42, 36, 0.08);
-    backdrop-filter: blur(12px);
+    margin: 10px 0 0;
+    padding: 8px 0;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
   .catalog-stage-link {
@@ -5910,8 +5911,8 @@ button.prime-number-question:focus-visible {
   }
 
   .stage-elementary {
-    --stage-color: #8a7340;
-    --stage-soft: #fffbea;
+    --stage-color: #946d57;
+    --stage-soft: #fff4ec;
   }
 
   .stage-middle {
