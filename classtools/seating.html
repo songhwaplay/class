@@ -263,22 +263,25 @@
         }
 
         @media print {
-            body { min-width: 0; background: #fff; }
-            main { width: 100%; margin: 0; padding: 0; }
+            html,
+            body { min-width: 0; height: auto; background: #fff; }
+            main { width: 100%; margin: 0; padding: 0; break-after: avoid; }
             .header-nav,
             .card > h1,
             .seat-summary,
             .controls-row,
             .btn,
             .student-lock-select { display: none !important; }
-            .card { margin: 0; padding: 0; border: 0; border-radius: 0; background: #fff; box-shadow: none; }
-            .blackboard { width: min(160mm, 100%); margin: 0 auto 10mm; padding: 8mm; font-size: 16pt; }
+            .card { margin: 0; padding: 0; border: 0; border-radius: 0; background: #fff; box-shadow: none; break-inside: avoid; }
+            .blackboard { width: min(160mm, 100%); margin: 0 auto 5mm; padding: 4mm; font-size: 15pt; box-shadow: none; }
             .seating-grid {
                 grid-template-columns: repeat(6, 1fr);
-                gap: 5mm;
+                grid-template-rows: repeat(6, 20mm);
+                gap: 2.5mm;
                 margin: 0;
+                break-inside: avoid;
             }
-            .desk { min-height: 26mm; break-inside: avoid; box-shadow: none; }
+            .desk { min-height: 0; height: 20mm; padding: 1mm; break-inside: avoid; box-shadow: none; }
             .desk:not(.is-occupied) { visibility: hidden !important; }
             .desk-num,
             .desk-lock,
