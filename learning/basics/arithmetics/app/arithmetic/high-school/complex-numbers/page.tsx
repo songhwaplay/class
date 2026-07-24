@@ -12,14 +12,6 @@ import {
 
 const INITIAL_SEED = 20260723;
 
-function normalizeInteger(value: string) {
-  const sanitized = value.replace(/[^0-9-]/g, "");
-  const negative = sanitized.startsWith("-");
-  const digits = sanitized.replace(/-/g, "").slice(0, 3);
-  if (!digits) return negative ? "-" : "";
-  return `${negative ? "-" : ""}${digits}`;
-}
-
 function answerLatex(problem: ComplexProblem) {
   const { real, imaginary } = problem.answer;
   const imaginaryTerm = `${Math.abs(imaginary) === 1 ? "" : Math.abs(imaginary)}i`;
@@ -32,7 +24,6 @@ function answerLatex(problem: ComplexProblem) {
 export default function ComplexNumbersPage() {
   const [questionSet, setQuestionSet] = useState(() => createComplexProblemSet(INITIAL_SEED));
   const [reviewProblems, setReviewProblems] = useState<ComplexProblem[]>([]);
-  const [answers, setAnswers] = useState<Record<string, [string, string]>>({});
   const [selectedChoices, setSelectedChoices] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [answerPanelOpen, setAnswerPanelOpen] = useState(false);
@@ -48,34 +39,14 @@ export default function ComplexNumbersPage() {
     return () => window.removeEventListener("resize", fit);
   }, []);
 
-  function update(problem: ComplexProblem, index: 0 | 1, value: string) {
-    setAnswers((current) => {
-      const next: [string, string] = [...(current[problem.id] ?? ["", ""])];
-      next[index] = normalizeInteger(value);
-      return { ...current, [problem.id]: next };
-    });
-    setResults((current) => {
-      if (!(problem.id in current)) return current;
-      const next = { ...current };
-      delete next[problem.id];
-      return next;
-    });
-  }
-
-  function toggleSign(problem: ComplexProblem, index: 0 | 1) {
-    const value = answers[problem.id]?.[index] ?? "";
-    update(problem, index, value.startsWith("-") ? value.slice(1) : `-${value}`);
-  }
-
   function reset() {
-    setAnswers({});
     setSelectedChoices({});
     setResults({});
     setReviewProblems([]);
   }
 
   function newSet() {
-    if (Object.values(answers).some(([real, imaginary]) => real || imaginary) && !window.confirm("입력이 사라집니다. 새 문제를 만들까요?")) return;
+    if (Object.keys(selectedChoices).length > 0 && !window.confirm("선택한 답이 사라집니다. 새 문제를 만들까요?")) return;
     setQuestionSet(createComplexProblemSet((Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0));
     reset();
   }
@@ -92,35 +63,6 @@ export default function ComplexNumbersPage() {
       wrongOriginal.map(({ kind }) => kind),
       (questionSet.seed ^ 0x9e3779b9) >>> 0,
     ));
-  }
-
-  function renderFields(problem: ComplexProblem, index: number) {
-    const values = answers[problem.id] ?? ["", ""];
-    const labels = problem.answerMode === "conjugate-pair" ? ["실수부", "허수부의 크기"] : ["실수부", "허수부"];
-    return (
-      <div className="complex-answer-fields">
-        <MathFormula latex={problem.answerMode === "conjugate-pair" ? "x=" : ""} />
-        {[0, 1].map((fieldIndex) => (
-          <span className="complex-answer-part" key={labels[fieldIndex]}>
-            {fieldIndex === 1 && <MathFormula latex={problem.answerMode === "conjugate-pair" ? "\\pm" : "+"} />}
-            <label className="complex-answer-field">
-              <small>{labels[fieldIndex]}</small>
-              <span className="rational-input-shell complex-input-shell">
-                <button type="button" tabIndex={-1} onClick={() => toggleSign(problem, fieldIndex as 0 | 1)} aria-label={`${index + 1}번 ${labels[fieldIndex]} 부호 바꾸기`}>±</button>
-                <input
-                  className="rational-coefficient-input complex-input"
-                  inputMode="numeric"
-                  value={values[fieldIndex]}
-                  onChange={(event) => update(problem, fieldIndex as 0 | 1, event.target.value)}
-                  aria-label={`${index + 1}번 ${labels[fieldIndex]}`}
-                />
-              </span>
-            </label>
-            {fieldIndex === 1 && <MathFormula latex="i" />}
-          </span>
-        ))}
-      </div>
-    );
   }
 
   function renderProblem(problem: ComplexProblem, index: number, answerSheet: boolean) {

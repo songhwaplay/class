@@ -14,18 +14,7 @@ import {
 import MathFormula from "../../../components/math-formula";
 
 type PrintMode = "worksheet" | "answers" | "both";
-type PolynomialInput = [quadratic: string, linear: string, constant: string];
-type RationalAnswerInput = {
-  numerator: PolynomialInput;
-  denominator: PolynomialInput;
-};
-
 const INITIAL_SEED = 20260722;
-const TERM_LABELS = [
-  { label: "x²", latex: "x^2" },
-  { label: "x", latex: "x" },
-  { label: "상수", latex: "" },
-] as const;
 const OPERATOR_LATEX: Record<RationalOperation["operator"], string> = {
   start: "",
   multiply: "\\times",
@@ -55,63 +44,9 @@ function expressionLatex(operations: RationalOperation[]) {
   return operations.map((operation, index) => `${index === 0 ? "" : OPERATOR_LATEX[operation.operator]}${fractionLatex(operation.fraction)}`).join(" ");
 }
 
-function emptyAnswer(): RationalAnswerInput {
-  return { numerator: ["", "", ""], denominator: ["", "", ""] };
-}
-
-function normalizeCoefficient(value: string) {
-  const sanitized = value.replace(/[^0-9-]/g, "");
-  const negative = sanitized.startsWith("-");
-  const digits = sanitized.replace(/-/g, "").slice(0, 3);
-  if (!digits) return negative ? "-" : "";
-  return `${negative ? "-" : ""}${digits}`;
-}
-
-function parsedPolynomial(input: PolynomialInput): RationalPolynomial | null {
-  if (input.some((value) => !/^-?\d+$/.test(value))) return null;
-  return input.map(Number) as RationalPolynomial;
-}
-
-function parsedAnswer(input: RationalAnswerInput | undefined): RationalFraction | null {
-  if (!input) return null;
-  const numerator = parsedPolynomial(input.numerator);
-  const denominator = parsedPolynomial(input.denominator);
-  if (!numerator || !denominator || denominator.every((coefficient) => coefficient === 0)) return null;
-  return { numerator, denominator };
-}
-
-function greatestCommonDivisor(left: number, right: number): number {
-  let first = Math.abs(left);
-  let second = Math.abs(right);
-  while (second !== 0) [first, second] = [second, first % second];
-  return first;
-}
-
-function normalizedAnswer(value: RationalFraction) {
-  const coefficients = [...value.numerator, ...value.denominator];
-  const divisor = coefficients.reduce((result, coefficient) => (
-    coefficient === 0 ? result : greatestCommonDivisor(result, coefficient)
-  ), 0) || 1;
-  const firstDenominatorCoefficient = value.denominator.find((coefficient) => coefficient !== 0) ?? 1;
-  const sign = firstDenominatorCoefficient < 0 ? -1 : 1;
-  const normalize = (polynomial: RationalPolynomial) => (
-    polynomial.map((coefficient) => coefficient / divisor * sign) as RationalPolynomial
-  );
-  return { numerator: normalize(value.numerator), denominator: normalize(value.denominator) };
-}
-
-function sameRationalAnswer(answer: RationalFraction | null, expected: RationalFraction) {
-  if (!answer) return false;
-  const normalized = normalizedAnswer(answer);
-  const normalizedExpected = normalizedAnswer(expected);
-  return normalized.numerator.every((coefficient, index) => coefficient === normalizedExpected.numerator[index])
-    && normalized.denominator.every((coefficient, index) => coefficient === normalizedExpected.denominator[index]);
-}
-
 export default function FactorizationRationalPage() {
   const [questionSet, setQuestionSet] = useState(() => createRationalExpressionProblemSet(INITIAL_SEED));
   const [reviewProblems, setReviewProblems] = useState<RationalExpressionProblem[]>([]);
-  const [answers, setAnswers] = useState<Record<string, RationalAnswerInput>>({});
   const [selectedChoices, setSelectedChoices] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [sheetScale, setSheetScale] = useState(0.6);
@@ -141,32 +76,6 @@ export default function FactorizationRationalPage() {
   const canAddReview = reviewProblems.length === 0 && wrongOriginalProblems.length > 0;
   const reviewCount = Math.min(wrongOriginalProblems.length, 2);
 
-  function updateAnswer(
-    id: string,
-    part: keyof RationalAnswerInput,
-    coefficientIndex: number,
-    value: string,
-  ) {
-    setAnswers((current) => {
-      const nextAnswer = current[id]
-        ? { numerator: [...current[id].numerator], denominator: [...current[id].denominator] } as RationalAnswerInput
-        : emptyAnswer();
-      nextAnswer[part][coefficientIndex] = normalizeCoefficient(value);
-      return { ...current, [id]: nextAnswer };
-    });
-    setResults((current) => {
-      if (!(id in current)) return current;
-      const next = { ...current };
-      delete next[id];
-      return next;
-    });
-  }
-
-  function toggleSign(id: string, part: keyof RationalAnswerInput, coefficientIndex: number) {
-    const currentValue = answers[id]?.[part][coefficientIndex] ?? "";
-    updateAnswer(id, part, coefficientIndex, currentValue.startsWith("-") ? currentValue.slice(1) : `-${currentValue}`);
-  }
-
   function checkAll() {
     setResults(Object.fromEntries(problems.map((problem) => [
       problem.id,
@@ -175,7 +84,6 @@ export default function FactorizationRationalPage() {
   }
 
   function resetAnswers() {
-    setAnswers({});
     setSelectedChoices({});
     setResults({});
     setReviewProblems([]);
@@ -204,32 +112,6 @@ export default function FactorizationRationalPage() {
 
   function renderExpression(operations: RationalOperation[]) {
     return <div className="rational-expression"><MathFormula latex={expressionLatex(operations)} display /></div>;
-  }
-
-  function renderPolynomialInputs(problem: RationalExpressionProblem, part: keyof RationalAnswerInput) {
-    const values = answers[problem.id]?.[part] ?? emptyAnswer()[part];
-    return (
-      <div className="rational-coefficient-row" aria-label={`${problem.id} ${part === "numerator" ? "분자" : "분모"} 계수 입력`}>
-        {TERM_LABELS.map((term, coefficientIndex) => (
-          <label className="rational-coefficient-field" key={term.label}>
-            <span className="rational-input-shell">
-              <button type="button" tabIndex={-1} onClick={() => toggleSign(problem.id, part, coefficientIndex)} aria-label={`${term} 계수 부호 바꾸기`}>±</button>
-              <input
-                className="rational-coefficient-input"
-                type="text"
-                inputMode="numeric"
-                pattern="-?[0-9]*"
-                maxLength={4}
-                value={values[coefficientIndex]}
-                onChange={(event) => updateAnswer(problem.id, part, coefficientIndex, event.target.value)}
-                aria-label={`${part === "numerator" ? "분자" : "분모"} ${term.label}의 계수`}
-              />
-            </span>
-            <b aria-hidden="true">{term.latex && <MathFormula latex={term.latex} />}</b>
-          </label>
-        ))}
-      </div>
-    );
   }
 
   function renderProblem(problem: RationalExpressionProblem, index: number, answerSheet: boolean) {

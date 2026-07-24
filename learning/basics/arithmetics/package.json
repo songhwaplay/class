@@ -6,7 +6,7 @@
     "node": ">=22.13.0"
   },
   "scripts": {
-    "pretest": "node --experimental-strip-types --test tests/geometry-workouts.test.ts tests/high-school-foundation-workouts.test.ts tests/worksheet-choice-utils.test.ts tests/sequence-workouts.test.ts",
+    "pretest": "node --experimental-strip-types --test tests/geometry-workouts.test.ts tests/high-school-foundation-workouts.test.ts tests/generated-choice-workouts.test.ts tests/worksheet-choice-utils.test.ts tests/sequence-workouts.test.ts",
     "dev": "vinext dev",
     "build": "vinext build",
     "start": "vinext start",

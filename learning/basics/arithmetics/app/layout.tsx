@@ -12,17 +12,17 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "기초연산",
-    description: "초1부터 고2까지 필요한 연산 문제를 한 목록에서 골라 연습하는 기초연산",
+    description: "초·중·고부터 이공계 기초까지 필요한 수학 연산을 골라 연습하는 기초연산",
     openGraph: {
       title: "기초연산",
-      description: "초1부터 고2까지 필요한 연산 문제를 한 목록에서 고르는 기초연산",
+      description: "초·중·고부터 이공계 기초까지 필요한 수학 연산을 골라 연습하는 기초연산",
       type: "website",
       images: socialImage ? [{ url: socialImage, width: 1672, height: 941, alt: "초1부터 고2까지 한곳에서 고르는 연산 학습지" }] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: "기초연산",
-      description: "초1부터 고2까지 필요한 연산 문제를 한 목록에서 고르는 기초연산",
+      description: "초·중·고부터 이공계 기초까지 필요한 수학 연산을 골라 연습하는 기초연산",
       images: socialImage ? [socialImage] : undefined,
     },
   };

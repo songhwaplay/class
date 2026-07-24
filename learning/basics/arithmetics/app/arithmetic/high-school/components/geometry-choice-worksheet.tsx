@@ -18,23 +18,25 @@ type Props = {
   problems: GeometryChoiceItem[];
   problemSets?: GeometryChoiceItem[][];
   createProblems?: (seed: number) => GeometryChoiceItem[];
+  createSet?: (seed: number) => GeometryChoiceItem[];
 };
 
-export default function GeometryChoiceWorksheet({ subject = "기하", title, seed, problems, problemSets, createProblems }: Props) {
+export default function GeometryChoiceWorksheet({ subject = "기하", title, seed, problems, problemSets, createProblems, createSet }: Props) {
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [panelOpen, setPanelOpen] = useState(false);
   const [scale, setScale] = useState(0.6);
   const [arrangement, setArrangement] = useState(0);
   const [worksheetSeed, setWorksheetSeed] = useState(seed);
+  const problemFactory = createProblems ?? createSet;
   const displayedProblems = useMemo(() => {
-    const source = createProblems?.(worksheetSeed) ?? problemSets?.[arrangement % problemSets.length] ?? problems;
+    const source = problemFactory?.(worksheetSeed) ?? problemSets?.[arrangement % problemSets.length] ?? problems;
     const ordered = rotateChoices(source, `${worksheetSeed}-problems-${arrangement}`);
     return ordered.map((problem) => ({
       ...problem,
       choices: rotateChoices(problem.choices, `${worksheetSeed}-${problem.id}-${arrangement}`),
     }));
-  }, [arrangement, createProblems, problemSets, problems, worksheetSeed]);
+  }, [arrangement, problemFactory, problemSets, problems, worksheetSeed]);
 
   useEffect(() => {
     const fit = () => setScale(Math.min((window.innerWidth - 32) / 794, 1));
@@ -56,7 +58,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
   }
 
   function newProblems() {
-    if (createProblems) setWorksheetSeed(Date.now() >>> 0);
+    if (problemFactory) setWorksheetSeed(Date.now() >>> 0);
     else setArrangement((value) => value + 1);
     reset();
   }
@@ -100,7 +102,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
         <a className="counting-back" href="/arithmetic">← 연산</a>
         <div className="counting-progress"><strong>{Object.values(results).filter(Boolean).length}<small>/{displayedProblems.length} 정답</small></strong></div>
         <div className="toolbar">
-          {(createProblems || problemSets) && <button className="button secondary" onClick={newProblems}>새 문제</button>}
+          {(problemFactory || problemSets) && <button className="button secondary" onClick={newProblems}>새 문제</button>}
           <button className="button ghost" onClick={reset}>다시 풀기</button>
           <button className="button secondary" onClick={() => setPanelOpen(true)}>답안 입력</button>
           <button className="button ghost" onClick={() => window.print()}>인쇄</button>
