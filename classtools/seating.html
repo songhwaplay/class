@@ -350,6 +350,19 @@
             }
 
             function renderDesks() {
+                try {
+                    renderSeatGrid();
+                } catch (error) {
+                    console.error('Seat layout recovery:', error);
+                    manualAssignments.clear();
+                    manualVacantSeats.clear();
+                    unassignedStudents.clear();
+                    saveSeatSettings();
+                    renderSeatGrid();
+                }
+            }
+
+            function renderSeatGrid() {
                 seatingGrid.innerHTML = '';
                 const availableSeats = Array.from({ length: TOTAL_DESKS }, (_, index) => index)
                     .filter((index) => !unavailableSeats.has(index));
