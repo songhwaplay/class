@@ -168,6 +168,7 @@
         }
 
         .desk-header-row {
+            position: relative;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -183,13 +184,19 @@
             padding: 2px 7px;
             border-radius: 6px;
             line-height: 1.2;
+            z-index: 2;
         }
 
         .desk-avatar {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
             font-size: 2.2rem;
             line-height: 1;
-            margin: 0 4px;
-            transform: translateY(-2px);
+            margin: 0;
+            pointer-events: none;
+            z-index: 1;
         }
 
         .desk-body {
