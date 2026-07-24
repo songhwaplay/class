@@ -95,7 +95,7 @@ export default function GradeFivePrimeNumbersPage() {
           <div className="counting-sheet-title"><span>5학년</span><strong>소수(素數) 찾기{answerSheet ? " 정답" : ""}</strong></div>
           <div className="counting-sheet-info"><span>이름 <i /></span><span>날짜 <i /></span><small>1~100</small></div>
         </header>
-        <p className="prime-number-guide">소수(素數, prime number)는 1보다 큰 자연수 중 약수가 1과 자기 자신뿐인 수입니다. 해당하는 수에 ○표 하세요.</p>
+        <p className="prime-number-guide">소수(素數, prime number)는 1보다 큰 자연수 중 약수가 1과 자기 자신뿐인 수입니다. 모두 찾아 ○표 하세요.</p>
         <div className="prime-number-grid">
           {HUNDRED_CHART_NUMBERS.map((number) => renderNumber(number, answerSheet))}
         </div>
