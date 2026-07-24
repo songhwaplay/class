@@ -790,12 +790,10 @@
   function formatSize(work){if(work.size.label)return work.size.label;const parts=[];if(work.size.h)parts.push(`높이 ${work.size.h}cm`);if(work.size.w)parts.push(`너비 ${work.size.w}cm`);if(work.size.d)parts.push(`깊이 ${work.size.d}cm`);return parts.join(' × ');}
   function getExtendedGuide(work){
     if(work.id==='p09')return{
-      background:'밀레가 이 그림을 그린 19세기 프랑스에는 농사를 지어 살아가는 사람이 아주 많았어요. 당시 미술에서는 왕이나 영웅을 크게 그리는 일이 흔했지만, 밀레는 평범한 농민의 고된 노동도 중요한 이야기라고 생각했어요. 이런 태도를 사실주의라고 해요.',
-      talk:'내가 이 들판에 있었다면 세 여인에게 어떤 말을 건네고 싶나요? 그림에서 가장 먼저 눈에 들어온 사람과 그 이유를 친구에게 말해 보세요.'
+      background:'밀레가 이 그림을 그린 19세기 프랑스에는 농사를 지어 살아가는 사람이 아주 많았어요. 당시 미술에서는 왕이나 영웅을 크게 그리는 일이 흔했지만, 밀레는 평범한 농민의 고된 노동도 중요한 이야기라고 생각했어요. 이런 태도를 사실주의라고 해요.'
     };
     return{
-      background:work.styleNote||`${work.year} 무렵, ${work.artist}는 자신만의 눈으로 사람과 세상을 관찰해 이 작품을 만들었어요. 작품이 만들어진 시대와 화가의 생각을 함께 떠올리며 감상해 보세요.`,
-      talk:'이 작품의 제목을 내가 새로 붙인다면 무엇이라고 할까요? 그렇게 생각한 그림 속 단서를 한 가지 골라 친구에게 설명해 보세요.'
+      background:work.styleNote||`${work.year} 무렵, ${work.artist}는 자신만의 눈으로 사람과 세상을 관찰해 이 작품을 만들었어요. 작품이 만들어진 시대와 화가의 생각을 함께 떠올리며 감상해 보세요.`
     };
   }
   function showWork(work,room){
@@ -807,7 +805,7 @@
     const tags=document.getElementById('modal-tags');tags.replaceChildren(...(work.tags||[]).map(label=>{const tag=document.createElement('span');tag.textContent=label;return tag;}));tags.hidden=!work.tags?.length;
     document.getElementById('modal-artist').textContent=work.artist;document.getElementById('modal-year').textContent=work.year;document.getElementById('modal-medium').textContent=work.medium;
     const extendedGuide=getExtendedGuide(work);
-    document.getElementById('modal-size').textContent=formatSize(work);document.getElementById('modal-docent').textContent=work.docent;document.getElementById('modal-background').textContent=extendedGuide.background;document.getElementById('modal-point').textContent=work.point;document.getElementById('modal-talk').textContent=extendedGuide.talk;
+    document.getElementById('modal-size').textContent=formatSize(work);document.getElementById('modal-docent').textContent=work.docent;document.getElementById('modal-background').textContent=extendedGuide.background;document.getElementById('modal-point').textContent=work.point;
     const legal=document.getElementById('modal-legal'),rights=String(work.rights||''),needsCredit=/©|CC BY|공공누리|저작권자|출처 표시/.test(rights);
     legal.hidden=!needsCredit;legal.open=false;document.getElementById('modal-rights').textContent=needsCredit?rights:'';document.getElementById('modal-source').href=work.source;modal.showModal();keysClear();
   }
