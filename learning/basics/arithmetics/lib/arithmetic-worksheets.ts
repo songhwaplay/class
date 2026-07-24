@@ -224,6 +224,7 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "미적1", name: "함수의 극한과 연속", title: "함수의 극한과 연속", route: "/arithmetic/high-school/limits-continuity" },
   { grade: "미적1", name: "미분", title: "미분", route: "/arithmetic/high-school/derivative-practice" },
   { grade: "미적1", name: "미분의 활용", title: "미분의 활용", route: "/arithmetic/high-school/derivative-applications" },
+  { grade: "미적1", name: "평균값정리", title: "평균값정리", route: "/arithmetic/high-school/mean-value-theorem" },
   { grade: "미적1", name: "다항함수의 적분", title: "다항함수의 적분", route: "/arithmetic/high-school/polynomial-integrals" },
   { grade: "미적2", name: "지수·로그함수 미분", title: "지수·로그함수 미분", route: "/arithmetic/high-school/exponential-log-derivatives" },
   { grade: "미적2", name: "삼각함수 미분 1", title: "삼각함수 미분 1", route: "/arithmetic/high-school/trigonometric-derivatives" },
