@@ -5804,9 +5804,7 @@ button.prime-number-question:focus-visible {
   }
 
   .catalog-page {
-    background:
-      linear-gradient(rgba(247, 241, 231, 0.18), rgba(247, 241, 231, 0.24)),
-      url("/math-learning-banner.webp") center top / cover fixed no-repeat;
+    background: url("/math-learning-banner.webp") center top / cover fixed no-repeat;
   }
 
   .catalog-header {
