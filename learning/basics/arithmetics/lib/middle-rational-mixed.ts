@@ -134,7 +134,7 @@ function build(kind: MiddleRationalMixedKind, next: () => number, id: string) {
     id,
     kind,
     "유리수 종합 계산",
-    `${latex(n1, d1)}-\\left\\{${latex(n2, d2)}\\times${signedTerm(latex(n3, d3))}\\right\\}^{-1}`,
+    `${latex(n1, d1)}-1\\div\\left\\{${latex(n2, d2)}\\times${signedTerm(latex(n3, d3))}\\right\\}`,
     numerator,
     denominator,
   );
