@@ -54,6 +54,7 @@
     let applyingAudioState = false;
     let playbackUnlocked = false;
     let shouldResumePlayback = sessionStorage.getItem(PLAYBACK_STATE_KEY) !== "paused";
+    let pageIsHiding = false;
 
     function savePlaybackState() {
         const isPlaying = !audio.paused && !audio.ended;
@@ -214,7 +215,12 @@
         applyAudioState();
         savePlaybackState();
     });
-    audio.addEventListener("pause", savePlaybackState);
+    audio.addEventListener("pause", () => {
+        // During navigation the browser pauses the old page's audio after
+        // pagehide. That is not a learner-requested pause, so keep the state
+        // captured at pagehide for the next menu.
+        if (!pageIsHiding) savePlaybackState();
+    });
     audio.addEventListener("timeupdate", () => {
         // Keep navigation seamless without writing to storage for every frame.
         if (Math.floor(audio.currentTime) % 5 === 0) savePlaybackState();
@@ -225,7 +231,15 @@
         if (playbackUnlocked || musicMuted) startPlayback();
     });
 
-    window.addEventListener("pagehide", savePlaybackState);
+    window.addEventListener("pagehide", () => {
+        savePlaybackState();
+        pageIsHiding = true;
+    });
+    window.addEventListener("pageshow", () => {
+        pageIsHiding = false;
+        shouldResumePlayback = sessionStorage.getItem(PLAYBACK_STATE_KEY) === "playing";
+        if (shouldResumePlayback) startPlayback();
+    });
     document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "hidden") savePlaybackState();
     });
