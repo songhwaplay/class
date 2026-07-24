@@ -812,18 +812,17 @@
 
         <!-- Widget 4: Calendar, Weather & Meal -->
         <section class="widget-card" id="widget-info" draggable="true">
-            <div class="weather-box" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; background: rgba(255,255,255,0.05); border-radius: 14px; margin-bottom: 8px;">
-                <div>
-                    <div style="font-size: 0.78rem; color: var(--text-muted); display: flex; gap: 8px; align-items: center;">
-                        <span>현재 날씨</span>
-                        <span id="weatherHumidity" style="color: #7ce4ff; font-weight: 700;">💧 습도 --%</span>
+            <div class="weather-box" style="display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; background: rgba(255,255,255,0.05); border-radius: 16px; margin-bottom: 10px;">
+                <div style="display: flex; flex-direction: column; gap: 3px;">
+                    <div class="weather-temp" id="weatherTemp" style="font-size: 1.4rem; font-weight: 900; color: #ffffff; display: flex; align-items: center; gap: 8px;">
+                        --° <span style="font-size: 1.15rem; color: var(--accent-amber);">☀️ 불러오는 중</span>
                     </div>
-                    <div class="weather-temp" id="weatherTemp" style="font-size: 1.2rem; font-weight: 800; margin-top: 2px;">
-                        --° <span style="font-size: 1.05rem; color: var(--accent-amber);">☀️ 불러오는 중</span>
+                    <div id="weatherHumidity" style="color: #7ce4ff; font-size: 1.05rem; font-weight: 800; display: flex; align-items: center; gap: 4px;">
+                        💧 습도 --%
                     </div>
                 </div>
                 <div style="text-align: right;">
-                    <div id="dustBadge" class="dust-pill" style="background: #3a86ff; color: #ffffff; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 800; display: inline-block;">
+                    <div id="dustBadge" class="dust-pill" style="background: #3a86ff; color: #ffffff; padding: 6px 14px; border-radius: 24px; font-size: 0.98rem; font-weight: 800; display: inline-block; box-shadow: 0 4px 12px rgba(58, 134, 255, 0.3);">
                         미세먼지 <span id="dustStatus">로딩 중</span>
                     </div>
                 </div>
@@ -1487,8 +1486,8 @@
 
                     const weatherTempEl = document.getElementById("weatherTemp");
                     const weatherHumidityEl = document.getElementById("weatherHumidity");
-                    if (weatherTempEl) weatherTempEl.innerHTML = `${temp}° <span style="font-size: 1.05rem; color: var(--accent-amber);">${cond}</span>`;
-                    if (weatherHumidityEl) weatherHumidityEl.textContent = `💧 습도 ${humidity}%`;
+                    if (weatherTempEl) weatherTempEl.innerHTML = `${temp}° <span style="font-size: 1.15rem; color: var(--accent-amber);">${cond}</span>`;
+                    if (weatherHumidityEl) weatherHumidityEl.innerHTML = `💧 습도 <strong style="color: #7ce4ff; font-weight: 900;">${humidity}%</strong>`;
                 }
 
                 if (airData && airData.current && airData.current.pm10 !== undefined) {
