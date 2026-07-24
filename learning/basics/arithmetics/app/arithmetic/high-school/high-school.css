@@ -1171,6 +1171,10 @@
   letter-spacing: -0.025em;
 }
 
+.polynomial-page .worksheet-stage .geometry-choice-question {
+  padding-left: 42px;
+}
+
 .polynomial-page .worksheet-stage .polynomial-expression,
 .polynomial-page .worksheet-stage .rational-expression,
 .polynomial-page .worksheet-stage .complex-expression,

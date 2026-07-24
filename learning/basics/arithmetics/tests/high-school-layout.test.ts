@@ -41,6 +41,13 @@ test("서술형과 도형형 문제는 전체 폭 예외를 둔다", () => {
   }
 });
 
+test("도형형 문제의 번호와 본문은 겹치지 않는다", () => {
+  assert.match(
+    css,
+    /\.polynomial-page \.worksheet-stage \.geometry-choice-question\s*\{[^}]*padding-left:\s*42px;/s,
+  );
+});
+
 test("7문제와 오답 보충 문제도 모든 행의 높이가 같다", () => {
   for (const count of [7, 8, 9]) {
     assert.match(
