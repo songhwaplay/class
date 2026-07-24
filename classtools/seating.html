@@ -167,6 +167,23 @@
         .desk-lock.male { background: #c6961d; }
         .desk-lock.female { background: #5c91c5; }
 
+        .desk-student-lock {
+            position: absolute;
+            top: 8px;
+            left: 9px;
+            max-width: calc(100% - 76px);
+            overflow: hidden;
+            padding: 3px 6px;
+            border-radius: 99px;
+            color: #fff;
+            background: #4f6d61;
+            font-size: 0.68rem;
+            font-weight: 900;
+            line-height: 1;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
         .desk:focus-visible { outline: 3px solid var(--brand-light); outline-offset: 3px; }
 
         .controls-row {
@@ -187,6 +204,19 @@
 
         .btn-male[aria-pressed="true"] { border-color: #3f6e9e; color: #fff; background: #3f6e9e; }
         .btn-female[aria-pressed="true"] { border-color: #a85278; color: #fff; background: #a85278; }
+        .btn-student-lock[aria-pressed="true"] { border-color: #4f6d61; color: #fff; background: #4f6d61; }
+
+        .student-lock-select {
+            min-height: 38px;
+            min-width: 150px;
+            padding: 0 10px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            color: var(--ink);
+            background: var(--paper);
+            font: inherit;
+            font-weight: 700;
+        }
 
         .seat-summary {
             margin: 0 0 18px;
@@ -244,6 +274,8 @@
                     <button class="btn btn-toggle" id="unused-mode-btn" type="button" aria-pressed="false">✕ 사용 안 함 표시</button>
                     <button class="btn btn-male" id="male-lock-btn" type="button" aria-pressed="false">🔒 남학생 고정</button>
                     <button class="btn btn-female" id="female-lock-btn" type="button" aria-pressed="false">🔒 여학생 고정</button>
+                    <select class="student-lock-select" id="student-lock-select" aria-label="고정할 학생 선택"><option value="">학생 선택</option></select>
+                    <button class="btn btn-student-lock" id="student-lock-btn" type="button" aria-pressed="false">📌 학생 자리 고정</button>
                     <button class="btn btn-primary" id="shuffle-btn" type="button">🎲 자리 무작위 섞기</button>
                     <button class="btn" id="reset-unused-btn" type="button">↺ X 표시 모두 해제</button>
                 </div>
@@ -261,6 +293,8 @@
             const unusedModeBtn = document.getElementById('unused-mode-btn');
             const maleLockBtn = document.getElementById('male-lock-btn');
             const femaleLockBtn = document.getElementById('female-lock-btn');
+            const studentLockSelect = document.getElementById('student-lock-select');
+            const studentLockBtn = document.getElementById('student-lock-btn');
             const resetUnusedBtn = document.getElementById('reset-unused-btn');
             const seatSummary = document.getElementById('seat-summary');
             const TOTAL_DESKS = 36;
@@ -268,8 +302,10 @@
             let students = [];
             let unavailableSeats = new Set();
             let genderLocks = new Map();
+            let studentLocks = new Map();
             let isUnusedMode = false;
             let genderLockMode = null;
+            let isStudentLockMode = false;
             let storageKey = 'classroom-seating-unused-default';
 
             async function api(path) {
@@ -286,18 +322,21 @@
                 for (let i = 0; i < TOTAL_DESKS; i++) {
                     const isUnused = unavailableSeats.has(i);
                     const genderLock = genderLocks.get(i);
+                    const studentLockNumber = studentLocks.get(i);
+                    const lockedStudent = students.find((candidate) => candidate.number === studentLockNumber);
                     const student = assignedSeats.get(i);
                     const desk = document.createElement('button');
                     desk.type = 'button';
                     desk.className = `desk${isUnused ? ' is-unused' : ''}${genderLock === '남' ? ' is-gender-male' : ''}${genderLock === '여' ? ' is-gender-female' : ''}${!student && !isUnused ? ' is-empty' : ''}`;
                     desk.setAttribute('aria-label', isUnused
                         ? `${i + 1}번 좌석, 사용 안 함. 클릭하여 사용으로 전환`
-                        : `${i + 1}번 좌석, ${student ? student.name : '빈자리'}${genderLock ? `, ${genderLock}학생 고정` : ''}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : genderLockMode ? `. 클릭하여 ${genderLockMode}학생 고정` : ''}`);
-                    desk.title = isUnusedMode ? '클릭하여 사용 안 함(X) 표시를 전환합니다.' : genderLockMode ? `클릭하여 ${genderLockMode}학생 고정을 전환합니다.` : 'X 표시 또는 성별 고정 버튼을 눌러 좌석을 설정할 수 있습니다.';
+                        : `${i + 1}번 좌석, ${student ? student.name : '빈자리'}${genderLock ? `, ${genderLock}학생 고정` : ''}${lockedStudent ? `, ${lockedStudent.name} 자리 고정` : ''}${isUnusedMode ? '. 클릭하여 사용 안 함으로 표시' : genderLockMode ? `. 클릭하여 ${genderLockMode}학생 고정` : isStudentLockMode ? '. 클릭하여 선택 학생 자리로 고정' : ''}`);
+                    desk.title = isUnusedMode ? '클릭하여 사용 안 함(X) 표시를 전환합니다.' : genderLockMode ? `클릭하여 ${genderLockMode}학생 고정을 전환합니다.` : isStudentLockMode ? '클릭하여 선택한 학생을 이 자리에 고정합니다.' : 'X 표시, 성별 고정 또는 학생 자리 고정 버튼을 눌러 좌석을 설정할 수 있습니다.';
                     const genderBadge = student && student.gender ? `<small style="opacity:0.7; font-size:0.8rem; margin-left:3px;">(${student.gender})</small>` : '';
                     desk.innerHTML = `
                         <span class="desk-num">${i + 1}번 좌석</span>
                         <span class="desk-name">${isUnused ? '사용 안 함' : (student ? student.name + genderBadge : '빈자리')}</span>
+                        ${lockedStudent && !isUnused ? `<span class="desk-student-lock">${lockedStudent.name} 고정</span>` : ''}
                         ${genderLock && !isUnused ? `<span class="desk-lock ${genderLock === '남' ? 'male' : 'female'}">${genderLock} 고정</span>` : ''}
                     `;
                     desk.addEventListener('click', () => handleDeskClick(i));
@@ -308,18 +347,26 @@
                 const unassignedCount = Math.max(0, students.length - activeDeskCount);
                 const maleLocks = [...genderLocks.values()].filter((gender) => gender === '남').length;
                 const femaleLocks = [...genderLocks.values()].filter((gender) => gender === '여').length;
+                const studentLockCount = studentLocks.size;
                 const activeModeNote = isUnusedMode
                     ? ' <span class="mode-note">— 좌석을 클릭해 X 표시를 켜거나 끄세요.</span>'
-                    : genderLockMode ? ` <span class="mode-note">— 좌석을 클릭해 ${genderLockMode}학생 고정을 켜거나 끄세요.</span>` : '';
-                seatSummary.innerHTML = `<strong>전체 36석</strong> · 사용 가능 ${activeDeskCount}석 · 사용 안 함 ${unavailableSeats.size}석 · 남학생 고정 ${maleLocks}석 · 여학생 고정 ${femaleLocks}석 · 학생 ${students.length}명${unassignedCount ? ` <span class="mode-note">(배정되지 않은 학생 ${unassignedCount}명)</span>` : ''}${activeModeNote}`;
+                    : genderLockMode ? ` <span class="mode-note">— 좌석을 클릭해 ${genderLockMode}학생 고정을 켜거나 끄세요.</span>`
+                    : isStudentLockMode ? ' <span class="mode-note">— 좌석을 클릭해 선택한 학생을 고정하세요.</span>' : '';
+                seatSummary.innerHTML = `<strong>전체 36석</strong> · 사용 가능 ${activeDeskCount}석 · 사용 안 함 ${unavailableSeats.size}석 · 남학생 고정 ${maleLocks}석 · 여학생 고정 ${femaleLocks}석 · 학생 자리 고정 ${studentLockCount}석 · 학생 ${students.length}명${unassignedCount ? ` <span class="mode-note">(배정되지 않은 학생 ${unassignedCount}명)</span>` : ''}${activeModeNote}`;
             }
 
             function buildAssignments(availableSeats) {
                 const assignedSeats = new Map();
                 const assignedStudents = new Set();
+                for (const seatIndex of availableSeats.filter((seat) => studentLocks.has(seat))) {
+                    const student = students.find((candidate) => candidate.number === studentLocks.get(seat));
+                    if (!student || assignedStudents.has(student)) continue;
+                    assignedSeats.set(seatIndex, student);
+                    assignedStudents.add(student);
+                }
                 for (const gender of ['남', '여']) {
                     const matchingStudents = students.filter((student) => student.gender === gender);
-                    for (const seatIndex of availableSeats.filter((seat) => genderLocks.get(seat) === gender)) {
+                    for (const seatIndex of availableSeats.filter((seat) => !studentLocks.has(seat) && genderLocks.get(seat) === gender)) {
                         const student = matchingStudents.find((candidate) => !assignedStudents.has(candidate));
                         if (!student) continue;
                         assignedSeats.set(seatIndex, student);
@@ -327,7 +374,7 @@
                     }
                 }
                 const remainingStudents = students.filter((student) => !assignedStudents.has(student));
-                for (const seatIndex of availableSeats.filter((seat) => !genderLocks.has(seat))) {
+                for (const seatIndex of availableSeats.filter((seat) => !genderLocks.has(seat) && !studentLocks.has(seat))) {
                     const student = remainingStudents.shift();
                     if (student) assignedSeats.set(seatIndex, student);
                 }
@@ -337,7 +384,8 @@
             function saveSeatSettings() {
                 localStorage.setItem(storageKey, JSON.stringify({
                     unavailableSeats: [...unavailableSeats],
-                    genderLocks: Object.fromEntries(genderLocks)
+                    genderLocks: Object.fromEntries(genderLocks),
+                    studentLocks: Object.fromEntries(studentLocks)
                 }));
             }
 
@@ -350,9 +398,14 @@
                     genderLocks = new Map(Object.entries(savedLocks || {})
                         .map(([seat, gender]) => [Number(seat), gender])
                         .filter(([seat, gender]) => Number.isInteger(seat) && seat >= 0 && seat < TOTAL_DESKS && ['남', '여'].includes(gender) && !unavailableSeats.has(seat)));
+                    const savedStudentLocks = Array.isArray(saved) ? {} : saved.studentLocks;
+                    studentLocks = new Map(Object.entries(savedStudentLocks || {})
+                        .map(([seat, studentNumber]) => [Number(seat), String(studentNumber)])
+                        .filter(([seat, studentNumber]) => Number.isInteger(seat) && seat >= 0 && seat < TOTAL_DESKS && !unavailableSeats.has(seat) && students.some((student) => student.number === studentNumber)));
                 } catch (_) {
                     unavailableSeats = new Set();
                     genderLocks = new Map();
+                    studentLocks = new Map();
                 }
             }
 
@@ -361,6 +414,7 @@
                 else {
                     unavailableSeats.add(index);
                     genderLocks.delete(index);
+                    studentLocks.delete(index);
                 }
                 saveSeatSettings();
                 renderDesks();
@@ -369,7 +423,10 @@
             function toggleGenderLock(index) {
                 if (unavailableSeats.has(index) || !genderLockMode) return;
                 if (genderLocks.get(index) === genderLockMode) genderLocks.delete(index);
-                else genderLocks.set(index, genderLockMode);
+                else {
+                    genderLocks.set(index, genderLockMode);
+                    studentLocks.delete(index);
+                }
                 saveSeatSettings();
                 renderDesks();
             }
@@ -380,14 +437,32 @@
                     return;
                 }
                 if (genderLockMode) toggleGenderLock(index);
+                else if (isStudentLockMode) toggleStudentLock(index);
+            }
+
+            function toggleStudentLock(index) {
+                const studentNumber = studentLockSelect.value;
+                if (!studentNumber || unavailableSeats.has(index)) return;
+                if (studentLocks.get(index) === studentNumber) studentLocks.delete(index);
+                else {
+                    for (const [seat, lockedNumber] of studentLocks) {
+                        if (lockedNumber === studentNumber) studentLocks.delete(seat);
+                    }
+                    studentLocks.set(index, studentNumber);
+                    genderLocks.delete(index);
+                }
+                saveSeatSettings();
+                renderDesks();
             }
 
             function setUnusedMode(nextMode) {
                 isUnusedMode = nextMode;
                 if (isUnusedMode) {
                     genderLockMode = null;
+                    isStudentLockMode = false;
                     maleLockBtn.setAttribute('aria-pressed', 'false');
                     femaleLockBtn.setAttribute('aria-pressed', 'false');
+                    studentLockBtn.setAttribute('aria-pressed', 'false');
                 }
                 unusedModeBtn.setAttribute('aria-pressed', String(isUnusedMode));
                 unusedModeBtn.textContent = isUnusedMode ? '✕ X 표시 중지' : '✕ 사용 안 함 표시';
@@ -397,11 +472,34 @@
             function setGenderLockMode(nextMode) {
                 genderLockMode = genderLockMode === nextMode ? null : nextMode;
                 isUnusedMode = false;
+                isStudentLockMode = false;
                 unusedModeBtn.setAttribute('aria-pressed', 'false');
                 unusedModeBtn.textContent = '✕ 사용 안 함 표시';
                 maleLockBtn.setAttribute('aria-pressed', String(genderLockMode === '남'));
                 femaleLockBtn.setAttribute('aria-pressed', String(genderLockMode === '여'));
+                studentLockBtn.setAttribute('aria-pressed', 'false');
                 renderDesks();
+            }
+
+            function setStudentLockMode(nextMode) {
+                if (nextMode && !studentLockSelect.value) return;
+                isStudentLockMode = nextMode;
+                isUnusedMode = false;
+                genderLockMode = null;
+                unusedModeBtn.setAttribute('aria-pressed', 'false');
+                unusedModeBtn.textContent = '✕ 사용 안 함 표시';
+                maleLockBtn.setAttribute('aria-pressed', 'false');
+                femaleLockBtn.setAttribute('aria-pressed', 'false');
+                studentLockBtn.setAttribute('aria-pressed', String(isStudentLockMode));
+                studentLockBtn.textContent = isStudentLockMode ? '📌 학생 자리 고정 중' : '📌 학생 자리 고정';
+                renderDesks();
+            }
+
+            function populateStudentLockOptions() {
+                const currentValue = studentLockSelect.value;
+                studentLockSelect.replaceChildren(new Option('학생 선택', ''));
+                students.forEach((student) => studentLockSelect.add(new Option(`${student.number}번 ${student.name}`, student.number)));
+                studentLockSelect.value = currentValue;
             }
 
             function shuffleStudents() {
@@ -437,6 +535,7 @@
                     classHeader.textContent = '송화초등학교 5학년 2반 (김선생님)';
                 }
                 loadSeatSettings();
+                populateStudentLockOptions();
                 renderDesks();
             }
 
@@ -444,6 +543,10 @@
             unusedModeBtn.addEventListener('click', () => setUnusedMode(!isUnusedMode));
             maleLockBtn.addEventListener('click', () => setGenderLockMode('남'));
             femaleLockBtn.addEventListener('click', () => setGenderLockMode('여'));
+            studentLockBtn.addEventListener('click', () => setStudentLockMode(!isStudentLockMode));
+            studentLockSelect.addEventListener('change', () => {
+                if (isStudentLockMode && !studentLockSelect.value) setStudentLockMode(false);
+            });
             resetUnusedBtn.addEventListener('click', () => {
                 unavailableSeats.clear();
                 saveSeatSettings();
