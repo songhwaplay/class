@@ -34,7 +34,7 @@ function build(kind:DerivativeApplicationKind,next:()=>number,id:string):Derivat
   if(kind==="stationary-points"){
     const parity=integer(next,0,1),r=-integer(next,1,3)*2+parity,s=integer(next,1,3)*2+parity;
     const quadratic=-3*(r+s)/2,linear=3*r*s;
-    return{id,kind,label:"증가와 감소의 경계",prompt:"함수의 증가와 감소가 바뀔 수 있는 두 𝑥값을 작은 것부터 구하세요.",latex:`f(x)=x^3${signedTerm(quadratic,"x^2")}${signedTerm(linear,"x")}`,answerLabels:["x_1","x_2"],answers:[r,s]};
+    return{id,kind,label:"증가와 감소의 경계인 𝑥값",prompt:"함수의 증가와 감소가 바뀔 수 있는 두 𝑥값을 작은 것부터 구하세요.",latex:`f(x)=x^3${signedTerm(quadratic,"x^2")}${signedTerm(linear,"x")}`,answerLabels:["x_1","x_2"],answers:[r,s]};
   }
   if(kind==="extrema-values"){
     const a=integer(next,1,3),constant=integer(next,-4,4);
