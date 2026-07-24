@@ -37,14 +37,14 @@
         main {
             width: min(100% - 32px, 1420px);
             margin: 0 auto;
-            padding: 20px 0 60px;
+            padding: 10px 0 40px;
         }
 
         .header-nav {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .btn {
@@ -404,21 +404,11 @@
             </div>
         </div>
 
-        <section class="card" style="padding: 20px 24px;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h1 style="margin: 0; font-size: 1.7rem; font-weight: 900; display: flex; align-items: center; gap: 8px;">🪑 교실 자리 배치 <span style="font-size: 0.85rem; font-weight: 800; color: #5c6b73; background: #eee7da; padding: 3px 10px; border-radius: 20px;">📍 엑셀 좌표 (A1 ~ F6)</span></h1>
-            </div>
-
+        <section class="card" style="padding: 14px 20px;">
             <div class="seating-container">
                 <!-- 메인 교실 영역 (왼쪽) -->
                 <div class="seating-main-panel">
-                    <!-- 교실 칠판 상단 벽면 디테일 -->
-                    <div style="display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 10px; font-size: 0.82rem; font-weight: 800; color: #6b5c4d;">
-                        <span style="background: #ede3d3; padding: 3px 12px; border-radius: 14px; border: 1px solid #d8c8b1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🇰🇷 태극기</span>
-                        <span style="background: #ede3d3; padding: 3px 12px; border-radius: 14px; border: 1px solid #d8c8b1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">⏰ 교실 시계</span>
-                        <span style="background: #ede3d3; padding: 3px 12px; border-radius: 14px; border: 1px solid #d8c8b1; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">🌱 급훈: 바르고 솔선수범하자</span>
-                    </div>
-                    <div class="blackboard">칠 판 (앞)</div>
+                    <div class="blackboard" style="margin-top: 4px; margin-bottom: 12px;">칠 판 (앞)</div>
                     <p class="seat-summary" id="seat-summary" aria-live="polite"></p>
                     <div class="seating-grid" id="seating-grid" aria-label="6행 6열 자리 배치"></div>
                 </div>
