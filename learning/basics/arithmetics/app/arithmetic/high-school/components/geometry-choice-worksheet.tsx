@@ -17,22 +17,24 @@ type Props = {
   seed: number;
   problems: GeometryChoiceItem[];
   problemSets?: GeometryChoiceItem[][];
+  createProblems?: (seed: number) => GeometryChoiceItem[];
 };
 
-export default function GeometryChoiceWorksheet({ subject = "기하", title, seed, problems, problemSets }: Props) {
+export default function GeometryChoiceWorksheet({ subject = "기하", title, seed, problems, problemSets, createProblems }: Props) {
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [results, setResults] = useState<Record<string, boolean>>({});
   const [panelOpen, setPanelOpen] = useState(false);
   const [scale, setScale] = useState(0.6);
   const [arrangement, setArrangement] = useState(0);
+  const [worksheetSeed, setWorksheetSeed] = useState(seed);
   const displayedProblems = useMemo(() => {
-    const source = problemSets?.[arrangement % problemSets.length] ?? problems;
-    const ordered = rotateChoices(source, `${seed}-problems-${arrangement}`);
+    const source = createProblems?.(worksheetSeed) ?? problemSets?.[arrangement % problemSets.length] ?? problems;
+    const ordered = rotateChoices(source, `${worksheetSeed}-problems-${arrangement}`);
     return ordered.map((problem) => ({
       ...problem,
-      choices: rotateChoices(problem.choices, `${seed}-${problem.id}-${arrangement}`),
+      choices: rotateChoices(problem.choices, `${worksheetSeed}-${problem.id}-${arrangement}`),
     }));
-  }, [arrangement, problemSets, problems, seed]);
+  }, [arrangement, createProblems, problemSets, problems, worksheetSeed]);
 
   useEffect(() => {
     const fit = () => setScale(Math.min((window.innerWidth - 32) / 794, 1));
@@ -53,6 +55,12 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
     ])));
   }
 
+  function newProblems() {
+    if (createProblems) setWorksheetSeed(Date.now() >>> 0);
+    else setArrangement((value) => value + 1);
+    reset();
+  }
+
   function selectChoice(problemId: string, choiceId: string) {
     setSelected((current) => ({ ...current, [problemId]: choiceId }));
     setResults((current) => {
@@ -67,7 +75,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
       <div className="a4-sheet counting-sheet polynomial-sheet derivative-sheet trig-derivative-sheet geometry-choice-sheet polynomial-sheet-7" style={{ transform: `scale(${scale})` }}>
         <header className="counting-sheet-header polynomial-sheet-header">
           <div className="counting-sheet-title"><span>{subject}</span><strong>{title}{answerSheet ? " 정답" : ""}</strong></div>
-          <div className="counting-sheet-info"><span>이름 <i /></span><span>날짜 <i /></span><small>문제지 {seed}</small></div>
+          <div className="counting-sheet-info"><span>이름 <i /></span><span>날짜 <i /></span><small>문제지 {worksheetSeed}</small></div>
         </header>
         <div className="polynomial-problem-grid derivative-problem-grid trig-derivative-problem-grid">
           {displayedProblems.map((problem, index) => (
@@ -92,7 +100,7 @@ export default function GeometryChoiceWorksheet({ subject = "기하", title, see
         <a className="counting-back" href="/arithmetic">← 연산</a>
         <div className="counting-progress"><strong>{Object.values(results).filter(Boolean).length}<small>/{displayedProblems.length} 정답</small></strong></div>
         <div className="toolbar">
-          <button className="button secondary" onClick={() => { setArrangement((value) => value + 1); reset(); }}>{problemSets ? "새 문제" : "새 배열"}</button>
+          {(createProblems || problemSets) && <button className="button secondary" onClick={newProblems}>새 문제</button>}
           <button className="button ghost" onClick={reset}>다시 풀기</button>
           <button className="button secondary" onClick={() => setPanelOpen(true)}>답안 입력</button>
           <button className="button ghost" onClick={() => window.print()}>인쇄</button>

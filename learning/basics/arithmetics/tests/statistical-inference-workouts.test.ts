@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { statisticalInferenceProblems } from "../lib/statistical-inference-workouts.ts";
+import { createStatisticalInferenceProblems, statisticalInferenceProblems } from "../lib/statistical-inference-workouts.ts";
 
 test("통계적 추정 학습지는 모집단부터 신뢰구간까지 순서대로 다룬다", () => {
   assert.equal(statisticalInferenceProblems.length, 7);
@@ -26,7 +26,18 @@ test("통계적 추정 학습지는 모집단부터 신뢰구간까지 순서대
   }
 });
 
-test("모평균의 95% 신뢰구간과 폭이 정확하다", () => {
-  assert.equal(statisticalInferenceProblems[5].correctLatex, String.raw`48.04\le\mu\le51.96`);
-  assert.equal(statisticalInferenceProblems[6].correctLatex, String.raw`1.96`);
+test("새 시드마다 수치와 정답이 달라진다", () => {
+  const first = createStatisticalInferenceProblems(101);
+  const second = createStatisticalInferenceProblems(202);
+  assert.notDeepEqual(
+    first.map(({ latex, correctLatex }) => [latex, correctLatex]),
+    second.map(({ latex, correctLatex }) => [latex, correctLatex]),
+  );
+});
+
+test("질문 속 통계 기호는 인라인 수식으로 표시한다", () => {
+  const prompts = statisticalInferenceProblems.map(({ prompt }) => prompt ?? "");
+  assert.ok(prompts.includes("$E(\\overline X)$는?"));
+  assert.ok(prompts.includes("$\\sigma_{\\overline X}$는?"));
+  assert.ok(prompts.some((prompt) => prompt.includes("$\\mu$")));
 });
