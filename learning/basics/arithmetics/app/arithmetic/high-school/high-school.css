@@ -47,7 +47,7 @@
 }
 
 .polynomial-page .polynomial-focus-label {
-  margin-left: 32px;
+  margin-left: 0;
   margin-bottom: 5px;
 }
 
@@ -1174,7 +1174,8 @@
 .polynomial-page .worksheet-stage .rr-expression,
 .polynomial-page .worksheet-stage .logarithm-expression,
 .polynomial-page .worksheet-stage .derivative-expression,
-.polynomial-page .worksheet-stage .trig-derivative-expression {
+.polynomial-page .worksheet-stage .trig-derivative-expression,
+.polynomial-page .worksheet-stage .geometry-choice-expression {
   font-size: var(--high-school-math-size) !important;
   line-height: 1.35;
 }
