@@ -276,15 +276,14 @@
         }
 
         .prep-active-badge {
-            font-size: 0.85rem;
-            animation: pulse-red 1.8s infinite ease-in-out;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #ff4d4d;
+            box-shadow: 0 0 6px rgba(255, 77, 77, 0.8);
             flex-shrink: 0;
-        }
-
-        @keyframes pulse-red {
-            0% { transform: scale(1); opacity: 0.9; }
-            50% { transform: scale(1.18); opacity: 1; filter: drop-shadow(0 0 6px rgba(255, 77, 77, 0.9)); }
-            100% { transform: scale(1); opacity: 0.9; }
+            display: inline-block;
+            margin-right: 2px;
         }
 
         .period-subject {
@@ -343,11 +342,10 @@
         }
 
         .prep-input.has-value {
-            background: rgba(255, 77, 77, 0.16);
-            border-color: #ff4d4d;
-            color: #ffb3b3;
-            font-weight: 800;
-            box-shadow: 0 0 10px rgba(255, 77, 77, 0.25);
+            background: rgba(255, 77, 77, 0.10);
+            border-color: rgba(255, 77, 77, 0.45);
+            color: #7ce4ff;
+            font-weight: 700;
         }
 
         .prep-input::placeholder {
@@ -1036,7 +1034,7 @@
                 }
                 const prepVal = savedPreps[item.p] || "";
                 const hasVal = prepVal.trim().length > 0;
-                const prepBadge = `<span class="prep-active-badge" id="prepBadge_${dayName}_${item.p}" style="${hasVal ? '' : 'display:none;'}">🔴 🎒</span>`;
+                const prepBadge = `<span class="prep-active-badge" id="prepBadge_${dayName}_${item.p}" style="${hasVal ? '' : 'display:none;'}"></span>`;
 
                 div.innerHTML = `
                     <div class="period-col-left">
