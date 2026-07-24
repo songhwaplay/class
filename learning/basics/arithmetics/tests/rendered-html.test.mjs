@@ -1181,6 +1181,8 @@ test("renders the grade-three weight and capacity worksheet in three by three ve
   assert.match(source, /<small>\/9 정답<\/small>/);
   assert.match(css, /\.measurement-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,/);
   assert.match(css, /\.measurement-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(3,/);
+  assert.match(css, /\.measurement-question\s*\{[^}]*display:\s*flex[^}]*justify-content:\s*center/s);
+  assert.match(css, /\.measurement-number\s*\{[^}]*position:\s*absolute[^}]*left:\s*20px/s);
   assert.match(css, /\.measurement-operation\s*\{[^}]*width:\s*180px[^}]*justify-self:\s*center/s);
   assert.match(css, /\.measurement-quantity,[\s\S]*?grid-template-columns:\s*44px 24px 56px 28px/);
   assert.match(css, /\.measurement-answer,[\s\S]*?width:\s*158px[^}]*margin-left:\s*22px/s);

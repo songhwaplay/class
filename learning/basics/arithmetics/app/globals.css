@@ -1643,10 +1643,9 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 .measurement-question {
   position: relative;
   min-width: 0;
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  align-items: stretch;
-  gap: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 14px 12px 20px;
   border-right: 1px dashed #d8d0c5;
   border-bottom: 1px dashed #d8d0c5;
@@ -1663,6 +1662,9 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .measurement-number {
+  position: absolute;
+  top: 14px;
+  left: 20px;
   color: #647087;
   font-size: 11px;
   font-weight: 850;
