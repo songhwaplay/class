@@ -157,9 +157,13 @@ export default function GradeFourDivisionPage() {
       <div className={`multiplication-question grade-four-division-question${graded ? isCorrect ? " is-correct" : " is-wrong" : ""}`} data-testid="grade-four-division-question" key={problem.id}>
         <span className="grade-four-division-index">{index + 1}</span>
         <div className="grade-four-division-operation">
-          <div className="grade-four-division-quotient"><span>몫</span>{renderAnswer(problem, "quotient", answerSheet)}</div>
-          <div className="grade-four-division-bracket"><strong>{problem.divisor}</strong><b>{problem.dividend}</b></div>
-          <div className="grade-four-division-remainder"><span>나머지</span>{renderAnswer(problem, "remainder", answerSheet)}</div>
+          <strong>{problem.dividend}</strong>
+          <span>÷</span>
+          <strong>{problem.divisor}</strong>
+          <span>=</span>
+          {renderAnswer(problem, "quotient", answerSheet)}
+          <span className="grade-four-division-ellipsis">…</span>
+          {renderAnswer(problem, "remainder", answerSheet)}
         </div>
         {!answerSheet && graded && <span className={`counting-result ${isCorrect ? "correct" : "wrong"}`} role="status">{isCorrect ? "맞음" : "틀림"}</span>}
       </div>
@@ -170,7 +174,7 @@ export default function GradeFourDivisionPage() {
     return (
       <div className="a4-sheet counting-sheet grade-four-division-sheet" style={{ transform: `scale(${sheetScale})` }}>
         <header className="counting-sheet-header">
-          <div className="counting-sheet-title"><span>4학년</span><strong>나눗셈{answerSheet ? " 정답" : ""}</strong></div>
+          <div className="counting-sheet-title"><span>4학년</span><strong>몫, 나머지{answerSheet ? " 정답" : ""}</strong></div>
           <div className="counting-sheet-info"><span>이름 <i /></span><span>날짜 <i /></span><small>문제지 {questionSet.seed}</small></div>
         </header>
         <div className="grade-four-division-grid">{questionSet.problems.map((problem, index) => renderProblem(problem, index, answerSheet))}</div>

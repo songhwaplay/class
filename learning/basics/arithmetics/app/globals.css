@@ -2373,8 +2373,8 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
   min-height: 0;
   flex: 1 1 auto;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-template-rows: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(0, 1fr));
   margin-top: 14px;
   overflow: hidden;
   border: 1px solid #d8d0c5;
@@ -2395,11 +2395,11 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
   color: #17233c;
 }
 
-.grade-four-division-question:nth-child(3n) {
+.grade-four-division-question:nth-child(2n) {
   border-right: 0;
 }
 
-.grade-four-division-question:nth-last-child(-n + 3) {
+.grade-four-division-question:nth-last-child(-n + 2) {
   border-bottom: 0;
 }
 
@@ -2411,67 +2411,24 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .grade-four-division-operation {
-  width: 168px;
+  width: 100%;
   justify-self: center;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-areas:
-    ". quotient"
-    "bracket bracket"
-    ". remainder";
+  display: flex;
   align-items: center;
-  row-gap: 7px;
-}
-
-.grade-four-division-quotient,
-.grade-four-division-remainder {
-  display: grid;
-  grid-template-columns: 34px 48px;
-  align-items: center;
-  gap: 4px;
-  color: #657086;
-  font-size: 11px;
-  font-weight: 800;
-}
-
-.grade-four-division-quotient {
-  grid-area: quotient;
-}
-
-.grade-four-division-remainder {
-  grid-area: remainder;
-}
-
-.grade-four-division-bracket {
-  grid-area: bracket;
-  display: grid;
-  grid-template-columns: 67px 1fr;
-  align-items: center;
-  font-size: 27px;
+  justify-content: center;
+  gap: 7px;
+  color: #17233c;
+  font-size: 23px;
   font-weight: 900;
-  text-align: center;
+  white-space: nowrap;
 }
 
-.grade-four-division-bracket strong,
-.grade-four-division-bracket b {
+.grade-four-division-operation > strong {
   font: inherit;
 }
 
-.grade-four-division-bracket b {
-  position: relative;
-  padding: 9px 5px 2px 11px;
-  border-top: 2px solid #17233c;
-}
-
-.grade-four-division-bracket b::before {
-  content: "";
-  position: absolute;
-  top: -2px;
-  bottom: 0;
-  left: 0;
-  width: 10px;
-  border-left: 2px solid #17233c;
-  border-radius: 70% 0 0 0;
+.grade-four-division-ellipsis {
+  letter-spacing: 2px;
 }
 
 .grade-four-division-input,
