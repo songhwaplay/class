@@ -10,6 +10,7 @@
     const PLAYBACK_STATE_KEY = "classMusicPlaybackState";
     const PLAYBACK_SOURCE_KEY = "classMusicPlaybackSource";
     const PLAYBACK_TIME_KEY = "classMusicPlaybackTime";
+    const PLAYBACK_POSITIONS_KEY = "classMusicPlaybackPositions";
     const DEFAULT_LEVEL = 3;
 
     const currentScript = document.currentScript;
@@ -59,20 +60,38 @@
     let shouldResumePlayback = true;
     let pageIsHiding = false;
 
+    function readPlaybackPositions() {
+        try {
+            const saved = JSON.parse(sessionStorage.getItem(PLAYBACK_POSITIONS_KEY) || "{}");
+            return saved && typeof saved === "object" ? saved : {};
+        } catch (_) {
+            return {};
+        }
+    }
+
     function savePlaybackState() {
         const isPlaying = !audio.paused && !audio.ended;
         sessionStorage.setItem(PLAYBACK_STATE_KEY, isPlaying ? "playing" : "paused");
 
         if (!isPlaying || !Number.isFinite(audio.currentTime)) return;
-        sessionStorage.setItem(PLAYBACK_SOURCE_KEY, audio.currentSrc || audio.src);
+        const source = audio.currentSrc || audio.src;
+        const positions = readPlaybackPositions();
+        positions[source] = audio.currentTime;
+        sessionStorage.setItem(PLAYBACK_POSITIONS_KEY, JSON.stringify(positions));
+        // Keep these keys for sessions created before per-track resume support.
+        sessionStorage.setItem(PLAYBACK_SOURCE_KEY, source);
         sessionStorage.setItem(PLAYBACK_TIME_KEY, String(audio.currentTime));
     }
 
     function restorePlaybackPosition() {
-        const savedSource = sessionStorage.getItem(PLAYBACK_SOURCE_KEY);
-        const savedTime = Number(sessionStorage.getItem(PLAYBACK_TIME_KEY));
         const source = audio.currentSrc || audio.src;
-        if (!savedSource || savedSource !== source || !Number.isFinite(savedTime) || savedTime < 0) return;
+        const positions = readPlaybackPositions();
+        const savedTime = Number(
+            positions[source] ?? (sessionStorage.getItem(PLAYBACK_SOURCE_KEY) === source
+                ? sessionStorage.getItem(PLAYBACK_TIME_KEY)
+                : NaN)
+        );
+        if (!Number.isFinite(savedTime) || savedTime < 0) return;
 
         try {
             audio.currentTime = savedTime;
