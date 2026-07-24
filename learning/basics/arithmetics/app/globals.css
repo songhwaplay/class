@@ -6578,6 +6578,10 @@ button.prime-number-question:focus-visible {
   white-space: nowrap;
 }
 
+.grade-three-fraction-symbol-word {
+  gap: 6px;
+}
+
 .geometry-choice-expression {
   font-size: 18px;
   line-height: 1.2;

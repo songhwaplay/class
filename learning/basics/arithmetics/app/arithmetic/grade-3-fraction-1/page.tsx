@@ -166,7 +166,7 @@ export default function GradeThreeFractionOnePage() {
       <div className={`multiplication-question grade-three-fraction-question value${resultClass(problem)}`} data-testid="grade-three-fraction-question" key={problem.id}>
         <span className="grade-three-fraction-index">{index + 1}</span>
         <span className="grade-three-fraction-word"><strong>{problem.whole}</strong>의</span>
-        <span className="grade-three-fraction-word">
+        <span className="grade-three-fraction-word grade-three-fraction-symbol-word">
           <FractionStack numerator={problem.numerator} denominator={problem.denominator} />
           {[1, 3, 6, 7, 8].includes(problem.numerator) ? "은" : "는"}
         </span>
@@ -198,7 +198,7 @@ export default function GradeThreeFractionOnePage() {
           <span>묶으면</span>
           <span className="grade-three-fraction-word"><strong>{problem.selected}</strong>{vowelEnding(problem.selected) ? "는" : "은"}</span>
           <span className="grade-three-fraction-word"><strong>{problem.whole}</strong>의</span>
-          <span className="grade-three-fraction-word">{fraction}입니다.</span>
+          <span className="grade-three-fraction-word grade-three-fraction-symbol-word">{fraction}입니다.</span>
         </span>
         {!answerSheet && problem.id in results && <span className={`counting-result ${isCorrect ? "correct" : "wrong"}`} role="status">{isCorrect ? "맞음" : "틀림"}</span>}
       </div>
