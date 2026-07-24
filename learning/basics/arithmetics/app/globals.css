@@ -1669,10 +1669,12 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .measurement-operation {
-  width: 100%;
+  width: 180px;
+  max-width: 100%;
   min-width: 0;
   overflow: hidden;
   align-self: center;
+  justify-self: center;
   display: grid;
   gap: 8px;
 }
@@ -1702,10 +1704,10 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 .measurement-quantity,
 .measurement-answer,
 .measurement-static-answer {
-  width: 100%;
+  width: 158px;
   min-width: 0;
   display: grid;
-  grid-template-columns: minmax(30px, 1fr) 24px minmax(42px, 1.25fr) 28px;
+  grid-template-columns: 44px 24px 56px 28px;
   align-items: center;
   gap: 2px;
   font-size: 17px;
@@ -1727,6 +1729,7 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 }
 
 .measurement-rule {
+  width: 158px;
   height: 2px;
   margin-left: 22px;
   background: #17233c;
@@ -1734,7 +1737,7 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
 
 .measurement-answer,
 .measurement-static-answer {
-  width: calc(100% - 22px);
+  width: 158px;
   margin-left: 22px;
 }
 
@@ -1749,6 +1752,7 @@ html[data-race-mode="true"] body { padding-bottom: 72px; }
   font-weight: 850;
   text-align: center;
   outline: none;
+  justify-self: end;
 }
 
 .measurement-answer input:nth-of-type(2) {

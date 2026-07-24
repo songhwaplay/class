@@ -1163,9 +1163,9 @@ test("renders the grade-three weight and capacity worksheet in three by three ve
   const source = await readFile(new URL("../app/arithmetic/grade-3-measurement/page.tsx", import.meta.url), "utf8");
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
   assert.match(html, /3학년/);
-  assert.match(html, /무게,들이/);
-  assert.match(html, /aria-label="A4 3학년 무게,들이 문제지"/);
-  assert.match(html, /aria-label="A4 3학년 무게,들이 전체 답지"/);
+  assert.match(html, /무게와 들이/);
+  assert.match(html, /aria-label="A4 3학년 무게와 들이 문제지"/);
+  assert.match(html, /aria-label="A4 3학년 무게와 들이 전체 답지"/);
   assert.equal((html.match(/data-testid="measurement-question"/g) ?? []).length, 18);
   assert.equal((html.match(/class="measurement-answer"/g) ?? []).length, 9);
   assert.equal((html.match(/class="measurement-static-answer"/g) ?? []).length, 9);
@@ -1181,9 +1181,9 @@ test("renders the grade-three weight and capacity worksheet in three by three ve
   assert.match(source, /<small>\/9 정답<\/small>/);
   assert.match(css, /\.measurement-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,/);
   assert.match(css, /\.measurement-grid\s*\{[\s\S]*?grid-template-rows:\s*repeat\(3,/);
-  assert.match(css, /\.measurement-operation\s*\{[^}]*width:\s*100%[^}]*overflow:\s*hidden/s);
-  assert.match(css, /\.measurement-quantity,[\s\S]*?grid-template-columns:\s*minmax\(30px,\s*1fr\)\s*24px\s*minmax\(42px,\s*1\.25fr\)\s*28px/);
-  assert.match(css, /\.measurement-answer,[\s\S]*?width:\s*calc\(100%\s*-\s*22px\)[^}]*margin-left:\s*22px/s);
+  assert.match(css, /\.measurement-operation\s*\{[^}]*width:\s*180px[^}]*justify-self:\s*center/s);
+  assert.match(css, /\.measurement-quantity,[\s\S]*?grid-template-columns:\s*44px 24px 56px 28px/);
+  assert.match(css, /\.measurement-answer,[\s\S]*?width:\s*158px[^}]*margin-left:\s*22px/s);
 });
 
 test("renders the third grade unit fraction worksheet in two columns with fixed fraction rules", async () => {
