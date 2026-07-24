@@ -50,7 +50,7 @@ export const meanValueTheoremProblems: GeometryChoiceItem[] = [
   item(
     "v3",
     "평균값정리",
-    "평균값정리를 만족하는 c는?",
+    "평균값정리를 만족하는 $c$는?",
     String.raw`f(x)=x^2,\quad 1\le x\le3`,
     String.raw`c=2`,
     [String.raw`c=1`, String.raw`c=\frac32`, String.raw`c=\frac52`],
@@ -58,7 +58,7 @@ export const meanValueTheoremProblems: GeometryChoiceItem[] = [
   item(
     "v4",
     "평균값정리",
-    "평균값정리를 만족하는 c는?",
+    "평균값정리를 만족하는 $c$는?",
     String.raw`f(x)=x^3,\quad 0\le x\le3`,
     String.raw`c=\sqrt3`,
     [String.raw`c=1`, String.raw`c=\frac32`, String.raw`c=3`],
@@ -66,7 +66,7 @@ export const meanValueTheoremProblems: GeometryChoiceItem[] = [
   item(
     "v5",
     "롤의 정리",
-    "롤의 정리를 만족하는 c는?",
+    "롤의 정리를 만족하는 $c$는?",
     String.raw`f(x)=x^2-4x,\quad 0\le x\le4`,
     String.raw`c=2`,
     [String.raw`c=0`, String.raw`c=1`, String.raw`c=3`],
@@ -74,7 +74,7 @@ export const meanValueTheoremProblems: GeometryChoiceItem[] = [
   item(
     "v6",
     "유리함수의 평균값정리",
-    "평균값정리를 만족하는 c는?",
+    "평균값정리를 만족하는 $c$는?",
     String.raw`f(x)=\frac1x,\quad 1\le x\le2`,
     String.raw`c=\sqrt2`,
     [String.raw`c=\frac32`, String.raw`c=1`, String.raw`c=2`],
@@ -82,7 +82,7 @@ export const meanValueTheoremProblems: GeometryChoiceItem[] = [
   item(
     "v7",
     "두 개의 c",
-    "평균값정리를 만족하는 모든 c는?",
+    "평균값정리를 만족하는 모든 $c$는?",
     String.raw`f(x)=x^3-3x,\quad -2\le x\le2`,
     String.raw`c=\pm\frac{2\sqrt3}{3}`,
     [String.raw`c=\pm\sqrt3`, String.raw`c=\pm1`, String.raw`c=0`],

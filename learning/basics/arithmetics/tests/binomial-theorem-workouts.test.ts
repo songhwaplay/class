@@ -25,3 +25,10 @@ test("이항정리 학습지는 핵심 유형을 빠짐없이 다룬다", () => 
     assert.equal(new Set(problem.choices.map(({ latex }) => latex)).size, 4);
   }
 });
+
+test("문장 속 문자식은 인라인 수식으로 표시한다", () => {
+  const prompts = binomialTheoremProblems.map(({ prompt }) => prompt ?? "");
+  assert.ok(prompts.includes("$x^3$의 계수는?"));
+  assert.ok(prompts.includes("$x^4$의 계수는?"));
+  assert.equal(prompts.some((prompt) => /^x\^\d/.test(prompt)), false);
+});

@@ -66,7 +66,7 @@ export const sequenceLimitsSeriesProblems: GeometryChoiceItem[] = [
   make(
     "ls6",
     "급수의 수렴 조건",
-    "급수가 수렴하는 x의 범위는?",
+    "급수가 수렴하는 $x$의 범위는?",
     String.raw`\sum_{n=0}^{\infty}(x-1)^n`,
     String.raw`0<x<2`,
     [String.raw`-1<x<1`, String.raw`0\le x\le2`, String.raw`x<0\ \text{또는}\ x>2`],

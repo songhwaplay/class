@@ -30,7 +30,7 @@ export const binomialTheoremProblems: GeometryChoiceItem[] = [
   item(
     "b1",
     "특정 항의 계수",
-    String.raw`x^3의 계수는?`,
+    String.raw`$x^3$의 계수는?`,
     String.raw`(2+x)^5`,
     String.raw`40`,
     [String.raw`20`, String.raw`80`, String.raw`10`],
@@ -70,7 +70,7 @@ export const binomialTheoremProblems: GeometryChoiceItem[] = [
   item(
     "b6",
     "이항계수",
-    String.raw`x^4의 계수는?`,
+    String.raw`$x^4$의 계수는?`,
     String.raw`(1+x)^7`,
     String.raw`35`,
     [String.raw`21`, String.raw`28`, String.raw`42`],

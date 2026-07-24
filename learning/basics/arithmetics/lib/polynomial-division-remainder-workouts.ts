@@ -46,7 +46,7 @@ export const polynomialDivisionRemainderProblems: GeometryChoiceItem[] = [
   item(
     "pr3",
     "몫과 나머지",
-    "몫 Q(x)와 나머지 R은?",
+    "몫 $Q(x)$와 나머지 $R$은?",
     String.raw`x^3-2x^2+4x-5=(x-2)Q(x)+R`,
     String.raw`Q(x)=x^2+4,\quad R=3`,
     [String.raw`Q(x)=x^2-4,\quad R=3`, String.raw`Q(x)=x^2+4,\quad R=-3`, String.raw`Q(x)=x^2+2x+4,\quad R=3`],
@@ -54,7 +54,7 @@ export const polynomialDivisionRemainderProblems: GeometryChoiceItem[] = [
   item(
     "pr4",
     "나머지정리",
-    "x+1로 나눈 나머지는?",
+    "$x+1$로 나눈 나머지는?",
     String.raw`f(x)=x^4-3x^2+2x-5`,
     String.raw`-9`,
     [String.raw`-5`, String.raw`-3`, String.raw`9`],
@@ -62,7 +62,7 @@ export const polynomialDivisionRemainderProblems: GeometryChoiceItem[] = [
   item(
     "pr5",
     "인수정리",
-    "x-2가 인수가 되도록 하는 k는?",
+    "$x-2$가 인수가 되도록 하는 $k$는?",
     String.raw`f(x)=x^3+kx^2-5x+6`,
     String.raw`k=-1`,
     [String.raw`k=1`, String.raw`k=-2`, String.raw`k=2`],
@@ -70,7 +70,7 @@ export const polynomialDivisionRemainderProblems: GeometryChoiceItem[] = [
   item(
     "pr6",
     "이차식으로 나눈 나머지",
-    "x²+x-2로 나눈 나머지는?",
+    "$x^2+x-2$로 나눈 나머지는?",
     String.raw`x^4+x^3-5x^2-x+7`,
     String.raw`2x+1`,
     [String.raw`2x-1`, String.raw`x+2`, String.raw`-2x+1`],
@@ -78,7 +78,7 @@ export const polynomialDivisionRemainderProblems: GeometryChoiceItem[] = [
   item(
     "pr7",
     "나머지의 결정",
-    "x²-1로 나눈 나머지는?",
+    "$x^2-1$로 나눈 나머지는?",
     String.raw`f(1)=2,\quad f(-1)=-4`,
     String.raw`3x-1`,
     [String.raw`3x+1`, String.raw`x-3`, String.raw`-3x-1`],

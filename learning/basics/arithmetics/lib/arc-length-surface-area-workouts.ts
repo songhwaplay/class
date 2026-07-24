@@ -26,7 +26,7 @@ export const arcLengthSurfaceAreaProblems: GeometryChoiceItem[] = [
   make(
     "as1",
     "곡선의 길이 공식",
-    "곡선의 길이 L을 나타낸 것은?",
+    "곡선의 길이 $L$을 나타낸 것은?",
     String.raw`y=f(x),\quad a\le x\le b`,
     String.raw`L=\int_a^b\sqrt{1+\{f'(x)\}^2}\,dx`,
     [
