@@ -191,7 +191,7 @@
 
         .paste-grid {
             display: grid;
-            grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
+            grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr) minmax(0, 0.7fr) minmax(0, 0.9fr);
             gap: 12px;
         }
 
@@ -456,7 +456,7 @@
             }
 
             .paste-grid {
-                grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr) minmax(0, 0.7fr);
+                grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr) minmax(0, 0.7fr) minmax(0, 0.9fr);
                 gap: 8px;
             }
 
@@ -607,38 +607,22 @@
                     </div>
                     <textarea id="genders" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="남&#10;여&#10;남&#10;여" aria-describedby="input-status"></textarea>
                 </div>
+
+                <div class="field">
+                    <div class="field-head">
+                        <label for="passwords">비밀번호</label>
+                        <span class="line-count" id="password-count">0행</span>
+                    </div>
+                    <textarea id="passwords" inputmode="numeric" autocomplete="new-password" autocapitalize="off" spellcheck="false" placeholder="123456&#10;123456&#10;123456&#10;123456" aria-describedby="input-status"></textarea>
+                </div>
             </div>
 
             <div class="actions">
-                <p class="status" id="input-status" role="status" aria-live="polite">엑셀에서 학번, 성명, 성별 열을 복사하여 붙여넣으세요.</p>
+                <p class="status" id="input-status" role="status" aria-live="polite">엑셀에서 학번, 성명, 성별, 비밀번호 열을 복사하여 붙여넣으세요.</p>
                 <button class="save-button" id="save-button" type="button" disabled>SAVE ROSTER</button>
             </div>
         </section>
 
-        <section class="preview-card" id="preview-card" aria-labelledby="preview-title" hidden>
-            <div class="preview-head">
-                <div>
-                    <h2 id="preview-title">Preview</h2>
-                    <p class="class-summary" id="class-summary"></p>
-                </div>
-                <span class="student-total" id="student-total">0 students</span>
-            </div>
-            <p class="empty-preview" id="empty-preview">Your roster preview will appear here.</p>
-            <div class="table-wrap" id="table-wrap" hidden>
-                <table>
-                    <thead>
-                        <tr>
-                            <th scope="col">NUMBER</th>
-                            <th scope="col">NAME</th>
-                            <th scope="col">GENDER</th>
-                            <th scope="col">PASSWORD</th>
-                        </tr>
-                    </thead>
-                    <tbody id="roster-body"></tbody>
-                </table>
-            </div>
-            <p class="password-note">New students start with 123456. Leave a saved student's password blank to keep it unchanged.</p>
-        </section>
     </main>
 
     <script>
@@ -658,7 +642,6 @@
             const claimStatus = document.querySelector("#claim-status");
             const claimButton = document.querySelector("#claim-button");
             const rosterCard = document.querySelector("#roster-card");
-            const previewCard = document.querySelector("#preview-card");
             const schoolInput = document.querySelector("#school-name");
             const schoolCodeInput = document.querySelector("#school-code");
             const schoolYearInput = document.querySelector("#school-year");
@@ -666,22 +649,17 @@
             const classNumberInput = document.querySelector("#class-number");
             const teacherInput = document.querySelector("#teacher-name");
             const profileStatus = document.querySelector("#profile-status");
-            const classSummary = document.querySelector("#class-summary");
             const numbersInput = document.querySelector("#numbers");
             const namesInput = document.querySelector("#names");
             const gendersInput = document.querySelector("#genders");
+            const passwordsInput = document.querySelector("#passwords");
             const numberCount = document.querySelector("#number-count");
             const nameCount = document.querySelector("#name-count");
             const genderCount = document.querySelector("#gender-count");
+            const passwordCount = document.querySelector("#password-count");
             const status = document.querySelector("#input-status");
             const saveButton = document.querySelector("#save-button");
-            const rosterBody = document.querySelector("#roster-body");
-            const tableWrap = document.querySelector("#table-wrap");
-            const emptyPreview = document.querySelector("#empty-preview");
-            const studentTotal = document.querySelector("#student-total");
             const savedPasswordNumbers = new Set();
-            const passwordDrafts = new Map();
-            const genderDrafts = new Map();
             let authorized = false;
             let saving = false;
 
@@ -714,110 +692,38 @@
             function getRosterState() {
                 const numbers = splitLines(numbersInput.value);
                 const names = splitLines(namesInput.value);
-                let rawGenders = splitLines(gendersInput.value);
-                
-                const genders = numbers.map((num, idx) => {
-                    if (genderDrafts.has(num)) return genderDrafts.get(num);
-                    if (rawGenders[idx]) return normalizeGenderValue(rawGenders[idx]);
-                    return "남";
-                });
+                const rawGenders = splitLines(gendersInput.value);
+                const rawPasswords = splitLines(passwordsInput.value);
+                const genders = numbers.map((_, index) => normalizeGenderValue(rawGenders[index]));
+                const passwords = numbers.map((number, index) => rawPasswords[index] || (savedPasswordNumbers.has(number) ? "" : DEFAULT_STUDENT_PASSWORD));
 
                 const hasBlank = numbers.some((value) => !value) || names.some((value) => !value);
                 const duplicateNumbers = numbers.filter((value, index) => value && numbers.indexOf(value) !== index);
                 const invalidNumbers = numbers.filter((value) => value && !/^\d{1,3}$/.test(value));
                 const invalidNames = names.filter((value) => value && !/^[가-힣]{2,6}$/.test(value));
-                const invalidPasswords = numbers.filter((number) => {
-                    const password = getStudentPassword(number);
-                    return password ? !STUDENT_PASSWORD_PATTERN.test(password) : !savedPasswordNumbers.has(number);
-                });
+                const invalidPasswords = passwords.filter((password) => password && !STUDENT_PASSWORD_PATTERN.test(password));
+                const hasMismatchedGenders = rawGenders.length > 0 && rawGenders.length !== numbers.length;
+                const hasMismatchedPasswords = rawPasswords.length > 0 && rawPasswords.length !== numbers.length;
                 const isComplete = numbers.length > 0 &&
                     numbers.length === names.length &&
                     !hasBlank &&
                     duplicateNumbers.length === 0 &&
                     invalidNumbers.length === 0 &&
                     invalidNames.length === 0 &&
+                    !hasMismatchedGenders &&
+                    !hasMismatchedPasswords &&
                     invalidPasswords.length === 0;
 
-                return { numbers, names, genders, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidPasswords, isComplete };
+                return { numbers, names, genders, passwords, hasBlank, duplicateNumbers, invalidNumbers, invalidNames, invalidPasswords, hasMismatchedGenders, hasMismatchedPasswords, isComplete };
             }
 
-            function getStudentPassword(number) {
-                if (passwordDrafts.has(number)) return passwordDrafts.get(number);
-                return savedPasswordNumbers.has(number) ? "" : DEFAULT_STUDENT_PASSWORD;
-            }
-
-            function createRoster(numbers, names, genders) {
+            function createRoster(numbers, names, genders, passwords) {
                 return numbers.map((number, index) => ({
                     number,
                     name: names[index],
                     gender: genders[index] || "남",
-                    password: getStudentPassword(number),
+                    password: passwords[index] || "",
                 }));
-            }
-
-            function renderRoster(roster) {
-                rosterBody.replaceChildren();
-
-                roster.forEach(({ number, name, gender, password }) => {
-                    const row = document.createElement("tr");
-                    const numberCell = document.createElement("td");
-                    const nameCell = document.createElement("td");
-                    const genderCell = document.createElement("td");
-                    const passwordCell = document.createElement("td");
-
-                    numberCell.textContent = number;
-                    nameCell.textContent = name;
-
-                    const genderSelect = document.createElement("select");
-                    genderSelect.className = "student-gender-select";
-                    genderSelect.style.padding = "4px 8px";
-                    genderSelect.style.borderRadius = "4px";
-                    genderSelect.style.border = "1px solid #ccc";
-                    genderSelect.style.fontWeight = "bold";
-                    genderSelect.innerHTML = `<option value="남" ${gender === "남" ? "selected" : ""}>남</option><option value="여" ${gender === "여" ? "selected" : ""}>여</option>`;
-                    genderSelect.addEventListener("change", () => {
-                        genderDrafts.set(number, genderSelect.value);
-                        profileStatus.textContent = "Unsaved changes";
-                        update();
-                    });
-                    genderCell.append(genderSelect);
-
-                    const passwordInput = document.createElement("input");
-                    passwordInput.className = "student-password";
-                    passwordInput.type = "password";
-                    passwordInput.inputMode = "numeric";
-                    passwordInput.autocomplete = "new-password";
-                    passwordInput.maxLength = 6;
-                    passwordInput.value = password;
-                    passwordInput.placeholder = savedPasswordNumbers.has(number) && !password ? "UNCHANGED" : "";
-                    passwordInput.setAttribute("aria-label", `Password for ${number} ${name}`);
-                    passwordInput.setAttribute("aria-invalid", String(Boolean(password) && !STUDENT_PASSWORD_PATTERN.test(password)));
-                    passwordInput.addEventListener("input", () => {
-                        const cleanPassword = passwordInput.value.replace(/\D/g, "").slice(0, 6);
-                        if (passwordInput.value !== cleanPassword) passwordInput.value = cleanPassword;
-                        passwordDrafts.set(number, cleanPassword);
-                        passwordInput.setAttribute("aria-invalid", String(
-                            cleanPassword ? !STUDENT_PASSWORD_PATTERN.test(cleanPassword) : !savedPasswordNumbers.has(number)
-                        ));
-                        profileStatus.textContent = "Unsaved changes";
-                        const nextState = getRosterState();
-                        saveButton.disabled = saving || !authorized || !nextState.isComplete || !isProfileComplete();
-                        if (nextState.invalidPasswords.length > 0) {
-                            setStatus("Each new or changed password must contain exactly 6 digits.", "error");
-                        } else if (nextState.isComplete && isProfileComplete()) {
-                            const noun = nextState.numbers.length === 1 ? "student is" : "students are";
-                            setStatus(`${nextState.numbers.length} ${noun} ready to save.`, "success");
-                        }
-                    });
-                    passwordCell.append(passwordInput);
-                    row.append(numberCell, nameCell, genderCell, passwordCell);
-                    rosterBody.append(row);
-                });
-
-                const hasRoster = roster.length > 0;
-                tableWrap.hidden = !hasRoster;
-                emptyPreview.hidden = hasRoster;
-                studentTotal.textContent = `${roster.length} ${roster.length === 1 ? "student" : "students"}`;
             }
 
             function setStatus(message, tone = "neutral") {
@@ -856,16 +762,7 @@
             }
 
             function updateClassSummary(profile) {
-                const school = profile.schoolName;
-                const schoolCode = profile.schoolCode ? `Code ${profile.schoolCode}` : "";
-                const year = profile.schoolYear || "";
-                const gradeAndClass = [
-                    profile.grade ? `Grade ${profile.grade}` : "",
-                    profile.classNumber ? `Class ${profile.classNumber}` : "",
-                ].filter(Boolean).join(" · ");
-                const teacher = profile.teacherName ? `Teacher ${profile.teacherName}` : "";
-                const summary = [school, schoolCode, year, gradeAndClass, teacher].filter(Boolean);
-                classSummary.textContent = summary.join(" · ") || "Enter the class details above.";
+                return profile;
             }
 
             function markUnsaved() {
@@ -884,12 +781,10 @@
                 numbersInput.value = classroom.students.map((student) => student.number).join("\n");
                 namesInput.value = classroom.students.map((student) => student.name).join("\n");
                 gendersInput.value = classroom.students.map((student) => student.gender || "남").join("\n");
+                passwordsInput.value = "";
                 savedPasswordNumbers.clear();
-                passwordDrafts.clear();
-                genderDrafts.clear();
                 classroom.students.forEach((student) => {
                     if (student.passwordConfigured) savedPasswordNumbers.add(student.number);
-                    genderDrafts.set(student.number, student.gender || "남");
                 });
                 profileStatus.textContent = "Saved on the server";
                 updateClassSummary(getProfile());
@@ -900,9 +795,10 @@
                 numberCount.textContent = `${state.numbers.length}행`;
                 nameCount.textContent = `${state.names.length}행`;
                 if (genderCount) genderCount.textContent = `${state.genders.length}행`;
+                if (passwordCount) passwordCount.textContent = `${state.passwords.length}행`;
 
                 const hasAnyInput = state.numbers.length > 0 || state.names.length > 0;
-                const hasMismatchedCounts = hasAnyInput && state.numbers.length !== state.names.length;
+                const hasMismatchedCounts = hasAnyInput && (state.numbers.length !== state.names.length || state.hasMismatchedGenders || state.hasMismatchedPasswords);
 
                 numbersInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.duplicateNumbers.length > 0 || state.invalidNumbers.length > 0));
                 namesInput.setAttribute("aria-invalid", String(hasMismatchedCounts || state.hasBlank || state.invalidNames.length > 0));
@@ -910,7 +806,6 @@
 
                 if (!hasAnyInput) {
                     setStatus("엑셀에서 학번, 성명, 성별 열을 복사하여 붙여넣으세요.");
-                    renderRoster([]);
                     return;
                 }
 
@@ -918,49 +813,41 @@
                     const difference = Math.abs(state.numbers.length - state.names.length);
                     const shorterSide = state.numbers.length < state.names.length ? "번호" : "이름";
                     setStatus(`${shorterSide} 열이 ${difference}행 부족합니다.`, "error");
-                    renderRoster([]);
                     return;
                 }
 
                 if (state.hasBlank) {
                     setStatus("중간의 빈 행을 제거해주세요.", "error");
-                    renderRoster([]);
                     return;
                 }
 
                 if (state.duplicateNumbers.length > 0) {
                     const duplicated = [...new Set(state.duplicateNumbers)].join(", ");
                     setStatus(`중복된 학번: ${duplicated}`, "error");
-                    renderRoster([]);
                     return;
                 }
 
                 if (state.invalidNumbers.length > 0) {
                     setStatus("학번은 숫자만 입력 가능합니다.", "error");
-                    renderRoster([]);
                     return;
                 }
 
                 if (state.invalidNames.length > 0) {
                     setStatus("이름은 2~6자의 한글이어야 합니다.", "error");
-                    renderRoster([]);
                     return;
                 }
 
-                if (state.invalidPasswords.length > 0) {
+                if (state.invalidPasswords.length > 0 || state.hasMismatchedPasswords) {
                     setStatus("비밀번호는 6자리 숫자여야 합니다.", "error");
-                    renderRoster(createRoster(state.numbers, state.names, state.genders));
                     return;
                 }
 
                 if (!isProfileComplete()) {
                     setStatus("모든 학급 정보를 입력해 주세요.", "error");
-                    renderRoster(createRoster(state.numbers, state.names, state.genders));
                     return;
                 }
 
                 setStatus(`${state.numbers.length}명의 학생 명단이 준비되었습니다.`, "success");
-                renderRoster(createRoster(state.numbers, state.names, state.genders));
             }
 
             async function saveRoster() {
@@ -968,7 +855,7 @@
                 const profile = getProfile();
                 if (!authorized || !state.isComplete || !isProfileComplete(profile) || saving) return;
 
-                const roster = createRoster(state.numbers, state.names, state.genders);
+                const roster = createRoster(state.numbers, state.names, state.genders, state.passwords);
                 saving = true;
                 saveButton.textContent = "SAVING…";
                 update();
@@ -988,7 +875,6 @@
                     profileStatus.textContent = "Saved on the server";
                     savedPasswordNumbers.clear();
                     roster.forEach((student) => savedPasswordNumbers.add(student.number));
-                    passwordDrafts.clear();
                     setStatus(`${roster.length} students saved.`, "success");
                 } catch (error) {
                     setStatus(error.message, "error");
@@ -1027,7 +913,6 @@
                     classNumberInput.readOnly = true;
                     teacherInput.readOnly = true;
                     rosterCard.hidden = false;
-                    previewCard.hidden = false;
                     const result = await api("/api/teacher/class");
                     if (result.classroom) loadClassroom(result.classroom);
                     else profileStatus.textContent = "Not saved yet";
@@ -1064,6 +949,16 @@
             [schoolYearInput, gradeInput].forEach((select) => select.addEventListener("change", markUnsaved));
             numbersInput.addEventListener("input", update);
             namesInput.addEventListener("input", update);
+            gendersInput.addEventListener("input", update);
+            passwordsInput.addEventListener("input", () => {
+                const cleanLines = passwordsInput.value
+                    .replace(/[^\d\r\n]/g, "")
+                    .replace(/\r\n?/g, "\n")
+                    .split("\n")
+                    .map((line) => line.slice(0, 6));
+                passwordsInput.value = cleanLines.join("\n");
+                update();
+            });
             saveButton.addEventListener("click", saveRoster);
             signOutButton.addEventListener("click", async () => {
                 await api("/api/auth/logout", { method: "POST", body: "{}" }).catch(() => {});
