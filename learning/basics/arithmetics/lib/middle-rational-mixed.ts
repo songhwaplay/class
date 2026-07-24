@@ -56,6 +56,11 @@ function latex(numerator: number, denominator = 1) {
   return d === 1 ? String(n) : `${n < 0 ? "-" : ""}\\frac{${Math.abs(n)}}{${d}}`;
 }
 
+function signedTerm(value: number | string) {
+  const text = String(value);
+  return text.startsWith("-") ? `(${text})` : text;
+}
+
 function makeProblem(
   id: string,
   kind: MiddleRationalMixedKind,
@@ -69,7 +74,7 @@ function makeProblem(
     id,
     kind,
     label,
-    prompt: "계산하세요.",
+    prompt: "",
     latex: expression,
     answers: answer[1] === 1 ? [answer[0]] : answer,
     answerLabels: answer[1] === 1 ? ["답"] : ["분자", "분모"],
@@ -82,21 +87,21 @@ function build(kind: MiddleRationalMixedKind, next: () => number, id: string) {
   const c = nonzero(next, -6, 6);
 
   if (kind === "integer-priority") {
-    return makeProblem(id, kind, "곱셈이 있는 정수 계산", `${a}+(${b})\\times(${c})`, a + b * c);
+    return makeProblem(id, kind, "곱셈이 있는 정수 계산", `${a}+${signedTerm(b)}\\times${signedTerm(c)}`, a + b * c);
   }
   if (kind === "integer-parentheses") {
-    return makeProblem(id, kind, "괄호가 있는 정수 계산", `(${a}-(${b}))\\times(${c})`, (a - b) * c);
+    return makeProblem(id, kind, "괄호가 있는 정수 계산", `\\left(${a}-${signedTerm(b)}\\right)\\times${signedTerm(c)}`, (a - b) * c);
   }
   if (kind === "integer-power") {
     const base = nonzero(next, -5, 5);
     const multiplier = nonzero(next, -5, 5);
-    return makeProblem(id, kind, "거듭제곱과 부호", `-(${base})^2+(${multiplier})\\times(${c})`, -(base ** 2) + multiplier * c);
+    return makeProblem(id, kind, "거듭제곱과 부호", `-${signedTerm(base)}^2+${signedTerm(multiplier)}\\times${signedTerm(c)}`, -(base ** 2) + multiplier * c);
   }
   if (kind === "integer-nested") {
     const divisor = nonzero(next, -5, 5);
     const quotient = nonzero(next, -6, 6);
     const inner = divisor * quotient;
-    return makeProblem(id, kind, "중괄호가 있는 계산", `${a}-\\left\\{${b}-(${inner})\\div(${divisor})\\right\\}`, a - (b - quotient));
+    return makeProblem(id, kind, "중괄호가 있는 계산", `${a}-\\left\\{${b}-${signedTerm(inner)}\\div${signedTerm(divisor)}\\right\\}`, a - (b - quotient));
   }
 
   const d1 = integer(next, 2, 8);
@@ -108,17 +113,17 @@ function build(kind: MiddleRationalMixedKind, next: () => number, id: string) {
 
   if (kind === "fraction-priority") {
     const numerator = n1 * d2 * d3 + n2 * n3 * d1;
-    return makeProblem(id, kind, "유리수의 계산 순서", `${latex(n1, d1)}+(${latex(n2, d2)})\\times(${latex(n3, d3)})`, numerator, d1 * d2 * d3);
+    return makeProblem(id, kind, "유리수의 계산 순서", `${latex(n1, d1)}+${signedTerm(latex(n2, d2))}\\times${signedTerm(latex(n3, d3))}`, numerator, d1 * d2 * d3);
   }
   if (kind === "fraction-parentheses") {
     const numerator = (n1 * d2 - n2 * d1) * n3;
-    return makeProblem(id, kind, "괄호가 있는 유리수 계산", `\\left(${latex(n1, d1)}-(${latex(n2, d2)})\\right)\\times(${latex(n3, d3)})`, numerator, d1 * d2 * d3);
+    return makeProblem(id, kind, "괄호가 있는 유리수 계산", `\\left(${latex(n1, d1)}-${signedTerm(latex(n2, d2))}\\right)\\times${signedTerm(latex(n3, d3))}`, numerator, d1 * d2 * d3);
   }
   if (kind === "fraction-power") {
     const baseNumerator = nonzero(next, -4, 4);
     const baseDenominator = integer(next, 2, 6);
     const numerator = baseNumerator ** 2 * d1 + n1 * baseDenominator ** 2;
-    return makeProblem(id, kind, "분수의 거듭제곱", `\\left(${latex(baseNumerator, baseDenominator)}\\right)^2+(${latex(n1, d1)})`, numerator, baseDenominator ** 2 * d1);
+    return makeProblem(id, kind, "분수의 거듭제곱", `\\left(${latex(baseNumerator, baseDenominator)}\\right)^2+${signedTerm(latex(n1, d1))}`, numerator, baseDenominator ** 2 * d1);
   }
 
   const productNumerator = n2 * n3;
@@ -129,7 +134,7 @@ function build(kind: MiddleRationalMixedKind, next: () => number, id: string) {
     id,
     kind,
     "유리수 종합 계산",
-    `${latex(n1, d1)}-\\left\\{${latex(n2, d2)}\\times(${latex(n3, d3)})\\right\\}^{-1}`,
+    `${latex(n1, d1)}-\\left\\{${latex(n2, d2)}\\times${signedTerm(latex(n3, d3))}\\right\\}^{-1}`,
     numerator,
     denominator,
   );

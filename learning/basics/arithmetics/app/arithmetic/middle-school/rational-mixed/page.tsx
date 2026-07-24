@@ -17,6 +17,7 @@ export default function MiddleRationalMixedPage() {
       createSet={createMiddleRationalMixedProblemSet}
       createReviews={createMiddleRationalMixedReviewProblems}
       formatChoice={formatMiddleRationalMixedChoice}
+      showPromptOnWorksheet={false}
     />
   );
 }

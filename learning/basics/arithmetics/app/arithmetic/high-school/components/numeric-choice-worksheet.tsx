@@ -52,7 +52,7 @@ export default function NumericChoiceWorksheet({ initialSeed, subject, title, in
   const wrong = set.problems.filter((problem) => results[problem.id] === false);
   const choiceProblems: WorksheetChoiceProblem[] = problems.map((problem) => ({
     id: problem.id,
-    label: problem.prompt,
+    label: problem.prompt || problem.label,
     correctLatex: formatChoice(problem, problem.answers),
     choices: (makeChoices?.(problem) ?? createNumericChoices(problem.answers, problem.id)).map((choice) => ({
       id: choice.id,
