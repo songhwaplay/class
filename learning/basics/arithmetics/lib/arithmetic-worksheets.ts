@@ -201,6 +201,7 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "공수1", name: "복소수", title: "복소수", route: "/arithmetic/high-school/complex-numbers" },
   { grade: "공수1", name: "지수와 근호", title: "지수와 근호", route: "/arithmetic/high-school/exponents-radicals" },
   { grade: "공수1", name: "방정식", title: "방정식", route: "/arithmetic/high-school/equation-transformations" },
+  { grade: "공수1", name: "삼차방정식과 사차방정식", title: "삼차방정식과 사차방정식", route: "/arithmetic/high-school/cubic-quartic-equations" },
   { grade: "공수1", name: "부등식", title: "부등식", route: "/arithmetic/high-school/inequality-intervals" },
   { grade: "공수1", name: "순열", title: "순열", route: "/arithmetic/high-school/permutations-combinations" },
   { grade: "공수1", name: "조합", title: "조합", route: "/arithmetic/high-school/combinations" },
