@@ -177,12 +177,27 @@
         }
     }
 
-    function setMusicMuted(muted) {
+    function setMusicMuted(muted, { persist = true } = {}) {
         musicMuted = Boolean(muted);
-        storeState();
+        if (persist) storeState();
         render();
         applyAudioState();
         announceState();
+    }
+
+    // Joining another player's room temporarily mutes nearby devices. Keep the
+    // learner's actual preference separate so it can be restored when the room
+    // is left or the game is interrupted.
+    let multiplayerMuteRestore = null;
+    function muteForMultiplayer() {
+        if (multiplayerMuteRestore === null) multiplayerMuteRestore = musicMuted;
+        setMusicMuted(true, { persist: false });
+    }
+
+    function restoreAfterMultiplayer() {
+        if (multiplayerMuteRestore === null) return;
+        setMusicMuted(multiplayerMuteRestore, { persist: false });
+        multiplayerMuteRestore = null;
     }
 
     async function startPlayback() {
@@ -199,12 +214,14 @@
     }
 
     musicMuteBtn.addEventListener("click", () => {
+        multiplayerMuteRestore = null;
         setMusicMuted(!musicMuted);
         startPlayback();
     });
 
     musicLevelBtns.forEach(btn => {
         btn.addEventListener("click", () => {
+            multiplayerMuteRestore = null;
             musicLevel = Number(btn.dataset.classMusicLevel);
             musicMuted = false;
             storeState();
@@ -262,7 +279,8 @@
     });
     // Multiplayer guests start muted by default. They can still use UNMUTE
     // when they are far enough from the host that they need local audio.
-    window.addEventListener("classroommultiplayerjoined", () => setMusicMuted(true));
+    window.addEventListener("classroommultiplayerjoined", muteForMultiplayer);
+    window.addEventListener("classroommultiplayerleft", restoreAfterMultiplayer);
     window.addEventListener("pageshow", () => {
         pageIsHiding = false;
         shouldResumePlayback = true;

@@ -496,10 +496,20 @@
         }
 
         _abort(title, message) {
+            this._notifyGuestLeft();
             this.options.onAbort?.({ title, message, ...this.snapshot() });
         }
 
+        _notifyGuestLeft() {
+            if (this.role !== "guest" || !this.connected) return;
+            window.dispatchEvent(new CustomEvent("classroommultiplayerleft", {
+                detail: { gameId: this.gameId, roomCode: this.roomCode }
+            }));
+            this.connected = false;
+        }
+
         destroy() {
+            this._notifyGuestLeft();
             this._closeTransport();
             window.removeEventListener("beforeunload", this._boundBeforeUnload);
         }
