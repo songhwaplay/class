@@ -42,7 +42,7 @@ function build(kind:DerivativeApplicationKind,next:()=>number,id:string):Derivat
   }
   if(kind==="tangent-parameter"){
     const x=integer(next,1,3),a=integer(next,-4,4),q=integer(next,-3,3),slope=3*x*x+2*a*x+q;
-    return{id,kind,label:"접선의 기울기와 매개변수",prompt:"주어진 점에서의 접선이 직선과 평행하도록 𝑎를 구하세요.",latex:`f(x)=x^3+ax^2${signed(q)}x,\\qquad x=${x},\\qquad y=${slope}x+1`,answerLabels:["a"],answers:[a]};
+    return{id,kind,label:"평행 조건을 만족하는 𝑎값",prompt:"주어진 점에서의 접선이 직선과 평행하도록 𝑎를 구하세요.",latex:`f(x)=x^3+ax^2${signed(q)}x,\\qquad x=${x},\\qquad y=${slope}x+1`,answerLabels:["a"],answers:[a]};
   }
   const a=integer(next,1,3),b=integer(next,-4,4),c=integer(next,-5,5),t=integer(next,1,3);
   return{id,kind,label:"속도와 가속도",prompt:"주어진 시각의 속도와 가속도를 각각 구하세요.",latex:`s(t)=${leadingTerm(a,"t^3")}${signedTerm(b,"t^2")}${signedTerm(c,"t")},\\qquad t=${t}`,answerLabels:[`v(${t})`,`a(${t})`],answers:[3*a*t*t+2*b*t+c,6*a*t+2*b]};
