@@ -211,10 +211,11 @@
         }
 
         .timetable-item {
-            display: flex;
+            display: grid;
+            grid-template-columns: 105px 1fr minmax(130px, 160px);
+            gap: 10px;
             align-items: center;
-            justify-content: space-between;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 14px;
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.06);
@@ -224,25 +225,76 @@
         .timetable-item.active {
             background: linear-gradient(135deg, rgba(240, 189, 100, 0.25) 0%, rgba(240, 189, 100, 0.05) 100%);
             border-color: var(--accent-amber);
-            transform: scale(1.02);
+            transform: scale(1.01);
             box-shadow: 0 4px 15px rgba(240, 189, 100, 0.15);
+        }
+
+        .period-col-left {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .period-col-center {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-align: center;
+        }
+
+        .period-col-right {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
         }
 
         .period-label {
             font-weight: 800;
-            font-size: 1rem;
+            font-size: 0.95rem;
         }
 
         .period-subject {
-            font-weight: 800;
-            font-size: 1.15rem;
+            font-weight: 900;
+            font-size: 1.25rem;
             color: #ffffff;
         }
 
         .period-time {
-            font-size: 0.78rem;
+            font-size: 0.76rem;
             color: var(--text-sub);
             margin-top: 2px;
+        }
+
+        .period-place-badge {
+            background: rgba(117, 214, 159, 0.15);
+            border: 1px solid rgba(117, 214, 159, 0.3);
+            color: var(--accent-green);
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 12px;
+            white-space: nowrap;
+        }
+
+        .prep-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
+            padding: 5px 8px;
+            color: #7ce4ff;
+            font-size: 0.82rem;
+            font-weight: 600;
+            outline: none;
+        }
+
+        .prep-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .prep-input:focus {
+            border-color: var(--accent-green);
+            background: rgba(0, 0, 0, 0.45);
         }
 
         .timetable-item.active .period-subject {
@@ -878,10 +930,14 @@
 
         function renderTimetable(dayName, now = new Date()) {
             const listEl = document.getElementById("timetableList");
+            if (!listEl) return;
             listEl.replaceChildren();
 
             const periods = customTimetable[dayName] || defaultTimetable["월"];
             const currentMins = now.getHours() * 60 + now.getMinutes();
+
+            // 요일별 저장된 그날만의 준비물 데이터
+            const savedPreps = JSON.parse(localStorage.getItem(`dashboardPreps_${dayName}`) || "{}");
 
             periods.forEach((item) => {
                 const div = document.createElement("div");
@@ -896,16 +952,35 @@
                     div.classList.add("active");
                 }
 
-                const placeTag = item.place ? `<span style="font-size: 0.76rem; background: rgba(117, 214, 159, 0.18); color: var(--accent-green); padding: 2px 6px; border-radius: 6px; font-weight: 700; margin-left: 6px; border: 1px solid rgba(117,214,159,0.3);">📍 ${item.place}</span>` : '';
+                const placeTag = item.place ? `<span class="period-place-badge">📍 ${item.place}</span>` : '';
+                const prepVal = savedPreps[item.p] || "";
 
                 div.innerHTML = `
-                    <div>
+                    <div class="period-col-left">
                         <div class="period-label">${item.p}교시</div>
                         <div class="period-time">${item.s || ""} - ${item.e || ""}</div>
                     </div>
-                    <div class="period-subject">${item.sub || "과목"}${placeTag}</div>
+                    <div class="period-col-center">
+                        <span class="period-subject">${item.sub || "과목"}</span>
+                        ${placeTag}
+                    </div>
+                    <div class="period-col-right">
+                        <input class="prep-input" data-day="${dayName}" data-p="${item.p}" value="${prepVal}" placeholder="🎒 준비물 입력...">
+                    </div>
                 `;
                 listEl.append(div);
+            });
+
+            // 준비물 입력 이벤트 리스너
+            listEl.querySelectorAll(".prep-input").forEach(input => {
+                input.addEventListener("input", (e) => {
+                    const p = e.target.dataset.p;
+                    const day = e.target.dataset.day;
+                    const val = e.target.value;
+                    const preps = JSON.parse(localStorage.getItem(`dashboardPreps_${day}`) || "{}");
+                    preps[p] = val;
+                    localStorage.setItem(`dashboardPreps_${day}`, JSON.stringify(preps));
+                });
             });
         }
         setInterval(updateClock, 1000);
