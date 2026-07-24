@@ -11,6 +11,23 @@
     const PROGRESS_KEY = `${LEGACY_PROGRESS_KEY}${playerKeySuffix}`;
     const BEST_SCORE_KEY = `${LEGACY_BEST_SCORE_KEY}${playerKeySuffix}`;
     const ILLUSTRATIONS = {
+        dongseonambuk: "assets/idioms/dongseonambuk.webp",
+        dongmunseodap: "assets/idioms/dongmunseodap.webp",
+        iyeolchyeol: "assets/idioms/iyeolchyeol.webp",
+        gyeonmulsaengsim: "assets/idioms/gyeonmulsaengsim.webp",
+        iljangildan: "assets/idioms/iljangildan.webp",
+        sipinsipsaek: "assets/idioms/sipinsipsaek.webp",
+        seongyeonjimyeong: "assets/idioms/seongyeonjimyeong.webp",
+        munjeonseongsi: "assets/idioms/munjeonseongsi.webp",
+        taksanggongnon: "assets/idioms/taksanggongnon.webp",
+        jaseungjabak: "assets/idioms/jaseungjabak.webp",
+        myeonggyeongjisu: "assets/idioms/myeonggyeongjisu.webp",
+        ingwaeungbo: "assets/idioms/ingwaeungbo.webp",
+        samilcheonha: "assets/idioms/samilcheonha.webp",
+        dongsimhyeomnyeok: "assets/idioms/dongsimhyeomnyeok.webp",
+        sanjeonsujeon: "assets/idioms/sanjeonsujeon.webp",
+        cheonbangjichuk: "assets/idioms/cheonbangjichuk.webp",
+        yumyeongmusil: "assets/idioms/yumyeongmusil.webp",
         sipjungpalgu: "assets/idioms/sipjungpalgu.webp",
         cheonsinmango: "assets/idioms/cheonsinmango.webp",
         samsaileon: "assets/idioms/samsaileon.webp",
