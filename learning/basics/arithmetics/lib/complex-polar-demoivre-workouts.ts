@@ -55,7 +55,7 @@ export const complexPolarDemoivreProblems: GeometryChoiceItem[] = [
     "cp4",
     "극형식의 곱셈",
     "곱 $z_1z_2$는?",
-    String.raw`z_1=2\left(\cos\frac{\pi}{6}+i\sin\frac{\pi}{6}\right),\quad z_2=3\left(\cos\frac{3\pi}{4}+i\sin\frac{3\pi}{4}\right)`,
+    String.raw`\begin{aligned}z_1&=2\left(\cos\frac{\pi}{6}+i\sin\frac{\pi}{6}\right)\\z_2&=3\left(\cos\frac{3\pi}{4}+i\sin\frac{3\pi}{4}\right)\end{aligned}`,
     String.raw`6\left(\cos\frac{11\pi}{12}+i\sin\frac{11\pi}{12}\right)`,
     [
       String.raw`6\left(\cos\frac{7\pi}{12}+i\sin\frac{7\pi}{12}\right)`,
@@ -67,7 +67,7 @@ export const complexPolarDemoivreProblems: GeometryChoiceItem[] = [
     "cp5",
     "극형식의 나눗셈",
     "몫 $\\dfrac{z_1}{z_2}$는?",
-    String.raw`z_1=6\left(\cos\frac{5\pi}{6}+i\sin\frac{5\pi}{6}\right),\quad z_2=2\left(\cos\frac{\pi}{3}+i\sin\frac{\pi}{3}\right)`,
+    String.raw`\begin{aligned}z_1&=6\left(\cos\frac{5\pi}{6}+i\sin\frac{5\pi}{6}\right)\\z_2&=2\left(\cos\frac{\pi}{3}+i\sin\frac{\pi}{3}\right)\end{aligned}`,
     String.raw`3\left(\cos\frac{\pi}{2}+i\sin\frac{\pi}{2}\right)`,
     [
       String.raw`3\left(\cos\frac{7\pi}{6}+i\sin\frac{7\pi}{6}\right)`,

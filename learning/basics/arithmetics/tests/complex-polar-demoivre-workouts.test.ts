@@ -41,3 +41,10 @@ test("문장 속 수학 기호는 인라인 수식으로 표시한다", () => {
   assert.ok(prompts.includes("곱 $z_1z_2$는?"));
   assert.ok(prompts.includes("몫 $\\dfrac{z_1}{z_2}$는?"));
 });
+
+test("두 복소수를 제시하는 긴 식은 의도적으로 두 줄 정렬한다", () => {
+  for (const problem of complexPolarDemoivreProblems.filter(({ id }) => id === "cp4" || id === "cp5")) {
+    assert.match(problem.latex, /\\begin\{aligned\}/);
+    assert.match(problem.latex, /\\\\z_2&=/);
+  }
+});

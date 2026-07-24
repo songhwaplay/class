@@ -1193,6 +1193,19 @@
   letter-spacing: -0.025em;
 }
 
+.polynomial-page .worksheet-stage .geometry-choice-prompt .math-formula,
+.trig-derivative-answer-panel .trig-derivative-answer-item-heading .math-formula {
+  margin: 0 0.08em;
+  font-size: 1.18em;
+  line-height: 1;
+  vertical-align: -0.08em;
+}
+
+.polynomial-page .worksheet-stage .geometry-choice-prompt .math-formula .katex,
+.trig-derivative-answer-panel .trig-derivative-answer-item-heading .math-formula .katex {
+  font-size: 1em;
+}
+
 .polynomial-page .worksheet-stage .geometry-choice-question {
   padding-left: 42px;
 }
@@ -1226,6 +1239,10 @@
 .polynomial-page.formula-only-page .worksheet-stage .geometry-choice-expression .katex-display,
 .polynomial-page.numeric-choice-page .worksheet-stage .logarithm-expression .katex-display {
   margin: 5px 0 0;
+  text-align: left;
+}
+
+.polynomial-page.formula-only-page .worksheet-stage .geometry-choice-expression .aligned {
   text-align: left;
 }
 
