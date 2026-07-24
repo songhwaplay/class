@@ -238,6 +238,7 @@ export const highSchoolWorksheetCatalog: ArithmeticWorksheet[] = [
   { grade: "기하", name: "벡터의 내적과 정사영", title: "벡터의 내적과 정사영", route: "/arithmetic/high-school/vector-projections" },
   { grade: "기하", name: "도형과 벡터", title: "도형과 벡터", route: "/arithmetic/high-school/vector-geometry" },
   { grade: "기하", name: "공간좌표", title: "공간좌표", route: "/arithmetic/high-school/space-coordinates" },
+  { grade: "확통", name: "이항정리", title: "이항정리", route: "/arithmetic/high-school/binomial-theorem" },
   { grade: "확통", name: "확률의 계산", title: "확률의 계산", route: "/arithmetic/high-school/probability-rules" },
   { grade: "확통", name: "확률분포와 통계", title: "확률분포와 통계", route: "/arithmetic/high-school/probability-distributions" },
 ];
