@@ -75,10 +75,15 @@ test("renders the learning index, arithmetic mode choice, and catalog in workboo
   assert.match(catalogHtml, /data-stage="high"/);
   assert.match(catalogHtml, /이공계 기초/);
   assert.equal((catalogHtml.match(/class="worksheet-grade"/g) ?? []).length, 131);
-  assert.ok(catalogHtml.indexOf("수세기①") < catalogHtml.indexOf("덧셈뺄셈①"));
-  assert.ok(catalogHtml.indexOf("분수①") < catalogHtml.indexOf("분수②"));
-  assert.ok(catalogHtml.indexOf("분수②") < catalogHtml.indexOf("무게,들이"));
-  assert.ok(catalogHtml.indexOf("비례식") < catalogHtml.indexOf("원기둥"));
+  assert.ok(catalogHtml.indexOf("수 세기") < catalogHtml.indexOf("덧셈·뺄셈 ①"));
+  assert.ok(catalogHtml.indexOf("분수 ①") < catalogHtml.indexOf("분수 ②"));
+  assert.ok(catalogHtml.indexOf("분수 ②") < catalogHtml.indexOf("무게와 들이"));
+  assert.ok(catalogHtml.indexOf("비례식") < catalogHtml.indexOf("원기둥의 계산"));
+  assert.match(catalogHtml, /구구단\(2·5단\)/);
+  assert.match(catalogHtml, /구구단\(3·4단\)/);
+  assert.match(catalogHtml, /구구단\(6·7단\)/);
+  assert.match(catalogHtml, /구구단\(8·9단\)/);
+  assert.match(catalogHtml, /구구단\(종합\)/);
   assert.match(catalogHtml, /worksheet-grade[^>]*>\(초1\)<\/small>/);
   assert.match(catalogHtml, /worksheet-grade[^>]*>\(초3\)<\/small>/);
   assert.match(catalogHtml, /worksheet-grade[^>]*>\(초4\)<\/small>/);
@@ -1839,9 +1844,9 @@ test("renders the first multiplication worksheet with the workbook blank pattern
 
   const html = await response.text();
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(html, /구구단 ①/);
-  assert.match(html, /aria-label="A4 구구단 ① 문제지"/);
-  assert.match(html, /aria-label="A4 구구단 ① 전체 답지"/);
+  assert.match(html, /구구단\(2·5단\)/);
+  assert.match(html, /aria-label="A4 구구단\(2·5단\) 문제지"/);
+  assert.match(html, /aria-label="A4 구구단\(2·5단\) 전체 답지"/);
   assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
   assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
   assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
@@ -1867,9 +1872,9 @@ test("renders the second multiplication worksheet with three and four times tabl
   assert.equal(response.status, 200);
 
   const html = await response.text();
-  assert.match(html, /구구단 ②/);
-  assert.match(html, /aria-label="A4 구구단 ② 문제지"/);
-  assert.match(html, /aria-label="A4 구구단 ② 전체 답지"/);
+  assert.match(html, /구구단\(3·4단\)/);
+  assert.match(html, /aria-label="A4 구구단\(3·4단\) 문제지"/);
+  assert.match(html, /aria-label="A4 구구단\(3·4단\) 전체 답지"/);
   assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
   assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
   assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
@@ -1889,9 +1894,9 @@ test("renders the third multiplication worksheet with six and seven times tables
   assert.equal(response.status, 200);
 
   const html = await response.text();
-  assert.match(html, /구구단 ③/);
-  assert.match(html, /aria-label="A4 구구단 ③ 문제지"/);
-  assert.match(html, /aria-label="A4 구구단 ③ 전체 답지"/);
+  assert.match(html, /구구단\(6·7단\)/);
+  assert.match(html, /aria-label="A4 구구단\(6·7단\) 문제지"/);
+  assert.match(html, /aria-label="A4 구구단\(6·7단\) 전체 답지"/);
   assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
   assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
   assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
@@ -1911,9 +1916,9 @@ test("renders the fourth multiplication worksheet with eight and nine times tabl
   assert.equal(response.status, 200);
 
   const html = await response.text();
-  assert.match(html, /구구단 ④/);
-  assert.match(html, /aria-label="A4 구구단 ④ 문제지"/);
-  assert.match(html, /aria-label="A4 구구단 ④ 전체 답지"/);
+  assert.match(html, /구구단\(8·9단\)/);
+  assert.match(html, /aria-label="A4 구구단\(8·9단\) 문제지"/);
+  assert.match(html, /aria-label="A4 구구단\(8·9단\) 전체 답지"/);
   assert.equal((html.match(/data-testid="multiplication-question"/g) ?? []).length, 60);
   assert.equal((html.match(/class="multiplication-input"/g) ?? []).length, 30);
   assert.equal((html.match(/class="multiplication-static-answer"/g) ?? []).length, 30);
@@ -1934,9 +1939,9 @@ test("renders the fifth multiplication worksheet as the workbook's five-by-twent
 
   const html = await response.text();
   const css = await readFile(new URL("../app/globals.css", import.meta.url), "utf8");
-  assert.match(html, /구구단 ⑤/);
-  assert.match(html, /aria-label="A4 구구단 ⑤ 문제지"/);
-  assert.match(html, /aria-label="A4 구구단 ⑤ 전체 답지"/);
+  assert.match(html, /구구단\(종합\)/);
+  assert.match(html, /aria-label="A4 구구단\(종합\) 문제지"/);
+  assert.match(html, /aria-label="A4 구구단\(종합\) 전체 답지"/);
   assert.equal((html.match(/data-testid="multiplication-five-question"/g) ?? []).length, 200);
   assert.equal((html.match(/multiplication-five-input/g) ?? []).length, 100);
   assert.equal((html.match(/multiplication-five-static-answer/g) ?? []).length, 100);
